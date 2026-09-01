@@ -1,69 +1,25 @@
-// These defaults are product policy: Luna keeps review cost low, while reasoning and source metadata aid diagnosis.
+// Shared review policy is combined with a small profile-specific focus below.
 export const defaultDeveloperText = 'Review the following JavaScript source files and identify actionable issues:\n\n';
-export const prompt = {
-  model: 'gpt-5.6-luna',
-  service_tier: 'default',
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: 'List every issue as one bullet per line, grouped by priority P0, P1, P2, etc. When naming an issue, include its file path and related line number(s) in the response. Honor inline comments explaining intentional policies; do not report behavior explicitly marked intentional as an issue. Be extremely concise; sacrifice grammar for brevity.' }] },
-  ],
-  text: { format: { type: 'text' }, verbosity: 'low' },
-  reasoning: { effort: 'none', mode: 'standard', summary: null },
-  tools: [],
-  store: false,
-  prompt_cache_options: { mode: 'explicit' },
-  include: ['reasoning.encrypted_content', 'web_search_call.action.sources'],
-};
-
-export const mdPrompt = {
-  ...prompt,
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: 'Find documentation inconsistencies. List each one bullet per line, grouped by priority P0, P1, P2, etc. Include path and line number(s). Be extremely concise; sacrifice grammar for brevity.' }] },
-  ],
-};
-
-export const allPrompt = {
-  ...prompt,
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: 'Find conflicts between the documentation and the code. Report only doc/code inconsistencies, not standalone code issues or standalone documentation issues. List each one bullet per line, grouped by priority P0, P1, P2, etc. Include path and line number(s). Be extremely concise; sacrifice grammar for brevity.' }] },
-  ],
-};
-
-export const refactorPrompt = {
-  ...prompt,
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: 'Identify monolithic files with mixed scopes or responsibilities. Report only meaningful refactoring opportunities, not style preferences or intentional policies. For each issue, include the file path and related line number(s), explain the responsibility split, and suggest a smaller single-purpose file/folder structure that improves maintainability and testability. Group by priority P0, P1, P2, etc., one bullet per line. Be extremely concise; sacrifice grammar for brevity.' }] },
-  ],
-};
-
-const implementationOnlyPrompt = (instruction) => ({
-  ...prompt,
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: `${instruction} Use the complete implementation source provided above. Include file path and related line number(s) where relevant. Honor inline comments marking intentional policies. Be extremely concise; sacrifice grammar for brevity.` }] },
-  ],
-});
-
-export const architecturePrompt = implementationOnlyPrompt('Suggest architecture optimizations only: identify high-value improvements to module boundaries, dependencies, data flow, scalability, reliability, and maintainability. Do not report ordinary code defects, style issues, or documentation issues.');
-export const newFeaturesPrompt = implementationOnlyPrompt('Suggest valuable new features only: infer practical capabilities that would improve this tool for users. Do not report defects, refactoring tasks, style issues, or documentation issues. For each suggestion, briefly state user value and likely implementation area.');
-export const securityPrompt = implementationOnlyPrompt('Identify security risks only: secrets, unsafe input, injection, permissions, trust boundaries, and data exposure.');
-export const performancePrompt = implementationOnlyPrompt('Identify performance risks only: unnecessary I/O, CPU cost, memory growth, latency, and scalability bottlenecks.');
-export const reliabilityPrompt = implementationOnlyPrompt('Identify reliability risks only: failure handling, retries, cancellation, cleanup, and incomplete or corrupted state.');
-export const apiDesignPrompt = implementationOnlyPrompt('Suggest API design improvements only: public interfaces, validation, consistency, and extensibility.');
-export const dependenciesPrompt = implementationOnlyPrompt('Suggest dependency improvements only: unnecessary packages, risky coupling, unused dependencies, and dependency boundaries.');
-export const observabilityPrompt = implementationOnlyPrompt('Suggest observability improvements only: logging, diagnostics, actionable errors, and operational visibility.');
-export const accessibilityPrompt = implementationOnlyPrompt('Suggest accessibility improvements only for user-facing terminal or UI behavior. Do not report unrelated code issues.');
-export const releasePrompt = implementationOnlyPrompt('Identify release and packaging improvements only: entrypoints, metadata, versioning, installation, and distribution.');
-export const quickWinsPrompt = implementationOnlyPrompt('Suggest only high-value, low-effort improvements. Exclude speculative, stylistic, or large refactoring work.');
-export const prioritizePrompt = implementationOnlyPrompt('Prioritize existing improvement opportunities only by impact, effort, and recommended order. Do not invent unrelated issues.');
-
-export const createAnalysisPrompt = (subject) => ({
-  ...prompt,
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    { role: 'user', content: [{ type: 'input_text', text: `Review ${subject}. List each issue one bullet per line, grouped by priority P0, P1, P2, etc. Include path and line number(s). Honor inline comments marking intentional policies. Be extremely concise; sacrifice grammar for brevity.` }] },
-  ],
-});
+export const globalReviewInstructions = 'List each issue as one bullet per line, grouped by priority P0, P1, P2, etc. Include file path and related line number(s). Inspect nearby comments first: inline comments authoritatively explain intentional behavior or policy, so do not report behavior they explain. This is hard false-positive suppression, not context. Example: organization-only GHCR support comments suppress personal-account support findings. Be extremely concise; sacrifice grammar for brevity.';
+// Intentional deployment policy: pin the tested low-cost model so every profile has predictable availability/cost.
+const base = { model: 'gpt-5.6-luna', service_tier: 'default', text: { format: { type: 'text' }, verbosity: 'low' }, reasoning: { effort: 'none', mode: 'standard', summary: null }, tools: [], store: false, prompt_cache_options: { mode: 'explicit' }, include: ['reasoning.encrypted_content', 'web_search_call.action.sources'] };
+const profilePrompt = focus => ({ ...base, input: [{ role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] }, { role: 'user', content: [{ type: 'input_text', text: `${globalReviewInstructions}\n\nProfile focus: ${focus}` }] }] });
+export const prompt = profilePrompt('review selected source files for actionable implementation issues.');
+export const mdPrompt = profilePrompt('find documentation inconsistencies only.');
+export const allPrompt = profilePrompt('find conflicts between documentation and code only; do not report standalone code or documentation issues.');
+export const refactorPrompt = profilePrompt('identify meaningful monolithic-file responsibility splits and suggest smaller single-purpose structures; do not report style preferences or intentional policies.');
+const implementationOnlyPrompt = instruction => profilePrompt(`${instruction} Use the complete implementation source provided above.`);
+export const architecturePrompt = implementationOnlyPrompt('Suggest architecture optimizations only.');
+export const newFeaturesPrompt = implementationOnlyPrompt('Suggest valuable new features only, including user value and likely implementation area.');
+export const securityPrompt = implementationOnlyPrompt('Identify security risks only.');
+export const performancePrompt = implementationOnlyPrompt('Identify performance risks only.');
+export const reliabilityPrompt = implementationOnlyPrompt('Identify reliability risks only.');
+export const apiDesignPrompt = implementationOnlyPrompt('Suggest API design improvements only.');
+export const dependenciesPrompt = implementationOnlyPrompt('Suggest dependency improvements only.');
+export const observabilityPrompt = implementationOnlyPrompt('Suggest observability improvements only.');
+export const accessibilityPrompt = implementationOnlyPrompt('Suggest accessibility improvements only for user-facing behavior.');
+export const releasePrompt = profilePrompt('Act as a release-readiness gate for the complete implementation source. Output exactly one verdict: `pass`, `pass with known issues`, or `block release`. Use `block release` only for findings that affect correctness, security, reliability, or user data. Use `pass with known issues` for lower-risk findings. Do not block for behavior explicitly documented as an intentional policy or threat-model limitation, including immediate streaming of partial output before a later provider failure or portable lstat/read race limitations. Ignore purely stylistic, cosmetic, speculative, and convenience suggestions. After the verdict, add at most three ultra-concise bullets naming only release-blocking or materially relevant known issues, with path and line number(s).');
+export const quickWinsPrompt = implementationOnlyPrompt('Suggest only high-value, low-effort improvements.');
+export const prioritizePrompt = implementationOnlyPrompt('Prioritize existing improvement opportunities only.');
+export const priorityPrompt = maximum => implementationOnlyPrompt(`Identify implementation issues only at priorities P0 through P${maximum}; omit lower priorities.`);
+export const createAnalysisPrompt = subject => profilePrompt(subject);

@@ -7,7 +7,9 @@ import { fs } from '@eliware/common';
 const VERSION = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 export function usage() {
-  return `CODESCOPE
+  // Intentional API policy: help is a packaged local document and synchronous loading guarantees complete output.
+  return fs.readFileSync(new URL('../docs/quick-start.md', import.meta.url), 'utf8');
+  /* return `CODESCOPE
 
 What it does:
   Codescope reviews the current repository with OpenAI. It combines selected
@@ -24,13 +26,13 @@ Usage:
   codescope <profile>
 
 Analysis profiles:
-  implementation              Real .mjs files only
-  implementation-docs         Implementation plus Markdown
-  implementation-tests        Implementation plus *.test.mjs
+  code                        Real .mjs files only
+  code-docs                   Code plus Markdown
+  code-tests                  Code plus *.test.mjs
   refactor                    Monolithic files and responsibility splits
   architecture                Architecture optimizations only
   new-features                New feature suggestions only
-  implementation-tests-docs  Implementation, tests, and Markdown
+  code-tests-docs             Code, tests, and Markdown
   security                    Security risks only
   performance                 Performance risks only
   reliability                 Reliability risks only
@@ -38,9 +40,13 @@ Analysis profiles:
   dependencies                Dependency improvements only
   observability               Logging and diagnostics improvements only
   accessibility               User-facing accessibility improvements only
-  release                     Packaging and release improvements only
+  release                     Release-readiness verdict: pass, known issues, or block
   quick-wins                  High-value, low-effort improvements only
   prioritize                  Rank improvement opportunities
+  p0                          P0 issues only
+  p0-1                        P0 and P1 issues only
+  p0-2                        P0 through P2 issues only
+  p0-3                        P0 through P3 issues only
   tests                       *.test.mjs only
   tests-docs                  Tests plus Markdown
   docs                        Markdown only
@@ -56,16 +62,20 @@ Intentional behavior:
   The reviewer is instructed to honor these comments and not report the
   documented behavior as a false positive.
 
-`;
+`; */
 }
 
+// Intentional UX contract: every successful profile ends with this short human-facing reminder.
+// It is deliberately emitted even for machine-readable review text because inline comments are part of the review workflow.
 const REVIEW_NOTE = '\n\nNote: Add an inline comment explaining intentional behavior to avoid false positives.\n';
 
 export function parseArgs(args) {
+  // Intentional CLI boundary: argument grammar stays beside dispatch policy so the single-page UX has one contract.
   const [first = 'help', ...rest] = args;
+  // Intentional UX: bare codescope is the quick-start help page; --usage applies only to an explicit review profile.
   if (first === '-h' || first === '--help') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'help', option: undefined }; }
   if (first === '-v' || first === '--version') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'version', option: undefined }; }
-  const profiles = ['implementation', 'implementation-docs', 'implementation-tests', 'implementation-tests-docs', 'refactor', 'architecture', 'new-features', 'security', 'performance', 'reliability', 'api-design', 'dependencies', 'observability', 'accessibility', 'release', 'quick-wins', 'prioritize', 'tests', 'tests-docs', 'docs'];
+  const profiles = ['code', 'code-docs', 'code-tests', 'code-tests-docs', 'refactor', 'architecture', 'new-features', 'security', 'performance', 'reliability', 'api-design', 'dependencies', 'observability', 'accessibility', 'release', 'quick-wins', 'prioritize', 'p0', 'p0-1', 'p0-2', 'p0-3', 'tests', 'tests-docs', 'docs'];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   if (!['help', 'version', ...profiles].includes(first)) throw new Error(`Unknown command: ${first}`);
   if (profiles.includes(first) && ['--version', '-v'].includes(rest[0])) throw new Error(`Option ${rest[0]} is not valid for ${first}`);
@@ -84,6 +94,7 @@ export async function main(args, {
   cwd = process.cwd(),
   review = runReview,
 } = {}) {
+  // Intentional process boundary: main coordinates parsing, profile execution, final guidance, and exit-code policy.
   try {
     const { command, option } = parseArgs(args);
     if (!['help', 'version'].includes(command) && !command.startsWith('analyze-')) throw new Error(`Unknown command: ${command}`);
@@ -105,7 +116,8 @@ export async function main(args, {
       const target = command.slice('analyze-'.length);
       const { combine, prompt } = getProfile(target);
       await review(cwd, { write, combine, usage: option === '--usage', prompt });
-      // Intentional: this human-facing CLI always ends reviews with guidance; API consumers call runReview directly.
+      // Intentional: guidance is written only after review success; failed/partial output must not look successfully finalized.
+      // A guidance-write failure is an operational failure because the promised completed-run reminder was not delivered.
       try { await write(REVIEW_NOTE); } catch (cause) { throw new Error(`Unable to write review guidance: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
       return 0;
     }

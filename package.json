@@ -14,6 +14,7 @@
     "src/",
     "README.md",
     "src/prompt.mjs",
+    "docs/",
     "LICENSE",
     "RELEASE_NOTES.md"
   ],

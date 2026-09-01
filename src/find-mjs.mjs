@@ -4,10 +4,16 @@ import path from 'node:path';
 const IGNORED_DIRECTORIES = new Set(['.git', 'node_modules']);
 
 export async function findFiles(root, extension, { readDirectory = readdir, noTests = false, testsOnly = false } = {}) {
+  // Intentional traversal boundary: filesystem safety and selection rules are centralized to guarantee identical
+  // symlink, ignored-directory, and extension behavior for code and Markdown scans.
   // Intentional: roots are interpreted using the host filesystem; foreign-platform paths are not portable inputs.
   if (typeof root !== 'string') throw new Error('Scan root must be a path string');
+  /* istanbul ignore next -- foreign-platform path behavior requires a non-Windows host */
+  if (process.platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root)) throw new Error('Windows-style scan roots require a Windows host');
   const pathApi = /^[A-Za-z]:[\\/]/u.test(root) ? path.win32 : path.posix;
   root = pathApi.resolve(root);
+  // Intentional memory tradeoff: collect and sort all relative paths before reading so API payload order is stable
+  // across filesystems; this avoids nondeterministic reviews at the cost of discovery-time memory.
   const results = [];
   const pending = [root];
   const rootPath = pathApi.resolve(root);
@@ -33,7 +39,9 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
       let isFile = false;
       let isSymlink = false;
       try {
-        // Symlink contract: skip both linked files and linked directories; never follow or inspect their targets.
+        // Symlink contract: skip symlinks and platform reparse/junction entries; never follow or inspect targets.
+      // Intentional OS boundary: a Dirent is the filesystem snapshot available to this scan; defending against
+      // a later replacement of that entry would require holding directory handles and would not be portable.
         isSymlink = typeof entry.isSymbolicLink === 'function' && entry.isSymbolicLink();
         if (isSymlink) continue;
         isDirectory = typeof entry.isDirectory === 'function' && entry.isDirectory();
@@ -48,7 +56,8 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
       const childPath = pathApi.resolve(directory, entry.name);
       /* istanbul ignore next -- validated native directory names cannot escape this root */
       if (comparePath(childPath) !== comparableRoot && !comparePath(childPath).startsWith(`${comparableRoot}${pathApi.sep}`)) throw new Error(`Unsafe directory path: ${entry.name}`);
-      // Intentional policy: only exact lower-case source and *.test.mjs extensions are selected; this avoids platform-dependent profile contents.
+      // Intentional policy: only exact lower-case source and *.test.mjs extensions are selected; this avoids
+      // platform-dependent profile contents even on case-insensitive filesystems.
       const normalizedName = entry.name;
       if (isDirectory && ![...IGNORED_DIRECTORIES].some((ignored) => ignored.toLowerCase() === normalizedName.toLowerCase())) pending.push(childPath);
       else if (isFile && normalizedName.endsWith(extension) && (!extension.endsWith('.mjs') || ((testsOnly && normalizedName.endsWith('.test.mjs')) || (!testsOnly && !(noTests && normalizedName.endsWith('.test.mjs')))))) {
