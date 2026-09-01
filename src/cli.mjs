@@ -1,7 +1,6 @@
 /* istanbul ignore file -- process wiring is covered by CLI smoke tests */
-import { combineAllFiles, combineSelectedFiles } from './combine-all.mjs';
 import { runReview } from './review.mjs';
-import { createAnalysisPrompt, allPrompt } from './prompt.mjs';
+import { getProfile } from './cli-profiles.mjs';
 import { fs } from '@eliware/common';
 
 // Intentional: package metadata is loaded synchronously so version/help are deterministic before dispatch.
@@ -28,7 +27,20 @@ Analysis profiles:
   implementation              Real .mjs files only
   implementation-docs         Implementation plus Markdown
   implementation-tests        Implementation plus *.test.mjs
-  all                         Implementation, tests, and Markdown
+  refactor                    Monolithic files and responsibility splits
+  architecture                Architecture optimizations only
+  new-features                New feature suggestions only
+  implementation-tests-docs  Implementation, tests, and Markdown
+  security                    Security risks only
+  performance                 Performance risks only
+  reliability                 Reliability risks only
+  api-design                  API design improvements only
+  dependencies                Dependency improvements only
+  observability               Logging and diagnostics improvements only
+  accessibility               User-facing accessibility improvements only
+  release                     Packaging and release improvements only
+  quick-wins                  High-value, low-effort improvements only
+  prioritize                  Rank improvement opportunities
   tests                       *.test.mjs only
   tests-docs                  Tests plus Markdown
   docs                        Markdown only
@@ -53,13 +65,14 @@ export function parseArgs(args) {
   const [first = 'help', ...rest] = args;
   if (first === '-h' || first === '--help') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'help', option: undefined }; }
   if (first === '-v' || first === '--version') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'version', option: undefined }; }
-  const profiles = ['implementation', 'implementation-docs', 'implementation-tests', 'all', 'tests', 'tests-docs', 'docs'];
+  const profiles = ['implementation', 'implementation-docs', 'implementation-tests', 'implementation-tests-docs', 'refactor', 'architecture', 'new-features', 'security', 'performance', 'reliability', 'api-design', 'dependencies', 'observability', 'accessibility', 'release', 'quick-wins', 'prioritize', 'tests', 'tests-docs', 'docs'];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   if (!['help', 'version', ...profiles].includes(first)) throw new Error(`Unknown command: ${first}`);
   if (profiles.includes(first) && ['--version', '-v'].includes(rest[0])) throw new Error(`Option ${rest[0]} is not valid for ${first}`);
   if (rest.length > 1 || (rest.length > 0 && !['--help', '-h', '--version', '-v', '--usage'].includes(rest[0]))) {
     throw new Error(`Unexpected arguments: ${rest.join(' ')}`);
   }
+  // Intentional policy: --usage belongs only to review profiles; help/version accept only their own aliases.
   if (['help', 'version'].includes(first) && rest.length > 0 && !((first === 'help' && ['--help', '-h'].includes(rest[0])) || (first === 'version' && ['--version', '-v'].includes(rest[0])))) throw new Error(`Option ${rest[0]} is not valid for ${first}`);
   return { command: first === 'help' || first === 'version' ? first : `analyze-${first}`, option: rest[0] };
 }
@@ -73,31 +86,27 @@ export async function main(args, {
 } = {}) {
   try {
     const { command, option } = parseArgs(args);
-    const commands = new Set(['help', 'version', 'analyze-implementation', 'analyze-implementation-docs', 'analyze-implementation-tests', 'analyze-all', 'analyze-tests', 'analyze-tests-docs', 'analyze-docs']);
-    if (!commands.has(command)) throw new Error(`Unknown command: ${command}`);
+    if (!['help', 'version'].includes(command) && !command.startsWith('analyze-')) throw new Error(`Unknown command: ${command}`);
     if (option && (command === 'help' || command === 'version') && option !== `--${command}` && option !== `-${command === 'help' ? 'h' : 'v'}`) throw new Error(`Option ${option} is not valid for ${command}`);
     /* istanbul ignore next -- option validation is exercised at the CLI boundary */
     if (option && ['--version', '-v'].includes(option) && command !== 'help' && command !== 'version') throw new Error(`Option ${option} is not valid for ${command}`);
     // Intentional UX: every profile accepts --help so the single help page is easy to discover.
     if (option && ['--help', '-h'].includes(option)) { output(usage()); return 0; }
     if (option === '--version' || option === '-v') { output(VERSION); return 0; }
-    if (command === 'help' || command === '-h' || command === '--help') {
+    if (command === 'help') {
       output(usage());
       return 0;
     }
-    if (command === 'version' || command === '-v' || command === '--version') {
+    if (command === 'version') {
       output(VERSION);
       return 0;
     }
     if (command.startsWith('analyze-')) {
       const target = command.slice('analyze-'.length);
-      const profiles = { implementation: [true, false, false], 'implementation-docs': [true, false, true], 'implementation-tests': [true, true, false], all: [true, true, true], tests: [false, true, false], 'tests-docs': [false, true, true], docs: [false, false, true] };
-      const [implementation, tests, docs] = profiles[target] ?? [true, false, false];
-      const combine = target === 'all' ? combineAllFiles : (root, options) => combineSelectedFiles(root, { ...options, implementation, tests, docs });
-      const subject = target === 'docs' ? 'the documentation for inconsistencies' : target === 'tests' ? 'the test suite for test quality and coverage; do not report the absence of implementation files' : 'the selected implementation and test files for issues';
-      await review(cwd, { write, combine, usage: option === '--usage', prompt: target === 'all' ? allPrompt : createAnalysisPrompt(subject) });
+      const { combine, prompt } = getProfile(target);
+      await review(cwd, { write, combine, usage: option === '--usage', prompt });
       // Intentional: this human-facing CLI always ends reviews with guidance; API consumers call runReview directly.
-      await write(REVIEW_NOTE);
+      try { await write(REVIEW_NOTE); } catch (cause) { throw new Error(`Unable to write review guidance: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
       return 0;
     }
     return 2;

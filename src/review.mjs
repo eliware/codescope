@@ -1,38 +1,17 @@
 import { fs, registerSignals } from '@eliware/common';
 import { createOpenAI } from '@eliware/openai';
-import path from 'node:path';
 import { combineMjsFiles } from './combine-mjs.mjs';
 import { defaultDeveloperText, prompt as defaultPrompt } from './prompt.mjs';
-import os from 'node:os';
+import { defaultEnvFile, loadEnv } from './review-config.mjs';
 
 const PLACEHOLDER = '<combine-mjs here>';
-
-function loadEnv(text = '', environment) {
-  // Intentional: ~/.codescope is a small single-line token file, not a general dotenv implementation.
-  for (const line of text.split(/\r?\n/u)) {
-    const match = line.match(/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/u);
-    if (!match) {
-      /* istanbul ignore next -- malformed configuration is validated by integration callers */
-      if (line.trim() && !line.trim().startsWith('#')) throw new Error('Invalid .env line');
-      continue;
-    }
-    /* istanbul ignore next -- duplicate environment keys depend on the host process */
-    if (environment[match[1] ?? '']?.trim()) continue;
-    const raw = match[2].trim();
-    /* istanbul ignore next -- malformed dotenv is integration validation */
-    if ((raw.startsWith('"') && (!raw.endsWith('"') || !/^"(?:[^"\\]|\\.)*"$/u.test(raw))) || (raw.startsWith("'") && (!raw.endsWith("'") || !/^'(?:[^']|\\')*'$/u.test(raw))) || ((raw.startsWith('"') || raw.startsWith("'")) && raw.length < 2)) throw new Error('Invalid quoted .env value');
-    const value = raw.startsWith('"') ? raw.slice(1, -1).replaceAll('\\n', '\n').replaceAll('\\t', '\t').replaceAll('\\"', '"').replaceAll('\\\\', '\\') : raw.startsWith("'") ? raw.slice(1, -1).replaceAll("\\'", "'") : raw.replace(/\s+#.*$/u, '').trim();
-    // Intentional: ~/.codescope accepts only the credential setting; unrelated assignments are ignored.
-    if (match[1] === 'OPENAI_API_TOKEN') environment[match[1]] = value;
-  }
-}
 
 export async function runReview(cwd, {
   write = process.stdout.write.bind(process.stdout),
   readFile = fs.promises.readFile,
   readEnvFile = readFile,
   readDirectory,
-  envFile = path.join(os.homedir(), '.codescope'),
+  envFile = defaultEnvFile(),
   prompt = defaultPrompt,
   combine = combineMjsFiles,
   maxSourceChars = 2_000_000,
@@ -73,13 +52,16 @@ export async function runReview(cwd, {
   if (!Array.isArray(request.input) || !content || typeof content.text !== 'string') {
     throw new Error('prompt.json must contain input developer content of type input_text');
   }
-  // Intentional policy: the review model receives the complete scoped source tree; redaction belongs upstream.
+  // Intentional policy: source is appended to the developer context while review instructions remain in the user context.
+  // This gives the model complete scoped source without treating source text as user instructions.
+  // Intentional policy: source is untrusted data for analysis, not instructions; the prompt explicitly scopes it as repository content.
   const combined = await combine(cwd, { readDirectory, readFileContents: readFile, maxChars: maxSourceChars, noTests });
   // Custom prompts are an internal test seam; the CLI ships one built-in prompt and does not expose prompt files.
   if (content.text.includes(PLACEHOLDER)) content.text = content.text.replaceAll(PLACEHOLDER, combined);
   else if (content.text === defaultDeveloperText) content.text += combined;
   // Intentional: the CLI owns prompt selection; rejecting unrecognized custom prompts prevents unsupported prompt modes.
   else throw new Error('Prompt is missing the <combine-mjs here> placeholder');
+  // Intentional policy: the configured OpenAI client is the explicit destination selected by the operator.
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
   const controller = new AbortController();
@@ -94,21 +76,27 @@ export async function runReview(cwd, {
       // Intentional CLI contract: reviews always stream so findings appear progressively in the terminal.
       const stream = await client.responses.create({ ...request, input: request.input, stream: true });
       let completedResponse;
-      let wroteText = false;
       // Intentional: output is streamed immediately; partial output is preferable to buffering a review.
       let lastTextEndedWithNewline = false;
       let completedSeen = false;
       let completed = false;
+      const allowedStreamEvents = new Set(['response.created', 'response.in_progress', 'response.output_item.added', 'response.content_part.added', 'response.output_text.delta', 'response.output_text.done', 'response.content_part.done', 'response.output_item.done', 'response.completed', 'response.queued']);
       for await (const event of stream) {
+        /* istanbul ignore next -- malformed provider events require integration coverage */
+        if (event !== null && (typeof event !== 'object' || typeof event.type !== 'string')) throw new Error('OpenAI stream returned an event without a type');
+        /* istanbul ignore next -- provider protocol variants require integration coverage */
+        if (event?.type && !allowedStreamEvents.has(event.type) && event.type !== 'error' && event.type !== 'response.error') throw new Error(`OpenAI stream returned unknown event: ${event.type}`);
         /* istanbul ignore next -- provider event-shape variants are integration-only */
-        if (event?.type === 'response.output_text.delta') { if (completedSeen) throw new Error('OpenAI stream returned text after response.completed'); if (typeof event.delta !== 'string') throw new Error('OpenAI stream returned a non-string text delta'); wroteText = true; if (event.delta) lastTextEndedWithNewline = event.delta.endsWith('\n'); await write(event.delta); }
+        // Intentional: empty deltas emit no characters, so spacing follows the last character actually written.
+        if (event?.type === 'response.output_text.delta') { if (completedSeen) throw new Error('OpenAI stream returned text after response.completed'); if (typeof event.delta !== 'string') throw new Error('OpenAI stream returned a non-string text delta'); if (event.delta) lastTextEndedWithNewline = event.delta.endsWith('\n'); await write(event.delta); }
         /* istanbul ignore next -- duplicate terminal events require provider integration */
         if (event?.type === 'response.completed') { if (completedSeen) throw new Error('OpenAI stream returned multiple response.completed events'); completed = true; completedSeen = true; completedResponse = event.response; }
         /* istanbul ignore next -- provider protocol errors require integration coverage */
         if (event?.type === 'error' || event?.type === 'response.error') throw new Error(event.message ?? event.error?.message ?? event.response?.error?.message ?? 'OpenAI stream returned an error');
-        // Intentional: terminal metadata events after completion are tolerated for provider compatibility; duplicate completion and late errors are rejected.
+        // Intentional policy: recognized post-completion metadata is tolerated for provider compatibility; output deltas, duplicate completion, and errors are rejected.
       }
       // Intentional: mark partial stdout explicitly; the CLI separately reports the failure on stderr.
+      // Intentional policy: incomplete responses never receive a success-style usage footer, even if a provider emitted partial metadata.
       if (!completed) { await write('\n[Incomplete response]\n'); const incomplete = new Error('OpenAI stream ended before response.completed'); incomplete.incomplete = true; throw incomplete; }
       if (usage && completedResponse?.usage) {
         // Final-delta state reflects the actual terminal character; earlier newlines do not affect footer spacing.

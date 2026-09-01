@@ -13,7 +13,7 @@ export async function combineFiles(root, extension, { readDirectory, readFileCon
   const sections = [];
   let totalChars = 0;
   // Intentional: bounded batches protect file descriptors and memory on large repositories.
-  // Intentional: finite limits serialize reads so the limit bounds memory before the next file starts.
+  // Intentional policy: readFileContents returns complete strings; finite limits serialize reads to avoid holding multiple file bodies while enforcing the request-payload limit.
   const batchSize = Number.isFinite(maxChars) ? 1 : concurrency;
   for (let start = 0; start < files.length; start += batchSize) {
     const batch = await Promise.all(files.slice(start, start + batchSize).map(async (relativePath) => {
@@ -26,6 +26,8 @@ export async function combineFiles(root, extension, { readDirectory, readFileCon
       throw new Error(`Unable to read ${relativePath}: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
     }
     if (typeof contents !== 'string') throw new Error(`Unable to read ${relativePath}: file reader returned non-string content`);
+    // Intentional policy: maxChars measures JavaScript string characters, matching the request payload rather than encoded bytes or tokens.
+    if (Number.isFinite(maxChars) && contents.length > maxChars) throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
       // Intentional: remove only the terminal separator; preserve intentional blank source lines.
       const trimmed = contents.replace(/(?:\r\n|\r|\n)$/u, '');
       const lines = trimmed === '' ? ['[empty file]'] : trimmed.split(/\r\n|\r|\n/u);
@@ -33,7 +35,8 @@ export async function combineFiles(root, extension, { readDirectory, readFileCon
       const numbered = lines.map((line, index) => `${String(index + 1).padStart(width, ' ')} ${line}`).join('\n');
       return `===== ${relativePath} =====\n${numbered}\n`;
     }));
-    totalChars += batch.reduce((total, section) => total + section.length, 0);
+  // Intentional policy: the formatted payload check includes headers, line numbers, separators, and newline normalization.
+    totalChars += batch.reduce((total, section) => total + section.length, 0) + (sections.length > 0 ? 1 : 0);
     if (totalChars > maxChars) throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
     sections.push(...batch);
   }
