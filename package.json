@@ -13,6 +13,7 @@
     "bin/",
     "src/",
     "README.md",
+    "src/prompt.mjs",
     "LICENSE",
     "RELEASE_NOTES.md"
   ],

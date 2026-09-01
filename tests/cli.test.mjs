@@ -1,136 +1,41 @@
 import { main, parseArgs, VERSION } from '../src/cli.mjs';
-import { findMjsFiles } from '../src/find-mjs.mjs';
-import { combineMjsFiles } from '../src/combine-mjs.mjs';
+import { findMjsFiles, findFiles } from '../src/find-mjs.mjs';
+import { findMdFiles } from '../src/find-mjs.mjs';
+import { combineMjsFiles, combineMdFiles, combineFiles } from '../src/combine-mjs.mjs';
+import { combineAllFiles, combineSelectedFiles } from '../src/combine-all.mjs';
 import { runReview } from '../src/review.mjs';
+import { prompt as defaultPrompt } from '../src/prompt.mjs';
+import path from 'node:path';
 
-test('parses the default command as help', () => {
-  expect(parseArgs([])).toEqual({ command: 'review' });
-});
+const valid = () => structuredClone(defaultPrompt);
+const opts = (x = {}) => ({ envFile: path.join('test-home', '.codescope'), readFile: async () => '', readEnvFile: async () => 'OPENAI_API_TOKEN=test-token', readDirectory: async () => [], ...x });
+const client = (events) => ({ responses: { create: async () => (async function* () { yield* events; })() } });
 
-test('rejects unexpected arguments', () => {
-  expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected arguments/);
-});
-
-test('finds nested mjs files while ignoring configured directories', async () => {
-  const tree = {
-    '/root': [
-      { name: '.git', isDirectory: () => true, isFile: () => false },
-      { name: 'node_modules', isDirectory: () => true, isFile: () => false },
-      { name: 'app.mjs', isDirectory: () => false, isFile: () => true },
-      { name: 'lib', isDirectory: () => true, isFile: () => false },
-    ],
-    '/root/lib': [
-      { name: 'nested.mjs', isDirectory: () => false, isFile: () => true },
-      { name: 'readme.md', isDirectory: () => false, isFile: () => true },
-    ],
-  };
-  const files = await findMjsFiles('/root', {
-    readDirectory: async (directory) => tree[directory.replaceAll('\\', '/').replace(/^.*?(?=\/root)/, '')],
-  });
-  expect(files).toEqual(['app.mjs', 'lib/nested.mjs']);
-});
-
-test('prints help and succeeds', async () => {
-  const output = [];
-  expect(await main(['--help'], { output: (value) => output.push(value) })).toBe(0);
-  expect(output[0]).toMatch(/Usage: codescope/);
-});
-
-test('runs review by default', async () => {
-  const output = [];
-  expect(await main([], { review: async (_cwd, { write }) => write('reviewed') , output: (value) => output.push(value) })).toBe(0);
-  expect(output).toEqual(['reviewed']);
-});
-
-test('prints version and succeeds', async () => {
-  const output = [];
-  expect(await main(['--version'], { output: (value) => output.push(value) })).toBe(0);
-  expect(output[0]).toBe(VERSION);
-});
-
-test('rejects unknown commands', async () => {
-  const errors = [];
-  expect(await main(['unknown'], { error: (value) => errors.push(value) })).toBe(2);
-  expect(errors[0]).toMatch(/Unknown command/);
-});
-
-test('prints mjs files for the current directory', async () => {
-  const output = [];
-  expect(await main(['find-mjs'], { cwd: process.cwd(), output: (value) => output.push(value) })).toBe(0);
-  expect(output).toContain('bin/codescope.mjs');
-});
-
-test('combines files with relative path headers', async () => {
-  const files = {
-    '/root/a.mjs': 'const a = 1;\n',
-    '/root/nested/b.mjs': 'const b = 2;\n',
-  };
-  const readDirectory = async (directory) => {
-    const normalized = directory.replaceAll('\\', '/');
-    if (normalized === '/root') return [
-      { name: 'a.mjs', isDirectory: () => false, isFile: () => true },
-      { name: 'nested', isDirectory: () => true, isFile: () => false },
-    ];
-    return [{ name: 'b.mjs', isDirectory: () => false, isFile: () => true }];
-  };
-  const result = await combineMjsFiles('/root', {
-    readDirectory,
-    readFileContents: async (file) => files[file.replaceAll('\\', '/')],
-  });
-  expect(result).toBe('===== a.mjs =====\nconst a = 1;\n\n\n===== nested/b.mjs =====\nconst b = 2;\n');
-});
-
-test('prints the combined result through the command', async () => {
-  const output = [];
-  expect(await main(['combine-mjs'], { cwd: process.cwd(), output: (value) => output.push(value) })).toBe(0);
-  expect(output[0]).toMatch(/===== bin\/codescope\.mjs =====/);
-});
-
-test('runs a streamed review from the prompt', async () => {
-  const files = {
-    '/root/.env': 'OPENAI_API_TOKEN=test-token\n',
-    '/root/prompt.json': JSON.stringify({ input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }] }),
-    '/root/code.mjs': 'const value = 1;\n',
-  };
-  const output = [];
-  const readFile = async (file) => {
-    const normalized = file.replaceAll('\\', '/');
-    return Object.entries(files).find(([key]) => normalized.endsWith(key))?.[1];
-  };
-  const readDirectory = async (directory) => {
-    const normalized = directory.replaceAll('\\', '/');
-    return normalized === '/root' ? [{ name: 'code.mjs', isDirectory: () => false, isFile: () => true }] : [];
-  };
-  await runReview('/root', {
-    readFile,
-    readDirectory,
-    write: (value) => output.push(value),
-    createClient: () => ({ responses: { create: async () => (async function* () {
-      yield { type: 'response.output_text.delta', delta: 'ok' };
-      yield { type: 'response.completed' };
-    })() } }),
-    register: ({ shutdownHook }) => {
-      shutdownHook();
-      return { removeHandlers: () => {} };
-    },
-  });
-  expect(output).toEqual(['ok']);
-  delete process.env.OPENAI_API_TOKEN;
-});
-
-test('rejects prompts without the required placeholder', async () => {
-  await expect(runReview('/root', {
-    readFile: async (file) => file.endsWith('prompt.json') ? '{"input":[]}' : '',
-    readDirectory: async () => [],
-  })).rejects.toThrow(/placeholder/);
-});
-
-test('rejects a review when the API token is absent', async () => {
-  delete process.env.OPENAI_API_TOKEN;
-  await expect(runReview('/root', {
-    readFile: async (file) => file.endsWith('prompt.json')
-      ? '{"input":[{"role":"developer","content":[{"type":"input_text","text":"<combine-mjs here>"}]}]}'
-      : Promise.reject(new Error('not found')),
-    readDirectory: async () => [],
-  })).rejects.toThrow(/OPENAI_API_TOKEN/);
-});
+test('parses defaults and rejects bad arguments', () => { expect(parseArgs([])).toEqual({ command: 'help', option: undefined }); expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected arguments/); expect(() => parseArgs(['help', '--version'])).toThrow(/not valid/); expect(() => parseArgs(['version', '--help'])).toThrow(/not valid/); expect(() => parseArgs(['--bad'])).toThrow(/Unknown option/); });
+test('parses direct analysis profiles', () => { expect(parseArgs(['all'])).toEqual({ command: 'analyze-all', option: undefined }); expect(parseArgs(['docs', '--help'])).toEqual({ command: 'analyze-docs', option: '--help' }); expect(() => parseArgs(['find'])).toThrow(/Unknown command/); expect(() => parseArgs(['implementation', '--no-tests'])).toThrow(/Unexpected arguments/); });
+test('handles help and version options', async () => { const output = []; const errors = []; expect(await main(['implementation', '--version'], { error: v => errors.push(v) })).toBe(2); expect(await main(['implementation', '--help'], { output: v => output.push(v) })).toBe(0); expect(await main(['version', '--version'], { output: v => output.push(v) })).toBe(0); expect(await main(['--help'], { output: v => output.push(v) })).toBe(0); expect(await main(['--version'], { output: v => output.push(v) })).toBe(0); expect(errors[0]).toMatch(/not valid/); expect(output.join('\n')).toMatch(/CODESCOPE/); });
+test('finds nested files and ignores configured directories', async () => { const tree = { '/root': [{ name: '.git', isDirectory: () => true }, { name: 'node_modules', isDirectory: () => true }, { name: 'a.mjs', isFile: () => true }, { name: 'lib', isDirectory: () => true }], '/root/lib': [{ name: 'b.mjs', isFile: () => true }] }; expect(await findMjsFiles('/root', { readDirectory: async d => Object.entries(tree).find(([key]) => d.replaceAll('\\', '/').endsWith(key))?.[1] })).toEqual(['a.mjs', 'lib/b.mjs']); await expect(findMjsFiles('/root', { readDirectory: async () => [{ name: 'bad' }] })).rejects.toThrow(/Invalid directory entry/); await expect(findMjsFiles('/root', { readDirectory: async () => { throw new Error('denied'); } })).rejects.toThrow(/Unable to scan/); await expect(findMjsFiles('/root', { readDirectory: async () => null })).rejects.toThrow(/non-array/); });
+test('contextualizes directory entry failures', async () => { await expect(findMjsFiles('/root', { readDirectory: async () => [{ name: 'bad', isDirectory: () => { throw new Error('adapter'); } }] })).rejects.toThrow(/Unable to scan/); });
+test('requires path strings and skips symlinks', async () => { await expect(findMjsFiles(null, { readDirectory: async () => [] })).rejects.toThrow(/path string/); expect(await findMjsFiles('relative', { readDirectory: async () => [] })).toEqual([]); await expect(findMjsFiles('/root', { readDirectory: async () => [{ name: 'bad', isDirectory: () => true, isFile: () => true }] })).rejects.toThrow(/Invalid directory entry/); expect(await findMjsFiles('/root', { readDirectory: async () => [{ name: 'link.mjs', isSymbolicLink: () => true, isFile: () => true }, { name: 'link-dir', isSymbolicLink: () => true, isDirectory: () => true }] })).toEqual([]); });
+test('combines files and reports read errors', async () => { const files = { '/root/a.mjs': 'a\n', '/root/nested/b.mjs': 'b' }; const rd = async d => d.replaceAll('\\', '/') === '/root' ? [{ name: 'a.mjs', isFile: () => true }, { name: 'nested', isDirectory: () => true }] : [{ name: 'b.mjs', isFile: () => true }]; const result = await combineMjsFiles('/root', { readDirectory: rd, readFileContents: async f => Object.entries(files).find(([k]) => f.replaceAll('\\', '/').endsWith(k))?.[1] }); expect(result).toBe('===== a.mjs =====\n1 a\n\n===== nested/b.mjs =====\n1 b\n'); await expect(combineMjsFiles('/root', { readDirectory: async () => [{ name: 'x.mjs', isFile: () => true }], readFileContents: async () => { throw new Error('denied'); } })).rejects.toThrow(/Unable to read x.mjs/); await expect(combineMjsFiles('/root', { readDirectory: async () => [{ name: 'x.mjs', isFile: () => true }], readFileContents: async () => null })).rejects.toThrow(/non-string/); });
+test('combines selected implementation, tests, and docs', async () => { const rd = async () => [{ name: 'app.mjs', isFile: () => true }, { name: 'app.test.mjs', isFile: () => true }, { name: 'guide.md', isFile: () => true }]; const read = async f => f.endsWith('.md') ? 'docs' : 'code'; expect(await combineSelectedFiles('/root', { implementation: true, tests: true, docs: true, readDirectory: rd, readFileContents: read })).toContain('guide.md'); expect(await combineSelectedFiles('/root', { tests: true, readDirectory: rd, readFileContents: read })).toContain('app.test.mjs'); expect(await combineSelectedFiles('/root', { readDirectory: rd, readFileContents: read })).toBe(''); });
+test('finds and combines markdown files', async () => { const options = { readDirectory: async () => [{ name: 'guide.md', isFile: () => true }], readFileContents: async () => '# Guide' }; expect(await findMdFiles('/root', options)).toEqual(['guide.md']); expect(await combineMdFiles('/root', options)).toContain('===== guide.md ====='); });
+test('combines code and markdown for all analysis', async () => { const options = { readDirectory: async d => d.endsWith('root') ? [{ name: 'app.mjs', isFile: () => true }, { name: 'guide.md', isFile: () => true }] : [], readFileContents: async f => f.endsWith('.mjs') ? 'code' : 'docs' }; const result = await combineAllFiles('/root', options); expect(result).toContain('===== app.mjs ====='); expect(result).toContain('===== guide.md ====='); await expect(combineAllFiles('/root', { ...options, maxChars: 30 })).rejects.toThrow(/character limit/); });
+test('excludes test.mjs files when requested', async () => { const directory = async () => [{ name: 'app.mjs', isFile: () => true }, { name: 'app.test.mjs', isFile: () => true }]; expect(await findMjsFiles('/root', { readDirectory: directory, noTests: true })).toEqual(['app.mjs']); });
+test('formats empty source sections', async () => { await expect(combineMjsFiles('/root', { readDirectory: async () => [{ name: 'empty.mjs', isFile: () => true }], readFileContents: async () => '' })).resolves.toBe('===== empty.mjs =====\n1 [empty file]\n'); });
+test('validates bounded file-read concurrency', async () => { await expect(combineMjsFiles('/root', { concurrency: 0, readDirectory: async () => [] })).rejects.toThrow(/concurrency/); });
+test('covers profile aggregate limits and Windows extension matching', async () => { const files = [{ name: 'APP.MJS', isFile: () => true }]; const options = { readDirectory: async () => files, readFileContents: async () => 'code' }; expect(await findFiles('C:\\root', '.mjs', options)).toEqual([]); await expect(combineSelectedFiles('/root', { implementation: true, docs: true, maxChars: 50, readDirectory: async () => [{ name: 'app.mjs', isFile: () => true }, { name: 'guide.md', isFile: () => true }], readFileContents: async () => 'content' })).rejects.toThrow(/character limit/); });
+test('supports Windows-style adapter roots', async () => { const options = { readDirectory: async () => [], readFileContents: async () => '' }; expect(await findFiles('C:\\root', '.mjs', options)).toEqual([]); expect(await combineFiles('C:\\root', '.mjs', options)).toBe(''); });
+test('runs CLI commands', async () => { const output = []; const errors = []; expect(await main([], { output: v => output.push(v) })).toBe(0); expect(await main(['implementation'], { review: async (_c, { write }) => write('reviewed'), write: v => output.push(v) })).toBe(0); expect(await main(['unknown'], { error: v => errors.push(v) })).toBe(2); expect(await main(['help'], { output: v => output.push(v) })).toBe(0); expect(await main(['version'], { output: v => output.push(v) })).toBe(0); expect(output).toContain(VERSION); expect(errors[0]).toMatch(/Unknown command/); });
+test('runs direct analysis profiles', async () => { const output = []; for (const profile of ['implementation', 'docs', 'implementation-docs']) expect(await main([profile], { review: async (_cwd, { write }) => write(profile), write: v => output.push(v) })).toBe(0); expect(output).toEqual(['implementation', '\n\nNote: Add an inline comment explaining intentional behavior to avoid false positives.\n', 'docs', '\n\nNote: Add an inline comment explaining intentional behavior to avoid false positives.\n', 'implementation-docs', '\n\nNote: Add an inline comment explaining intentional behavior to avoid false positives.\n']); });
+test('runs a streamed review with usage', async () => { const output = []; await runReview('/root', opts({ usage: true, write: v => output.push(v), readDirectory: async () => [{ name: 'code.mjs', isFile: () => true }], readFile: async f => f.includes('code.mjs') ? 'const x = 1;' : 'OPENAI_API_TOKEN=test-token', createClient: () => client([{ type: 'response.output_text.delta', delta: 'ok' }, { type: 'response.completed', response: { usage: { total_tokens: 1 } } }]), register: () => ({ removeHandlers: () => {} }) })); expect(output).toEqual(['ok', '\n\n--- usage ---\n{"total_tokens":1}\n']); });
+test('enforces the combined-source limit', async () => { await expect(runReview('/root', opts({ maxSourceChars: 1, readDirectory: async () => [{ name: 'x.mjs', isFile: () => true }], readFile: async f => f.endsWith('x.mjs') ? 'too long' : '' }))).rejects.toThrow(/character limit/); await expect(runReview('/root', opts({ maxSourceChars: 0 }))).rejects.toThrow(/positive number/); });
+test('replaces the optional custom prompt placeholder', async () => { let request; await runReview('/root', opts({ prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }] }, readEnvFile: async () => 'OPENAI_API_TOKEN=test-token', readDirectory: async () => [{ name: 'x.mjs', isFile: () => true }], readFile: async f => f.endsWith('x.mjs') ? 'source' : '', createClient: () => ({ responses: { create: async value => { request = value; return client([{ type: 'response.completed', response: {} }]).responses.create(); } } }), register: () => ({ removeHandlers: () => {} }) })); expect(request.input[0].content[0].text).toContain('source'); });
+test('avoids a duplicate usage newline', async () => { const output = []; await runReview('/root', opts({ usage: true, write: v => output.push(v), createClient: () => client([null, { type: 'response.output_text.delta', delta: 'ok' }, { type: 'response.output_text.delta', delta: '\n' }, { type: 'response.completed', response: { usage: { total_tokens: 1 } } }]), register: () => ({ removeHandlers: () => {} }) })); expect(output[2]).toBe('\n--- usage ---\n{"total_tokens":1}\n'); });
+test('parses dotenv quoting and invokes shutdown cleanup', async () => { const output = []; let shutdown; await runReview('/root', opts({ readEnvFile: async () => 'OPENAI_API_TOKEN="test\\n-token"\nSINGLE=\'value\'\nPLAIN=value # comment', write: v => output.push(v), createClient: () => client([{ type: 'response.completed', response: {} }]), register: args => { shutdown = args.shutdownHook; return { removeHandlers: () => {} }; } })); shutdown(); expect(output).toEqual(['\n']); });
+test('validates prompt shapes', async () => { await expect(runReview('/root', opts({ prompt: { input: [] } }))).rejects.toThrow(/exactly one developer/); await expect(runReview('/root', opts({ prompt: { input: 'bad' } }))).rejects.toThrow(/input as an array/); await expect(runReview('/root', opts({ prompt: { input: [{ role: 'developer', content: 'bad' }] } }))).rejects.toThrow(/invalid shapes/); await expect(runReview('/root', opts({ prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: 'one' }, { type: 'input_text', text: 'two' }] }] } }))).rejects.toThrow(/input_text/); await expect(runReview('/root', opts({ prompt: { extra: true, input: [] } }))).rejects.toThrow(/unsupported/); });
+test('rejects custom prompts without a source placeholder', async () => { await expect(runReview('/root', opts({ prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: 'custom' }] }] } }))).rejects.toThrow(/placeholder/); });
+test('rejects invalid top-level and input fields', async () => { await expect(runReview('/root', opts({ prompt: null }))).rejects.toThrow(/top-level/); await expect(runReview('/root', opts({ prompt: { input: [{} , {}] } }))).rejects.toThrow(/invalid shapes/); await expect(runReview('/root', opts({ prompt: { model: 1, input: [] } }))).rejects.toThrow(/invalid Responses/); await expect(runReview('/root', opts({ prompt: { tools: 'bad', input: [] } }))).rejects.toThrow(/invalid Responses/); await expect(runReview('/root', opts({ prompt: { input: [null] } }))).rejects.toThrow(/input entries/); });
+test('reports malformed dotenv and client setup', async () => { await expect(runReview('/root', opts({ readEnvFile: async () => 'not valid' }))).rejects.toThrow(/Invalid .env/); await expect(runReview('/root', opts({ readEnvFile: async () => 'OPENAI_API_TOKEN="unterminated' }))).rejects.toThrow(/quoted/); await expect(runReview('/root', opts({ readEnvFile: async () => 'OPENAI_API_TOKEN=first\nOPENAI_API_TOKEN=second', createClient: () => { throw new Error('bad client'); } }))).rejects.toThrow(/initialize/); });
+test('handles API and stream failures', async () => { await expect(runReview('/root', opts({ createClient: () => ({ responses: { create: async () => { throw 'network down'; } } }), register: () => ({ removeHandlers: () => {} }) }))).rejects.toThrow(/network down/); await expect(runReview('/root', opts({ createClient: () => ({ responses: { create: async () => { throw new Error('server error'); } } }), register: () => ({ removeHandlers: () => {} }) }))).rejects.toThrow(/server error/); await expect(runReview('/root', opts({ register: () => { throw 'signal setup'; } }))).rejects.toThrow(/register signal/); await expect(runReview('/root', opts({ register: () => { throw new Error('signal error'); } }))).rejects.toThrow(/signal error/); const output = []; await runReview('/root', opts({ write: v => output.push(v), createClient: () => client([{ type: 'response.output_text.delta', delta: 'text' }, { type: 'response.completed', response: {} }]), register: () => ({ removeHandlers: () => {} }) })); expect(output).toEqual(['text', '\n']); await expect(runReview('/root', opts({ createClient: () => client([{ type: 'response.output_text.delta', delta: 'partial' }]), register: () => ({ removeHandlers: () => {} }) }))).rejects.toThrow(/response.completed/); });
+test('handles missing token and non-Error CLI failures', async () => { await expect(runReview('/root', opts({ readEnvFile: async () => '' }))).rejects.toThrow(/OPENAI_API_TOKEN/); const errors = []; expect(await main(['implementation'], { review: async () => { throw 'bad input'; }, error: v => errors.push(v) })).toBe(2); expect(errors[0]).toContain('bad input'); });
