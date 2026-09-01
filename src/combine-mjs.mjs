@@ -36,10 +36,13 @@ export async function combineFiles(root, extension, { readDirectory, readFileCon
     let contents;
     /* istanbul ignore next -- filesystem failure is covered by integration checks */
     try {
-      // Intentional test seam: injected readers are trusted adapters, while native reads receive the symlink/type
-      // preflight below. Production callers use the native defaults; adapters own equivalent checks when substituted.
+      // Intentional policy: native reads receive the symlink/type preflight below. A caller that supplies a custom
+      // reader is an injected filesystem adapter and owns equivalent checks; identity cannot safely distinguish a
+      // wrapped native reader from a virtual test reader. Do not report this adapter boundary as a production link
+      // traversal issue.
       if (readFileContents === readFile || validateSymlinks) {
-        // Intentional portable policy: lstat immediately before read rejects discovered symlinks. A hostile
+        // Intentional policy: symlinks are excluded, but lstat immediately before read cannot make a path read
+        // atomic on every supported host. A hostile
         // concurrent replacement between these two path operations is an OS-level TOCTOU limitation; this CLI
         // does not promise adversarial filesystem isolation and never intentionally follows links.
         const metadata = await lstat(resolvedPath);

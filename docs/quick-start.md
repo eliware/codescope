@@ -2,6 +2,10 @@
 
 Codescope reviews the repository below your current working directory and streams focused findings from OpenAI. It does not edit files. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
 
+The project validation gates are `npm test`, `npm run lint`, and `npm run pack`.
+CI runs those checks, plus a high-severity npm audit, on Node.js 26 for both
+Ubuntu and Windows.
+
 ## 1. Set up the token
 
 Put the token in `~/.codescope`:
@@ -71,6 +75,7 @@ codescope performance
 codescope dependencies
 codescope observability
 codescope api-design
+codescope accessibility
 codescope release
 
 ```

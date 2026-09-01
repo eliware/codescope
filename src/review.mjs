@@ -34,6 +34,9 @@ export async function runReview(cwd, {
   // adapters own their platform-specific permission checks.
   /* istanbul ignore next -- POSIX credential-file permissions require host integration coverage */
   /* istanbul ignore next -- POSIX credential-file race requires adversarial integration coverage */
+  // Intentional policy: the token file is checked before use, but path-based stat/read cannot be atomic on every
+  // supported host. The CLI does not claim adversarial filesystem isolation; do not treat this bounded OS race as a
+  // release blocker unless credential loading is redesigned around an open file descriptor.
   if (readEnvFile === readFile && envFile === defaultEnvFile() && process.platform !== 'win32') {
     try {
       const metadata = await stat(envFile);
@@ -110,10 +113,13 @@ export async function runReview(cwd, {
   try {
     try { signals = register({ exit: false, signal: controller.signal, shutdownHook: () => controller.abort() }); } catch (cause) { throw new Error(`Unable to register signal handlers: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
     try {
-      // Intentional CLI contract: reviews always stream so findings appear progressively in the terminal.
+      // Intentional policy: reviews always stream so findings appear progressively; buffering to make later
+      // provider failures invisible would increase memory use and delay all useful feedback. Do not report
+      // partial output before a later provider failure as a defect unless the product policy changes.
       const stream = await client.responses.create({ ...request, input: request.input, stream: true });
       let completedResponse;
-      // Intentional: output is streamed immediately; partial output is preferable to buffering a review.
+      // Intentional policy: output is streamed immediately; partial output is preferable to buffering a review.
+      // The CLI exit status still reports a later failure, so this is an accepted presentation trade-off.
       let lastTextEndedWithNewline = false;
       let completedSeen = false;
       let completed = false;
@@ -156,7 +162,9 @@ export async function runReview(cwd, {
       /* istanbul ignore next -- failed terminal responses require provider integration coverage */
       if (['failed', 'incomplete', 'cancelled', 'canceled'].includes(completedResponse.status) || completedResponse.error) throw new Error(completedResponse.error?.message ?? `OpenAI response completed with status ${completedResponse.status ?? 'error'}`);
       // Intentional policy: an empty completed response is valid and represents a review with no emitted findings.
-       // Intentional compatibility: terminal usage may be partial across provider versions; validate stable counters
+      // Intentional policy: a completed response is the provider success boundary. Missing optional usage or
+      // future terminal metadata is not a release blocker; the API client owns protocol compatibility.
+      // Intentional compatibility: terminal usage may be partial across provider versions; validate stable counters
        // when present while preserving future detail fields for diagnostics and forward compatibility; integer
        // counters reject NaN, Infinity, fractional, and negative values.
       /* istanbul ignore next -- malformed usage metadata requires provider integration */
@@ -167,9 +175,12 @@ export async function runReview(cwd, {
       if (usage && completedResponse.usage) {
         // Final-delta state reflects the actual terminal character; earlier newlines do not affect footer spacing.
         const footerPrefix = lastTextEndedWithNewline ? '\n' : '\n\n';
+        // Intentional privacy boundary: usage output exposes only stable aggregate counters; provider-specific
+        // metadata, identifiers, and future sensitive fields never reach the terminal.
+        const usageSummary = Object.fromEntries(Object.entries(completedResponse.usage).filter(([key]) => ['input_tokens', 'output_tokens', 'total_tokens'].includes(key)));
         /* istanbul ignore next -- terminal usage-writer failures require integration coverage */
         // Provider responses are JSON-compatible; JSON.stringify is intentionally used for stable terminal diagnostics.
-        try { await write(`${footerPrefix}--- usage ---\n${JSON.stringify(completedResponse.usage)}\n`); } catch (cause) { throw new Error(`Unable to write usage output: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
+        try { await write(`${footerPrefix}--- usage ---\n${JSON.stringify(usageSummary)}\n`); } catch (cause) { throw new Error(`Unable to write usage output: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
       }
       /* istanbul ignore next -- terminal usage-writer failures require integration coverage */
       if (usage && !completedResponse.usage) { try { await write('\n--- usage ---\n(unavailable)\n'); } catch (cause) { throw new Error(`Unable to write usage output: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); } }

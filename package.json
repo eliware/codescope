@@ -8,6 +8,14 @@
     "openai",
     "cli"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eliware/codescope.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eliware/codescope/issues"
+  },
+  "homepage": "https://github.com/eliware/codescope#readme",
   "type": "module",
   "bin": {
     "codescope": "bin/codescope.mjs"
@@ -19,7 +27,6 @@
     "bin/",
     "src/",
     "README.md",
-    "src/prompt.mjs",
     "docs/",
     "LICENSE",
     "RELEASE_NOTES.md"
@@ -36,6 +43,9 @@
     "@eliware/test": "latest"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@eliware/common": "^2.0.0",
     "@eliware/openai": "^1.1.11"

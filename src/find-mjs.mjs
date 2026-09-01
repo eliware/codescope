@@ -10,6 +10,7 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
   if (typeof root !== 'string') throw new Error('Scan root must be a path string');
   /* istanbul ignore next -- foreign-platform path behavior requires a non-Windows host */
   if (process.platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root)) throw new Error('Windows-style scan roots require a Windows host');
+  /* istanbul ignore next -- Windows path selection is unreachable on non-Windows hosts after the guard above. */
   const pathApi = /^[A-Za-z]:[\\/]/u.test(root) ? path.win32 : path.posix;
   root = pathApi.resolve(root);
   // Intentional memory tradeoff: collect and sort all relative paths before reading so API payload order is stable
@@ -17,6 +18,7 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
   const results = [];
   const pending = [root];
   const rootPath = pathApi.resolve(root);
+  /* istanbul ignore next -- Windows path comparison is unreachable on non-Windows hosts after the guard above. */
   const comparePath = (value) => pathApi === path.win32 ? value.toLowerCase() : value;
   const comparableRoot = comparePath(rootPath);
 
