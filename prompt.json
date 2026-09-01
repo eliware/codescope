@@ -1,0 +1,40 @@
+{
+  "model": "gpt-5.6-luna",
+  "input": [
+    {
+      "role": "developer",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "<combine-mjs here>"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "bulletlist all issues one per line sorted into priority P0, P1, P2 etc..."
+        }
+      ]
+    }
+  ],
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "low"
+  },
+  "reasoning": {
+    "effort": "none",
+    "mode": "standard",
+    "summary": null
+  },
+  "tools": [],
+  "store": false,
+  "include": [
+    "reasoning.encrypted_content",
+    "web_search_call.action.sources"
+  ]
+}

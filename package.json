@@ -1,0 +1,35 @@
+{
+  "name": "codescope",
+  "version": "0.1.0",
+  "description": "A command-line tool for inspecting codebases.",
+  "type": "module",
+  "bin": {
+    "codescope": "bin/codescope.mjs"
+  },
+  "exports": {
+    ".": "./src/cli.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    "RELEASE_NOTES.md"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "lint": "eliware-test --lint",
+    "pack": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "devDependencies": {
+    "@eliware/test": "latest"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@eliware/common": "^2.0.0",
+    "@eliware/openai": "^1.1.11"
+  }
+}
