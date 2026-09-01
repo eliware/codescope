@@ -1,6 +1,6 @@
 # Codescope progressive quick start
 
-Codescope reviews the repository below your current working directory and streams focused findings from OpenAI. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
+Codescope reviews the repository below your current working directory and streams focused findings from OpenAI. It does not edit files. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
 
 ## 1. Set up the token
 
@@ -49,7 +49,7 @@ codescope tests
 codescope code-tests
 ```
 
-Use `tests` to review existing `*.test.mjs` files for missing or weak coverage. After adding or changing tests, use `code-tests` to check that code behavior and tests agree.
+Use `tests` to review existing `*.test.mjs` files for missing or weak coverage. After adding or changing tests, use `code-tests` to check that implementation behavior and tests agree. The `code-tests-docs` profile includes every `.mjs` file, including tests, plus every `.md` file.
 
 ## 5. Check documentation
 
@@ -93,7 +93,7 @@ codescope prioritize
 codescope code-tests-docs
 ```
 
-This final pass checks implementation, tests, and Markdown together for conflicts. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
+This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown together for conflicts. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
 
 ## The review loop
 

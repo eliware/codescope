@@ -1,7 +1,13 @@
 {
   "name": "codescope",
-  "version": "0.1.0",
-  "description": "A command-line tool for inspecting codebases.",
+  "version": "2.0.0",
+  "description": "An OpenAI-powered command-line tool for focused code and documentation reviews.",
+  "keywords": [
+    "code-review",
+    "documentation",
+    "openai",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "codescope": "bin/codescope.mjs"
