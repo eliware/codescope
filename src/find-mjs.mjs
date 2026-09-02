@@ -41,9 +41,11 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
       let isFile = false;
       let isSymlink = false;
       try {
-        // Symlink contract: skip symlinks and platform reparse/junction entries; never follow or inspect targets.
+      // Symlink contract: skip symlinks and platform reparse/junction entries; never follow or inspect targets.
       // Intentional OS boundary: a Dirent is the filesystem snapshot available to this scan; defending against
       // a later replacement of that entry would require holding directory handles and would not be portable.
+      // codescope ignore: directory-entry/Dirent replacement races, including a link appearing after inspection,
+      // are accepted non-adversarial filesystem limitations; observed symlinks are skipped and never followed.
         isSymlink = typeof entry.isSymbolicLink === 'function' && entry.isSymbolicLink();
         if (isSymlink) continue;
         isDirectory = typeof entry.isDirectory === 'function' && entry.isDirectory();

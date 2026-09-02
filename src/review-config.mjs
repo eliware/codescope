@@ -15,8 +15,9 @@ export function loadEnv(text = '', environment) {
       if (line.trim() && !line.trim().startsWith('#')) throw new Error('Invalid .env line');
       continue;
     }
-    // Intentional policy: first assignment wins, preserving stable credentials when generated config appends entries.
+    // Intentional policy: first assignment wins, including blank or environment-shadowed assignments.
     if (seen.has(match[1])) continue;
+    seen.add(match[1]);
     /* istanbul ignore next -- inherited environment precedence is host-dependent */
     if (environment[match[1] ?? '']?.trim()) continue;
     const raw = match[2].trim();
@@ -26,7 +27,6 @@ export function loadEnv(text = '', environment) {
     const value = raw.startsWith('"') ? raw.slice(1, -1).replaceAll('\\n', '\n').replaceAll('\\t', '\t').replaceAll('\\"', '"').replaceAll('\\\\', '\\') : raw.startsWith("'") ? raw.slice(1, -1).replaceAll("\\'", "'") : raw.replace(/\s+#.*$/u, '').trim();
     /* istanbul ignore next -- empty credential assignments require configuration integration coverage */
     if (!value.trim()) continue;
-    seen.add(match[1]);
     if (match[1] === 'OPENAI_API_TOKEN') environment[match[1]] = value;
   }
 }

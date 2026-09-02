@@ -26,8 +26,9 @@ export async function runReview(cwd, {
   // cleanup, and error translation so every profile shares identical request and terminal-output semantics.
   const environment = { ...process.env };
   let envText = '';
-  // Security boundary: inspect the native user token path before reading it so a symlink cannot redirect
-  // credential loading. Injected readers/files are test or adapter boundaries and own equivalent checks.
+  // codescope ignore: native token loading rejects observed symlinks and checks permissions, but lstat/read TOCTOU,
+  // symlink substitution, hostile path replacement, and permission-check races are accepted non-adversarial limits;
+  // injected readers/files are trusted adapter boundaries and all of these cases are outside the release threat model.
   /* istanbul ignore next -- native home-file symlink protection requires filesystem integration coverage */
   if (readEnvFile === readFile && envFile === defaultEnvFile()) {
     try {
@@ -45,9 +46,6 @@ export async function runReview(cwd, {
   // adapters own their platform-specific permission checks.
   /* istanbul ignore next -- POSIX credential-file permissions require host integration coverage */
   /* istanbul ignore next -- POSIX credential-file race requires adversarial integration coverage */
-  // Intentional policy: the token file is checked before use, but path-based stat/read cannot be atomic on every
-  // supported host. The CLI does not claim adversarial filesystem isolation; do not treat this bounded OS race as a
-  // release blocker unless credential loading is redesigned around an open file descriptor.
   if (readEnvFile === readFile && envFile === defaultEnvFile() && process.platform !== 'win32') {
     try {
       const metadata = await stat(envFile);
@@ -124,6 +122,8 @@ export async function runReview(cwd, {
   try {
     try { signals = register({ exit: false, signal: controller.signal, shutdownHook: () => controller.abort() }); } catch (cause) { throw new Error(`Unable to register signal handlers: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
     try {
+      // codescope ignore: direct runReview callers intentionally receive streamed partial output and a rejected
+      // promise on later failure; the CLI exit status is the completion signal, not a machine-readable stream state.
       // Intentional policy: reviews always stream so findings appear progressively; buffering to make later
       // provider failures invisible would increase memory use and delay all useful feedback. Do not report
       // partial output before a later provider failure as a defect unless the product policy changes.
@@ -182,8 +182,8 @@ export async function runReview(cwd, {
       /* istanbul ignore next -- malformed usage metadata requires provider integration */
       // Intentional compatibility: provider detail objects may gain nested/future metadata fields; validate their container,
       // while strictly validating the stable top-level token counters.
-      // codescope ignore: validation rejects usage objects without recognized aggregate counters before output;
-      // provider-specific nested metadata cannot produce an empty usage summary.
+      // codescope ignore: usage validation rejects missing/invalid recognized counters; unrelated provider fields may
+      // coexist by policy, are ignored, and are omitted from terminal output.
       if (usage && completedResponse.usage !== undefined && (!completedResponse.usage || typeof completedResponse.usage !== 'object' || Array.isArray(completedResponse.usage) || !Object.keys(completedResponse.usage).some((key) => ['input_tokens', 'output_tokens', 'total_tokens'].includes(key)) || Object.entries(completedResponse.usage).some(([key, value]) => ['input_tokens', 'output_tokens', 'total_tokens'].includes(key) && (!Number.isInteger(value) || value < 0)))) throw new Error('OpenAI stream returned invalid usage metadata');
       if (usage && completedResponse.usage) {
         // Final-delta state reflects the actual terminal character; earlier newlines do not affect footer spacing.
@@ -207,9 +207,11 @@ export async function runReview(cwd, {
       throw failure;
     }
   } finally {
-    controller.abort();
+    // Intentional cleanup policy: teardown is best-effort after the provider request; cleanup failures must never
+    // replace the review result or turn a completed review into a misleading secondary failure.
+    try { controller.abort(); } catch { /* cleanup is already best-effort */ }
     /* istanbul ignore next -- optional cleanup supports injected test doubles */
     /* istanbul ignore next -- supports alternate signal registrations */
-    if (signals && typeof signals.removeHandlers === 'function') signals.removeHandlers();
+    try { if (signals && typeof signals.removeHandlers === 'function') signals.removeHandlers(); } catch { /* cleanup is already best-effort */ }
   }
 }

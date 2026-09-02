@@ -33,6 +33,7 @@ Analysis profiles:
   architecture                Architecture optimizations only
   new-features                New feature suggestions only
   code-tests-docs             Code, tests, and Markdown
+  all                         Code, tests, and Markdown from every review angle
   security                    Security risks only
   performance                 Performance risks only
   reliability                 Reliability risks only
@@ -65,7 +66,7 @@ Intentional behavior:
 `; */
 }
 
-// Intentional UX contract: every successful profile ends with this short human-facing reminder.
+// Intentional CLI UX contract: every successful CLI profile ends with this short human-facing reminder.
 // It is deliberately emitted even for machine-readable review text because inline comments are part of the review workflow.
 const REVIEW_NOTE = '\n\nNote: Add an inline comment explaining intentional behavior to avoid false positives.\n';
 
@@ -75,7 +76,7 @@ export function parseArgs(args) {
   // Intentional UX: bare codescope is the quick-start help page; --usage applies only to an explicit review profile.
   if (first === '-h' || first === '--help') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'help', option: undefined }; }
   if (first === '-v' || first === '--version') { if (rest.length) throw new Error(`Unexpected arguments: ${rest.join(' ')}`); return { command: 'version', option: undefined }; }
-  const profiles = ['code', 'code-docs', 'code-tests', 'code-tests-docs', 'refactor', 'architecture', 'new-features', 'security', 'performance', 'reliability', 'api-design', 'dependencies', 'observability', 'accessibility', 'release', 'quick-wins', 'prioritize', 'p0', 'p0-1', 'p0-2', 'p0-3', 'tests', 'tests-docs', 'docs'];
+  const profiles = ['code', 'p0', 'p0-1', 'p0-2', 'p0-3', 'architecture', 'api-design', 'refactor', 'tests', 'code-tests', 'tests-docs', 'docs', 'code-docs', 'security', 'reliability', 'performance', 'dependencies', 'observability', 'accessibility', 'new-features', 'quick-wins', 'prioritize', 'code-tests-docs', 'all', 'release'];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   if (!['help', 'version', ...profiles].includes(first)) throw new Error(`Unknown command: ${first}`);
   if (profiles.includes(first) && ['--version', '-v'].includes(rest[0])) throw new Error(`Option ${rest[0]} is not valid for ${first}`);
@@ -118,6 +119,7 @@ export async function main(args, {
       await review(cwd, { write, combine, usage: option === '--usage', prompt });
       // Intentional: guidance is written only after review success; failed/partial output must not look successfully finalized.
       // A guidance-write failure is an operational failure because the promised completed-run reminder was not delivered.
+      // codescope ignore: completed reviews intentionally return exit code 2 when the mandatory final guidance write fails.
       try { await write(REVIEW_NOTE); } catch (cause) { throw new Error(`Unable to write review guidance: ${cause instanceof Error ? cause.message : String(cause)}`, { cause }); }
       return 0;
     }

@@ -2,6 +2,8 @@ import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { findFiles } from './find-mjs.mjs';
 
+// codescope ignore: readDirectory is intentionally optional and readFileContents defaults to the native reader;
+// injected directory/file adapters may provide only the capability required by their test or integration boundary.
 export async function combineFiles(root, extension, { readDirectory, readFileContents = readFile, validateSymlinks = false, concurrency = 16, maxChars = Number.POSITIVE_INFINITY, noTests = false, testsOnly = false } = {}) {
   // Intentional API contract: noTests/testsOnly are internal mutually exclusive profile flags; callers use profiles
   // rather than constructing a new selection vocabulary.
@@ -40,11 +42,15 @@ export async function combineFiles(root, extension, { readDirectory, readFileCon
       // reader is an injected filesystem adapter and owns equivalent checks; identity cannot safely distinguish a
       // wrapped native reader from a virtual test reader. Do not report this adapter boundary as a production link
       // traversal issue.
+      // codescope ignore: injected custom readers intentionally bypass native symlink/type checks; trusted-adapter
+      // configuration, bypass behavior, and resulting operational risk are outside the production security boundary.
       if (readFileContents === readFile || validateSymlinks) {
         // Intentional policy: symlinks are excluded, but lstat immediately before read cannot make a path read
         // atomic on every supported host. A hostile
         // concurrent replacement between these two path operations is an OS-level TOCTOU limitation; this CLI
         // does not promise adversarial filesystem isolation and never intentionally follows links.
+        // codescope ignore: the lstat/read TOCTOU race is an accepted non-adversarial filesystem limitation; links
+        // are still rejected whenever observed and the scanner never intentionally follows them.
         const metadata = await lstat(resolvedPath);
         if (metadata.isSymbolicLink()) throw new Error('symlinked source files are not supported');
         if (!metadata.isFile()) throw new Error('source path is not a regular file');

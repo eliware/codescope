@@ -97,7 +97,19 @@ codescope code-tests-docs
 
 This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown together for conflicts. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
 
-## 8. Decide release readiness
+## 8. Review everything from every angle
+
+```text
+codescope all
+```
+
+`all` sends implementation, test, and Markdown content in one request and
+produces one consolidated review covering correctness, security, reliability,
+The report groups findings under Correctness, Security, Reliability, Performance,
+Architecture, API Design, Tests, and Documentation, and shows `None` for empty
+categories.
+
+## 9. Decide release readiness
 
 ```text
 codescope release

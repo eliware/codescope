@@ -25,6 +25,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `tests` reviews tests without implementation analysis.
 - `tests-docs` reviews tests and documentation together.
 - `docs` reviews documentation for inconsistencies.
+- `all` reviews implementation, tests, and documentation from every supported review angle in one consolidated report.
 
 ### Repository analysis
 
