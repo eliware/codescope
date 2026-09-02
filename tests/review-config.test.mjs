@@ -6,14 +6,17 @@ test('returns the user config path', () => {
 
 test('loads supported dotenv syntax and only the API token', () => {
   const environment = {};
-  loadEnv([
-    '# comment',
-    ' export OPENAI_API_TOKEN = "line\\n tab\\t quote\\" slash\\\\"',
-    "IGNORED='value'",
-    'EMPTY=   ',
-    'OTHER=plain # comment',
-    "SINGLE='it\\'s fine'",
-  ].join('\n'), environment);
+  loadEnv(
+    [
+      '# comment',
+      ' export OPENAI_API_TOKEN = "line\\n tab\\t quote\\" slash\\\\"',
+      "IGNORED='value'",
+      'EMPTY=   ',
+      'OTHER=plain # comment',
+      "SINGLE='it\\'s fine'",
+    ].join('\n'),
+    environment,
+  );
   expect(environment.OPENAI_API_TOKEN).toBe('line\n tab\t quote" slash\\');
   expect(environment.IGNORED).toBeUndefined();
 });

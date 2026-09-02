@@ -113,10 +113,10 @@ categories.
 ## 9. Decide release readiness
 
 ```text
-codescope release
+codescope all
 ```
 
-`release` is a release-readiness gate. It returns exactly one verdict: `pass` or `block`. It reviews P0/P1 correctness, security, reliability, user-data, API/contract, test/regression, and documentation risks. P2/P3, ignored, intentional, speculative, stylistic, and cosmetic findings do not delay release.
+`all` is the comprehensive review and release-readiness gate. It reports every P0–P3 finding grouped by category, but returns `block` only for unresolved P0/P1 issues, concrete documentation discrepancies, or major test gaps. P2/P3 findings remain visible without blocking the verdict.
 
 ## The review loop
 

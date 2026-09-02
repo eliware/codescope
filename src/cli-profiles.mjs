@@ -14,10 +14,12 @@ import {
   dependenciesPrompt,
   observabilityPrompt,
   accessibilityPrompt,
-  strictReleasePrompt,
   quickWinsPrompt,
   prioritizePrompt,
   priorityPrompt,
+  createReviewTool,
+  createSuggestionTool,
+  REVIEW_CATEGORIES,
 } from './prompt.mjs';
 
 const PROFILE_FILES = {
@@ -37,7 +39,6 @@ const PROFILE_FILES = {
   observability: [true, false, false],
   accessibility: [true, false, false],
 
-  release: [true, true, true],
   'quick-wins': [true, false, false],
   prioritize: [true, false, false],
   p0: [true, false, false],
@@ -49,7 +50,7 @@ const PROFILE_FILES = {
   docs: [false, false, true],
 };
 
-export function getProfile(profile) {
+export function getProfile(profile, mode = 'review') {
   if (!Object.hasOwn(PROFILE_FILES, profile))
     throw new Error(`Unknown analysis profile: ${profile}`);
   const [implementation, tests, docs] = PROFILE_FILES[profile];
@@ -87,7 +88,6 @@ export function getProfile(profile) {
     dependencies: dependenciesPrompt,
     observability: observabilityPrompt,
     accessibility: accessibilityPrompt,
-    release: strictReleasePrompt,
     'quick-wins': quickWinsPrompt,
     prioritize: prioritizePrompt,
     p0: priorityPrompt(0),
@@ -95,6 +95,33 @@ export function getProfile(profile) {
     'p0-2': priorityPrompt(2),
     'p0-3': priorityPrompt(3),
   };
-  const prompt = prompts[profile] ?? createAnalysisPrompt(subject);
+  const prompt = structuredClone(prompts[profile] ?? createAnalysisPrompt(subject));
+  const suggestionCategories = {
+    refactor: ['architecture'],
+    architecture: ['architecture'],
+    'new-features': ['architecture'],
+    security: ['security'],
+    performance: ['performance'],
+    reliability: ['reliability'],
+    'api-design': ['api_design'],
+    dependencies: ['reliability'],
+    observability: ['reliability'],
+    accessibility: ['correctness'],
+    'quick-wins': REVIEW_CATEGORIES,
+    prioritize: REVIEW_CATEGORIES,
+  }[profile];
+  const reviewCategories =
+    profile === 'all' || profile === 'code-tests-docs'
+      ? REVIEW_CATEGORIES
+      : { docs: ['documentation'], 'tests-docs': ['tests', 'documentation'] }[profile];
+  if (mode === 'suggest') {
+    const tool = createSuggestionTool(suggestionCategories ?? REVIEW_CATEGORIES);
+    prompt.tools = [tool];
+    prompt.tool_choice = { type: 'function', name: tool.name };
+  } else if (reviewCategories) {
+    const tool = createReviewTool(reviewCategories);
+    prompt.tools = [tool];
+    prompt.tool_choice = { type: 'function', name: tool.name };
+  }
   return { combine, prompt };
 }

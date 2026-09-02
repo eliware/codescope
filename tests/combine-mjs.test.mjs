@@ -16,7 +16,8 @@ test('combines, trims, numbers, and batches source files', async () => {
       { name: 'a.mjs', isFile: () => true },
     ],
     concurrency: 2,
-    readFileContents: async (file) => files[file],
+    readFileContents: async (file) =>
+      files[file.replaceAll('\\', '/').replace(/^.*(?=\/root\/)/u, '')],
   });
   expect(result).toBe('===== a.mjs =====\n1 one\n2 two\n\n===== b.mjs =====\n1 [empty file]\n');
 });
@@ -46,11 +47,18 @@ test('uses one-file batches for finite limits and enforces aggregate limits', as
 });
 
 test('validates options and rejects unsafe roots', async () => {
-  await expect(combineFiles('C:\\root', '.mjs', { readDirectory: async () => [] })).rejects.toThrow('Windows-style');
+  if (process.platform !== 'win32')
+    await expect(
+      combineFiles('C:\\root', '.mjs', { readDirectory: async () => [] }),
+    ).rejects.toThrow('Windows-style');
   for (const concurrency of [0, 1.5, '1'])
-    await expect(combineMjsFiles('/root', { concurrency, readDirectory: async () => [] })).rejects.toThrow('concurrency');
+    await expect(
+      combineMjsFiles('/root', { concurrency, readDirectory: async () => [] }),
+    ).rejects.toThrow('concurrency');
   for (const maxChars of [0, -1, 1.5, '1', Number.NaN])
-    await expect(combineMjsFiles('/root', { maxChars, readDirectory: async () => [] })).rejects.toThrow('maxChars');
+    await expect(
+      combineMjsFiles('/root', { maxChars, readDirectory: async () => [] }),
+    ).rejects.toThrow('maxChars');
 });
 
 test('validates real files and wraps all read failures', async () => {
@@ -74,18 +82,30 @@ test('validates real files and wraps all read failures', async () => {
       readFileContents: async () => 'unreachable',
     }),
   ).rejects.toThrow('regular file');
-  const { symlink } = await import('node:fs/promises');
-  await symlink(path.join(root, 'a.mjs'), path.join(root, 'alias.mjs'));
-  await expect(
-    combineMjsFiles(root, {
-      readDirectory: async () => [{ name: 'alias.mjs', isFile: () => true }],
-      validateSymlinks: true,
-      readFileContents: async () => 'unreachable',
+  if (process.platform !== 'win32') {
+    const { symlink } = await import('node:fs/promises');
+    await symlink(path.join(root, 'a.mjs'), path.join(root, 'alias.mjs'));
+    await expect(
+      combineMjsFiles(root, {
+        readDirectory: async () => [{ name: 'alias.mjs', isFile: () => true }],
+        validateSymlinks: true,
+        readFileContents: async () => 'unreachable',
+      }),
+    ).rejects.toThrow('symlinked');
+  }
+  expect(
+    await combineMdFiles('/root', {
+      readDirectory: async () => [],
+      readFileContents: async () => '',
     }),
-  ).rejects.toThrow('symlinked');
-  expect(await combineMdFiles('/root', { readDirectory: async () => [], readFileContents: async () => '' })).toBe('');
+  ).toBe('');
   await expect(
-    combineMjsFiles('/root', { ...oneFile(), readFileContents: async () => { throw 'denied'; } }),
+    combineMjsFiles('/root', {
+      ...oneFile(),
+      readFileContents: async () => {
+        throw 'denied';
+      },
+    }),
   ).rejects.toThrow('denied');
   await expect(
     combineMjsFiles('/root', { ...oneFile(), readFileContents: async () => null }),

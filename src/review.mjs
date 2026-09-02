@@ -10,10 +10,7 @@ import { removeSignalHandlers } from './review-cleanup.mjs';
 
 const PLACEHOLDER = '<combine-mjs here>';
 
-export async function runReview(
-  cwd,
-  options,
-) {
+export async function runReview(cwd, options) {
   const defaults = {
     write: process.stdout.write.bind(process.stdout),
     readFile: fs.promises.readFile,
@@ -28,8 +25,19 @@ export async function runReview(
     inspectPermissions: stat,
   };
   const {
-    write, readFile, readEnvFile = readFile, readDirectory, envFile, prompt, combine,
-    maxSourceChars, usage, createClient, register, inspectFile, inspectPermissions,
+    write,
+    readFile,
+    readEnvFile = readFile,
+    readDirectory,
+    envFile,
+    prompt,
+    combine,
+    maxSourceChars,
+    usage,
+    createClient,
+    register,
+    inspectFile,
+    inspectPermissions,
   } = { ...defaults, ...options };
   const environment = { ...process.env };
   let envText = '';
@@ -107,13 +115,20 @@ export async function runReview(
       );
     }
     try {
+      const toolName = request.tool_choice?.name ?? 'submit_review';
       const response = await client.responses.create({
         ...request,
         input: request.input,
-        tool_choice: { type: 'function', name: 'submit_review' },
+        tool_choice: { type: 'function', name: toolName },
         parallel_tool_calls: false,
       });
-      const result = parseReviewToolResponse(response);
+      const schemaCategories = Object.keys(
+        request.tools?.[0]?.parameters?.properties?.issues?.properties ??
+          request.tools?.[0]?.parameters?.properties?.suggestions?.properties ??
+          {},
+      );
+      const categories = schemaCategories.length ? schemaCategories : undefined;
+      const result = parseReviewToolResponse(response, toolName, categories);
       const output = usage ? { ...result, usage: response.usage ?? null } : result;
 
       try {

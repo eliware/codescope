@@ -20,7 +20,6 @@ export async function findFiles(
   const pending = [root];
   const rootPath = pathApi.resolve(root);
 
-
   while (pending.length > 0) {
     const directory = pending.pop();
     let entries;

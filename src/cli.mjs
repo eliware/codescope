@@ -12,6 +12,16 @@ export function usage() {
 
 export function parseArgs(args) {
   const [first = 'help', ...rest] = args;
+  if (first === 'review' || first === 'suggest') {
+    const [profile, ...options] = rest;
+    if (
+      !profile ||
+      options.length > 1 ||
+      (options[0] && !['--usage', '--help', '-h'].includes(options[0]))
+    )
+      throw new Error('Usage: codescope review|suggest <profile> [--usage]');
+    return { command: `analyze-${profile}`, mode: first, option: options[0] };
+  }
   const option = rest[0];
 
   if (['-h', '--help'].includes(first)) {
@@ -59,7 +69,6 @@ export function parseArgs(args) {
     'prioritize',
     'code-tests-docs',
     'all',
-    'release',
   ];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   const commandNames = new Set(['help', 'version', ...profiles]);
@@ -88,7 +97,7 @@ export async function main(
   } = {},
 ) {
   try {
-    const { command, option } = parseArgs(args);
+    const { command, mode = 'review', option } = parseArgs(args);
     if (option && ['--help', '-h'].includes(option)) {
       output(usage());
       return 0;
@@ -106,7 +115,7 @@ export async function main(
       return 0;
     }
     const target = command.slice('analyze-'.length);
-    const { combine, prompt } = getProfile(target);
+    const { combine, prompt } = getProfile(target, mode);
     await review(cwd, { write, combine, usage: option === '--usage', prompt });
     return 0;
   } catch (cause) {

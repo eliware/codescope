@@ -10,6 +10,18 @@ import { getProfile } from '../src/cli-profiles.mjs';
 import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
 
 const valid = () => structuredClone(defaultPrompt);
+const emptyIssues = Object.fromEntries(
+  [
+    'correctness',
+    'security',
+    'reliability',
+    'performance',
+    'architecture',
+    'api_design',
+    'tests',
+    'documentation',
+  ].map((category) => [category, []]),
+);
 const opts = (x = {}) => ({
   envFile: path.join('test-home', '.codescope'),
   readFile: async () => '',
@@ -46,6 +58,20 @@ test('parses direct analysis profiles', () => {
   expect(parseArgs(['docs', '--help'])).toEqual({ command: 'analyze-docs', option: '--help' });
   expect(() => parseArgs(['find'])).toThrow(/Unknown command/);
   expect(() => parseArgs(['code', '--no-tests'])).toThrow(/Unexpected arguments/);
+});
+test('parses grouped review and suggestion commands', () => {
+  expect(parseArgs(['review', 'all'])).toEqual({
+    command: 'analyze-all',
+    mode: 'review',
+    option: undefined,
+  });
+  expect(parseArgs(['suggest', 'new-features', '--usage'])).toEqual({
+    command: 'analyze-new-features',
+    mode: 'suggest',
+    option: '--usage',
+  });
+  expect(() => parseArgs(['review'])).toThrow(/Usage/);
+  expect(() => parseArgs(['suggest', 'all', '--version'])).toThrow(/Usage/);
 });
 test('handles help and version options', async () => {
   const output = [];
@@ -124,7 +150,7 @@ test('requires path strings and skips symlinks', async () => {
 test('combines files and reports read errors', async () => {
   const files = { '/root/a.mjs': 'a\n', '/root/nested/b.mjs': 'b' };
   const rd = async (d) =>
-    d.replaceAll('\\', '/') === '/root'
+    d.replaceAll('\\', '/').endsWith('/root')
       ? [
           { name: 'a.mjs', isFile: () => true },
           { name: 'nested', isDirectory: () => true },
@@ -133,7 +159,8 @@ test('combines files and reports read errors', async () => {
   const result = await combineMjsFiles('/root', {
     readDirectory: rd,
     readFileContents: async (f) =>
-      Object.entries(files).find(([k]) => f.replaceAll('\\', '/').endsWith(k))?.[1],
+      Object.entries(files).find(([k]) => f.replaceAll('\\', '/').endsWith(k))?.[1] ??
+      (f.endsWith('a.mjs') ? 'a\n' : 'b'),
   });
   expect(result).toBe('===== a.mjs =====\n1 a\n\n===== nested/b.mjs =====\n1 b\n');
   await expect(
@@ -170,9 +197,9 @@ test('combines selected implementation, tests, and docs', async () => {
   expect(
     await combineSelectedFiles('/root', { tests: true, readDirectory: rd, readFileContents: read }),
   ).toContain('app.test.mjs');
-  expect(await combineSelectedFiles('/root', { readDirectory: rd, readFileContents: read })).toBe(
-    '',
-  );
+  expect(
+    await combineSelectedFiles('/root', { readDirectory: rd, readFileContents: read }),
+  ).toContain('===== package.json =====');
 });
 test('finds and combines markdown files', async () => {
   const options = {
@@ -313,7 +340,6 @@ test('runs direct analysis profiles without appending guidance', async () => {
     'prioritize',
     'code-tests-docs',
     'all',
-    'release',
   ])
     expect(
       await main([profile], {
@@ -321,7 +347,7 @@ test('runs direct analysis profiles without appending guidance', async () => {
         write: (v) => output.push(v),
       }),
     ).toBe(0);
-  expect(output).toHaveLength(25);
+  expect(output).toHaveLength(24);
   expect(output).toEqual([
     'code',
     'p0',
@@ -347,7 +373,6 @@ test('runs direct analysis profiles without appending guidance', async () => {
     'prioritize',
     'code-tests-docs',
     'all',
-    'release',
   ]);
 });
 test('builds every profile strategy', async () => {
@@ -365,7 +390,6 @@ test('builds every profile strategy', async () => {
     'dependencies',
     'observability',
     'accessibility',
-    'release',
     'quick-wins',
     'prioritize',
     'p0',
@@ -379,20 +403,17 @@ test('builds every profile strategy', async () => {
     'docs',
   ]) {
     const { combine } = getProfile(profile);
-    await expect(combine('/root', { readDirectory: async () => [] })).resolves.toBe('');
+    await expect(
+      combine('/root', { readDirectory: async () => [], readFileContents: async () => '{}' }),
+    ).resolves.toContain('===== package.json =====');
   }
   expect(() => getProfile('missing')).toThrow(/Unknown analysis profile/);
 });
-test('release prompt inventories evidenced P0/P1 blockers before its verdict', () => {
-  const release = getProfile('release').prompt.input[1].content[0].text;
-  expect(release).toMatch(/every concrete P0 or P1 release blocker/);
-  expect(release).toMatch(/Ignore P2 and P3 findings completely/);
-  expect(release).toMatch(/Absence of validation results is not a blocker/);
-  expect(release).toMatch(/Build an internal inventory of ALL distinct P0\/P1 blockers/);
-  expect(release).toMatch(/inventory of ALL distinct P0\/P1 blockers before calling submit_review/);
-  expect(release).toMatch(/the verdict is last/);
-  expect(release).toMatch(/do not stop after the first blocker/);
-  expect(release).toMatch(/Call submit_review exactly once/);
+test('all prompt reports every priority while blocking only material findings', () => {
+  const all = getProfile('all').prompt.input[1].content[0].text;
+  expect(all).toMatch(/Report every actionable finding, including P0, P1, P2, and P3/);
+  expect(all).toMatch(/P2 and P3 findings must be reported but must not affect the verdict/);
+  expect(all).toMatch(/apply the global pass\/block criteria/);
 });
 test('global prompt defines shared priorities from supplied evidence', () => {
   const text = getProfile('code').prompt.input[1].content[0].text;
@@ -454,7 +475,7 @@ test('pretty prints the complete non-streamed tool result', async () => {
                 {
                   type: 'function_call',
                   name: 'submit_review',
-                  arguments: JSON.stringify({ issues: [], verdict: 'pass' }),
+                  arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
                 },
               ],
             };
@@ -464,7 +485,9 @@ test('pretty prints the complete non-streamed tool result', async () => {
       register: () => ({ removeHandlers: () => {} }),
     }),
   );
-  expect(output).toEqual(['{\n  "issues": [],\n  "verdict": "pass"\n}\n']);
+  expect(output).toEqual([
+    `${JSON.stringify({ issues: emptyIssues, verdict: 'pass' }, null, 2)}\n`,
+  ]);
 });
 test('adds usage to the structured output only when requested', async () => {
   const output = [];
@@ -481,7 +504,7 @@ test('adds usage to the structured output only when requested', async () => {
               {
                 type: 'function_call',
                 name: 'submit_review',
-                arguments: JSON.stringify({ issues: [], verdict: 'pass' }),
+                arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
               },
             ],
           }),
@@ -491,7 +514,7 @@ test('adds usage to the structured output only when requested', async () => {
     }),
   );
   expect(JSON.parse(output[0])).toEqual({
-    issues: [],
+    issues: emptyIssues,
     verdict: 'pass',
     usage: { total_tokens: 7 },
   });
@@ -510,7 +533,7 @@ test('reports unavailable usage in the structured output', async () => {
               {
                 type: 'function_call',
                 name: 'submit_review',
-                arguments: JSON.stringify({ issues: [], verdict: 'pass' }),
+                arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
               },
             ],
           }),
@@ -519,7 +542,7 @@ test('reports unavailable usage in the structured output', async () => {
       register: () => ({ removeHandlers: () => {} }),
     }),
   );
-  expect(JSON.parse(output[0])).toEqual({ issues: [], verdict: 'pass', usage: null });
+  expect(JSON.parse(output[0])).toEqual({ issues: emptyIssues, verdict: 'pass', usage: null });
 });
 test('enforces the combined-source limit', async () => {
   await expect(
@@ -556,7 +579,7 @@ test('replaces the optional custom prompt placeholder', async () => {
                 {
                   type: 'function_call',
                   name: 'submit_review',
-                  arguments: JSON.stringify({ issues: [], verdict: 'pass' }),
+                  arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
                 },
               ],
             };
@@ -585,7 +608,7 @@ test('parses dotenv quoting and invokes shutdown cleanup', async () => {
               {
                 type: 'function_call',
                 name: 'submit_review',
-                arguments: JSON.stringify({ issues: [], verdict: 'pass' }),
+                arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
               },
             ],
           }),
@@ -598,7 +621,7 @@ test('parses dotenv quoting and invokes shutdown cleanup', async () => {
     }),
   );
   shutdown();
-  expect(JSON.parse(output[0])).toEqual({ issues: [], verdict: 'pass' });
+  expect(JSON.parse(output[0])).toEqual({ issues: emptyIssues, verdict: 'pass' });
 });
 test('validates prompt shapes', async () => {
   await expect(runReview('/root', opts({ prompt: { input: [] } }))).rejects.toThrow(
