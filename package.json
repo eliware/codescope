@@ -1,5 +1,5 @@
 {
-    "name": "codescope",
+    "name": "@eliware/codescope",
     "version": "2.1.0",
     "description": "An OpenAI-powered CLI for focused code, test, architecture, documentation, and release reviews.",
     "keywords": [
