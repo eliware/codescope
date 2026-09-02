@@ -40,11 +40,12 @@ These still send the complete implementation source, but ask the AI to include f
 Run the structural profiles after the baseline is stable:
 
 ```text
-codescope refactor
 codescope architecture
+codescope api-design
+codescope refactor
 ```
 
-Use `refactor` to identify monolithic files and responsibility splits. Use `architecture` for module boundaries, dependencies, data flow, scalability, reliability, and maintainability. Apply suggestions manually in small changes; Codescope does not edit files.
+Use `architecture` for module boundaries, dependencies, data flow, scalability, reliability, and maintainability. Use `refactor` to identify monolithic files and responsibility splits. Apply suggestions manually in small changes; Codescope does not edit files.
 
 ## 4. Strengthen tests
 
@@ -74,13 +75,9 @@ codescope reliability
 codescope performance
 codescope dependencies
 codescope observability
-codescope api-design
 codescope accessibility
-codescope release
 
 ```
-
-`release` is a release-readiness gate. It returns one verdict: `pass`, `pass with known issues`, or `block release`. It blocks only for correctness, security, reliability, or user-data risks; stylistic and cosmetic findings do not delay release.
 
 For product planning and small improvements:
 
@@ -100,6 +97,14 @@ codescope code-tests-docs
 
 This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown together for conflicts. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
 
+## 8. Decide release readiness
+
+```text
+codescope release
+```
+
+`release` is a release-readiness gate. It returns one verdict: `pass`, `pass with known issues`, or `block release`. It blocks only for correctness, security, reliability, or user-data risks; stylistic and cosmetic findings do not delay release.
+
 ## The review loop
 
 For each profile:
@@ -110,13 +115,13 @@ For each profile:
 4. Rerun the same profile.
 5. Continue until the result is stable, then move to the next profile.
 
-If behavior is intentional, add a nearby inline comment explaining why. For example:
+If behavior is intentional and should be excluded from every profile, add one nearby inline comment with the explicit marker and describe the complete scope. For example:
 
 ```js
-// Intentional: bounded reads keep memory predictable for large repositories.
+// codescope ignore: bounded reads and serialized finite-limit reads keep memory predictable for large repositories.
 ```
 
-Codescope is instructed to honor comments describing intentional policy and not report that behavior as a false positive.
+Codescope suppresses the behavior described after `codescope ignore:`. One comment can name multiple intentional behaviors; multiple comments on the same line are unnecessary. If a finding is only partly covered, Codescope explains why the residual behavior is outside the comment scope and suggests either fixing it or expanding the same comment to explicitly include it. Ordinary comments remain context and do not suppress findings; unrelated issues in the same code are still reported.
 
 Use `--usage` after a review profile when you want API usage metadata included; it is not a standalone command:
 

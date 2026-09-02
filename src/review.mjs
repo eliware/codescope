@@ -3,7 +3,7 @@ import { createOpenAI } from '@eliware/openai';
 import { combineMjsFiles } from './combine-mjs.mjs';
 import { defaultDeveloperText, prompt as defaultPrompt } from './prompt.mjs';
 import { defaultEnvFile, loadEnv } from './review-config.mjs';
-import { stat } from 'node:fs/promises';
+import { lstat, stat } from 'node:fs/promises';
 
 const PLACEHOLDER = '<combine-mjs here>';
 
@@ -26,6 +26,17 @@ export async function runReview(cwd, {
   // cleanup, and error translation so every profile shares identical request and terminal-output semantics.
   const environment = { ...process.env };
   let envText = '';
+  // Security boundary: inspect the native user token path before reading it so a symlink cannot redirect
+  // credential loading. Injected readers/files are test or adapter boundaries and own equivalent checks.
+  /* istanbul ignore next -- native home-file symlink protection requires filesystem integration coverage */
+  if (readEnvFile === readFile && envFile === defaultEnvFile()) {
+    try {
+      const metadata = await lstat(envFile);
+      if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');
+    } catch (cause) {
+      if (cause?.code !== 'ENOENT') throw new Error(`Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+    }
+  }
   /* istanbul ignore next -- filesystem permission failures require integration coverage */
   // Intentional: authentication requires sending the token to the configured OpenAI endpoint.
   // Intentional: retain local path context; this is a CLI diagnostic, not provider data.
@@ -171,6 +182,8 @@ export async function runReview(cwd, {
       /* istanbul ignore next -- malformed usage metadata requires provider integration */
       // Intentional compatibility: provider detail objects may gain nested/future metadata fields; validate their container,
       // while strictly validating the stable top-level token counters.
+      // codescope ignore: validation rejects usage objects without recognized aggregate counters before output;
+      // provider-specific nested metadata cannot produce an empty usage summary.
       if (usage && completedResponse.usage !== undefined && (!completedResponse.usage || typeof completedResponse.usage !== 'object' || Array.isArray(completedResponse.usage) || !Object.keys(completedResponse.usage).some((key) => ['input_tokens', 'output_tokens', 'total_tokens'].includes(key)) || Object.entries(completedResponse.usage).some(([key, value]) => ['input_tokens', 'output_tokens', 'total_tokens'].includes(key) && (!Number.isInteger(value) || value < 0)))) throw new Error('OpenAI stream returned invalid usage metadata');
       if (usage && completedResponse.usage) {
         // Final-delta state reflects the actual terminal character; earlier newlines do not affect footer spacing.

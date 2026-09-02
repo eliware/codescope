@@ -58,8 +58,8 @@ export async function findFiles(root, extension, { readDirectory = readdir, noTe
       const childPath = pathApi.resolve(directory, entry.name);
       /* istanbul ignore next -- validated native directory names cannot escape this root */
       if (comparePath(childPath) !== comparableRoot && !comparePath(childPath).startsWith(`${comparableRoot}${pathApi.sep}`)) throw new Error(`Unsafe directory path: ${entry.name}`);
-      // Intentional policy: only exact lower-case source and *.test.mjs extensions are selected; this avoids
-      // platform-dependent profile contents even on case-insensitive filesystems.
+      // codescope ignore: exact lower-case source extensions and *.test.mjs matching are intentional; this keeps
+      // profile contents deterministic across case-sensitive and case-insensitive filesystems.
       const normalizedName = entry.name;
       if (isDirectory && ![...IGNORED_DIRECTORIES].some((ignored) => ignored.toLowerCase() === normalizedName.toLowerCase())) pending.push(childPath);
       else if (isFile && normalizedName.endsWith(extension) && (!extension.endsWith('.mjs') || ((testsOnly && normalizedName.endsWith('.test.mjs')) || (!testsOnly && !(noTests && normalizedName.endsWith('.test.mjs')))))) {
