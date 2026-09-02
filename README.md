@@ -33,7 +33,7 @@ npm run pack
 The `Node.js CI` workflow runs these validation gates with Node.js 26 on both
 Ubuntu and Windows for pushes to `main`, pull requests, and `v*` tags.
 
-The tool uses built-in prompts and accepts only `OPENAI_API_TOKEN` from `~/.codescope`; other assignments are ignored. That home-directory file is configuration, not part of the repository scan. It accepts dotenv-style `KEY=value` syntax, including optional `export`, comments, and quoted values. On Unix, group/world-readable `~/.codescope` files are rejected. An existing nonblank process environment variable takes precedence over `~/.codescope`. A missing or blank token causes a clear error and exit code `2`. Reviews are sent to OpenAI and streamed to the terminal.
+The tool uses built-in prompts and accepts only `OPENAI_API_TOKEN` from `~/.codescope`; other assignments are ignored. That home-directory file is configuration, not part of the repository scan. It accepts dotenv-style `KEY=value` syntax, including optional `export`, comments, and quoted values. On Unix, group/world-readable `~/.codescope` files are rejected. An existing nonblank process environment variable takes precedence over `~/.codescope`. A missing or blank token causes a clear error and exit code `2`. Reviews are sent to OpenAI and written once as a completed structured result.
 
 Symlink policy: file discovery includes only real filesystem entries. Any entry reported as a symbolic link is skipped, whether it is a file or directory; symlink targets are never followed, scanned, combined, or sent to OpenAI. This means a symlink to an otherwise valid source file is intentionally excluded.
 
@@ -43,8 +43,8 @@ Running `codescope` with no command displays the single help page. Run a profile
 
 `codescope --help` is the single help page. It explains what Codescope does, how files are selected and reviewed, all analysis profiles, and how to annotate intentional behavior with inline comments so it is not reported as a false positive. To suppress intentional behavior explicitly, place one nearby comment containing `codescope ignore:` followed by the complete scope to ignore, such as `// codescope ignore: x, y, and z are intentional policy constraints.` If a finding extends beyond that scope, Codescope reports only the uncovered behavior and suggests either fixing it or expanding the same comment. Unrelated issues remain reportable. A profile may also be followed by `--help` to display that same page.
 
-Append `--usage` to any review profile, for example `codescope code --usage`, to print API usage metadata after the response. The implementation-focused suggestion profiles are `refactor`, `architecture`, `new-features`, `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`, and the `p0` through `p0-3` priority profiles. `release` is a release gate, not a suggestion profile.
+Append `--usage` to any review profile, for example `codescope code --usage`, to print API usage metadata after the response. The implementation-focused suggestion profiles are `refactor`, `architecture`, `new-features`, `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`, and the `p0` through `p0-3` priority profiles. `release` is a P0/P1 release gate, not a suggestion profile; P2/P3 findings do not block it.
 
 ## Security and operations
 
-Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and streams findings but does not modify the reviewed repository.
+Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.

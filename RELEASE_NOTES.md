@@ -14,17 +14,19 @@
 - Global review guidance honors nearby `codescope ignore:` annotations as scoped suppression directives.
 - One annotation can describe multiple intentional behaviors.
 - Partially covered findings identify only the uncovered residual behavior and provide copyable replacement ignore text when appropriate.
-- Release reviews use a binary `pass` or `block release` verdict and omit ignored or intentional findings from the report.
+- Release reviews use a binary `pass` or `block` verdict and omit ignored or intentional findings from the report.
 
 ### CLI and documentation
 
 - Profile ordering and progressive workflow guidance are documented in the single help page.
 - Profile dispatch coverage includes the complete supported profile set.
 - Configuration, adapter boundaries, cleanup behavior, and accepted platform limitations are documented for focused review.
+- Review profiles emit one structured review and optional `--usage` metadata; no automatic guidance text is appended.
+- Reported issues include a copy-paste-ready `// codescope ignore:` example; partially covered issues include a complete replacement annotation when needed.
 
 ## v2.0.0
 
-Codescope is a native ESM Node.js command-line tool for reviewing repository code and documentation with streamed OpenAI analysis. It collects the relevant repository content, applies a focused review profile, and writes concise findings directly to the terminal.
+Codescope is a native ESM Node.js command-line tool for reviewing repository code and documentation with structured OpenAI analysis. It collects the relevant repository content, applies a focused review profile, and writes concise findings directly to the terminal.
 
 ### Command-line experience
 
@@ -33,7 +35,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `codescope --version` reports the package version.
 - Profile names are supplied directly as commands, for example `codescope code` or `codescope release`.
 - `--usage` optionally appends the provider token-usage summary to a review.
-- Review output is streamed as it arrives and the process exits cleanly after completion.
+- Review output is written once after the complete tool response arrives and the process exits cleanly.
 
 ### Review profiles
 
@@ -42,7 +44,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `architecture` focuses exclusively on architectural structure and optimization opportunities.
 - `new-features` suggests useful product or technical capabilities based on the implementation.
 - `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, and `accessibility` provide focused specialist reviews.
-- `release` produces one verdict: `pass` or `block release`; blocking is limited to concrete correctness, security, reliability, or user-data findings.
+- `release` produces one verdict: `pass` or `block`; blocking is limited to concrete correctness, security, reliability, or user-data findings.
 - `quick-wins`, `prioritize`, `p0`, `p0-1`, `p0-2`, and `p0-3` support action-oriented prioritization and priority-range reviews.
 - `tests` reviews tests without implementation analysis.
 - `tests-docs` reviews tests and documentation together.
@@ -75,10 +77,10 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - Uses native Node.js ESM with the Node.js 26 runtime.
 - Reads `OPENAI_API_TOKEN` from the process environment or the user-level `~/.codescope` configuration file.
 - Keeps provider credentials outside the repository and does not require a repository-local secret file.
-- Uses `@eliware/openai` for streamed Responses API requests and `@eliware/common` for shared path and utility behavior.
+- Uses `@eliware/openai` for structured Responses API requests and `@eliware/common` for shared path and utility behavior.
 - Uses built-in prompts for every supported profile.
 - Supports cancellation and signal cleanup during active reviews.
-- Reports configuration, filesystem, provider, and stream failures with actionable CLI errors.
+- Reports configuration, filesystem, and provider failures with actionable CLI errors.
 
 ### Project conventions
 

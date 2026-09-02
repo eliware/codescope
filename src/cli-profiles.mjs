@@ -1,5 +1,24 @@
 import { combineAllFiles, combineSelectedFiles } from './combine-all.mjs';
-import { createAnalysisPrompt, mdPrompt, allPrompt, codeTestsDocsPrompt, refactorPrompt, architecturePrompt, newFeaturesPrompt, securityPrompt, performancePrompt, reliabilityPrompt, apiDesignPrompt, dependenciesPrompt, observabilityPrompt, accessibilityPrompt, strictReleasePrompt, quickWinsPrompt, prioritizePrompt, priorityPrompt } from './prompt.mjs';
+import {
+  createAnalysisPrompt,
+  mdPrompt,
+  allPrompt,
+  codeTestsDocsPrompt,
+  refactorPrompt,
+  architecturePrompt,
+  newFeaturesPrompt,
+  securityPrompt,
+  performancePrompt,
+  reliabilityPrompt,
+  apiDesignPrompt,
+  dependenciesPrompt,
+  observabilityPrompt,
+  accessibilityPrompt,
+  strictReleasePrompt,
+  quickWinsPrompt,
+  prioritizePrompt,
+  priorityPrompt,
+} from './prompt.mjs';
 
 const PROFILE_FILES = {
   code: [true, false, false],
@@ -17,7 +36,8 @@ const PROFILE_FILES = {
   dependencies: [true, false, false],
   observability: [true, false, false],
   accessibility: [true, false, false],
-  release: [true, false, false],
+
+  release: [true, true, true],
   'quick-wins': [true, false, false],
   prioritize: [true, false, false],
   p0: [true, false, false],
@@ -30,15 +50,51 @@ const PROFILE_FILES = {
 };
 
 export function getProfile(profile) {
-  // Intentional API registry: this compact map is the single extension point pairing source selection and prompt focus;
-  // adding a profile requires one registry entry and one prompt mapping, making mismatches visible in profile-strategy tests.
-  if (!Object.hasOwn(PROFILE_FILES, profile)) throw new Error(`Unknown analysis profile: ${profile}`);
+  if (!Object.hasOwn(PROFILE_FILES, profile))
+    throw new Error(`Unknown analysis profile: ${profile}`);
   const [implementation, tests, docs] = PROFILE_FILES[profile];
-  const combine = profile === 'code-tests-docs' ? combineAllFiles : (root, options) => combineSelectedFiles(root, { ...options, implementation, tests, docs });
-  // Intentional scope mapping: tests-docs explicitly receives a tests/docs-only subject; all profile scopes are
-  // centralized here so generic prompt construction cannot silently broaden that review.
-  const subject = profile === 'docs' ? 'the documentation for inconsistencies only' : profile === 'tests' ? 'the test suite for test quality and coverage only; do not report the absence of implementation files' : profile === 'code-docs' ? 'the selected code and Markdown files, reporting code/documentation inconsistencies only' : profile === 'tests-docs' ? 'the selected test and Markdown files for test/documentation inconsistencies only' : profile === 'code-tests' ? 'the selected code and test files for implementation/test inconsistencies and actionable issues' : 'the selected code files for actionable implementation issues';
-  const prompts = { code: createAnalysisPrompt(subject), 'code-docs': createAnalysisPrompt(subject), 'code-tests': createAnalysisPrompt(subject), docs: mdPrompt, 'code-tests-docs': codeTestsDocsPrompt, all: allPrompt, refactor: refactorPrompt, architecture: architecturePrompt, 'new-features': newFeaturesPrompt, security: securityPrompt, performance: performancePrompt, reliability: reliabilityPrompt, 'api-design': apiDesignPrompt, dependencies: dependenciesPrompt, observability: observabilityPrompt, accessibility: accessibilityPrompt, release: strictReleasePrompt, 'quick-wins': quickWinsPrompt, prioritize: prioritizePrompt, p0: priorityPrompt(0), 'p0-1': priorityPrompt(1), 'p0-2': priorityPrompt(2), 'p0-3': priorityPrompt(3) };
+  const combine =
+    profile === 'code-tests-docs'
+      ? combineAllFiles
+      : (root, options) => combineSelectedFiles(root, { ...options, implementation, tests, docs });
+
+  const subject =
+    profile === 'docs'
+      ? 'the documentation for inconsistencies only'
+      : profile === 'tests'
+        ? 'the test suite for test quality and coverage only; do not report the absence of implementation files'
+        : profile === 'code-docs'
+          ? 'the selected code and Markdown files, reporting code/documentation inconsistencies only'
+          : profile === 'tests-docs'
+            ? 'the selected test and Markdown files for test/documentation inconsistencies only'
+            : profile === 'code-tests'
+              ? 'the selected code and test files for implementation/test inconsistencies and actionable issues'
+              : 'the selected code files for actionable implementation issues';
+  const prompts = {
+    code: createAnalysisPrompt(subject),
+    'code-docs': createAnalysisPrompt(subject),
+    'code-tests': createAnalysisPrompt(subject),
+    docs: mdPrompt,
+    'code-tests-docs': codeTestsDocsPrompt,
+    all: allPrompt,
+    refactor: refactorPrompt,
+    architecture: architecturePrompt,
+    'new-features': newFeaturesPrompt,
+    security: securityPrompt,
+    performance: performancePrompt,
+    reliability: reliabilityPrompt,
+    'api-design': apiDesignPrompt,
+    dependencies: dependenciesPrompt,
+    observability: observabilityPrompt,
+    accessibility: accessibilityPrompt,
+    release: strictReleasePrompt,
+    'quick-wins': quickWinsPrompt,
+    prioritize: prioritizePrompt,
+    p0: priorityPrompt(0),
+    'p0-1': priorityPrompt(1),
+    'p0-2': priorityPrompt(2),
+    'p0-3': priorityPrompt(3),
+  };
   const prompt = prompts[profile] ?? createAnalysisPrompt(subject);
   return { combine, prompt };
 }

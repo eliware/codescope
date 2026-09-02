@@ -1,6 +1,6 @@
 # Codescope progressive quick start
 
-Codescope reviews the repository below your current working directory and streams focused findings from OpenAI. It does not edit files. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
+Codescope reviews the repository below your current working directory and writes one completed structured result from OpenAI. It does not edit files. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
 
 The project validation gates are `npm test`, `npm run lint`, and `npm run pack`.
 CI runs those checks, plus a high-severity npm audit, on Node.js 26 for both
@@ -115,7 +115,7 @@ categories.
 codescope release
 ```
 
-`release` is a release-readiness gate. It returns exactly one verdict: `pass` or `block release`. It blocks only for concrete correctness, security, reliability, or user-data risks; ignored, intentional, speculative, stylistic, and cosmetic findings do not delay release.
+`release` is a release-readiness gate. It returns exactly one verdict: `pass` or `block`. It reviews P0/P1 correctness, security, reliability, user-data, API/contract, test/regression, and documentation risks. P2/P3, ignored, intentional, speculative, stylistic, and cosmetic findings do not delay release.
 
 ## The review loop
 

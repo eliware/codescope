@@ -38,13 +38,16 @@
     "scripts": {
         "test": "eliware-test",
         "lint": "eliware-test --lint",
-        "pack": "npm pack --dry-run"
+        "pack": "npm pack --dry-run",
+        "format": "prettier --write bin src tests",
+        "format:check": "prettier --check bin src tests"
     },
     "engines": {
         "node": ">=26"
     },
     "devDependencies": {
-        "@eliware/test": "^2.3.0"
+        "@eliware/test": "^2.3.0",
+        "prettier": "^3.9.6"
     },
     "license": "MIT",
     "publishConfig": {
