@@ -549,6 +549,8 @@ test('uses forced tool choice when both tools are supplied', async () => {
 
 // codescope ignore: native filesystem plus live-provider end-to-end coverage is intentionally outside the deterministic unit-test contract; injected collaborators cover the package behavior.
 test('covers default config permission outcomes on non-Windows platforms', async () => {
+  const previousToken = process.env.OPENAI_API_TOKEN;
+  process.env.OPENAI_API_TOKEN = 'test-token';
   const common = {
     envFile: defaultEnvFile(),
     platform: 'linux',
@@ -592,6 +594,8 @@ test('covers default config permission outcomes on non-Windows platforms', async
       },
     }),
   ).rejects.toThrow('permission string');
+  if (previousToken === undefined) delete process.env.OPENAI_API_TOKEN;
+  else process.env.OPENAI_API_TOKEN = previousToken;
 });
 
 test('runs a review with placeholder and usage', async () => {
