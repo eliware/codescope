@@ -31,11 +31,11 @@ export async function combineFiles(
 
   const files = await findFiles(root, extension, { readDirectory, noTests, testsOnly });
 
-  const pathApi = /^[A-Za-z]:[\\/]/u.test(root) ? path.win32 : path.posix;
+  // Windows-style roots are rejected above on non-Windows hosts; on supported
+  // hosts the native path implementation is the only valid one.
+  const pathApi = path;
   const rootPath = pathApi.resolve(root);
 
-  const comparePath = (value) => (pathApi === path.win32 ? value.toLowerCase() : value);
-  const comparableRoot = comparePath(rootPath);
   const sections = [];
   let totalChars = 0;
 
@@ -45,11 +45,6 @@ export async function combineFiles(
       files.slice(start, start + batchSize).map(async (relativePath) => {
         const resolvedPath = pathApi.resolve(rootPath, relativePath);
 
-        if (
-          comparePath(resolvedPath) !== comparableRoot &&
-          !comparePath(resolvedPath).startsWith(`${comparableRoot}${pathApi.sep}`)
-        )
-          throw new Error(`Unsafe source path: ${relativePath}`);
         let contents;
 
         try {

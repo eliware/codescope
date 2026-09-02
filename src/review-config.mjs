@@ -17,7 +17,7 @@ export function loadEnv(text = '', environment) {
     if (seen.has(match[1])) continue;
     seen.add(match[1]);
 
-    if (environment[match[1] ?? '']?.trim()) continue;
+    if (environment[match[1]]?.trim()) continue;
     const raw = match[2].trim();
 
     if (

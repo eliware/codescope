@@ -13,15 +13,13 @@ export async function findFiles(
   if (process.platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
     throw new Error('Windows-style scan roots require a Windows host');
 
-  const pathApi = /^[A-Za-z]:[\\/]/u.test(root) ? path.win32 : path.posix;
+  const pathApi = path;
   root = pathApi.resolve(root);
 
   const results = [];
   const pending = [root];
   const rootPath = pathApi.resolve(root);
 
-  const comparePath = (value) => (pathApi === path.win32 ? value.toLowerCase() : value);
-  const comparableRoot = comparePath(rootPath);
 
   while (pending.length > 0) {
     const directory = pending.pop();
@@ -52,7 +50,7 @@ export async function findFiles(
         );
     }
 
-    entries.sort((left, right) => (left.name < right.name ? -1 : left.name > right.name ? 1 : 0));
+    entries.sort((left, right) => left.name.localeCompare(right.name));
     for (const entry of entries) {
       let isDirectory = false;
       let isFile = false;
@@ -74,12 +72,6 @@ export async function findFiles(
       if (!isDirectory && !isFile)
         throw new Error(`Invalid directory entry in ${pathApi.relative(root, directory) || '.'}`);
       const childPath = pathApi.resolve(directory, entry.name);
-
-      if (
-        comparePath(childPath) !== comparableRoot &&
-        !comparePath(childPath).startsWith(`${comparableRoot}${pathApi.sep}`)
-      )
-        throw new Error(`Unsafe directory path: ${entry.name}`);
 
       const normalizedName = entry.name;
       if (
