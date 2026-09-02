@@ -105,6 +105,7 @@ codescope all
 
 `all` sends implementation, test, and Markdown content in one request and
 produces one consolidated review covering correctness, security, reliability,
+performance, architecture, API design, test quality, and documentation consistency.
 The report groups findings under Correctness, Security, Reliability, Performance,
 Architecture, API Design, Tests, and Documentation, and shows `None` for empty
 categories.

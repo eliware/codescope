@@ -1,5 +1,20 @@
 # Release notes
 
+## v2.2.0
+
+### Structured reviews and release readiness
+
+- Review profiles return one structured `submit_review` result with a verdict and complete issue records.
+- Tool calls are required to run sequentially with parallel tool calls disabled.
+- Release reviews use the binary `pass` or `block` verdict and evaluate only concrete P0/P1 blockers.
+- Tool-result validation rejects malformed issue entries before output.
+
+### Repository analysis and documentation
+
+- Source combination preserves explicit line numbers and skips symlinked entries.
+- Documentation describes the completed structured-response workflow and current release verdict contract.
+- Prettier formatting is configured for the CLI source and focused tests.
+
 ## v2.1.0
 
 ### Comprehensive review profile
@@ -34,7 +49,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `codescope --help` displays the same complete usage guide.
 - `codescope --version` reports the package version.
 - Profile names are supplied directly as commands, for example `codescope code` or `codescope release`.
-- `--usage` optionally appends the provider token-usage summary to a review.
+- `--usage` optionally adds provider token-usage metadata to the structured review result.
 - Review output is written once after the complete tool response arrives and the process exits cleanly.
 
 ### Review profiles

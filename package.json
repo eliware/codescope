@@ -1,7 +1,7 @@
 {
     "name": "@eliware/codescope",
-    "version": "2.1.0",
-    "description": "An OpenAI-powered CLI for focused code, test, architecture, documentation, and release reviews.",
+    "version": "2.2.0",
+    "description": "A structured OpenAI CLI for focused code, test, architecture, documentation, and release reviews.",
     "keywords": [
         "code-review",
         "documentation",
@@ -10,7 +10,9 @@
         "architecture",
         "security",
         "testing",
-        "release-readiness"
+        "release-readiness",
+        "static-analysis",
+        "developer-tools"
     ],
     "repository": {
         "type": "git",
