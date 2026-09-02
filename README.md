@@ -1,19 +1,44 @@
-# codescope
+# [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-`codescope` is a Node.js command-line tool for reviewing codebases with focused OpenAI-powered analysis profiles.
+## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/npm/l/@eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/nodejs.yml)
+
+`codescope` is a Node.js command-line tool for focused OpenAI-powered codebase reviews, suggestions, and token estimates.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Validation](#validation)
+- [Security and Operations](#security-and-operations)
+- [Support](#support)
+- [License](#license)
+- [Links](#links)
+
+## Features
+
+- Focused review and suggestion profiles for code, tests, documentation, architecture, security, and release readiness.
+- Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
+- Token and cost estimates, model selection, reasoning-effort controls, and configurable test timeouts.
+- Symlink-safe discovery and inline `codescope ignore:` guidance for intentional behavior.
+- Read-only analysis that does not modify the reviewed repository.
 
 ## Requirements
 
 - Node.js 26 or newer
 - npm
 
-## Setup
+## Installation
 
 ```text
 npm install
 ```
 
-Run the CLI locally:
+Run the CLI locally from a checkout:
 
 ```text
 node bin/codescope.mjs --help
@@ -21,6 +46,12 @@ node bin/codescope.mjs --version
 ```
 
 To use `codescope` as a shell command from any repository, install this package globally with `npm install --global .` (or use `npm link` during development).
+
+## Usage
+
+## Configuration
+
+The CLI loads only `OPENAI_API_TOKEN` from `~/.codescope`. It accepts dotenv-style `KEY=value` syntax, including optional `export`, comments, and quoted values; other assignments are ignored. An existing nonblank process environment variable takes precedence. On Unix, group/world-readable configuration files are rejected. A missing or blank token causes a clear error and exit code `3`.
 
 ## Validation
 
@@ -38,7 +69,7 @@ The CLI intentionally documents only the public `~/.codescope` configuration pat
 
 Symlink policy: file discovery includes only real filesystem entries. Any entry reported as a symbolic link is skipped, whether it is a file or directory; symlink targets are never followed, scanned, combined, or sent to OpenAI. Native root inspection also rejects a symlink root. This means a symlink to an otherwise valid source file is intentionally excluded.
 
-`codescope all` is the main comprehensive review. It reviews implementation, tests, and Markdown together from correctness, security, reliability, performance, architecture, API design, test quality, and documentation-consistency perspectives. It reports P0–P3 findings, but only P0/P1 issues, concrete documentation discrepancies, or major test gaps block the verdict.
+`codescope all` is the main comprehensive review and suggestion command. It reviews implementation, tests, and Markdown together, makes exactly one review-tool call and one suggestion-tool call in parallel, and merges both into one JSON result. It reports P0–P3 findings, but only P0/P1 issues, concrete documentation discrepancies, or major test gaps block the verdict.
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions. File discovery is performed internally below the current working directory. Package metadata is included first, followed by the files selected by the profile. Symlinked files and directories are excluded and never followed.
 
@@ -50,6 +81,8 @@ Running `codescope` with no command displays the single help page. Use `codescop
 Append `--usage` to either grouped (`codescope review all`) or direct (`codescope all`) syntax to include API usage metadata in the final JSON result.
 
 Append `--dry-run` to prepare the same review request and ask OpenAI for its estimated input-token count without running a model review. The option reports the selected model and estimated input tokens; combine it with `--usage` when you want the count under `usage` as well.
+
+When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated.
 <!-- codescope ignore: the following profile list is explicitly illustrative, not exhaustive; omitted valid profiles are not documentation defects. -->
 
 For test-inclusive profiles, the combined source order is package metadata, implementation files, test files, test results, then Markdown files when included.
@@ -63,3 +96,18 @@ The effort benchmark runs `none`, `low`, `medium`, and `high` in parallel. OpenA
 
 Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.
 Use `codescope review all` for release-readiness review.
+
+## Support
+
+Open an issue in the [GitHub repository](https://github.com/eliware/codescope/issues) or join the [Eliware Discord community](https://discord.gg/M6aTR9eTwN).
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+## Links
+
+- [npm package](https://www.npmjs.com/package/@eliware/codescope)
+- [GitHub repository](https://github.com/eliware/codescope)
+- [Release notes](RELEASE_NOTES.md)
+- [Eliware Discord](https://discord.gg/M6aTR9eTwN)

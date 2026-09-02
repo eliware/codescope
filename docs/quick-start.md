@@ -102,7 +102,9 @@ codescope all
 ```
 
 `all` sends implementation, test, and Markdown content in one request and
-produces one consolidated review covering correctness, security, reliability,
+produces one consolidated JSON result containing both the review findings and
+improvement suggestions. It requests exactly one review-tool call and one
+suggestion-tool call in parallel, covering correctness, security, reliability,
 performance, architecture, API design, test quality, and documentation consistency.
 The report groups findings under Correctness, Security, Reliability, Performance,
 Architecture, API Design, Tests, and Documentation, and shows a `No issues found.`
@@ -154,3 +156,11 @@ Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning 
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
 
 The effort benchmark runs `none`, `low`, `medium`, and `high` in parallel. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and its current rates are recorded in `summary.json`.
+
+The current supported profiles are `code`, `code-docs`, `code-tests`,
+`code-tests-docs`, `tests`, `tests-docs`, `docs`, `architecture`, `api-design`,
+`refactor`, `security`, `reliability`, `performance`, `dependencies`,
+`observability`, `accessibility`, `quick-wins`, `prioritize`, `p0`, `p0-1`,
+`p0-2`, `p0-3`, `new-features`, and `all`. Use `codescope review <profile>`
+for issue review or `codescope suggest <profile>` for suggestions; direct
+profile names are supported shorthand. `new-features` is suggestion-only.

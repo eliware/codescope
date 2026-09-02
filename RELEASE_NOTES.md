@@ -2,18 +2,40 @@
 
 ## v2.2.0
 
-### Structured reviews and release readiness
+### Structured reviews and profile workflows
 
-- Review profiles return one structured `submit_review` result with a verdict and complete issue records.
-- The comprehensive `all` profile requests review and suggestion tool calls in parallel.
+- Review profiles return validated structured `submit_review` and `submit_suggestions` results.
+- The comprehensive `all` profile requests exactly one review and one suggestion tool call in parallel and merges both results into one JSON document.
+- Review and suggestion schemas adapt to the selected profile categories, require nonempty category arrays, and include explicit no-issue/no-suggestion placeholders.
 - Comprehensive reviews use the binary `pass` or `block` verdict; P0/P1 issues, concrete documentation discrepancies, and major test gaps block.
-- Tool-result validation rejects malformed issue entries before output.
+- Tool-result validation rejects malformed payloads, duplicate calls, unsupported fields, and invalid category shapes before output.
+- Nearby `codescope ignore:` annotations are supplied as scoped guidance, while uncovered behavior remains reportable.
 
-### Repository analysis and documentation
+### CLI and configuration
 
-- Source combination preserves explicit line numbers and skips symlinked entries.
-- Documentation describes the completed structured-response workflow and current release verdict contract.
-- Prettier formatting is configured for the CLI source and focused tests.
+- Added grouped `review` and `suggest` command forms alongside direct profile aliases.
+- Added reasoning-effort overrides for `none`, `low`, `medium`, `high`, `xhigh`, and `max`.
+- Added model overrides for GPT-5.6 Luna, Terra, and Sol.
+- Added documented exit codes for pass, blocked findings, usage, configuration, input, API, response, timeout, and signal failures.
+- Added `--usage` output with provider token details and calculated estimated USD cost.
+- Added `--dry-run` input-token estimation through OpenAI’s input-token endpoint without executing a review.
+- Configuration now uses `~/.codescope`, validates permissions on Unix, and keeps credentials outside the repository.
+
+### Repository analysis and tooling
+
+- Source discovery scans the working directory recursively while excluding `.git`, `node_modules`, and symbolic links.
+- Implementation, test, and Markdown profiles select files internally and preserve relative paths with one-based line numbers.
+- Test-inclusive profiles can run `npm test` with a bounded timeout and include sanitized results in the review context.
+- Added an effort benchmark runner with parallel effort execution, per-run logs, incremental summaries, model overrides, and pricing calculations.
+- Added a shared pricing module covering input, cached input, cache writes, and long-context requests above 272K input tokens.
+- Added Prettier configuration and formatting scripts.
+
+### Quality and portability
+
+- Expanded focused tests across CLI parsing, profile dispatch, source discovery, combination, request construction, response validation, pricing, configuration, and review execution.
+- Restored 100×4 coverage and zero-warning lint validation.
+- Fixed Linux test isolation so permission-path tests do not depend on a developer machine’s `~/.codescope` configuration.
+- Updated README and quick-start documentation for the complete profile, structured-output, usage, model, effort, and benchmark workflows.
 
 ## v2.1.0
 

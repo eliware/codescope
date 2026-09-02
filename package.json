@@ -1,7 +1,7 @@
 {
   "name": "@eliware/codescope",
   "version": "2.2.1",
-  "description": "A structured OpenAI CLI for focused code, test, architecture, documentation, and release reviews.",
+  "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "keywords": [
     "code-review",
     "documentation",
@@ -54,7 +54,8 @@
   },
   "license": "MIT",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "dependencies": {
     "@eliware/common": "^2.0.0",
