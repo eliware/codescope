@@ -43,7 +43,7 @@ Running `codescope` with no command displays the single help page. Run a profile
 
 `codescope --help` is the single help page. It explains what Codescope does, how files are selected and reviewed, all analysis profiles, and how to annotate intentional behavior with inline comments so it is not reported as a false positive. To suppress intentional behavior explicitly, place one nearby comment containing `codescope ignore:` followed by the complete scope to ignore, such as `// codescope ignore: x, y, and z are intentional policy constraints.` If a finding extends beyond that scope, Codescope reports only the uncovered behavior and suggests either fixing it or expanding the same comment. Unrelated issues remain reportable. A profile may also be followed by `--help` to display that same page.
 
-Append `--usage` to any review profile, for example `codescope code --usage`, to print API usage metadata after the response. The implementation-focused suggestion profiles are `architecture`, `new-features`, `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, `accessibility`, `release`, `quick-wins`, `prioritize`, and the `p0` through `p0-3` priority profiles.
+Append `--usage` to any review profile, for example `codescope code --usage`, to print API usage metadata after the response. The implementation-focused suggestion profiles are `refactor`, `architecture`, `new-features`, `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`, and the `p0` through `p0-3` priority profiles. `release` is a release gate, not a suggestion profile.
 
 ## Security and operations
 

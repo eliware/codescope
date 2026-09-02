@@ -115,7 +115,7 @@ categories.
 codescope release
 ```
 
-`release` is a release-readiness gate. It returns one verdict: `pass`, `pass with known issues`, or `block release`. It blocks only for correctness, security, reliability, or user-data risks; stylistic and cosmetic findings do not delay release.
+`release` is a release-readiness gate. It returns exactly one verdict: `pass` or `block release`. It blocks only for concrete correctness, security, reliability, or user-data risks; ignored, intentional, speculative, stylistic, and cosmetic findings do not delay release.
 
 ## The review loop
 

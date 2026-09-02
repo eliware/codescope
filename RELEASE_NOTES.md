@@ -1,5 +1,27 @@
 # Release notes
 
+## v2.1.0
+
+### Comprehensive review profile
+
+- `codescope all` reviews implementation, tests, and Markdown in one request.
+- The consolidated review covers correctness, security, reliability, performance, architecture, API design, test quality, and documentation consistency.
+- Findings are grouped by category, with `None` shown for categories without findings.
+- Duplicate underlying findings are consolidated into one best-fit category.
+
+### Review policies
+
+- Global review guidance honors nearby `codescope ignore:` annotations as scoped suppression directives.
+- One annotation can describe multiple intentional behaviors.
+- Partially covered findings identify only the uncovered residual behavior and provide copyable replacement ignore text when appropriate.
+- Release reviews use a binary `pass` or `block release` verdict and omit ignored or intentional findings from the report.
+
+### CLI and documentation
+
+- Profile ordering and progressive workflow guidance are documented in the single help page.
+- Profile dispatch coverage includes the complete supported profile set.
+- Configuration, adapter boundaries, cleanup behavior, and accepted platform limitations are documented for focused review.
+
 ## v2.0.0
 
 Codescope is a native ESM Node.js command-line tool for reviewing repository code and documentation with streamed OpenAI analysis. It collects the relevant repository content, applies a focused review profile, and writes concise findings directly to the terminal.
@@ -20,7 +42,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `architecture` focuses exclusively on architectural structure and optimization opportunities.
 - `new-features` suggests useful product or technical capabilities based on the implementation.
 - `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, and `accessibility` provide focused specialist reviews.
-- `release` produces one verdict: `pass`, `pass with known issues`, or `block release`; blocking is limited to correctness, security, reliability, or user-data findings.
+- `release` produces one verdict: `pass` or `block release`; blocking is limited to concrete correctness, security, reliability, or user-data findings.
 - `quick-wins`, `prioritize`, `p0`, `p0-1`, `p0-2`, and `p0-3` support action-oriented prioritization and priority-range reviews.
 - `tests` reviews tests without implementation analysis.
 - `tests-docs` reviews tests and documentation together.
