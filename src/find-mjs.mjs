@@ -1,4 +1,4 @@
-import { readdir } from 'node:fs/promises';
+import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const IGNORED_DIRECTORIES = new Set(['.git', 'node_modules']);
@@ -6,15 +6,28 @@ const IGNORED_DIRECTORIES = new Set(['.git', 'node_modules']);
 export async function findFiles(
   root,
   extension,
-  { readDirectory = readdir, noTests = false, testsOnly = false } = {},
+  {
+    readDirectory = readdir,
+    noTests = false,
+    testsOnly = false,
+    inspectRoot = lstat,
+    platform = process.platform,
+  } = {},
 ) {
   if (typeof root !== 'string') throw new Error('Scan root must be a path string');
+  if (noTests && testsOnly) throw new Error('noTests and testsOnly cannot both be enabled');
 
-  if (process.platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
+  if (platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
     throw new Error('Windows-style scan roots require a Windows host');
 
   const pathApi = path;
   root = pathApi.resolve(root);
+
+  // codescope ignore: injected directory adapters intentionally own root validation; native scans validate the root with lstat.
+  if (readDirectory === readdir || inspectRoot !== lstat) {
+    const metadata = await inspectRoot(root);
+    if (metadata.isSymbolicLink()) throw new Error('symlinked scan roots are not supported');
+  }
 
   const results = [];
   const pending = [root];
@@ -82,10 +95,10 @@ export async function findFiles(
         pending.push(childPath);
       else if (
         isFile &&
-        normalizedName.endsWith(extension) &&
+        normalizedName.toLowerCase().endsWith(extension) &&
         (!extension.endsWith('.mjs') ||
-          (testsOnly && normalizedName.endsWith('.test.mjs')) ||
-          (!testsOnly && !(noTests && normalizedName.endsWith('.test.mjs'))))
+          (testsOnly && normalizedName.toLowerCase().endsWith('.test.mjs')) ||
+          (!testsOnly && !(noTests && normalizedName.toLowerCase().endsWith('.test.mjs'))))
       ) {
         results.push(
           pathApi.relative(root, pathApi.join(directory, entry.name)).split(/[\\/]/u).join('/'),

@@ -5,8 +5,8 @@
 ### Structured reviews and release readiness
 
 - Review profiles return one structured `submit_review` result with a verdict and complete issue records.
-- Tool calls are required to run sequentially with parallel tool calls disabled.
-- Release reviews use the binary `pass` or `block` verdict and evaluate only concrete P0/P1 blockers.
+- The comprehensive `all` profile requests review and suggestion tool calls in parallel.
+- Comprehensive reviews use the binary `pass` or `block` verdict; P0/P1 issues, concrete documentation discrepancies, and major test gaps block.
 - Tool-result validation rejects malformed issue entries before output.
 
 ### Repository analysis and documentation
@@ -21,7 +21,7 @@
 
 - `codescope all` reviews implementation, tests, and Markdown in one request.
 - The consolidated review covers correctness, security, reliability, performance, architecture, API design, test quality, and documentation consistency.
-- Findings are grouped by category, with `None` shown for categories without findings.
+- Findings are grouped by category, with a `No issues found.` placeholder for categories without findings.
 - Duplicate underlying findings are consolidated into one best-fit category.
 
 ### Review policies
@@ -48,18 +48,18 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `codescope` displays the progressive quick-start guide.
 - `codescope --help` displays the same complete usage guide.
 - `codescope --version` reports the package version.
-- Profile names are supplied directly as commands, for example `codescope code` or `codescope release`.
+- Profile names are supplied directly as commands, for example `codescope review all` or `codescope suggest new-features`.
 - `--usage` optionally adds provider token-usage metadata to the structured review result.
-- Review output is written once after the complete tool response arrives and the process exits cleanly.
+- Review output is written once after the complete tool response arrives; invalid provider responses produce a diagnostic fallback without echoing the provider payload and a nonzero exit code.
 
 ### Review profiles
 
 - `code`, `code-docs`, `code-tests`, and `code-tests-docs` review implementation with the selected combination of tests and documentation.
 - `refactor` identifies monolithic files and mixed responsibilities, then proposes smaller single-purpose file and folder boundaries.
 - `architecture` focuses exclusively on architectural structure and optimization opportunities.
-- `new-features` suggests useful product or technical capabilities based on the implementation.
+- `new-features` suggests useful product or technical capabilities based on the implementation; use `suggest new-features` explicitly for suggestion output.
 - `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, and `accessibility` provide focused specialist reviews.
-- `release` produces one verdict: `pass` or `block`; blocking is limited to concrete correctness, security, reliability, or user-data findings.
+- `all` produces one structured verdict: `pass` or `block`; blocking is limited to concrete P0/P1, documentation, or major test-gap findings.
 - `quick-wins`, `prioritize`, `p0`, `p0-1`, `p0-2`, and `p0-3` support action-oriented prioritization and priority-range reviews.
 - `tests` reviews tests without implementation analysis.
 - `tests-docs` reviews tests and documentation together.
@@ -94,7 +94,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - Keeps provider credentials outside the repository and does not require a repository-local secret file.
 - Uses `@eliware/openai` for structured Responses API requests and `@eliware/common` for shared path and utility behavior.
 - Uses built-in prompts for every supported profile.
-- Supports cancellation and signal cleanup during active reviews.
+- Cleans up local signal handlers when active reviews finish or are interrupted.
 - Reports configuration, filesystem, and provider failures with actionable CLI errors.
 
 ### Project conventions

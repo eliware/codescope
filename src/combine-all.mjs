@@ -1,12 +1,17 @@
-import { readFile } from 'node:fs/promises';
+import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { combineMjsFiles, combineMdFiles } from './combine-mjs.mjs';
 
 async function combinePackageJson(root, options = {}) {
   const readFileContents = options.readFileContents ?? readFile;
+  const inspectFile = options.inspectFile ?? lstat;
   const packagePath = path.join(root, 'package.json');
   let contents;
   try {
+    if (options.validateSymlinks || readFileContents === readFile) {
+      const metadata = await inspectFile(packagePath);
+      if (metadata.isSymbolicLink()) throw new Error('symlinked package.json is not supported');
+    }
     contents = await readFileContents(packagePath, 'utf8');
   } catch (cause) {
     throw new Error(
@@ -22,16 +27,12 @@ async function combinePackageJson(root, options = {}) {
 }
 
 export async function combineAllFiles(root, options = {}) {
-  const componentOptions = Number.isFinite(options.maxChars)
-    ? { ...options, maxChars: Number.POSITIVE_INFINITY }
-    : options;
-
   const [packageJson, mjs, md] = await Promise.all([
     combinePackageJson(root, options),
-    combineMjsFiles(root, componentOptions),
-    combineMdFiles(root, componentOptions),
+    combineMjsFiles(root, options),
+    combineMdFiles(root, options),
   ]);
-  const combined = [packageJson, mjs, md].filter(Boolean).join('\n');
+  const combined = [packageJson, mjs, options.testResults, md].filter(Boolean).join('\n');
   if (Number.isFinite(options.maxChars) && combined.length > options.maxChars)
     throw new Error(`Combined source exceeds the ${options.maxChars}-character limit`);
   return combined;
@@ -39,16 +40,13 @@ export async function combineAllFiles(root, options = {}) {
 
 export async function combineSelectedFiles(
   root,
-  { implementation = false, tests = false, docs = false, ...options } = {},
+  { implementation = false, tests = false, docs = false, testResults, ...options } = {},
 ) {
   const parts = [await combinePackageJson(root, options)];
-  const componentOptions = Number.isFinite(options.maxChars)
-    ? { ...options, maxChars: Number.POSITIVE_INFINITY }
-    : options;
-  if (implementation)
-    parts.push(await combineMjsFiles(root, { ...componentOptions, noTests: true }));
-  if (tests) parts.push(await combineMjsFiles(root, { ...componentOptions, testsOnly: true }));
-  if (docs) parts.push(await combineMdFiles(root, componentOptions));
+  if (implementation) parts.push(await combineMjsFiles(root, { ...options, noTests: true }));
+  if (tests) parts.push(await combineMjsFiles(root, { ...options, testsOnly: true }));
+  if (testResults) parts.push(testResults);
+  if (docs) parts.push(await combineMdFiles(root, options));
   const combined = parts.filter(Boolean).join('\n');
 
   if (Number.isFinite(options.maxChars) && combined.length > options.maxChars)

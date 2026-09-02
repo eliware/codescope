@@ -8,11 +8,13 @@ export async function combineFiles(
   {
     readDirectory,
     readFileContents = readFile,
+    inspectFile = lstat,
     validateSymlinks = false,
     concurrency = 16,
     maxChars = Number.POSITIVE_INFINITY,
     noTests = false,
     testsOnly = false,
+    platform = process.platform,
   } = {},
 ) {
   if (!Number.isInteger(concurrency) || concurrency < 1)
@@ -26,7 +28,7 @@ export async function combineFiles(
   )
     throw new Error('maxChars must be a positive integer or Infinity');
 
-  if (process.platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
+  if (platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
     throw new Error('Windows-style source roots require a Windows host');
 
   const files = await findFiles(root, extension, { readDirectory, noTests, testsOnly });
@@ -49,7 +51,7 @@ export async function combineFiles(
 
         try {
           if (readFileContents === readFile || validateSymlinks) {
-            const metadata = await lstat(resolvedPath);
+            const metadata = await inspectFile(resolvedPath);
             // codescope ignore: this portable read-only scanner accepts the lstat-before-read TOCTOU race, symlink replacement race, and lack of atomic no-follow filesystem reads.
             if (metadata.isSymbolicLink())
               throw new Error('symlinked source files are not supported');

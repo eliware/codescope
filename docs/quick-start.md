@@ -3,8 +3,6 @@
 Codescope reviews the repository below your current working directory and writes one completed structured result from OpenAI. It does not edit files. Start narrow, fix the highest-value findings, and rerun the same profile before expanding the review.
 
 The project validation gates are `npm test`, `npm run lint`, and `npm run pack`.
-CI runs those checks, plus a high-severity npm audit, on Node.js 26 for both
-Ubuntu and Windows.
 
 ## 1. Set up the token
 
@@ -82,7 +80,7 @@ codescope accessibility
 For product planning and small improvements:
 
 ```text
-codescope new-features
+codescope suggest new-features
 codescope quick-wins
 codescope prioritize
 ```
@@ -95,7 +93,7 @@ codescope prioritize
 codescope code-tests-docs
 ```
 
-This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown together for conflicts. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
+This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown inconsistencies together. It does not report standalone code, test, or documentation issues. Run it after the focused reviews, not as the first pass, so its output is easier to act on.
 
 ## 8. Review everything from every angle
 
@@ -107,8 +105,8 @@ codescope all
 produces one consolidated review covering correctness, security, reliability,
 performance, architecture, API design, test quality, and documentation consistency.
 The report groups findings under Correctness, Security, Reliability, Performance,
-Architecture, API Design, Tests, and Documentation, and shows `None` for empty
-categories.
+Architecture, API Design, Tests, and Documentation, and shows a `No issues found.`
+placeholder for empty categories.
 
 ## 9. Decide release readiness
 
@@ -134,10 +132,25 @@ If behavior is intentional and should be excluded from every profile, add one ne
 // codescope ignore: bounded reads and serialized finite-limit reads keep memory predictable for large repositories.
 ```
 
-Codescope suppresses the behavior described after `codescope ignore:`. One comment can name multiple intentional behaviors; multiple comments on the same line are unnecessary. If a finding is only partly covered, Codescope explains why the residual behavior is outside the comment scope and suggests either fixing it or expanding the same comment to explicitly include it. Ordinary comments remain context and do not suppress findings; unrelated issues in the same code are still reported.
+Codescope supplies the behavior described after `codescope ignore:` to the AI as scoped review guidance. One comment can name multiple intentional behaviors; multiple comments on the same line are unnecessary. If a finding is only partly covered, Codescope explains why the residual behavior is outside the comment scope and suggests either fixing it or expanding the same comment to explicitly include it. Ordinary comments remain context and do not suppress findings; unrelated issues in the same code are still reported.
 
-Use `--usage` after a review profile when you want API usage metadata included; it is not a standalone command:
+Use `--usage` after grouped or direct review/suggestion syntax when you want API usage metadata included; it is not a standalone command:
 
 ```text
-codescope code --usage
+codescope review code --usage
 ```
+
+The `new-features` profile is suggestion-only. Both `codescope suggest new-features` and the shorthand `codescope new-features` request feature suggestions rather than issue findings.
+
+Use `--dry-run` to count the prepared request through OpenAI's input-token endpoint without performing a review. This still requires `OPENAI_API_TOKEN` and incurs any applicable token-counting API charge:
+
+```text
+codescope all --dry-run
+```
+
+Profiles that include tests automatically run `npm test` in the target repository with a 30-second timeout and add the result after package metadata and test files, before documentation when documentation is included. Test-capable suggestions include `suggest code-tests`, `suggest tests`, and `suggest all`; these are examples, not an exhaustive list. Profiles without tests reject `--omit-test-results`. Use `--omit-test-results` to skip test execution or `--test-timeout 120` with a review or suggestion command to override the timeout in seconds.
+The CLI uses `~/.codescope`; the internal programmatic API can inject a different environment file, which is outside this workflow.
+Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
+Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
+
+The effort benchmark runs `none`, `low`, `medium`, and `high` in parallel. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and its current rates are recorded in `summary.json`.

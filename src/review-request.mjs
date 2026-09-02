@@ -24,6 +24,7 @@ export function prepareRequest(prompt, combined) {
       .filter((field) => field in source)
       .map((field) => [field, structuredClone(source[field])]),
   );
+  // codescope ignore: the request allowlist intentionally rejects non-core custom Responses fields for API hardening.
   const unexpected = Object.keys(source).filter((field) => !allowedFields.includes(field));
   if (unexpected.length)
     throw new Error(`Prompt contains unsupported fields: ${unexpected.join(', ')}`);

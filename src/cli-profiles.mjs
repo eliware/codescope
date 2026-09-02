@@ -1,8 +1,10 @@
-import { combineAllFiles, combineSelectedFiles } from './combine-all.mjs';
+import { combineSelectedFiles } from './combine-all.mjs';
 import {
   createAnalysisPrompt,
+  profilePrompt,
   mdPrompt,
   allPrompt,
+  combinedAllPrompt,
   codeTestsDocsPrompt,
   refactorPrompt,
   architecturePrompt,
@@ -20,6 +22,7 @@ import {
   createReviewTool,
   createSuggestionTool,
   REVIEW_CATEGORIES,
+  SUGGESTION_CATEGORIES,
 } from './prompt.mjs';
 
 const PROFILE_FILES = {
@@ -49,15 +52,15 @@ const PROFILE_FILES = {
   'tests-docs': [false, true, true],
   docs: [false, false, true],
 };
+export const PROFILE_NAMES = Object.freeze(Object.keys(PROFILE_FILES));
 
 export function getProfile(profile, mode = 'review') {
   if (!Object.hasOwn(PROFILE_FILES, profile))
     throw new Error(`Unknown analysis profile: ${profile}`);
+  if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
   const [implementation, tests, docs] = PROFILE_FILES[profile];
-  const combine =
-    profile === 'code-tests-docs'
-      ? combineAllFiles
-      : (root, options) => combineSelectedFiles(root, { ...options, implementation, tests, docs });
+  const combine = (root, options) =>
+    combineSelectedFiles(root, { ...options, implementation, tests, docs });
 
   const subject =
     profile === 'docs'
@@ -95,11 +98,13 @@ export function getProfile(profile, mode = 'review') {
     'p0-2': priorityPrompt(2),
     'p0-3': priorityPrompt(3),
   };
-  const prompt = structuredClone(prompts[profile] ?? createAnalysisPrompt(subject));
   const suggestionCategories = {
     refactor: ['architecture'],
     architecture: ['architecture'],
-    'new-features': ['architecture'],
+    'new-features': ['new-features'],
+    'code-tests': ['tests'],
+    tests: ['tests'],
+    'tests-docs': ['tests', 'documentation'],
     security: ['security'],
     performance: ['performance'],
     reliability: ['reliability'],
@@ -110,18 +115,39 @@ export function getProfile(profile, mode = 'review') {
     'quick-wins': REVIEW_CATEGORIES,
     prioritize: REVIEW_CATEGORIES,
   }[profile];
+  const promptSource =
+    profile === 'all' && mode === 'review'
+      ? combinedAllPrompt
+      : mode === 'suggest' && !suggestionCategories
+        ? profilePrompt(
+            `suggest actionable improvements across all supplied source categories for the ${profile} profile. Do not report existing issues; return suggestions only.`,
+            createSuggestionTool(),
+          )
+        : // codescope ignore: direct profiles intentionally support both review and suggest modes; review mode rewrites suggestion-focused descriptors into issue-focused review prompts.
+          mode === 'review' && suggestionCategories
+          ? createAnalysisPrompt(`the selected code for ${profile} issues only`)
+          : (prompts[profile] ?? createAnalysisPrompt(subject));
+  const prompt = structuredClone(promptSource);
   const reviewCategories =
     profile === 'all' || profile === 'code-tests-docs'
       ? REVIEW_CATEGORIES
       : { docs: ['documentation'], 'tests-docs': ['tests', 'documentation'] }[profile];
   if (mode === 'suggest') {
-    const tool = createSuggestionTool(suggestionCategories ?? REVIEW_CATEGORIES);
+    const categories = [
+      ...new Set([...(suggestionCategories ?? SUGGESTION_CATEGORIES), 'new-features']),
+    ];
+    const tool = createSuggestionTool(categories);
     prompt.tools = [tool];
     prompt.tool_choice = { type: 'function', name: tool.name };
-  } else if (reviewCategories) {
+  } else if (suggestionCategories) {
+    const tool = createReviewTool(suggestionCategories);
+    prompt.tools = [tool];
+    prompt.tool_choice = { type: 'function', name: tool.name };
+    // codescope ignore: review all intentionally keeps both review tools and auto selection so one request can return issues and suggestions; every other review profile is single-tool.
+  } else if (reviewCategories && !(profile === 'all' && mode === 'review')) {
     const tool = createReviewTool(reviewCategories);
     prompt.tools = [tool];
     prompt.tool_choice = { type: 'function', name: tool.name };
   }
-  return { combine, prompt };
+  return { combine, prompt, includesTests: tests };
 }

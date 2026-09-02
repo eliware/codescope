@@ -1,62 +1,63 @@
 {
-    "name": "@eliware/codescope",
-    "version": "2.2.0",
-    "description": "A structured OpenAI CLI for focused code, test, architecture, documentation, and release reviews.",
-    "keywords": [
-        "code-review",
-        "documentation",
-        "openai",
-        "cli",
-        "architecture",
-        "security",
-        "testing",
-        "release-readiness",
-        "static-analysis",
-        "developer-tools"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/eliware/codescope.git"
-    },
-    "bugs": {
-        "url": "https://github.com/eliware/codescope/issues"
-    },
-    "homepage": "https://github.com/eliware/codescope#readme",
-    "type": "module",
-    "bin": {
-        "codescope": "bin/codescope.mjs"
-    },
-    "exports": {
-        ".": "./src/cli.mjs"
-    },
-    "files": [
-        "bin/",
-        "src/",
-        "README.md",
-        "docs/",
-        "LICENSE",
-        "RELEASE_NOTES.md"
-    ],
-    "scripts": {
-        "test": "eliware-test",
-        "lint": "eliware-test --lint",
-        "pack": "npm pack --dry-run",
-        "format": "prettier --write bin src tests",
-        "format:check": "prettier --check bin src tests"
-    },
-    "engines": {
-        "node": ">=26"
-    },
-    "devDependencies": {
-        "@eliware/test": "^2.3.0",
-        "prettier": "^3.9.6"
-    },
-    "license": "MIT",
-    "publishConfig": {
-        "access": "public"
-    },
-    "dependencies": {
-        "@eliware/common": "^2.0.0",
-        "@eliware/openai": "^1.1.11"
-    }
+  "name": "@eliware/codescope",
+  "version": "2.2.1",
+  "description": "A structured OpenAI CLI for focused code, test, architecture, documentation, and release reviews.",
+  "keywords": [
+    "code-review",
+    "documentation",
+    "openai",
+    "cli",
+    "architecture",
+    "security",
+    "testing",
+    "release-readiness",
+    "static-analysis",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eliware/codescope.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eliware/codescope/issues"
+  },
+  "homepage": "https://github.com/eliware/codescope#readme",
+  "type": "module",
+  "bin": {
+    "codescope": "bin/codescope.mjs"
+  },
+  "exports": {
+    ".": "./src/cli.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "docs/",
+    "LICENSE",
+    "RELEASE_NOTES.md"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "lint": "eliware-test --lint",
+    "pack": "npm pack --dry-run",
+    "benchmark:efforts": "node scripts/benchmark-efforts.mjs",
+    "format": "prettier --write bin src tests",
+    "format:check": "prettier --check bin src tests"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "devDependencies": {
+    "@eliware/test": "^2.3.0",
+    "prettier": "^3.9.6"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@eliware/common": "^2.0.0",
+    "@eliware/openai": "^1.1.11"
+  }
 }

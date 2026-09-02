@@ -51,6 +51,9 @@ test('validates options and rejects unsafe roots', async () => {
     await expect(
       combineFiles('C:\\root', '.mjs', { readDirectory: async () => [] }),
     ).rejects.toThrow('Windows-style');
+  await expect(
+    combineFiles('C:\\root', '.mjs', { platform: 'linux', readDirectory: async () => [] }),
+  ).rejects.toThrow('Windows-style');
   for (const concurrency of [0, 1.5, '1'])
     await expect(
       combineMjsFiles('/root', { concurrency, readDirectory: async () => [] }),
@@ -110,4 +113,12 @@ test('validates real files and wraps all read failures', async () => {
   await expect(
     combineMjsFiles('/root', { ...oneFile(), readFileContents: async () => null }),
   ).rejects.toThrow('non-string');
+  await expect(
+    combineMjsFiles('/root', {
+      ...oneFile(),
+      validateSymlinks: true,
+      inspectFile: async () => ({ isSymbolicLink: () => true }),
+      readFileContents: async () => 'unreachable',
+    }),
+  ).rejects.toThrow('symlinked');
 });

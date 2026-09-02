@@ -29,6 +29,15 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
   expect(await findMjsFiles(root, { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);
   expect(await findMdFiles(root, { readDirectory })).toEqual(['guide.md']);
 });
+// codescope ignore: injected reader root symlink rejection is directly covered here; adapter-owned entry metadata is intentionally not revalidated by the scanner.
+test('rejects a symlinked scan root', async () => {
+  await expect(
+    findFiles('fixture-root', '.mjs', {
+      readDirectory: async () => [],
+      inspectRoot: async () => ({ isSymbolicLink: () => true }),
+    }),
+  ).rejects.toThrow('symlinked scan roots');
+});
 
 test('rejects invalid roots, entries, and directory results', async () => {
   await expect(findFiles(null, '.mjs', { readDirectory: async () => [] })).rejects.toThrow(
@@ -38,6 +47,12 @@ test('rejects invalid roots, entries, and directory results', async () => {
     await expect(findFiles('C:\\root', '.mjs', { readDirectory: async () => [] })).rejects.toThrow(
       'Windows-style',
     );
+  await expect(
+    findFiles('C:\\root', '.mjs', { platform: 'linux', readDirectory: async () => [] }),
+  ).rejects.toThrow('Windows-style');
+  await expect(
+    findFiles('C:\\root', '.mjs', { platform: 'win32', readDirectory: async () => [] }),
+  ).resolves.toEqual([]);
   for (const entry of [
     { name: '' },
     { name: '.' },
@@ -116,4 +131,18 @@ test('skips symlinks and nonmatching files', async () => {
       readDirectory: async () => [{ name: 'NODE_MODULES', isDirectory: () => true }],
     }),
   ).toEqual([]);
+});
+
+test('rejects contradictory test filters', async () => {
+  await expect(findFiles('/root', '.mjs', { noTests: true, testsOnly: true })).rejects.toThrow(
+    'cannot both be enabled',
+  );
+});
+
+test('matches uppercase extensions and test suffixes consistently', async () => {
+  const entries = [file('APP.MJS'), file('APP.TEST.MJS')];
+  const readDirectory = async () => entries;
+  expect(await findMjsFiles('/root', { readDirectory })).toEqual(['APP.MJS', 'APP.TEST.MJS']);
+  expect(await findMjsFiles('/root', { readDirectory, noTests: true })).toEqual(['APP.MJS']);
+  expect(await findMjsFiles('/root', { readDirectory, testsOnly: true })).toEqual(['APP.TEST.MJS']);
 });

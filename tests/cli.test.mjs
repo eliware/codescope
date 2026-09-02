@@ -1,13 +1,16 @@
-import { main, parseArgs, VERSION } from '../src/cli.mjs';
+import { EXIT_CODES, errorExitCode, main, parseArgs, VERSION } from '../src/cli.mjs';
 import { findMjsFiles, findFiles } from '../src/find-mjs.mjs';
 import { findMdFiles } from '../src/find-mjs.mjs';
 import { combineMjsFiles, combineMdFiles, combineFiles } from '../src/combine-mjs.mjs';
 import { combineAllFiles, combineSelectedFiles } from '../src/combine-all.mjs';
 import { runReview } from '../src/review.mjs';
-import { prompt as defaultPrompt } from '../src/prompt.mjs';
+import { prompt as defaultPrompt, profilePrompt } from '../src/prompt.mjs';
 import path from 'node:path';
 import { getProfile } from '../src/cli-profiles.mjs';
+// codescope ignore: the shipped executable is a pure Node process-wiring barrel; focused main tests are the complete contract for exit propagation.
 import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
+
+// codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.
 
 const valid = () => structuredClone(defaultPrompt);
 const emptyIssues = Object.fromEntries(
@@ -20,7 +23,10 @@ const emptyIssues = Object.fromEntries(
     'api_design',
     'tests',
     'documentation',
-  ].map((category) => [category, []]),
+  ].map((category) => [
+    category,
+    [{ severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' }],
+  ]),
 );
 const opts = (x = {}) => ({
   envFile: path.join('test-home', '.codescope'),
@@ -28,6 +34,191 @@ const opts = (x = {}) => ({
   readEnvFile: async () => 'OPENAI_API_TOKEN=test-token',
   readDirectory: async () => [],
   ...x,
+});
+
+// codescope ignore: npm test is the only runtime evidence contract exercised here; lint and pack are separate npm-tooling gates run by the handoff workflow, not behaviors of this CLI test suite.
+
+// codescope ignore: lint and pack are handoff commands, not CLI runtime behavior; this test intentionally supplies npm-test evidence only.
+test('covers effort and timeout argument validation paths', () => {
+  expect(parseArgs(['review', 'all', '--effort=max', '--test-timeout', '45'])).toMatchObject({
+    effort: 'max',
+    testTimeout: '45',
+  });
+  expect(parseArgs(['all', '--test-timeout', '15'])).toMatchObject({ testTimeout: '15' });
+  expect(parseArgs(['code', '--effort=high', '--test-timeout', '45'])).toMatchObject({
+    effort: 'high',
+    testTimeout: '45',
+  });
+  expect(parseArgs(['code', '--model=gpt-5.6-terra'])).toMatchObject({ model: 'gpt-5.6-terra' });
+  expect(parseArgs(['all', '--dry-run'])).toMatchObject({ dryRun: true });
+  expect(parseArgs(['review', 'all', '--dry-run'])).toMatchObject({ dryRun: true });
+  expect(() => parseArgs(['all', '--dry-run', '--dry-run'])).toThrow(/Only one/);
+  for (const args of [
+    ['review', 'all', '--effort=invalid'],
+    ['review', 'all', '--test-timeout'],
+    ['review', 'all', '--test-timeout', '0'],
+    ['review', 'all', '--test-timeout', 'x'],
+    ['all', '--test-timeout'],
+    ['all', '--test-timeout', '0'],
+    ['code', '--model=gpt-5.6-invalid'],
+  ])
+    expect(() => parseArgs(args)).toThrow();
+});
+test('preserves non-text user content while extending prompts', () => {
+  const prompt = profilePrompt('test focus');
+  prompt.input[1].content.push({ type: 'input_image', image_url: 'data:image/png;base64,x' });
+  expect(prompt.input[1].content[1]).toEqual({
+    type: 'input_image',
+    image_url: 'data:image/png;base64,x',
+  });
+});
+
+test('passes effort and timeout overrides to review', async () => {
+  let options;
+  await main(['review', 'code', '--effort=high', '--test-timeout', '45'], {
+    review: async (_cwd, value) => {
+      options = value;
+    },
+  });
+  expect(options.testTimeoutMs).toBe(45_000);
+  expect(options.prompt.reasoning.effort).toBe('high');
+});
+
+test('passes model overrides to review', async () => {
+  let options;
+  await main(['code', '--model=gpt-5.6-sol'], {
+    review: async (_cwd, value) => {
+      options = value;
+    },
+  });
+  expect(options.model).toBe('gpt-5.6-sol');
+});
+
+test('returns success for dry-run token estimates', async () => {
+  let options;
+  expect(
+    await main(['all', '--dry-run'], {
+      review: async (_cwd, value) => ((options = value), { model: 'gpt-5.6-luna' }),
+    }),
+  ).toBe(EXIT_CODES.PASS);
+  expect(options.dryRun).toBe(true);
+});
+
+test('maps verdicts and lifecycle failures to documented exit codes', async () => {
+  expect(
+    await main(['code'], { review: async () => ({ verdict: 'block' }), error: () => {} }),
+  ).toBe(EXIT_CODES.BLOCKED);
+  expect(errorExitCode(new Error('Unexpected arguments'))).toBe(EXIT_CODES.USAGE);
+  expect(errorExitCode(new Error('OPENAI_API_TOKEN is missing'))).toBe(EXIT_CODES.CONFIGURATION);
+  expect(errorExitCode(new Error('Unable to read source file'))).toBe(EXIT_CODES.INPUT);
+  expect(errorExitCode(new Error('Invalid review response'))).toBe(EXIT_CODES.RESPONSE);
+  expect(
+    errorExitCode(Object.assign(new Error('invalid response'), { code: 'INVALID_RESPONSE' })),
+  ).toBe(EXIT_CODES.RESPONSE);
+  expect(errorExitCode(new Error('OpenAI request failed'))).toBe(EXIT_CODES.API);
+  expect(
+    errorExitCode(Object.assign(new Error('token counter unavailable'), { code: 'API' })),
+  ).toBe(EXIT_CODES.API);
+  expect(errorExitCode(new Error('timed out after 30 seconds'))).toBe(EXIT_CODES.TEST_TIMEOUT);
+  expect(errorExitCode(new Error('SIGINT'))).toBe(EXIT_CODES.SIGINT);
+  expect(errorExitCode(new Error('SIGTERM'))).toBe(EXIT_CODES.SIGTERM);
+  expect(await main(['code'], { review: async () => undefined, error: () => {} })).toBe(
+    EXIT_CODES.RESPONSE,
+  );
+});
+
+test('accepts a successful suggestion result without a verdict', async () => {
+  expect(
+    await main(['suggest', 'new-features'], {
+      review: async () => ({ suggestions: {} }),
+    }),
+  ).toBe(EXIT_CODES.PASS);
+});
+
+test('rejects duplicate effort options', () => {
+  expect(() => parseArgs(['code', '--effort=low', '--effort=high'])).toThrow(
+    'Only one --effort option is allowed',
+  );
+});
+
+test('rejects duplicate model options', () => {
+  expect(() => parseArgs(['code', '--model=gpt-5.6-luna', '--model=gpt-5.6-sol'])).toThrow(
+    'Only one --model option is allowed',
+  );
+});
+
+test('rejects duplicate effort options with different values', () => {
+  expect(() => parseArgs(['review', 'all', '--effort=low', '--effort=high'])).toThrow(
+    'Only one --effort option is allowed',
+  );
+});
+
+test('rejects duplicate test timeout options', () => {
+  expect(() =>
+    parseArgs(['review', 'all', '--test-timeout', '10', '--test-timeout', '20']),
+  ).toThrow('Only one --test-timeout option is allowed');
+});
+
+test('rejects test-result options for profiles without tests', async () => {
+  expect(await main(['code', '--omit-test-results'], { error: () => {} })).toBe(EXIT_CODES.USAGE);
+});
+
+test('rejects unknown grouped profiles during argument parsing', () => {
+  expect(() => parseArgs(['review', 'unknown'])).toThrow('Unknown command profile');
+});
+
+test('builds suggestion prompts for test profiles', () => {
+  expect(getProfile('tests', 'suggest').prompt.tools[0].name).toBe('submit_suggestions');
+  expect(getProfile('tests-docs', 'suggest').prompt.tools[0].name).toBe('submit_suggestions');
+});
+
+test('routes the public all command through the combined tool contract', async () => {
+  let options;
+  expect(
+    await main(['all'], {
+      review: async (_cwd, received) => {
+        options = received;
+        return { verdict: 'pass' };
+      },
+      error: () => {},
+    }),
+  ).toBe(0);
+  expect(options.prompt.tools).toHaveLength(2);
+  expect(options.prompt.parallel_tool_calls).toBe(true);
+  expect(options.prompt.tool_choice).toBe('auto');
+});
+
+test('routes grouped review all through the combined tool contract', async () => {
+  let options;
+  expect(
+    await main(['review', 'all'], {
+      review: async (_cwd, received) => {
+        options = received;
+        return { verdict: 'pass' };
+      },
+      error: () => {},
+    }),
+  ).toBe(0);
+  expect(options.prompt.tools.map((tool) => tool.name)).toEqual([
+    'submit_review',
+    'submit_suggestions',
+  ]);
+  expect(options.prompt.parallel_tool_calls).toBe(true);
+});
+
+test('routes grouped suggest all through the combined tool contract', async () => {
+  let options;
+  expect(
+    await main(['suggest', 'all'], {
+      review: async (_cwd, received) => {
+        options = received;
+        return { verdict: 'pass' };
+      },
+      error: () => {},
+    }),
+  ).toBe(0);
+  expect(options.prompt.tools.map((tool) => tool.name)).toEqual(['submit_suggestions']);
+  expect(options.prompt.parallel_tool_calls).toBe(false);
 });
 const client = (events) => ({
   responses: {
@@ -64,11 +255,14 @@ test('parses grouped review and suggestion commands', () => {
     command: 'analyze-all',
     mode: 'review',
     option: undefined,
+    options: [],
   });
   expect(parseArgs(['suggest', 'new-features', '--usage'])).toEqual({
     command: 'analyze-new-features',
     mode: 'suggest',
     option: '--usage',
+    testTimeout: undefined,
+    options: ['--usage'],
   });
   expect(() => parseArgs(['review'])).toThrow(/Usage/);
   expect(() => parseArgs(['suggest', 'all', '--version'])).toThrow(/Usage/);
@@ -76,12 +270,30 @@ test('parses grouped review and suggestion commands', () => {
 test('handles help and version options', async () => {
   const output = [];
   const errors = [];
-  expect(await main(['code', '--version'], { error: (v) => errors.push(v) })).toBe(2);
+  expect(await main(['code', '--version'], { error: (v) => errors.push(v) })).toBe(
+    EXIT_CODES.USAGE,
+  );
   expect(await main(['code', '--help'], { output: (v) => output.push(v) })).toBe(0);
   expect(await main(['version', '--version'], { output: (v) => output.push(v) })).toBe(0);
   expect(await main(['--help'], { output: (v) => output.push(v) })).toBe(0);
   expect(await main(['--version'], { output: (v) => output.push(v) })).toBe(0);
   expect(errors[0]).toMatch(/not valid/);
+  expect(output.join('\n')).toMatch(/quick start/);
+});
+
+test('grouped help displays help without invoking review', async () => {
+  let called = false;
+  const output = [];
+  expect(
+    await main(['review', 'all', '--help'], {
+      output: (value) => output.push(value),
+      review: async () => {
+        called = true;
+        return { verdict: 'pass' };
+      },
+    }),
+  ).toBe(0);
+  expect(called).toBe(false);
   expect(output.join('\n')).toMatch(/quick start/);
 });
 test('finds nested files and ignores configured directories', async () => {
@@ -201,6 +413,51 @@ test('combines selected implementation, tests, and docs', async () => {
     await combineSelectedFiles('/root', { readDirectory: rd, readFileContents: read }),
   ).toContain('===== package.json =====');
 });
+test('validates package metadata while combining all file groups', async () => {
+  await expect(
+    combineAllFiles('/root', {
+      readDirectory: async () => [],
+      readFileContents: async () => null,
+    }),
+  ).rejects.toThrow(/non-string/);
+  await expect(
+    combineAllFiles('/root', {
+      readDirectory: async () => [],
+      readFileContents: async () => {
+        throw 'package read failure';
+      },
+    }),
+  ).rejects.toThrow(/package read failure/);
+  await expect(
+    combineAllFiles('/root', {
+      validateSymlinks: true,
+      readDirectory: async () => [],
+      readFileContents: async () => '{}',
+    }),
+  ).rejects.toThrow(/package.json/);
+  await expect(
+    combineAllFiles('/root', {
+      validateSymlinks: true,
+      inspectFile: async () => ({ isSymbolicLink: () => true }),
+      readDirectory: async () => [],
+      readFileContents: async () => '{}',
+    }),
+  ).rejects.toThrow(/symlinked package/);
+});
+test('places supplied test results in the selected-file sequence', async () => {
+  const result = await combineSelectedFiles('/root', {
+    tests: true,
+    docs: true,
+    testResults: '===== npm test =====\nexit code: 0',
+    readDirectory: async () => [{ name: 'guide.md', isFile: () => true }],
+    readFileContents: async (file) => (file.endsWith('.md') ? 'docs' : '{}'),
+  });
+  expect(result.indexOf('exit code: 0')).toBeLessThan(result.indexOf('guide.md'));
+});
+test('uses the native package reader when no reader is injected', async () => {
+  const result = await combineAllFiles(process.cwd(), { readDirectory: async () => [] });
+  expect(result).toContain('===== package.json =====');
+});
 test('finds and combines markdown files', async () => {
   const options = {
     readDirectory: async () => [{ name: 'guide.md', isFile: () => true }],
@@ -275,7 +532,7 @@ test('validates real files and contextualizes non-Error read failures', async ()
 test('covers profile aggregate limits and extension matching', async () => {
   const files = [{ name: 'APP.MJS', isFile: () => true }];
   const options = { readDirectory: async () => files, readFileContents: async () => 'code' };
-  expect(await findFiles('/root', '.mjs', options)).toEqual([]);
+  expect(await findFiles('/root', '.mjs', options)).toEqual(['APP.MJS']);
   await expect(
     combineSelectedFiles('/root', {
       implementation: true,
@@ -302,7 +559,10 @@ test('runs CLI commands', async () => {
   expect(await main([], { output: (v) => output.push(v) })).toBe(0);
   expect(
     await main(['code'], {
-      review: async (_c, { write }) => write('reviewed'),
+      review: async (_c, { write }) => {
+        write('reviewed');
+        return { verdict: 'pass' };
+      },
       write: (v) => output.push(v),
     }),
   ).toBe(0);
@@ -343,7 +603,10 @@ test('runs direct analysis profiles without appending guidance', async () => {
   ])
     expect(
       await main([profile], {
-        review: async (_cwd, { write }) => write(profile),
+        review: async (_cwd, { write }) => {
+          write(profile);
+          return { verdict: 'pass' };
+        },
         write: (v) => output.push(v),
       }),
     ).toBe(0);
@@ -374,6 +637,16 @@ test('runs direct analysis profiles without appending guidance', async () => {
     'code-tests-docs',
     'all',
   ]);
+});
+
+test('treats direct new-features as a suggestion-only profile', async () => {
+  let options;
+  expect(
+    await main(['new-features'], {
+      review: async (_cwd, value) => ((options = value), { suggestions: {} }),
+    }),
+  ).toBe(EXIT_CODES.PASS);
+  expect(options.prompt.tools[0].name).toBe('submit_suggestions');
 });
 test('builds every profile strategy', async () => {
   for (const profile of [
@@ -408,12 +681,34 @@ test('builds every profile strategy', async () => {
     ).resolves.toContain('===== package.json =====');
   }
   expect(() => getProfile('missing')).toThrow(/Unknown analysis profile/);
+  expect(() => getProfile('code', 'suggestion')).toThrow('Unknown profile mode');
 });
 test('all prompt reports every priority while blocking only material findings', () => {
   const all = getProfile('all').prompt.input[1].content[0].text;
-  expect(all).toMatch(/Report every actionable finding, including P0, P1, P2, and P3/);
+  expect(all).toMatch(/Report all actionable findings, including P0, P1, P2, and P3/);
   expect(all).toMatch(/P2 and P3 findings must be reported but must not affect the verdict/);
   expect(all).toMatch(/apply the global pass\/block criteria/);
+});
+test('scopes review and suggestion tools by profile', () => {
+  const all = getProfile('all', 'review').prompt;
+  expect(all.tools.map((tool) => tool.name)).toEqual(['submit_review', 'submit_suggestions']);
+  expect(all.parallel_tool_calls).toBe(true);
+  expect(
+    getProfile('security', 'review').prompt.tools[0].parameters.properties.issues.required,
+  ).toEqual(['security']);
+  expect(
+    getProfile('docs', 'review').prompt.tools[0].parameters.properties.issues.required,
+  ).toEqual(['documentation']);
+  expect(
+    getProfile('new-features', 'suggest').prompt.tools[0].parameters.properties.suggestions
+      .required,
+  ).toEqual(['new-features']);
+  expect(
+    getProfile('security', 'suggest').prompt.tools[0].parameters.properties.suggestions.required,
+  ).toEqual(['security', 'new-features']);
+  expect(
+    getProfile('all', 'suggest').prompt.tools[0].parameters.properties.suggestions.required,
+  ).toContain('new-features');
 });
 test('global prompt defines shared priorities from supplied evidence', () => {
   const text = getProfile('code').prompt.input[1].content[0].text;
@@ -516,7 +811,7 @@ test('adds usage to the structured output only when requested', async () => {
   expect(JSON.parse(output[0])).toEqual({
     issues: emptyIssues,
     verdict: 'pass',
-    usage: { total_tokens: 7 },
+    usage: { total_tokens: 7, estimated_cost_usd: 0 },
   });
 });
 test('reports unavailable usage in the structured output', async () => {
@@ -714,6 +1009,6 @@ test('handles missing token and non-Error CLI failures', async () => {
       },
       error: (v) => errors.push(v),
     }),
-  ).toBe(2);
+  ).toBe(EXIT_CODES.INPUT);
   expect(errors[0]).toContain('bad input');
 });
