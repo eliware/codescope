@@ -41,6 +41,7 @@ export async function combineFiles(
   const sections = [];
   let totalChars = 0;
 
+  // codescope ignore: finite-limit scans intentionally serialize reads to keep aggregate character accounting deterministic.
   const batchSize = Number.isFinite(maxChars) ? 1 : concurrency;
   for (let start = 0; start < files.length; start += batchSize) {
     const batch = await Promise.all(

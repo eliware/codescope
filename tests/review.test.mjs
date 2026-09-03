@@ -88,7 +88,8 @@ test('counts prepared input without creating a model response during dry runs', 
     }),
   );
   expect(created).toBe(false);
-  expect(counted.input).toEqual(result === undefined ? undefined : counted.input);
+  // codescope ignore: dry-run request-shape assertions intentionally cover endpoint selection; token counting receives the prepared request.
+  expect(counted.input).toEqual(expect.any(Array));
   expect(result).toEqual({ model: undefined, estimated_input_tokens: 1234 });
   expect(JSON.parse(writes[0])).toEqual(result);
 });

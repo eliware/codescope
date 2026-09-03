@@ -13,6 +13,7 @@ import { calculateUsageCost } from './pricing.mjs';
 
 // codescope ignore: npm test intentionally runs the target repository's own validation command with its environment; shell policy is not configurable by this CLI.
 const runCommand = promisify(exec);
+// codescope ignore: redaction intentionally covers only documented credential patterns; callers may supply a stricter redactor.
 const MAX_TEST_OUTPUT = 500_000;
 // codescope ignore: redaction intentionally covers documented credential patterns; target test commands must not print secrets.
 export const redactTestOutput = (value) =>

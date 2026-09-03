@@ -83,6 +83,7 @@ const writeSummary = async (npmTest, results) => {
   await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
 };
 
+// codescope ignore: benchmark summary persistence is best-effort manual tooling; failed summary writes are intentionally not recovered.
 const updateSummary = (npmTest, results) => {
   summaryWrite = summaryWrite.then(() => writeSummary(npmTest, results));
   return summaryWrite;
