@@ -41,6 +41,16 @@ const emptySuggestions = Object.fromEntries(
     [{ location: 'none', suggestion: 'No suggestions found.', rationale: '', ignore_example: '' }],
   ]),
 );
+const validReviewFor = (profile, verdict = 'pass') => {
+  const { prompt } = getProfile(profile, 'review');
+  const categories = Object.keys(prompt.tools[0].parameters.properties.issues.properties);
+  return {
+    verdict,
+    issues: Object.fromEntries(
+      categories.map((category) => [category, emptyIssues[category] ?? [{ severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' }]]),
+    ),
+  };
+};
 const opts = (x = {}) => ({
   envFile: path.join('test-home', '.codescope'),
   readFile: async () => '',
@@ -129,7 +139,7 @@ test('returns success for dry-run token estimates', async () => {
 
 test('maps verdicts and lifecycle failures to documented exit codes', async () => {
   expect(
-    await main(['architecture'], { review: async () => ({ verdict: 'block' }), error: () => {} }),
+    await main(['architecture'], { review: async () => validReviewFor('architecture', 'block'), error: () => {} }),
   ).toBe(EXIT_CODES.BLOCKED);
   expect(errorExitCode(new Error('Unexpected arguments'))).toBe(EXIT_CODES.USAGE);
   expect(errorExitCode(new Error('OPENAI_API_TOKEN is missing'))).toBe(EXIT_CODES.CONFIGURATION);
@@ -315,7 +325,7 @@ test('grouped help displays help without invoking review', async () => {
       output: (value) => output.push(value),
       review: async () => {
         called = true;
-        return { verdict: 'pass' };
+        return validReviewFor('architecture');
       },
     }),
   ).toBe(0);
@@ -677,7 +687,7 @@ test('runs direct analysis profiles without appending guidance', async () => {
             ? { verdict: 'pass', issues: emptyIssues, suggestions: emptySuggestions }
             : profile === 'new-features'
             ? { suggestions: { 'new-features': [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }] } }
-            : { verdict: 'pass' };
+            : validReviewFor(profile);
         },
         write: (v) => output.push(v),
       }),

@@ -1,6 +1,7 @@
 import { runReview } from './review.mjs';
 import { getProfile, PROFILE_NAMES } from './cli-profiles.mjs';
 import { fs } from '@eliware/common';
+import { isValidReviewResult, isValidSuggestionResult } from './review-response.mjs';
 
 const VERSION = JSON.parse(
   fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
@@ -54,51 +55,6 @@ export function errorExitCode(cause) {
 
 export function usage() {
   return fs.readFileSync(new URL('../docs/quick-start.md', import.meta.url), 'utf8');
-}
-
-function validSuggestionResult(result, prompt) {
-  const categories = Object.keys(
-    prompt?.tools?.[0]?.parameters?.properties?.suggestions?.properties ?? {},
-  );
-  return (
-    result &&
-    typeof result === 'object' &&
-    result.suggestions &&
-    typeof result.suggestions === 'object' &&
-    !Array.isArray(result.suggestions) &&
-    categories.length > 0 &&
-    Object.keys(result.suggestions).length === categories.length &&
-    categories.every((category) => {
-      const items = result.suggestions[category];
-      return (
-        Array.isArray(items) &&
-        items.length >= 1 &&
-        items.every(
-          (item) =>
-            item &&
-            typeof item === 'object' &&
-            !Array.isArray(item) &&
-            Object.keys(item).length === 4 &&
-            ['location', 'suggestion', 'rationale', 'ignore_example'].every(
-              (key) => typeof item[key] === 'string',
-            ),
-        )
-      );
-    })
-  );
-}
-
-function validCombinedResult(result, prompt) {
-  return (
-    result &&
-    typeof result === 'object' &&
-    !Array.isArray(result) &&
-    ['pass', 'block'].includes(result.verdict) &&
-    result.issues &&
-    typeof result.issues === 'object' &&
-    !Array.isArray(result.issues) &&
-    validSuggestionResult({ suggestions: result.suggestions }, { tools: [prompt.tools[1]] })
-  );
 }
 
 export function parseArgs(args) {
@@ -299,10 +255,10 @@ export async function main(
     const isSuggestion = mode === 'suggest' || target === 'new-features';
     const isCombined = target === 'all' && mode === 'review';
     const effectivePrompt = reviewOptions.prompt;
-    const suggestionResultIsValid = validSuggestionResult(result, effectivePrompt);
+    const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
     if (
       (!isSuggestion &&
-        (isCombined ? !validCombinedResult(result, effectivePrompt) : !result || !['pass', 'block'].includes(result.verdict))) ||
+        (isCombined ? !isValidReviewResult({ issues: result?.issues, verdict: result?.verdict }, { tools: [effectivePrompt.tools[0]] }) || !isValidSuggestionResult({ suggestions: result?.suggestions }, { tools: [effectivePrompt.tools[1]] }) : !isValidReviewResult(result, effectivePrompt))) ||
       (isSuggestion && !suggestionResultIsValid)
     ) {
       error('codescope: review returned no validated pass-or-block verdict');
