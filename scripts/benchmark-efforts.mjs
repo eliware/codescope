@@ -158,6 +158,7 @@ if (testResult.code !== 0) {
     console.error('One or more provider benchmark runs failed; benchmark is incomplete');
     process.exitCode = 1;
   }
+  await summaryWrite;
 
   console.log(`\nLogs: ${logDirectory}`);
   console.log(`Parallel batch elapsed: ${(performance.now() - started).toFixed(0)} ms`);

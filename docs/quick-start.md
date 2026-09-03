@@ -75,19 +75,11 @@ Each specialized profile focuses on its named category. Apply suggestions manual
 
 ## 4. Strengthen tests
 
-```text
-codescope all
-```
-
-Use `all` to review implementation behavior against the supplied tests and test results. Focused profiles constrain the review question, not the source files.
+Use the test findings from the initial `all` review to guide implementation and test changes. Focused profiles constrain the review question, not the source files.
 
 ## 5. Check documentation
 
-```text
-codescope all
-```
-
-Review the category matching the selected profile in the combined result.
+Review documentation findings from the initial `all` result and update the relevant usage, API, or behavior descriptions.
 
 ## 6. Run focused quality reviews
 
@@ -116,11 +108,11 @@ codescope prioritize
 
 `accessibility` is useful when the project has user-facing terminal or UI behavior.
 
+The `cross-platform` profile evaluates portability within the host platforms and path semantics supported by the project; it does not emulate a foreign operating system.
+
 ## 7. Finish with a combined review
 
-```text
-codescope all
-```
+Use the initial `all` result as the combined baseline; subsequent iterations are owned by the goal harness.
 
 This final pass includes package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, every `.md` file, and a names-only inventory of other repository files, then checks implementation, tests, and Markdown inconsistencies together. Git metadata, dependencies, coverage output, and coverage data are excluded. It reports findings across all of those categories in one result. Run it after the focused reviews, not as the first pass, so its output is easier to act on. Test evidence is inserted before the Markdown source in the combined input.
 
