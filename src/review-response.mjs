@@ -45,6 +45,7 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
     'performance',
     'architecture',
     'api_design',
+    'cross_platform',
     'tests',
     'documentation',
   ];

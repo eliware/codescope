@@ -90,6 +90,7 @@ export function getProfile(profile, mode = 'review') {
     performance: ['performance'],
     reliability: ['reliability'],
     'api-design': ['api_design'],
+    'cross-platform': ['cross_platform'],
     dependencies: ['reliability'],
     observability: ['reliability'],
     accessibility: ['correctness'],

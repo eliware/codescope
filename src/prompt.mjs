@@ -7,6 +7,7 @@ export const REVIEW_CATEGORIES = [
   'performance',
   'architecture',
   'api_design',
+  'cross_platform',
   'tests',
   'documentation',
 ];

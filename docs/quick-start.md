@@ -130,7 +130,8 @@ node C:\\Users\\russe\\src\\codescope\\bin\\codescope.mjs all
 produces one consolidated JSON result containing both the review findings and
 improvement suggestions. It requests exactly one review-tool call and one
 suggestion-tool call in parallel, covering correctness, security, reliability,
-performance, architecture, API design, test quality, and documentation consistency.
+performance, architecture, API design, cross-platform compatibility, test quality,
+and documentation consistency.
 The report groups findings under Correctness, Security, Reliability, Performance,
 Architecture, API Design, Tests, and Documentation, and shows a `No issues found.`
 placeholder for empty categories.

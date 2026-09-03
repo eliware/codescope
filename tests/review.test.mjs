@@ -13,7 +13,8 @@ const emptyIssuesJson = JSON.stringify({
       'reliability',
       'performance',
       'architecture',
-      'api_design',
+    'api_design',
+    'cross_platform',
       'tests',
       'documentation',
     ].map((category) => [

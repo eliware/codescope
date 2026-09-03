@@ -29,6 +29,7 @@ const emptyIssues = Object.fromEntries(
     'performance',
     'architecture',
     'api_design',
+    'cross_platform',
     'tests',
     'documentation',
   ].map((category) => [
