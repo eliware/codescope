@@ -70,7 +70,7 @@ codescope api-design
 codescope refactor
 ```
 
-Use `architecture` for module boundaries, dependencies, data flow, scalability, reliability, and maintainability. Use `refactor` to identify monolithic files and responsibility splits. Apply suggestions manually in small changes; Codescope does not edit files.
+Each specialized profile focuses on its named category. Apply suggestions manually in small changes; Codescope does not edit files.
 
 ## 4. Strengthen tests
 
@@ -86,21 +86,23 @@ Use `all` to review implementation behavior against the supplied tests and test 
 codescope all
 ```
 
-Review the Documentation category in the combined result for concrete inconsistencies, then verify that implementation and documentation describe the same behavior.
+Review the category matching the selected profile in the combined result.
 
 ## 6. Run focused quality reviews
 
 Use specialized profiles when you are ready to examine one concern:
 
 ```text
-codescope security
+codescope architecture
+codescope api-design
 codescope cross-platform
+codescope refactor
+codescope security
 codescope reliability
 codescope performance
 codescope dependencies
 codescope observability
 codescope accessibility
-
 ```
 
 For product planning and small improvements:
