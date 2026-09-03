@@ -56,6 +56,51 @@ export function usage() {
   return fs.readFileSync(new URL('../docs/quick-start.md', import.meta.url), 'utf8');
 }
 
+function validSuggestionResult(result, prompt) {
+  const categories = Object.keys(
+    prompt?.tools?.[0]?.parameters?.properties?.suggestions?.properties ?? {},
+  );
+  return (
+    result &&
+    typeof result === 'object' &&
+    result.suggestions &&
+    typeof result.suggestions === 'object' &&
+    !Array.isArray(result.suggestions) &&
+    categories.length > 0 &&
+    Object.keys(result.suggestions).length === categories.length &&
+    categories.every((category) => {
+      const items = result.suggestions[category];
+      return (
+        Array.isArray(items) &&
+        items.length >= 1 &&
+        items.every(
+          (item) =>
+            item &&
+            typeof item === 'object' &&
+            !Array.isArray(item) &&
+            Object.keys(item).length === 4 &&
+            ['location', 'suggestion', 'rationale', 'ignore_example'].every(
+              (key) => typeof item[key] === 'string',
+            ),
+        )
+      );
+    })
+  );
+}
+
+function validCombinedResult(result, prompt) {
+  return (
+    result &&
+    typeof result === 'object' &&
+    !Array.isArray(result) &&
+    ['pass', 'block'].includes(result.verdict) &&
+    result.issues &&
+    typeof result.issues === 'object' &&
+    !Array.isArray(result.issues) &&
+    validSuggestionResult({ suggestions: result.suggestions }, { tools: [prompt.tools[1]] })
+  );
+}
+
 export function parseArgs(args) {
   // codescope ignore: grouped review/suggest commands intentionally share one concise option grammar; direct profiles retain their legacy aliases.
   const [first = 'help', ...rest] = args;
@@ -79,8 +124,11 @@ export function parseArgs(args) {
     throw new Error('Model must be one of: gpt-5.6-luna, gpt-5.6-terra, gpt-5.6-sol');
   if (first === 'review' || first === 'suggest') {
     const [profile, ...options] = argsWithoutEffort;
+    if (rest[0] === '--dry-run') throw new Error('Profile must precede options');
     if (!profile) throw new Error('Usage: codescope review|suggest <profile> [options]');
     if (!PROFILE_NAMES.includes(profile)) throw new Error(`Unknown command profile: ${profile}`);
+    if (first === 'review' && profile === 'new-features')
+      throw new Error('new-features is suggestion-only; use suggest new-features');
     const timeoutIndex = options.indexOf('--test-timeout');
     if (options.filter((value) => value === '--test-timeout').length > 1)
       throw new Error('Only one --test-timeout option is allowed');
@@ -88,6 +136,7 @@ export function parseArgs(args) {
     const remaining = options.filter(
       (_, index) => timeoutIndex < 0 || (index !== timeoutIndex && index !== timeoutIndex + 1),
     );
+    // codescope ignore: grouped dry-run is removed before shared option validation and preserved on the returned parse result.
     if (
       !profile ||
       (timeoutIndex >= 0 && (!/^\d+$/u.test(timeout ?? '') || Number(timeout) < 1)) ||
@@ -133,7 +182,6 @@ export function parseArgs(args) {
     throw new Error(`Unexpected arguments: ${rest.join(' ')}`);
   }
   const profiles = [
-    'code',
     'p0',
     'p0-1',
     'p0-2',
@@ -141,11 +189,6 @@ export function parseArgs(args) {
     'architecture',
     'api-design',
     'refactor',
-    'tests',
-    'code-tests',
-    'tests-docs',
-    'docs',
-    'code-docs',
     'security',
     'reliability',
     'performance',
@@ -155,7 +198,6 @@ export function parseArgs(args) {
     'new-features',
     'quick-wins',
     'prioritize',
-    'code-tests-docs',
     'all',
   ];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
@@ -254,7 +296,13 @@ export async function main(
     const result = await review(cwd, reviewOptions);
     if (dryRun) return EXIT_CODES.PASS;
     const isSuggestion = mode === 'suggest' || target === 'new-features';
-    if (!result || (!isSuggestion && !['pass', 'block'].includes(result.verdict))) {
+    const isCombined = target === 'all' && mode === 'review';
+    const suggestionResultIsValid = validSuggestionResult(result, prompt);
+    if (
+      (!isSuggestion &&
+        (isCombined ? !validCombinedResult(result, prompt) : !result || !['pass', 'block'].includes(result.verdict))) ||
+      (isSuggestion && !suggestionResultIsValid)
+    ) {
       error('codescope: review returned no validated pass-or-block verdict');
       return EXIT_CODES.RESPONSE;
     }

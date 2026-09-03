@@ -76,16 +76,13 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 
 ### Review profiles
 
-- `code`, `code-docs`, `code-tests`, and `code-tests-docs` review implementation with the selected combination of tests and documentation.
+- Review profiles inspect implementation, tests, and documentation together; focused profiles constrain the review question.
 - `refactor` identifies monolithic files and mixed responsibilities, then proposes smaller single-purpose file and folder boundaries.
 - `architecture` focuses exclusively on architectural structure and optimization opportunities.
-- `new-features` suggests useful product or technical capabilities based on the implementation; use `suggest new-features` explicitly for suggestion output.
+- `new-features` suggests useful product or technical capabilities based on the implementation; it is suggestion-only in both direct and grouped syntax.
 - `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, and `accessibility` provide focused specialist reviews.
 - `all` produces one structured verdict: `pass` or `block`; blocking is limited to concrete P0/P1, documentation, or major test-gap findings.
 - `quick-wins`, `prioritize`, `p0`, `p0-1`, `p0-2`, and `p0-3` support action-oriented prioritization and priority-range reviews.
-- `tests` reviews tests without implementation analysis.
-- `tests-docs` reviews tests and documentation together.
-- `docs` reviews documentation for inconsistencies.
 - `all` reviews implementation, tests, and documentation from every supported review angle in one consolidated report.
 
 ### Repository analysis

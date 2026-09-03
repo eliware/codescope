@@ -2,10 +2,8 @@ import { combineSelectedFiles } from './combine-all.mjs';
 import {
   createAnalysisPrompt,
   profilePrompt,
-  mdPrompt,
   allPrompt,
   combinedAllPrompt,
-  codeTestsDocsPrompt,
   refactorPrompt,
   architecturePrompt,
   newFeaturesPrompt,
@@ -26,13 +24,9 @@ import {
 } from './prompt.mjs';
 
 const PROFILE_FILES = {
-  code: [true, false, false],
-  'code-docs': [true, false, true],
-  'code-tests': [true, true, false],
   refactor: [true, false, false],
   architecture: [true, false, false],
   'new-features': [true, false, false],
-  'code-tests-docs': [true, true, true],
   all: [true, true, true],
   security: [true, false, false],
   performance: [true, false, false],
@@ -48,9 +42,6 @@ const PROFILE_FILES = {
   'p0-1': [true, false, false],
   'p0-2': [true, false, false],
   'p0-3': [true, false, false],
-  tests: [false, true, false],
-  'tests-docs': [false, true, true],
-  docs: [false, false, true],
 };
 export const PROFILE_NAMES = Object.freeze(Object.keys(PROFILE_FILES));
 
@@ -59,27 +50,19 @@ export function getProfile(profile, mode = 'review') {
     throw new Error(`Unknown analysis profile: ${profile}`);
   if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
   const [implementation, tests, docs] = PROFILE_FILES[profile];
+  const reviewSources = mode === 'review';
   const combine = (root, options) =>
-    combineSelectedFiles(root, { ...options, implementation, tests, docs });
+    combineSelectedFiles(root, {
+      ...options,
+      implementation: reviewSources || implementation,
+      tests: reviewSources || tests,
+      docs: reviewSources || docs,
+    });
 
   const subject =
-    profile === 'docs'
-      ? 'the documentation for inconsistencies only'
-      : profile === 'tests'
-        ? 'the test suite for test quality and coverage only; do not report the absence of implementation files'
-        : profile === 'code-docs'
-          ? 'the selected code and Markdown files, reporting code/documentation inconsistencies only'
-          : profile === 'tests-docs'
-            ? 'the selected test and Markdown files for test/documentation inconsistencies only'
-            : profile === 'code-tests'
-              ? 'the selected code and test files for implementation/test inconsistencies and actionable issues'
-              : 'the selected code files for actionable implementation issues';
+    'the supplied implementation, test, and documentation files for actionable implementation issues';
   const prompts = {
     code: createAnalysisPrompt(subject),
-    'code-docs': createAnalysisPrompt(subject),
-    'code-tests': createAnalysisPrompt(subject),
-    docs: mdPrompt,
-    'code-tests-docs': codeTestsDocsPrompt,
     all: allPrompt,
     refactor: refactorPrompt,
     architecture: architecturePrompt,
@@ -102,9 +85,7 @@ export function getProfile(profile, mode = 'review') {
     refactor: ['architecture'],
     architecture: ['architecture'],
     'new-features': ['new-features'],
-    'code-tests': ['tests'],
     tests: ['tests'],
-    'tests-docs': ['tests', 'documentation'],
     security: ['security'],
     performance: ['performance'],
     reliability: ['reliability'],
@@ -126,12 +107,8 @@ export function getProfile(profile, mode = 'review') {
         : // codescope ignore: direct profiles intentionally support both review and suggest modes; review mode rewrites suggestion-focused descriptors into issue-focused review prompts.
           mode === 'review' && suggestionCategories
           ? createAnalysisPrompt(`the selected code for ${profile} issues only`)
-          : (prompts[profile] ?? createAnalysisPrompt(subject));
+          : prompts[profile];
   const prompt = structuredClone(promptSource);
-  const reviewCategories =
-    profile === 'all' || profile === 'code-tests-docs'
-      ? REVIEW_CATEGORIES
-      : { docs: ['documentation'], 'tests-docs': ['tests', 'documentation'] }[profile];
   if (mode === 'suggest') {
     const categories = [
       ...new Set([...(suggestionCategories ?? SUGGESTION_CATEGORIES), 'new-features']),
@@ -144,10 +121,6 @@ export function getProfile(profile, mode = 'review') {
     prompt.tools = [tool];
     prompt.tool_choice = { type: 'function', name: tool.name };
     // codescope ignore: review all intentionally keeps both review tools and auto selection so one request can return issues and suggestions; every other review profile is single-tool.
-  } else if (reviewCategories && !(profile === 'all' && mode === 'review')) {
-    const tool = createReviewTool(reviewCategories);
-    prompt.tools = [tool];
-    prompt.tool_choice = { type: 'function', name: tool.name };
   }
-  return { combine, prompt, includesTests: tests };
+  return { combine, prompt, includesTests: reviewSources || tests };
 }

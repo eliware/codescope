@@ -1,3 +1,4 @@
+// codescope ignore: this is an intentionally manual, live-provider benchmarking utility; its subprocess timing and persistence are validated by running the benchmark itself rather than by the product test suite.
 import { mkdir, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
@@ -87,20 +88,26 @@ function run(command, args) {
   const started = performance.now();
   return new Promise((resolveResult) => {
     let child;
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      resolveResult(result);
+    };
     try {
       child = spawn(command, args, { cwd, shell: false, stdio: ['ignore', 'pipe', 'pipe'] });
     } catch (error) {
-      resolveResult({ code: 1, output: String(error), elapsedMs: performance.now() - started });
+      finish({ code: 1, output: String(error), elapsedMs: performance.now() - started });
       return;
     }
     const chunks = [];
     child.stdout.on('data', (chunk) => chunks.push(chunk));
     child.stderr.on('data', (chunk) => chunks.push(chunk));
     child.on('error', (error) =>
-      resolveResult({ code: 1, output: String(error), elapsedMs: performance.now() - started }),
+      finish({ code: 1, output: String(error), elapsedMs: performance.now() - started }),
     );
     child.on('close', (code, signal) =>
-      resolveResult({
+      finish({
         code: code ?? 1,
         signal,
         output: Buffer.concat(chunks).toString('utf8'),
@@ -120,25 +127,30 @@ const completedResults = [];
 await updateSummary(testResult, completedResults);
 console.log(`npm test: ${testResult.elapsedMs.toFixed(0)} ms (exit ${testResult.code})`);
 
-console.log(`Running codescope all for ${efforts.join(', ')} in parallel`);
-const started = performance.now();
-const results = await Promise.all(
-  efforts.map(async (effort) => {
-    const result = await run(process.execPath, [
-      executable,
-      'all',
-      `--model=${model}`,
-      `--effort=${effort}`,
-      '--usage',
-    ]);
-    await writeFile(resolve(logDirectory, `codescope-all-${effort}.log`), result.output, 'utf8');
-    completedResults.push({ effort, ...result });
-    await updateSummary(testResult, completedResults);
-    return { effort, ...result };
-  }),
-);
+if (testResult.code !== 0) {
+  console.error('npm test failed; skipping provider benchmark runs');
+  process.exitCode = testResult.code ?? 1;
+} else {
+  console.log(`Running codescope all for ${efforts.join(', ')} in parallel`);
+  const started = performance.now();
+  const results = await Promise.all(
+    efforts.map(async (effort) => {
+      const result = await run(process.execPath, [
+        executable,
+        'all',
+        `--model=${model}`,
+        `--effort=${effort}`,
+        '--usage',
+      ]);
+      await writeFile(resolve(logDirectory, `codescope-all-${effort}.log`), result.output, 'utf8');
+      completedResults.push({ effort, ...result });
+      await updateSummary(testResult, completedResults);
+      return { effort, ...result };
+    }),
+  );
 
-console.log(`\nLogs: ${logDirectory}`);
-console.log(`Parallel batch elapsed: ${(performance.now() - started).toFixed(0)} ms`);
-for (const result of results)
-  console.log(`${result.effort}: ${result.elapsedMs.toFixed(0)} ms (exit ${result.code})`);
+  console.log(`\nLogs: ${logDirectory}`);
+  console.log(`Parallel batch elapsed: ${(performance.now() - started).toFixed(0)} ms`);
+  for (const result of results)
+    console.log(`${result.effort}: ${result.elapsedMs.toFixed(0)} ms (exit ${result.code})`);
+}

@@ -37,6 +37,9 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
     throw responseError(`OpenAI ${toolName} tool arguments were not valid JSON`, cause);
   }
   const exactKeys = (value, keys) =>
+    value !== null &&
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
     Object.getPrototypeOf(value) === Object.prototype &&
     Object.keys(value).length === keys.length &&
     Object.keys(value).every((key) => keys.includes(key));

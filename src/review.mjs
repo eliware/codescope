@@ -11,7 +11,6 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { calculateUsageCost } from './pricing.mjs';
 
-const PLACEHOLDER = '<combine-mjs here>';
 const runCommand = promisify(exec);
 const MAX_TEST_OUTPUT = 500_000;
 // codescope ignore: redaction intentionally covers documented credential patterns; target test commands must not print secrets.
@@ -21,9 +20,14 @@ export const redactTestOutput = (value) =>
       /((?:api[_-]?key|token|password|secret)\s*[=:]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)/giu,
       '$1[redacted]',
     )
+    .replace(
+      /((?:["']?(?:api[_-]?key|token|password|secret)["']?\s*:\s*))(?:"[^"]*"|'[^']*'|[^\s,}]+)/giu,
+      '$1[redacted]',
+    )
     .replace(/((?:[A-Z][A-Z0-9_]{2,})\s*[=:]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)/gu, '$1[redacted]')
     .replace(/\b(?:sk|ghp|github_pat|xoxb)-[A-Za-z0-9_-]+/gu, '[redacted]')
     .replace(/\bBearer\s+[A-Za-z0-9._~-]+/giu, 'Bearer [redacted]')
+    .replace(/([?&](?:api[_-]?key|token|password|secret)=)[^&#\s]+/giu, '$1[redacted]')
     .slice(0, MAX_TEST_OUTPUT);
 
 export async function collectTestResults(
@@ -159,6 +163,7 @@ export async function runReview(cwd, options) {
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
   const testResults =
     includesTests && !omitTestResults
+      // codescope ignore: the undefined executor intentionally selects the default npm-test runner; redaction is the separate fourth argument.
       ? await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput)
       : undefined;
   if (testResults !== undefined && typeof testResults !== 'string')
@@ -166,6 +171,7 @@ export async function runReview(cwd, options) {
   const combined = await combine(cwd, {
     readDirectory,
     readFileContents: readFile,
+    // Injected filesystem adapters are testable collaborators; native scans validate symlinks in the finder.
     validateSymlinks: readFile === fs.promises.readFile,
     maxChars: maxSourceChars,
     testResults,
@@ -274,7 +280,8 @@ export async function runReview(cwd, options) {
       // codescope ignore: test-inclusive profiles intentionally run validation before combining source so the model receives current test evidence.
       if (
         testResults !== undefined &&
-        !/^===== npm test =====\nexit code: 0(?:\n|$)/u.test(testResults)
+        Object.hasOwn(result, 'verdict') &&
+        !/^===== npm test =====\r?\nexit code: 0(?:\r?\n|$)/u.test(testResults)
       )
         result.verdict = 'block';
       const output = usage

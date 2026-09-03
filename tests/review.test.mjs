@@ -1,4 +1,4 @@
-import { collectTestResults, runReview } from '../src/review.mjs';
+import { collectTestResults, redactTestOutput, runReview } from '../src/review.mjs';
 import { createSuggestionTool, defaultDeveloperText, profilePrompt } from '../src/prompt.mjs';
 import { createReviewTool } from '../src/prompt.mjs';
 import { defaultEnvFile } from '../src/review-config.mjs';
@@ -345,6 +345,25 @@ test('blocks when supplied test evidence fails', async () => {
   expect(result.verdict).toBe('block');
 });
 
+test('does not treat a later output marker as a passing test result', async () => {
+  const result = await runReview(
+    '/root',
+    base({
+      includesTests: true,
+      runTestCommand: async () => '===== npm test =====\nfailed\nexit code: 0',
+    }),
+  );
+  expect(result.verdict).toBe('block');
+});
+
+test('blocks noncanonical test evidence rather than assuming success', async () => {
+  const result = await runReview(
+    '/root',
+    base({ includesTests: true, runTestCommand: async () => 'npm test failed: exit code: 0' }),
+  );
+  expect(result.verdict).toBe('block');
+});
+
 // codescope ignore: subprocess mechanics are delegated to Node child_process; injected executors are the complete focused contract for this package and real subprocess integration is intentionally out of scope.
 test('formats test command failures and timeouts', async () => {
   await expect(collectTestResults('/root', 0, async () => ({}))).rejects.toThrow(
@@ -395,6 +414,18 @@ test('redacts secrets from successful test output', async () => {
   await expect(
     collectTestResults('/root', 30_000, async () => ({ stdout: null, stderr: null })),
   ).resolves.toContain('exit code: 0');
+});
+
+test('redacts authorization and URL query credentials across lines', () => {
+  const output = redactTestOutput('Authorization: Bearer abc\nhttps://example.test/?token=query-secret');
+  expect(output).toBe('Authorization: Bearer [redacted]\nhttps://example.test/?token=[redacted]');
+});
+
+test('redacts JSON-style credential fields', () => {
+  const output = redactTestOutput('{"token":"json-secret", "api_key": "key-secret"}');
+  expect(output).not.toContain('json-secret');
+  expect(output).not.toContain('key-secret');
+  expect(output).toContain('[redacted]');
 });
 
 test('supports a caller-provided test-output redactor', async () => {
@@ -549,9 +580,8 @@ test('uses forced tool choice when both tools are supplied', async () => {
 
 // codescope ignore: native filesystem plus live-provider end-to-end coverage is intentionally outside the deterministic unit-test contract; injected collaborators cover the package behavior.
 test('covers default config permission outcomes on non-Windows platforms', async () => {
-  const previousToken = process.env.OPENAI_API_TOKEN;
-  process.env.OPENAI_API_TOKEN = 'test-token';
   const common = {
+    environment: { OPENAI_API_TOKEN: 'test-token' },
     envFile: defaultEnvFile(),
     platform: 'linux',
     inspectFile: async () => ({ isSymbolicLink: () => false }),
@@ -594,22 +624,29 @@ test('covers default config permission outcomes on non-Windows platforms', async
       },
     }),
   ).rejects.toThrow('permission string');
-  if (previousToken === undefined) delete process.env.OPENAI_API_TOKEN;
-  else process.env.OPENAI_API_TOKEN = previousToken;
 });
 
 test('runs a review with placeholder and usage', async () => {
   let request;
+  let output;
   await runReview(
     '/root',
     base({
       usage: true,
+      write: (value) => {
+        output = JSON.parse(value);
+      },
       createClient: () => ({
         responses: {
           create: async (value) => {
             request = value;
             return {
-              usage: { total_tokens: 1 },
+              usage: {
+                input_tokens: 700,
+                output_tokens: 300,
+                total_tokens: 1000,
+                input_tokens_details: { cached_tokens: 40, cache_write_tokens: 20 },
+              },
               output: [
                 {
                   type: 'function_call',
@@ -624,6 +661,13 @@ test('runs a review with placeholder and usage', async () => {
     }),
   );
   expect(request.input[0].content[0].text).toContain('source');
+  expect(output.usage).toMatchObject({
+    input_tokens: 700,
+    output_tokens: 300,
+    total_tokens: 1000,
+    input_tokens_details: { cached_tokens: 40, cache_write_tokens: 20 },
+  });
+  expect(output.usage.estimated_cost_usd).toEqual(expect.any(Number));
 });
 
 test('handles the default config path when no config file exists', async () => {

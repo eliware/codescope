@@ -43,7 +43,11 @@ export function prepareRequest(prompt, combined) {
         typeof item.role !== 'string' ||
         !Array.isArray(item.content) ||
         item.content.some(
-          (part) => !part || typeof part !== 'object' || typeof part.type !== 'string',
+          (part) =>
+            !part ||
+            typeof part !== 'object' ||
+            typeof part.type !== 'string' ||
+            (part.type === 'input_text' && typeof part.text !== 'string'),
         ),
     )
   )
@@ -55,8 +59,6 @@ export function prepareRequest(prompt, combined) {
   if (textItems.length !== 1)
     throw new Error('prompt developer message must contain exactly one input_text part');
   const content = textItems[0];
-  if (typeof content.text !== 'string')
-    throw new Error('prompt.json must contain input developer content of type input_text');
   if (content.text.includes(PLACEHOLDER))
     content.text = content.text.replaceAll(
       PLACEHOLDER,

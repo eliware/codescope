@@ -2,7 +2,7 @@
 
 ## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/npm/l/@eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/nodejs.yml)
 
-`codescope` is a Node.js command-line tool for focused OpenAI-powered codebase reviews, suggestions, and token estimates.
+`codescope` is a Node.js command-line tool for OpenAI-powered codebase reviews, suggestions, and token estimates.
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## Features
 
-- Focused review and suggestion profiles for code, tests, documentation, architecture, security, and release readiness.
+- Focused review and suggestion profiles for architecture, security, reliability, performance, API design, dependencies, and release readiness.
 - Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
 - Token and cost estimates, model selection, reasoning-effort controls, and configurable test timeouts.
 - Symlink-safe discovery and inline `codescope ignore:` guidance for intentional behavior.
@@ -38,20 +38,29 @@
 npm install
 ```
 
-Run the CLI locally from a checkout:
+Run the CLI locally from this checkout:
 
 ```text
 node bin/codescope.mjs --help
 node bin/codescope.mjs --version
 ```
 
-To use `codescope` as a shell command from any repository, install this package globally with `npm install --global .` (or use `npm link` during development).
+For this development setup, create a live global npm link from the checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed.
 
 ## Usage
 
+```text
+codescope all
+codescope review architecture
+codescope suggest new-features
+codescope --help
+```
+
+See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow and profile list.
+
 ## Configuration
 
-The CLI loads only `OPENAI_API_TOKEN` from `~/.codescope`. It accepts dotenv-style `KEY=value` syntax, including optional `export`, comments, and quoted values; other assignments are ignored. An existing nonblank process environment variable takes precedence. On Unix, group/world-readable configuration files are rejected. A missing or blank token causes a clear error and exit code `3`.
+The CLI stores only `OPENAI_API_TOKEN` from `~/.codescope`. Its dotenv parser accepts assignment syntax, including optional `export`, comments, and quoted values; every assignment other than `OPENAI_API_TOKEN` is ignored, including duplicate non-token assignments. An existing nonblank process environment variable takes precedence. On Unix, group/world-readable configuration files are rejected. A missing or blank token causes a clear error and exit code `3`.
 
 ## Validation
 
@@ -61,7 +70,7 @@ npm run lint
 npm run pack
 ```
 
-The tool uses built-in prompts and loads only the `OPENAI_API_TOKEN` value from `~/.codescope`; other assignments are ignored. That home-directory file is configuration, not part of the repository scan. It accepts dotenv-style `KEY=value` syntax, including optional `export`, comments, and quoted values. On Unix, group/world-readable `~/.codescope` files are rejected. An existing nonblank process environment variable takes precedence over `~/.codescope`. A missing or blank token causes a clear error and exit code `3`. Reviews are sent to OpenAI and written once as a completed structured result; if the provider returns an invalid tool response, Codescope writes a diagnostic fallback without echoing the provider payload and returns a nonzero error code.
+Reviews use built-in prompts and write one completed structured result; invalid provider tool responses received after the request produce a diagnostic fallback without echoing the provider payload and return a nonzero error code.
 
 The CLI intentionally documents only the public `~/.codescope` configuration path. The internal programmatic `runReview` API can receive an explicit environment-file path through its options.
 
@@ -85,8 +94,7 @@ Append `--dry-run` to prepare the same review request and ask OpenAI for its est
 When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated.
 <!-- codescope ignore: the following profile list is explicitly illustrative, not exhaustive; omitted valid profiles are not documentation defects. -->
 
-For test-inclusive profiles, the combined source order is package metadata, implementation files, test files, test results, then Markdown files when included.
-Profiles that include tests run `npm test` in the target repository with a 30-second timeout and include its result after test content (and before docs when docs are included). Test-capable suggestions include `suggest tests`, `suggest code-tests`, and `suggest all`; these are examples, not an exhaustive list. Profiles without tests reject `--omit-test-results`. Use `--omit-test-results` to skip that command or `--test-timeout 120` with a review or suggestion command to override the timeout in seconds.
+Review profiles that include tests use package metadata, implementation files, test files, test results, and Markdown files. They run `npm test` in the target repository with a 30-second timeout by default. Use `--omit-test-results` to skip that command or `--test-timeout 120` to override the timeout. Suggestion profiles do not run tests.
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
 

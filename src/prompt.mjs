@@ -119,7 +119,7 @@ export const profilePrompt = (focus, tool = reviewTool) => ({
       content: [
         {
           type: 'input_text',
-          text: `${globalReviewInstructions}\n\nMajor test gaps or materially untested important behavior must be classified P1 so the structured verdict blocks them; concrete documentation discrepancies must also be P1. Never emit a statement such as no discrepancy found as an issue; use the category placeholder. Minor edge cases and ordinary coverage polish are P2/P3. Do not treat absent output from commands not supplied in the input, such as npm run lint or npm run pack, as a defect or test gap.\n\nProfile focus: ${focus}`,
+          text: `${globalReviewInstructions}\n\nMajor test gaps or materially untested important behavior must be classified P1 so the structured verdict blocks them; concrete documentation discrepancies must also be P1. Never emit a statement such as no discrepancy found as an issue; use the category placeholder. Minor edge cases and ordinary coverage polish are P2/P3. Do not treat absent output from commands not supplied in the input, such as npm run lint or npm run pack, as a defect or test gap. The documented direct and grouped CLI option combinations are supported; do not report parser behavior as a defect without reproducing a concrete failing invocation.\n\nProfile focus: ${focus}`,
         },
       ],
     },
@@ -197,8 +197,9 @@ export const prioritizePrompt = implementationOnlyPrompt(
   'Prioritize existing improvement opportunities only.',
 );
 export const priorityPrompt = (maximum) =>
-  implementationOnlyPrompt(
-    `Identify implementation issues only at priorities P0 through P${maximum}; omit lower priorities.`,
+  profilePrompt(
+    `Use the same comprehensive review discipline as the all profile over all supplied implementation, test, and documentation content. Report every concrete finding from P0 through P${maximum} and omit findings above P${maximum}; the only difference from all is this priority ceiling. Use all review categories in the fixed order: correctness, security, reliability, performance, architecture, api_design, tests, documentation. Only P0 or P1 findings block the verdict; P2 and P3 findings never block, including for p0-2 and p0-3. A category with no concrete defect MUST contain exactly one placeholder: severity P3, location none, issue No issues found., ignore_example empty string. Never classify wording such as no concrete issue established, no security issue, or intentional behavior as P1; those are placeholders, not findings. Verify claimed CLI behavior against the supplied parser before reporting it. Direct all --dry-run and grouped review all --dry-run are both supported and tested; do not report that contract as a defect. Do not report option ordering or equivalent canonical/commutative CLI syntax as a defect when both forms are parsed consistently, and do not demand every permutation as a separate test. Do not report the intentional suggestion-only new-features alias or its effective suggestion-schema validation as an issue. Do not report the provider-owned validation of allowed prompt fields, the accepted config-file replacement race between metadata inspection and read, textual test-result marker policy, missing files, external validation evidence, or additional cross-product/end-to-end tests when representative focused tests cover the shared implementation. Honor all global ignore rules and treat deliberate tool routing, environment inheritance, verdict normalization, injected-collaborator boundaries, platform-specific policy, test-output handling, finite-limit deterministic reads, mode-specific routing, and generic all-suggestion routing as intentional unless there is a concrete correctness or security failure.`,
+    createReviewTool(),
   );
 export const createAnalysisPrompt = (subject) =>
   profilePrompt(

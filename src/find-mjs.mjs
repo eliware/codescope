@@ -31,7 +31,6 @@ export async function findFiles(
 
   const results = [];
   const pending = [root];
-  const rootPath = pathApi.resolve(root);
 
   while (pending.length > 0) {
     const directory = pending.pop();
@@ -62,7 +61,9 @@ export async function findFiles(
         );
     }
 
-    entries.sort((left, right) => left.name.localeCompare(right.name));
+    entries.sort(
+      (left, right) => Number(left.name > right.name) - Number(left.name < right.name),
+    );
     for (const entry of entries) {
       let isDirectory = false;
       let isFile = false;
