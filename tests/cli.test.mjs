@@ -3,12 +3,20 @@ import { findMjsFiles, findFiles } from '../src/find-mjs.mjs';
 import { findMdFiles } from '../src/find-mjs.mjs';
 import { combineMjsFiles, combineMdFiles, combineFiles } from '../src/combine-mjs.mjs';
 import { combineAllFiles, combineSelectedFiles } from '../src/combine-all.mjs';
+import { benchmarkExitCode } from '../src/benchmark-status.mjs';
 import { runReview } from '../src/review.mjs';
 import { profilePrompt } from '../src/prompt.mjs';
 import path from 'node:path';
 import { getProfile } from '../src/cli-profiles.mjs';
 // codescope ignore: the shipped executable is a pure Node process-wiring barrel; focused main tests are the complete contract for exit propagation.
 import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
+
+test('benchmark status fails for provider failures and incomplete runs', () => {
+  expect(benchmarkExitCode([{ code: 0 }, { code: 0 }], 2)).toBe(0);
+  expect(benchmarkExitCode([{ code: 1 }, { code: 0 }], 2)).toBe(1);
+  expect(benchmarkExitCode([{ code: 0, signal: 'SIGTERM' }], 1)).toBe(1);
+  expect(benchmarkExitCode([{ code: 0 }], 2)).toBe(1);
+});
 
 // codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.
 
@@ -502,6 +510,54 @@ test('combines code and markdown for all analysis', async () => {
     /character limit/,
   );
 });
+test('orders all content and inventories only excluded files with sizes', async () => {
+  const files = ['package.json', 'guide.md', 'app.mjs', 'app.test.mjs', 'config.json', 'image.bin'];
+  const result = await combineAllFiles('/root', {
+    readDirectory: async (directory) => {
+      if (directory.endsWith('root'))
+        return files.map((name) => ({ name, isFile: () => true }))
+          .concat(['.github', '.knit'].map((name) => ({ name, isDirectory: () => true })));
+      if (directory.endsWith('.github')) return [
+        { name: 'ci.yml', isFile: () => true },
+        { name: 'binary.yml', isFile: () => true },
+      ];
+      if (directory.endsWith('.knit')) return [{ name: 'config.yml', isFile: () => true }];
+      return [];
+    },
+    readFileContents: async (file) => {
+      const name = file.split(/[\\/]/u).pop();
+      if (name === 'image.bin') return Buffer.from([0, 1, 2]);
+      if (name === 'package.json') return '{}';
+      if (name === 'config.json') return 'a\nb';
+      if (name === 'ci.yml' || name === 'config.yml') return 'name: check';
+      if (name === 'binary.yml') return Buffer.from([0, 1, 2]);
+      return name.endsWith('.md') ? '# docs' : 'code';
+    },
+  });
+  expect(result.indexOf('===== package.json =====')).toBeLessThan(result.indexOf('===== guide.md ====='));
+  expect(result.indexOf('===== repository configuration =====')).toBeLessThan(result.indexOf('===== guide.md ====='));
+  expect(result).toContain('===== .github/ci.yml =====');
+  expect(result).toContain('===== .knit/config.yml =====');
+  expect(result).not.toContain('===== .github/binary.yml =====');
+  expect(result.indexOf('===== guide.md =====')).toBeLessThan(result.indexOf('===== app.mjs ====='));
+  expect(result.indexOf('===== app.mjs =====')).toBeLessThan(result.indexOf('===== app.test.mjs ====='));
+  expect(result.indexOf('===== app.test.mjs =====')).toBeLessThan(result.indexOf('===== other files'));
+  expect(result).toContain('config.json | text | 2 lines | 3 bytes');
+  expect(result).toContain('image.bin | binary | 3 bytes');
+  expect(result).not.toContain('guide.md | text');
+});
+test('truncates oversized repository configuration files', async () => {
+  const longConfig = Array.from({ length: 201 }, (_, index) => `line-${index + 1}`).join('\n');
+  const result = await combineAllFiles('/root', {
+    readDirectory: async (directory) => directory.endsWith('root')
+      ? [{ name: '.github', isDirectory: () => true }]
+      : [{ name: 'large.yml', isFile: () => true }],
+    readFileContents: async (file) => file.endsWith('package.json') ? '{}' : longConfig,
+  });
+  expect(result).toMatch(/\s+200 line-200/);
+  expect(result).toContain('[truncated after 200 lines; remaining config omitted]');
+  expect(result).not.toContain('line-201');
+});
 test('excludes test.mjs files when requested', async () => {
   const directory = async () => [
     { name: 'app.mjs', isFile: () => true },
@@ -705,6 +761,8 @@ test('all prompt reports every priority while blocking only material findings', 
   const all = getProfile('all').prompt.input[1].content[0].text;
   expect(all).toMatch(/Report all actionable findings, including P0, P1, P2, and P3/);
   expect(all).toMatch(/P2 and P3 findings must be reported but must not affect the verdict/);
+  expect(all).toMatch(/validation-integrity/);
+  expect(all).toMatch(/passing test command does not downgrade/);
   expect(all).toMatch(/apply the global pass\/block criteria/);
 });
 test('scopes review and suggestion tools by profile', () => {
@@ -730,13 +788,13 @@ test('scopes review and suggestion tools by profile', () => {
 });
 test('global prompt defines shared priorities from supplied evidence', () => {
   const text = getProfile('architecture').prompt.input[1].content[0].text;
-  expect(text).toMatch(/P0 = Active outage, data-loss risk, critical security incident/);
-  expect(text).toMatch(
-    /P1 = Release-blocking failure: required tests or contract validation evident in the supplied files/,
-  );
-  expect(text).toMatch(/P2 = Important follow-up that does not block the release/);
-  expect(text).toMatch(/P3 = Polish, cleanup, optimization, or convenience work/);
-  expect(text).toMatch(/Do not infer CI, packaging, deployment-readiness, rollback/);
+  expect(text).toMatch(/Use P0 for an active or imminent severe incident, or any supplied test/);
+  expect(text).toMatch(/Use P1 only when every condition below is true/);
+  expect(text).toMatch(/Eliware release-contract rules/);
+  expect(text).toMatch(/Required source\/test structure is P1 only/);
+  expect(text).toMatch(/Use P2 for a real, actionable issue that should be addressed/);
+  expect(text).toMatch(/Use P3 for low-risk improvements/);
+  expect(text).toMatch(/Do not infer CI, npm pack, npm audit, Git status, deployment-readiness, rollback/);
 });
 test('rejects oversized files before formatting', async () => {
   await expect(

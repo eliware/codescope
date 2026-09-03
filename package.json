@@ -49,7 +49,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@eliware/test": "^2.3.0",
+    "@eliware/test": "^2.4.0",
     "prettier": "^3.9.6"
   },
   "license": "MIT",

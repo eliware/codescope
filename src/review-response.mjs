@@ -100,19 +100,6 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
     ) &&
     ['pass', 'block'].includes(result.verdict);
   if (!validReview) throw responseError('OpenAI submit_review returned an invalid review result');
-  const isPlaceholder = (issue) =>
-    issue.severity === 'P3' &&
-    issue.location === 'none' &&
-    issue.issue === 'No issues found.' &&
-    issue.ignore_example === '';
-  const hasBlockingFinding = expectedCategories.some((category) =>
-    result.issues[category].some(
-      (issue) =>
-        !isPlaceholder(issue) &&
-        (category === 'documentation' || ['P0', 'P1'].includes(issue.severity)),
-    ),
-  );
-  result.verdict = hasBlockingFinding ? 'block' : 'pass';
   return result;
 }
 

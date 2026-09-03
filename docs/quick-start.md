@@ -52,6 +52,8 @@ Follow this order exactly when progressively improving a repository:
 
    Record exit codes, warning count, coverage, failures, and unresolved risks.
 
+   `npm run pack` is a local `npm pack --dry-run` check of the publishable file set. Codescope does not include its output automatically; only supplied evidence can be reviewed.
+
 6. Stop without another Codescope call and write the detailed final report.
    Include the exact scan and verdict; every finding and suggestion with its
    disposition; files, fixes, and tests; every ignore and specification-based
@@ -161,7 +163,7 @@ codescope prioritize
 codescope all
 ```
 
-This final pass includes every `.mjs` file and every `.md` file, then checks implementation, tests, and Markdown inconsistencies together. It reports findings across all of those categories in one result. Run it after the focused reviews, not as the first pass, so its output is easier to act on. Test evidence is inserted before the Markdown source in the combined input.
+This final pass includes package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, every `.md` file, and a names-only inventory of other repository files, then checks implementation, tests, and Markdown inconsistencies together. Git metadata, dependencies, coverage output, and coverage data are excluded. It reports findings across all of those categories in one result. Run it after the focused reviews, not as the first pass, so its output is easier to act on. Test evidence is inserted before the Markdown source in the combined input.
 
 ## 8. Review everything from every angle
 
@@ -184,7 +186,7 @@ placeholder for empty categories.
 node C:\\Users\\russe\\src\\codescope\\bin\\codescope.mjs all
 ```
 
-`all` is the comprehensive review and release-readiness gate. It reports every P0–P3 finding grouped by category, but returns `block` only for unresolved P0/P1 issues, concrete documentation discrepancies, or major test gaps. P2/P3 findings remain visible without blocking the verdict.
+`all` is the comprehensive review and release-readiness gate. It reports every P0–P3 finding grouped by category, but returns `block` only for unresolved P0 or qualifying P1 issues. P2/P3 findings remain visible without blocking the verdict. A proven coverage-measurement or validation-integrity defect is P1 when it can make a passing result untrustworthy, even if the current test command passes. Missing source/test mirrors are P1 only when they leave required behavior or coverage unverified; pure barrels, generated files, configuration-only files, and explicitly excluded adapters are exempt.
 
 ## The review loop
 

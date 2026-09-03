@@ -15,7 +15,7 @@ const runCommand = promisify(exec);
 const MAX_TEST_OUTPUT = 500_000;
 // codescope ignore: redaction intentionally covers documented credential patterns; target test commands must not print secrets.
 export const redactTestOutput = (value) =>
-  value
+  String(value ?? '')
     .replace(
       /((?:api[_-]?key|token|password|secret)\s*[=:]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)/giu,
       '$1[redacted]',
@@ -28,6 +28,9 @@ export const redactTestOutput = (value) =>
     .replace(/\b(?:sk|ghp|github_pat|xoxb)-[A-Za-z0-9_-]+/gu, '[redacted]')
     .replace(/\bBearer\s+[A-Za-z0-9._~-]+/giu, 'Bearer [redacted]')
     .replace(/([?&](?:api[_-]?key|token|password|secret)=)[^&#\s]+/giu, '$1[redacted]')
+    .replace(/-----BEGIN [^-]+-----[\s\S]*?-----END [^-]+-----/gu, '[redacted-private-key]')
+    .replace(/\bAKIA[0-9A-Z]{16}\b/gu, '[redacted-aws-key]')
+    .replace(/\beyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\b/gu, '[redacted-jwt]')
     .slice(0, MAX_TEST_OUTPUT);
 
 export async function collectTestResults(
@@ -103,6 +106,15 @@ export async function runReview(cwd, options) {
     inspectPermissions,
     platform,
   } = { ...defaults, ...options };
+  if (typeof cwd !== 'string' || !cwd) throw new Error('runReview cwd must be a non-empty path string');
+  if (!Number.isFinite(maxSourceChars) && maxSourceChars !== Infinity)
+    throw new Error('runReview maxSourceChars must be finite or Infinity');
+  if (maxSourceChars < 1) throw new Error('runReview maxSourceChars must be positive');
+  if (!Number.isFinite(testTimeoutMs) || testTimeoutMs < 1)
+    throw new Error('runReview testTimeoutMs must be positive');
+  for (const [name, value] of Object.entries({ usage, dryRun, includesTests, omitTestResults }))
+    if (value !== undefined && typeof value !== 'boolean')
+      throw new Error(`runReview option ${name} must be a boolean`);
   // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
   for (const [name, value] of Object.entries({
     write,
@@ -161,11 +173,15 @@ export async function runReview(cwd, options) {
   loadEnv(envText, environment);
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
-  const testResults =
-    includesTests && !omitTestResults
-      // codescope ignore: the undefined executor intentionally selects the default npm-test runner; redaction is the separate fourth argument.
-      ? await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput)
-      : undefined;
+  let testResults;
+  if (includesTests && !omitTestResults) {
+    // codescope ignore: the undefined executor intentionally selects the default npm-test runner; redaction is the separate fourth argument.
+    try {
+      testResults = await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput);
+    } catch (cause) {
+      testResults = `===== npm test =====\nexit code: unknown\n${redactOutput(String(cause))}`;
+    }
+  }
   if (testResults !== undefined && typeof testResults !== 'string')
     throw new Error('Test runner must return a string');
   const combined = await combine(cwd, {
@@ -277,13 +293,9 @@ export async function runReview(cwd, options) {
         : toolName === 'submit_suggestions'
           ? parseReviewToolResponse(providerResponse, 'submit_suggestions', categories)
           : parseReviewToolResponse(providerResponse, 'submit_review', categories);
-      // codescope ignore: test-inclusive profiles intentionally run validation before combining source so the model receives current test evidence.
-      if (
-        testResults !== undefined &&
-        Object.hasOwn(result, 'verdict') &&
-        !/^===== npm test =====\r?\nexit code: 0(?:\r?\n|$)/u.test(testResults)
-      )
+      if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) {
         result.verdict = 'block';
+      }
       const output = usage
         ? {
             ...result,
@@ -332,4 +344,12 @@ export async function runReview(cwd, options) {
     controller.abort();
     removeSignalHandlers(signals);
   }
+}
+
+export function testEvidenceBlocks(testResults) {
+  if (typeof testResults !== 'string') return false;
+  const match = testResults.match(/(?:^|\r?\n)===== npm test =====\r?\n([^\r\n]*)/u);
+  if (!match) return false;
+  const status = match[1].trim();
+  return /^(?:exit code:\s*(?:[1-9]\d*|unknown)|timed out after\b)/iu.test(status);
 }

@@ -275,7 +275,8 @@ export async function main(
     }
     const target = command.slice('analyze-'.length);
     const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
-    const { combine, prompt, includesTests } = getProfile(target, effectiveMode);
+    const { combine, prompt: profilePrompt, includesTests } = getProfile(target, effectiveMode);
+    const prompt = structuredClone(profilePrompt);
     if (option === '--omit-test-results' && !includesTests)
       throw new Error(`Option --omit-test-results is not valid for ${target}`);
     const reviewOptions = {
@@ -297,10 +298,11 @@ export async function main(
     if (dryRun) return EXIT_CODES.PASS;
     const isSuggestion = mode === 'suggest' || target === 'new-features';
     const isCombined = target === 'all' && mode === 'review';
-    const suggestionResultIsValid = validSuggestionResult(result, prompt);
+    const effectivePrompt = reviewOptions.prompt;
+    const suggestionResultIsValid = validSuggestionResult(result, effectivePrompt);
     if (
       (!isSuggestion &&
-        (isCombined ? !validCombinedResult(result, prompt) : !result || !['pass', 'block'].includes(result.verdict))) ||
+        (isCombined ? !validCombinedResult(result, effectivePrompt) : !result || !['pass', 'block'].includes(result.verdict))) ||
       (isSuggestion && !suggestionResultIsValid)
     ) {
       error('codescope: review returned no validated pass-or-block verdict');

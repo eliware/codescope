@@ -7,7 +7,7 @@
 - Review profiles return validated structured `submit_review` and `submit_suggestions` results.
 - The comprehensive `all` profile requests exactly one review and one suggestion tool call in parallel and merges both results into one JSON document.
 - Review and suggestion schemas adapt to the selected profile categories, require nonempty category arrays, and include explicit no-issue/no-suggestion placeholders.
-- Comprehensive reviews use the binary `pass` or `block` verdict; P0/P1 issues, concrete documentation discrepancies, and major test gaps block.
+- Comprehensive reviews use the binary `pass` or `block` verdict; only unresolved P0 or qualifying P1 issues block under the documented evidence and release-scope criteria.
 - Tool-result validation rejects malformed payloads, duplicate calls, unsupported fields, and invalid category shapes before output.
 - Nearby `codescope ignore:` annotations are supplied as scoped guidance, while uncovered behavior remains reportable.
 
@@ -72,7 +72,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `codescope --version` reports the package version.
 - Profile names are supplied directly as commands, for example `codescope review all` or `codescope suggest new-features`.
 - `--usage` optionally adds provider token-usage metadata to the structured review result.
-- Review output is written once after the complete tool response arrives; invalid provider responses produce a diagnostic fallback without echoing the provider payload and a nonzero exit code.
+- Review output is written once after the complete tool response arrives; invalid provider responses produce a diagnostic fallback without echoing the provider payload and a nonzero exit code. Only the AI-provided validated `pass` or `block` verdict controls the review result.
 
 ### Review profiles
 
@@ -81,7 +81,7 @@ Codescope is a native ESM Node.js command-line tool for reviewing repository cod
 - `architecture` focuses exclusively on architectural structure and optimization opportunities.
 - `new-features` suggests useful product or technical capabilities based on the implementation; it is suggestion-only in both direct and grouped syntax.
 - `security`, `performance`, `reliability`, `api-design`, `dependencies`, `observability`, and `accessibility` provide focused specialist reviews.
-- `all` produces one structured verdict: `pass` or `block`; blocking is limited to concrete P0/P1, documentation, or major test-gap findings.
+- `all` produces one structured verdict: `pass` or `block`; only unresolved P0 or qualifying P1 findings block under the documented evidence and release-scope criteria.
 - `quick-wins`, `prioritize`, `p0`, `p0-1`, `p0-2`, and `p0-3` support action-oriented prioritization and priority-range reviews.
 - `all` reviews implementation, tests, and documentation from every supported review angle in one consolidated report.
 

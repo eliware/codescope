@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { API_PRICING, calculateUsageCost } from '../src/pricing.mjs';
+import { benchmarkExitCode } from '../src/benchmark-status.mjs';
 
 const efforts = ['none', 'low', 'medium', 'high'];
 const model =
@@ -75,6 +76,9 @@ const writeSummary = async (npmTest, results) => {
       }),
     ),
     logs: logDirectory,
+    status: results.length === efforts.length && results.every((result) => result.code === 0)
+      ? 'complete'
+      : 'incomplete',
   };
   await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
 };
@@ -148,6 +152,11 @@ if (testResult.code !== 0) {
       return { effort, ...result };
     }),
   );
+
+  if (benchmarkExitCode(results, efforts.length) !== 0) {
+    console.error('One or more provider benchmark runs failed; benchmark is incomplete');
+    process.exitCode = 1;
+  }
 
   console.log(`\nLogs: ${logDirectory}`);
   console.log(`Parallel batch elapsed: ${(performance.now() - started).toFixed(0)} ms`);

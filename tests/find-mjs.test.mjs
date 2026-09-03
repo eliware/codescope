@@ -11,6 +11,8 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
       directory('z'),
       directory('.git'),
       directory('node_modules'),
+      directory('coverage'),
+      directory('.nyc_output'),
       file('a.mjs'),
       file('guide.md'),
     ],
@@ -145,4 +147,24 @@ test('matches uppercase extensions and test suffixes consistently', async () => 
   expect(await findMjsFiles('/root', { readDirectory })).toEqual(['APP.MJS', 'APP.TEST.MJS']);
   expect(await findMjsFiles('/root', { readDirectory, noTests: true })).toEqual(['APP.MJS']);
   expect(await findMjsFiles('/root', { readDirectory, testsOnly: true })).toEqual(['APP.TEST.MJS']);
+});
+
+test('classifies JavaScript test extensions separately from implementation', async () => {
+  const entries = [file('app.js'), file('app.test.js'), file('app.cjs'), file('app.test.cjs')];
+  const readDirectory = async () => entries;
+  const codeExtensions = ['.js', '.cjs', '.mjs'];
+  expect(await findFiles('/root', codeExtensions, { readDirectory })).toEqual([
+    'app.cjs',
+    'app.js',
+    'app.test.cjs',
+    'app.test.js',
+  ]);
+  expect(await findFiles('/root', codeExtensions, { readDirectory, noTests: true })).toEqual([
+    'app.cjs',
+    'app.js',
+  ]);
+  expect(await findFiles('/root', codeExtensions, { readDirectory, testsOnly: true })).toEqual([
+    'app.test.cjs',
+    'app.test.js',
+  ]);
 });

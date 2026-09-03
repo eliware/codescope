@@ -1,4 +1,4 @@
-import { collectTestResults, redactTestOutput, runReview } from '../src/review.mjs';
+import { collectTestResults, redactTestOutput, runReview, testEvidenceBlocks } from '../src/review.mjs';
 import { createSuggestionTool, defaultDeveloperText, profilePrompt } from '../src/prompt.mjs';
 import { createReviewTool } from '../src/prompt.mjs';
 import { defaultEnvFile } from '../src/review-config.mjs';
@@ -345,7 +345,28 @@ test('blocks when supplied test evidence fails', async () => {
   expect(result.verdict).toBe('block');
 });
 
-test('does not treat a later output marker as a passing test result', async () => {
+test('converts injected test-runner errors into blocking evidence', async () => {
+  const result = await runReview(
+    '/root',
+    base({
+      includesTests: true,
+      runTestCommand: async () => {
+        throw new Error('runner failed');
+      },
+    }),
+  );
+  expect(result.verdict).toBe('block');
+});
+
+test('recognizes only executed nonzero or timed-out test evidence as blocking', () => {
+  expect(testEvidenceBlocks('===== npm test =====\nexit code: 1\nfailed')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\ntimed out after 30 seconds')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\nexit code: 0\npassed')).toBe(false);
+  expect(testEvidenceBlocks('===== npm test =====')).toBe(false);
+  expect(testEvidenceBlocks('test.mjs exists')).toBe(false);
+});
+
+test('does not override the AI verdict for a later output marker', async () => {
   const result = await runReview(
     '/root',
     base({
@@ -353,15 +374,15 @@ test('does not treat a later output marker as a passing test result', async () =
       runTestCommand: async () => '===== npm test =====\nfailed\nexit code: 0',
     }),
   );
-  expect(result.verdict).toBe('block');
+  expect(result.verdict).toBe('pass');
 });
 
-test('blocks noncanonical test evidence rather than assuming success', async () => {
+test('does not override the AI verdict for noncanonical test evidence', async () => {
   const result = await runReview(
     '/root',
     base({ includesTests: true, runTestCommand: async () => 'npm test failed: exit code: 0' }),
   );
-  expect(result.verdict).toBe('block');
+  expect(result.verdict).toBe('pass');
 });
 
 // codescope ignore: subprocess mechanics are delegated to Node child_process; injected executors are the complete focused contract for this package and real subprocess integration is intentionally out of scope.
@@ -961,4 +982,30 @@ test('handles environment read failures and missing usage', async () => {
 test('cleans up when the signal registrar has no removal hook', async () => {
   await runReview('/root', base({ register: () => ({}) }));
   await runReview('/root', base({ register: () => null }));
+});
+
+test('validates runReview scalar options before doing provider work', async () => {
+  await expect(runReview('', base())).rejects.toThrow('cwd must be');
+  await expect(runReview('/root', base({ maxSourceChars: 0 }))).rejects.toThrow(
+    'maxSourceChars must be positive',
+  );
+  await expect(runReview('/root', base({ maxSourceChars: NaN }))).rejects.toThrow(
+    'maxSourceChars must be finite',
+  );
+  await expect(runReview('/root', base({ testTimeoutMs: 0 }))).rejects.toThrow(
+    'testTimeoutMs must be positive',
+  );
+  await expect(runReview('/root', base({ usage: 'yes' }))).rejects.toThrow(
+    'option usage must be a boolean',
+  );
+});
+
+test('redacts common structured credentials', () => {
+  const output = redactTestOutput(
+    '-----BEGIN PRIVATE KEY-----secret-----END PRIVATE KEY----- AKIA1234567890ABCDEF eyJabcde.abcdef.ghijk',
+  );
+  expect(output).toContain('[redacted-private-key]');
+  expect(output).toContain('[redacted-aws-key]');
+  expect(output).toContain('[redacted-jwt]');
+  expect(redactTestOutput()).toBe('');
 });

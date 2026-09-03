@@ -70,6 +70,8 @@ npm run lint
 npm run pack
 ```
 
+`npm run pack` performs a local `npm pack --dry-run` validation of the publishable file set. Its output is not automatically sent to OpenAI; provide that evidence separately when a review needs to assess package contents.
+
 Reviews use built-in prompts and write one completed structured result; invalid provider tool responses received after the request produce a diagnostic fallback without echoing the provider payload and return a nonzero error code.
 
 The CLI intentionally documents only the public `~/.codescope` configuration path. The internal programmatic `runReview` API can receive an explicit environment-file path through its options.
@@ -78,7 +80,7 @@ The CLI intentionally documents only the public `~/.codescope` configuration pat
 
 Symlink policy: file discovery includes only real filesystem entries. Any entry reported as a symbolic link is skipped, whether it is a file or directory; symlink targets are never followed, scanned, combined, or sent to OpenAI. Native root inspection also rejects a symlink root. This means a symlink to an otherwise valid source file is intentionally excluded.
 
-`codescope all` is the main comprehensive review and suggestion command. It reviews implementation, tests, and Markdown together, makes exactly one review-tool call and one suggestion-tool call in parallel, and merges both into one JSON result. It reports P0–P3 findings, but only P0/P1 issues, concrete documentation discrepancies, or major test gaps block the verdict.
+`codescope all` is the main comprehensive review and suggestion command. It reviews package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, Markdown, and a names-only inventory of other repository files together. Git metadata, dependencies, coverage output, and coverage data are excluded. It makes exactly one review-tool call and one suggestion-tool call in parallel, and merges both into one JSON result. It reports P0–P3 findings, but only unresolved P0 or qualifying P1 issues block the verdict.
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions. File discovery is performed internally below the current working directory. Package metadata is included first, followed by the files selected by the profile. Symlinked files and directories are excluded and never followed.
 

@@ -1,7 +1,8 @@
 import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-const IGNORED_DIRECTORIES = new Set(['.git', 'node_modules']);
+const IGNORED_DIRECTORIES = new Set(['.git', 'node_modules', 'coverage', '.nyc_output']);
+const TEST_FILE_PATTERN = /\.test\.(?:js|cjs|mjs)$/iu;
 
 export async function findFiles(
   root,
@@ -31,6 +32,9 @@ export async function findFiles(
 
   const results = [];
   const pending = [root];
+  const isCodeExtension =
+    extension === '.mjs' ||
+    (Array.isArray(extension) && extension.some((value) => ['.js', '.cjs', '.mjs'].includes(value)));
 
   while (pending.length > 0) {
     const directory = pending.pop();
@@ -96,10 +100,13 @@ export async function findFiles(
         pending.push(childPath);
       else if (
         isFile &&
-        normalizedName.toLowerCase().endsWith(extension) &&
-        (!extension.endsWith('.mjs') ||
-          (testsOnly && normalizedName.toLowerCase().endsWith('.test.mjs')) ||
-          (!testsOnly && !(noTests && normalizedName.toLowerCase().endsWith('.test.mjs'))))
+        (extension === '' ||
+          (Array.isArray(extension)
+            ? extension.some((value) => normalizedName.toLowerCase().endsWith(value))
+            : normalizedName.toLowerCase().endsWith(extension))) &&
+        (!isCodeExtension ||
+          (testsOnly && TEST_FILE_PATTERN.test(normalizedName)) ||
+          (!testsOnly && !(noTests && TEST_FILE_PATTERN.test(normalizedName))))
       ) {
         results.push(
           pathApi.relative(root, pathApi.join(directory, entry.name)).split(/[\\/]/u).join('/'),
@@ -112,3 +119,4 @@ export async function findFiles(
 
 export const findMjsFiles = (root, options) => findFiles(root, '.mjs', options);
 export const findMdFiles = (root, options) => findFiles(root, '.md', options);
+export const findAllFiles = (root, options) => findFiles(root, '', options);

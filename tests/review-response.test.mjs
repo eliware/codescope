@@ -63,7 +63,7 @@ test('parses valid tool responses', () => {
     ),
   ).toHaveProperty('verdict', 'block');
 });
-test('normalizes blocking findings to a block verdict', () => {
+test('preserves the AI verdict when findings are blocking', () => {
   const result = parseReviewToolResponse(
     response({
       verdict: 'pass',
@@ -75,9 +75,9 @@ test('normalizes blocking findings to a block verdict', () => {
       },
     }),
   );
-  expect(result.verdict).toBe('block');
+  expect(result.verdict).toBe('pass');
 });
-test('normalizes scoped blocking findings without documentation', () => {
+test('preserves scoped AI verdicts', () => {
   const result = parseReviewToolResponse(
     response({
       verdict: 'pass',
@@ -88,7 +88,7 @@ test('normalizes scoped blocking findings without documentation', () => {
     'submit_review',
     ['correctness'],
   );
-  expect(result.verdict).toBe('block');
+  expect(result.verdict).toBe('pass');
 });
 test('parses the combined review and suggestion response', () => {
   const result = parseCombinedToolResponse(
@@ -263,12 +263,12 @@ test('accepts a valid scoped review and ignores unrelated output items', () => {
   expect(combined.verdict).toBe('pass');
 });
 
-test('does not treat a noncanonical placeholder as empty', () => {
+test('preserves the AI verdict for noncanonical placeholders', () => {
   const issues = Object.fromEntries(
     Object.keys(emptyIssues).map((category) => [category, emptyIssues[category]]),
   );
   issues.correctness = [
     { severity: 'P1', location: 'none', issue: 'No issues found.', ignore_example: '' },
   ];
-  expect(parseReviewToolResponse(response({ issues, verdict: 'pass' })).verdict).toBe('block');
+  expect(parseReviewToolResponse(response({ issues, verdict: 'pass' })).verdict).toBe('pass');
 });
