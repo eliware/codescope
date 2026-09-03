@@ -32,6 +32,7 @@ const PROFILE_FILES = {
   performance: [true, false, false],
   reliability: [true, false, false],
   'api-design': [true, false, false],
+  'cross-platform': [true, false, false],
   dependencies: [true, false, false],
   observability: [true, false, false],
   accessibility: [true, false, false],
@@ -71,6 +72,10 @@ export function getProfile(profile, mode = 'review') {
     performance: performancePrompt,
     reliability: reliabilityPrompt,
     'api-design': apiDesignPrompt,
+    'cross-platform': profilePrompt(
+      'suggest actionable cross-platform compatibility improvements only',
+      createSuggestionTool(['cross_platform']),
+    ),
     dependencies: dependenciesPrompt,
     observability: observabilityPrompt,
     accessibility: accessibilityPrompt,

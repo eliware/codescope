@@ -94,6 +94,7 @@ Use specialized profiles when you are ready to examine one concern:
 
 ```text
 codescope security
+codescope cross-platform
 codescope reliability
 codescope performance
 codescope dependencies
@@ -133,7 +134,7 @@ suggestion-tool call in parallel, covering correctness, security, reliability,
 performance, architecture, API design, cross-platform compatibility, test quality,
 and documentation consistency.
 The report groups findings under Correctness, Security, Reliability, Performance,
-Architecture, API Design, Tests, and Documentation, and shows a `No issues found.`
+Architecture, API Design, Cross Platform, Tests, and Documentation, and shows a `No issues found.`
 placeholder for empty categories.
 
 ## 9. Decide release readiness
@@ -183,7 +184,7 @@ Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default mod
 
 The effort benchmark runs `none`, `low`, `medium`, and `high` in parallel. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and its current rates are recorded in `summary.json`.
 
-The current supported profiles are `architecture`, `api-design`, `refactor`,
+The current supported profiles are `architecture`, `api-design`, `cross-platform`, `refactor`,
 `security`, `reliability`, `performance`, `dependencies`,
 `observability`, `accessibility`, `quick-wins`, `prioritize`, `p0`, `p0-1`,
 `p0-2`, `p0-3`, `new-features`, and `all`. Use `codescope review <profile>`
