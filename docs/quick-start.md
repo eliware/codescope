@@ -11,21 +11,25 @@ The recommended project validation gates are `npm test`, `npm run lint`, and `np
 3. Implement every practical suggestion.
 4. Run `npm test` and restore genuine 100×4 coverage.
 5. For findings rejected by design:
-   - Document the design decision, or
-   - Add a narrowly scoped CodeScope ignore with justification.
+   - First clarify the relevant documentation.
+   - If documentation alone is insufficient, add a narrowly scoped CodeScope ignore beside the affected code.
    - Never use ignores to hide real defects.
-6. Organize changes into separate, focused commits:
+6. If a finding appears already ignored or documented as out of scope, treat that as insufficiently explicit. Strengthen the documentation or add a scoped ignore at the specific code location.
+7. Every finding must receive an action:
+   - Fix or implementation
+   - Documentation update
+   - Narrowly scoped ignore with justification
+8. Organize changes into separate, focused commits:
    - One commit per independent fix or tightly related group.
    - Include matching tests and documentation in the relevant commit.
    - Avoid combining unrelated fixes.
    - Avoid splitting trivial parts of one fix into unnecessary commits.
-7. Validate each focused change when practical.
-8. Report every original issue and suggestion with its disposition:
-   - Fixed
-   - Documented as intentional design
-   - Narrowly ignored with justification
-9. Identify the commit that addresses each finding.
-10. Include all commit hashes and validation results.
+9. Validate each focused change when practical.
+10. Report every original issue and suggestion with:
+    - Final disposition
+    - Relevant commit hash
+    - Validation performed
+11. Include all commit hashes and final validation results.
 
 ## 1. Set up the token
 
