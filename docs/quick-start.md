@@ -4,77 +4,28 @@ Codescope reviews the repository below your current working directory and writes
 
 The recommended project validation gates are `npm test`, `npm run lint`, and `npm run pack`.
 
-## Owner workflow: complete one iteration
+## Owner workflow
 
-Follow this order exactly when progressively improving a repository:
-
-1. Run exactly one review command and wait for that same process if needed:
-
-   ```text
-   codescope all --usage --effort=none
-   ```
-
-   Use the owner-selected effort when one is specified. One command that
-   returns a verdict is one completed scan, including `block`; never launch a
-   second Codescope call in the same iteration.
-
-2. Capture the exact command, effort, verdict, every finding and suggestion
-   with category, severity, location, token usage, and estimated USD cost.
-   Treat that result as authoritative for the rest of the iteration.
-
-3. Review every category and disposition every item. Implement all in-scope,
-   technically sound fixes, including low- and medium-effort suggestions.
-   Add regression tests for behavior and edge cases. If the specification
-   requires the reported behavior, reject the report as specification-based
-   and ensure that rule is documented there. Otherwise, add a precise nearby
-   `codescope ignore:` only when the item is genuinely unfixable,
-   prohibitively high effort, or an intentional implementation exception.
-   Explain the boundary. There is no deferred status; never use unexplained
-   or blanket ignores to force a pass.
-
-4. Restore the repository contract with the full test suite:
-
-   ```text
-   npm test
-   ```
-
-   Do not bypass the 100×4 requirement. Add tests and repeat validation until
-   statements, branches, functions, and lines are all 100%. A focused run’s
-   mirrored coverage is not evidence for full-suite 100×4 coverage.
-
-5. Run the remaining validation commands:
-
-   ```text
-   npm run lint
-   npm run pack
-   git diff --check
-   ```
-
-   Record exit codes, warning count, coverage, failures, and unresolved risks.
-
-   `npm run pack` is a local `npm pack --dry-run` check of the publishable file set. Codescope does not include its output automatically; only supplied evidence can be reviewed.
-
-6. Stop without another Codescope call and write the detailed final report.
-   Include the exact scan and verdict; every finding and suggestion with its
-   disposition; files, fixes, and tests; every ignore and specification-based
-   rejection with its reason; all validation results; and missing or
-   interrupted evidence.
-
-End the report with cumulative totals across all iterations:
-
-```text
-Cumulative totals:
-- Codescope runs: N
-- Total usage: N tokens
-- Total estimated cost: $N
-- Cumulative issues/suggestions implemented: N
-- Cumulative issues/suggestions ignored: N
-- Cumulative issues/suggestions rejected by specification: N
-```
-
-A `pass` verdict plus required validation is needed to finish. A `block`
-verdict leaves the work active; begin the next iteration with one fresh scan
-against the updated working tree. Start another iteration only when requested.
+1. Run `codescope all`.
+2. Fix every reported issue.
+3. Implement every practical suggestion.
+4. Run `npm test` and restore genuine 100×4 coverage.
+5. For findings rejected by design:
+   - Document the design decision, or
+   - Add a narrowly scoped CodeScope ignore with justification.
+   - Never use ignores to hide real defects.
+6. Organize changes into separate, focused commits:
+   - One commit per independent fix or tightly related group.
+   - Include matching tests and documentation in the relevant commit.
+   - Avoid combining unrelated fixes.
+   - Avoid splitting trivial parts of one fix into unnecessary commits.
+7. Validate each focused change when practical.
+8. Report every original issue and suggestion with its disposition:
+   - Fixed
+   - Documented as intentional design
+   - Narrowly ignored with justification
+9. Identify the commit that addresses each finding.
+10. Include all commit hashes and validation results.
 
 ## 1. Set up the token
 
