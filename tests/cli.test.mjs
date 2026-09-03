@@ -17,6 +17,8 @@ test('benchmark status fails for provider failures and incomplete runs', () => {
   expect(benchmarkExitCode([{ code: 1 }, { code: 0 }], 2)).toBe(1);
   expect(benchmarkExitCode([{ code: 0, signal: 'SIGTERM' }], 1)).toBe(1);
   expect(benchmarkExitCode([{ code: 0 }], 2)).toBe(1);
+  expect(benchmarkExitCode([], -1)).toBe(1);
+  expect(benchmarkExitCode([], 1.5)).toBe(1);
 });
 
 // codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.

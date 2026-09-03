@@ -72,7 +72,7 @@ npm run pack
 
 `npm run pack` performs a local `npm pack --dry-run` validation of the publishable file set. Its output is not automatically sent to OpenAI; provide that evidence separately when a review needs to assess package contents.
 
-Reviews use built-in prompts and write one completed structured result; invalid provider tool responses received after the request produce a diagnostic fallback without echoing the provider payload and return a nonzero error code. Failures before a provider response do not produce fallback JSON.
+Reviews use built-in prompts and write one completed structured result. On the CLI, invalid provider tool responses received after the request produce diagnostic fallback JSON and a nonzero exit code; programmatic `runReview` callers receive a rejected error. Failures before a provider response do not produce fallback JSON.
 
 The CLI intentionally documents only the public `~/.codescope` configuration path. The internal programmatic `runReview` API can receive an explicit environment-file path through its options.
 
