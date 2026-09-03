@@ -2,7 +2,6 @@ import { collectTestResults, redactTestOutput, runReview, testEvidenceBlocks } f
 import { createSuggestionTool, defaultDeveloperText, profilePrompt } from '../src/prompt.mjs';
 import { createReviewTool } from '../src/prompt.mjs';
 import { defaultEnvFile } from '../src/review-config.mjs';
-import { fs } from '@eliware/common';
 import { getProfile } from '../src/cli-profiles.mjs';
 // codescope ignore: real child-process npm-test execution and cross-product provider-failure interactions are delegated to Node/OpenAI; injected executors plus parser tests provide complete deterministic coverage for this package.
 
