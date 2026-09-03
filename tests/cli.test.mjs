@@ -645,7 +645,7 @@ test('runs CLI commands', async () => {
     await main(['architecture'], {
       review: async (_c, { write }) => {
         write('reviewed');
-        return { verdict: 'pass' };
+        return validReviewFor('architecture');
       },
       write: (v) => output.push(v),
     }),
