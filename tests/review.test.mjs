@@ -604,7 +604,7 @@ test('covers default config permission outcomes on non-Windows platforms', async
   const common = {
     environment: { OPENAI_API_TOKEN: 'test-token' },
     envFile: defaultEnvFile(),
-    readEnvFile: async () => 'OPENAI_API_TOKEN=test-token',
+    readFile: async () => 'OPENAI_API_TOKEN=test-token',
     platform: 'linux',
     inspectFile: async () => ({ isSymbolicLink: () => false }),
     readFile: fs.promises.readFile,
