@@ -607,7 +607,6 @@ test('covers default config permission outcomes on non-Windows platforms', async
     readFile: async () => 'OPENAI_API_TOKEN=test-token',
     platform: 'linux',
     inspectFile: async () => ({ isSymbolicLink: () => false }),
-    readFile: fs.promises.readFile,
     combine: async () => '',
     createClient: () => {
       throw new Error('stop before API');
