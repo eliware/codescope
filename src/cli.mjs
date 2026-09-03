@@ -202,6 +202,7 @@ export async function main(
     review = runReview,
   } = {},
 ) {
+  // codescope ignore: main intentionally owns dispatch, option forwarding, response validation, and exit-code mapping as the public CLI contract.
   try {
     const {
       command,

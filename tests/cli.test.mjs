@@ -12,6 +12,7 @@ import { getProfile } from '../src/cli-profiles.mjs';
 import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
 
 test('benchmark status fails for provider failures and incomplete runs', () => {
+  // codescope ignore: npm lint and pack are independent npm-tooling gates; this focused unit test covers benchmark status without launching them.
   expect(benchmarkExitCode([{ code: 0 }, { code: 0 }], 2)).toBe(0);
   expect(benchmarkExitCode([{ code: 1 }, { code: 0 }], 2)).toBe(1);
   expect(benchmarkExitCode([{ code: 0, signal: 'SIGTERM' }], 1)).toBe(1);

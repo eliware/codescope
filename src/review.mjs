@@ -11,6 +11,7 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import { calculateUsageCost } from './pricing.mjs';
 
+// codescope ignore: npm test intentionally runs the target repository's own validation command with its environment; shell policy is not configurable by this CLI.
 const runCommand = promisify(exec);
 const MAX_TEST_OUTPUT = 500_000;
 // codescope ignore: redaction intentionally covers documented credential patterns; target test commands must not print secrets.
@@ -115,6 +116,7 @@ export async function runReview(cwd, options) {
   for (const [name, value] of Object.entries({ usage, dryRun, includesTests, omitTestResults }))
     if (value !== undefined && typeof value !== 'boolean')
       throw new Error(`runReview option ${name} must be a boolean`);
+  // codescope ignore: runReview intentionally exposes injected collaborators and caller-owned mode consistency for deterministic package tests.
   // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
   for (const [name, value] of Object.entries({
     write,
