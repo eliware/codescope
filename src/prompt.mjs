@@ -1,5 +1,6 @@
 import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
 import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
+import { createImplementationOnlyPrompt } from './prompts/suggestions.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
@@ -269,10 +270,7 @@ export const refactorPrompt = profilePrompt(
   'Identify meaningful monolithic-file responsibility splits and suggest smaller single-purpose structures. Return concise suggestions with paths and line number(s). Do not report ordinary implementation issues, style preferences, or intentional policies.',
 );
 const implementationOnlyPrompt = (instruction) =>
-  profilePrompt(
-    `${instruction} Use the complete implementation source provided above. For suggestions, every category array must contain at least one item; when empty, emit one placeholder with location \`none\`, suggestion \`No suggestions found.\`, and empty rationale. For findings, include the path and related line number(s), grouped by priority only when the profile identifies issues.`,
-    suggestionTool,
-  );
+  createImplementationOnlyPrompt(instruction, { profilePrompt, suggestionTool });
 export const architecturePrompt = implementationOnlyPrompt(
   'Suggest architecture optimizations only.',
 );
