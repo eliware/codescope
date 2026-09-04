@@ -1,6 +1,12 @@
 import { createProfileCombiner } from '../../src/profiles/source-selection.mjs';
 
-test('creates review and suggestion source selectors', () => {
-  expect(typeof createProfileCombiner([true, false, false], 'review')).toBe('function');
-  expect(typeof createProfileCombiner([true, false, false], 'suggest')).toBe('function');
+test('creates review and suggestion source selectors', async () => {
+  const options = {
+    readDirectory: async () => [],
+    readFileContents: async () => '{}',
+  };
+  await expect(createProfileCombiner([true, false, false], 'review')('/repo', options))
+    .resolves.toContain('package.json');
+  await expect(createProfileCombiner([true, false, true], 'suggest')('/repo', options))
+    .resolves.toContain('package.json');
 });

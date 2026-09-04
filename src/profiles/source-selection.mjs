@@ -1,4 +1,4 @@
-import { combineSelectedFiles } from '../combine-all.mjs';
+import { combineSelectedFiles } from '../combine/all.mjs';
 
 export function createProfileCombiner(profileFiles, mode) {
   const [implementation, tests, docs] = profileFiles;

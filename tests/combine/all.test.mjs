@@ -1,4 +1,4 @@
-import { combineAllFiles, combineSelectedFiles } from '../src/combine-all.mjs';
+import { combineAllFiles, combineSelectedFiles } from '../../src/combine/all.mjs';
 
 const options = {
   readFileContents: async (file) => file.endsWith('package.json') ? '{"name":"fixture"}\n' : 'content\n',
@@ -20,6 +20,12 @@ test('uses native readers when adapters are not supplied', async () => {
 test('combines only selected source groups when requested', async () => {
   const result = await combineSelectedFiles('/repo', { ...options, implementation: true });
   expect(result).toContain('===== package.json =====');
+  await expect(combineSelectedFiles('/repo', {
+    ...options,
+    tests: true,
+    docs: true,
+    testResults: 'test output',
+  })).resolves.toContain('test output');
 });
 
 test('orders configs, documentation, code, tests, results, and other-file metadata', async () => {
