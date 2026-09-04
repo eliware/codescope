@@ -1,34 +1,11 @@
-import { lstat, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { findAllFiles } from './find-mjs.mjs';
 import { combineCodeFiles, combineMdFiles } from './combine-mjs.mjs';
+import { combinePackageJson } from './combine/package-json.mjs';
 
 const CODE_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts'];
 const MAX_CONFIG_LINES = 200;
-
-async function combinePackageJson(root, options = {}) {
-  const readFileContents = options.readFileContents ?? readFile;
-  const inspectFile = options.inspectFile ?? lstat;
-  const packagePath = path.join(root, 'package.json');
-  let contents;
-  try {
-    if (options.validateSymlinks || readFileContents === readFile) {
-      const metadata = await inspectFile(packagePath);
-      if (metadata.isSymbolicLink()) throw new Error('symlinked package.json is not supported');
-    }
-    contents = await readFileContents(packagePath, 'utf8');
-  } catch (cause) {
-    throw new Error(
-      `Unable to read package.json: ${cause instanceof Error ? cause.message : String(cause)}`,
-      { cause },
-    );
-  }
-  if (typeof contents !== 'string')
-    throw new Error('Unable to read package.json: file reader returned non-string content');
-  const lines = contents.replace(/(?:\r\n|\r|\n)$/u, '').split(/\r\n|\r|\n/u);
-  const width = String(lines.length).length;
-  return `===== package.json =====\n${lines.map((line, index) => `${String(index + 1).padStart(width, ' ')} ${line}`).join('\n')}\n`;
-}
 
 export async function combineAllFiles(root, options = {}) {
   const inventory = await findAllFiles(root, options);
