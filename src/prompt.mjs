@@ -1,6 +1,6 @@
 import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
 import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
-import { createImplementationOnlyPrompt } from './prompts/suggestions.mjs';
+import { createSuggestionProfiles } from './prompts/suggestion-profiles.mjs';
 import { createReviewProfiles } from './prompts/review-profiles.mjs';
 import { createProfilePrompt } from './prompts/builders.mjs';
 
@@ -234,30 +234,18 @@ export const combinedAllPrompt = {
   ],
 };
 export const { codeTestsDocsPrompt, refactorPrompt } = reviewProfiles;
-const implementationOnlyPrompt = (instruction) =>
-  createImplementationOnlyPrompt(instruction, { profilePrompt, suggestionTool });
-export const architecturePrompt = implementationOnlyPrompt(
-  'Suggest architecture optimizations only.',
-);
-export const newFeaturesPrompt = implementationOnlyPrompt(
-  'Suggest new features only. Do not report existing bugs, risks, quality issues, refactoring opportunities, missing tests, or documentation problems. Do not assign P0/P1/P2 priorities to feature suggestions. For each concise suggestion, state the user value and likely implementation area.',
-);
-export const securityPrompt = implementationOnlyPrompt('Identify security risks only.');
-export const performancePrompt = implementationOnlyPrompt('Identify performance risks only.');
-export const reliabilityPrompt = implementationOnlyPrompt('Identify reliability risks only.');
-export const apiDesignPrompt = implementationOnlyPrompt('Suggest API design improvements only.');
-export const dependenciesPrompt = implementationOnlyPrompt('Suggest dependency improvements only.');
-export const observabilityPrompt = implementationOnlyPrompt(
-  'Suggest observability improvements only.',
-);
-export const accessibilityPrompt = implementationOnlyPrompt(
-  'Suggest accessibility improvements only for user-facing behavior.',
-);
-export const quickWinsPrompt = implementationOnlyPrompt(
-  'Suggest only high-value, low-effort improvements.',
-);
-export const prioritizePrompt = implementationOnlyPrompt(
-  'Prioritize existing improvement opportunities only.',
-);
+export const {
+  architecturePrompt,
+  newFeaturesPrompt,
+  securityPrompt,
+  performancePrompt,
+  reliabilityPrompt,
+  apiDesignPrompt,
+  dependenciesPrompt,
+  observabilityPrompt,
+  accessibilityPrompt,
+  quickWinsPrompt,
+  prioritizePrompt,
+} = createSuggestionProfiles({ profilePrompt, suggestionTool });
 export const priorityPrompt = (maximum) => createPriorityPrompt(maximum, { profilePrompt, createReviewTool });
 export const createAnalysisPrompt = (subject) => buildAnalysisPrompt(subject, { profilePrompt });
