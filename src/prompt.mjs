@@ -1,5 +1,4 @@
-import { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
-import { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
+import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
