@@ -1,5 +1,5 @@
 export const PROFILE_FILES = Object.freeze({
-  refactor: [true, false, false], architecture: [true, false, false], 'new-features': [true, false, false], all: [true, true, true],
+  refactor: [true, false, false], architecture: [true, false, false], 'new-features': [true, false, false], all: [true, true, true], release: [true, true, true],
   security: [true, false, false], performance: [true, false, false], reliability: [true, false, false], 'api-design': [true, false, false],
   'cross-platform': [true, false, false], dependencies: [true, false, false], observability: [true, false, false], accessibility: [true, false, false],
   'quick-wins': [true, false, false], prioritize: [true, false, false], p0: [true, false, false], 'p0-1': [true, false, false],

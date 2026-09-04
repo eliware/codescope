@@ -376,14 +376,19 @@ test('runs direct analysis profiles without appending guidance', async () => {
     'quick-wins',
     'prioritize',
     'all',
+    'release',
   ])
     expect(
       await main([profile], {
         review: async (_cwd, received) => {
           const { write } = received;
           write(profile);
-          return profile === 'all'
-            ? { verdict: 'pass', issues: emptyIssues, suggestions: emptySuggestions }
+          return ['all', 'release'].includes(profile)
+            ? {
+                verdict: 'pass',
+                issues: emptyIssues,
+                suggestions: Object.fromEntries(Object.entries(emptySuggestions).filter(([category]) => profile === 'all' || category !== 'new-features')),
+              }
             : profile === 'new-features'
             ? { suggestions: { 'new-features': [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }] } }
             : validReviewFor(profile);
@@ -391,7 +396,7 @@ test('runs direct analysis profiles without appending guidance', async () => {
         write: (v) => output.push(v),
       }),
     ).toBe(0);
-  expect(output).toHaveLength(17);
+  expect(output).toHaveLength(18);
   expect(output).toEqual([
     'p0',
     'p0-1',
@@ -410,6 +415,7 @@ test('runs direct analysis profiles without appending guidance', async () => {
     'quick-wins',
     'prioritize',
     'all',
+    'release',
   ]);
 });
 

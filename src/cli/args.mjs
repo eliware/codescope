@@ -100,6 +100,7 @@ export function parseArgs(args) {
     'quick-wins',
     'prioritize',
     'all',
+    'release',
   ];
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   const commandNames = new Set(['help', 'version', ...profiles]);

@@ -86,7 +86,7 @@ export async function main(
     const result = await review(cwd, reviewOptions);
     if (dryRun) return EXIT_CODES.PASS;
     const isSuggestion = mode === 'suggest' || target === 'new-features';
-    const isCombined = target === 'all' && mode === 'review';
+    const isCombined = ['all', 'release'].includes(target) && mode === 'review';
     const effectivePrompt = reviewOptions.prompt;
     const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
     if (

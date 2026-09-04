@@ -1,12 +1,13 @@
 import {
   createAnalysisPrompt, profilePrompt, allPrompt, combinedAllPrompt, refactorPrompt, architecturePrompt,
+  releasePrompt,
   newFeaturesPrompt, securityPrompt, performancePrompt, reliabilityPrompt, apiDesignPrompt, dependenciesPrompt,
   observabilityPrompt, accessibilityPrompt, quickWinsPrompt, prioritizePrompt, priorityPrompt, createSuggestionTool,
   REVIEW_CATEGORIES,
 } from '../prompt.mjs';
 
 const prompts = {
-  all: allPrompt, refactor: refactorPrompt, architecture: architecturePrompt, 'new-features': newFeaturesPrompt,
+  all: allPrompt, release: releasePrompt, refactor: refactorPrompt, architecture: architecturePrompt, 'new-features': newFeaturesPrompt,
   security: securityPrompt, performance: performancePrompt, reliability: reliabilityPrompt, 'api-design': apiDesignPrompt,
   dependencies: dependenciesPrompt, observability: observabilityPrompt, accessibility: accessibilityPrompt,
   'quick-wins': quickWinsPrompt, prioritize: prioritizePrompt, p0: priorityPrompt(0), 'p0-1': priorityPrompt(1),
@@ -24,6 +25,8 @@ export function getPromptRouting(profile, mode) {
   const categories = suggestionCategories[profile];
   const promptSource = profile === 'all' && mode === 'review'
     ? combinedAllPrompt
+    : profile === 'release' && mode === 'review'
+      ? releasePrompt
     : mode === 'suggest' && !categories
       ? profilePrompt(`suggest actionable improvements across all supplied source categories for the ${profile} profile. Do not report existing issues; return suggestions only.`, createSuggestionTool())
       : mode === 'review' && categories
