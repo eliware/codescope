@@ -3,6 +3,7 @@ import path from 'node:path';
 import { findFiles } from '../find/files.mjs';
 import { formatSourceSection } from './section-format.mjs';
 import { validateCombineOptions } from './policies.mjs';
+import { readSourceFile } from './read-file.mjs';
 
 export async function combineFiles(
   root,
@@ -38,28 +39,11 @@ export async function combineFiles(
       files.slice(start, start + batchSize).map(async (relativePath) => {
         const resolvedPath = pathApi.resolve(rootPath, relativePath);
 
-        let contents;
-
-        try {
-          if (readFileContents === readFile || validateSymlinks) {
-            const metadata = await inspectFile(resolvedPath);
-            // codescope ignore: this portable read-only scanner accepts the lstat-before-read TOCTOU race, symlink replacement race, and lack of atomic no-follow filesystem reads.
-            if (metadata.isSymbolicLink())
-              throw new Error('symlinked source files are not supported');
-            if (!metadata.isFile()) throw new Error('source path is not a regular file');
-          }
-
-          contents = await readFileContents(resolvedPath, 'utf8');
-        } catch (cause) {
-          throw new Error(
-            `Unable to read ${relativePath}: ${cause instanceof Error ? cause.message : String(cause)}`,
-            { cause },
-          );
-        }
-        if (typeof contents !== 'string')
-          throw new Error(
-            `Unable to read ${relativePath}: file reader returned non-string content`,
-          );
+        const contents = await readSourceFile(relativePath, resolvedPath, {
+          readFileContents,
+          inspectFile,
+          validateSymlinks,
+        });
 
         if (Number.isFinite(maxChars) && contents.length > maxChars)
           throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
