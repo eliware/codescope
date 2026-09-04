@@ -1,25 +1,10 @@
 import { PROFILE_NAMES } from '../profiles/index.mjs';
+import { parsePromptArgs } from './prompt-args.mjs';
 
 export function parseArgs(args) {
   // codescope ignore: grouped review/suggest commands intentionally share one concise option grammar; direct profiles retain their legacy aliases.
   const [first = 'help', ...rest] = args;
-  if (first === 'prompt') {
-    const promptText = rest.filter((value) => !value.startsWith('--')).join(' ').trim();
-    if (!promptText) throw new Error('Usage: codescope prompt <prompt text>');
-    const options = rest.filter((value) => value.startsWith('--'));
-    const effortToken = options.find((value) => value.startsWith('--effort='));
-    const modelToken = options.find((value) => value.startsWith('--model='));
-    const allowed = options.filter((value) => value.startsWith('--effort=') || value.startsWith('--model='));
-    if (options.length !== allowed.length || new Set(options).size !== options.length)
-      throw new Error('Usage: codescope prompt <prompt text> [--effort=...] [--model=...]');
-    const effort = effortToken?.slice('--effort='.length);
-    const model = modelToken?.slice('--model='.length);
-    if (effort && !['none', 'low', 'medium', 'high', 'xhigh', 'max'].includes(effort))
-      throw new Error('Effort must be one of: none, low, medium, high, xhigh, max');
-    if (model && !['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol'].includes(model))
-      throw new Error('Model must be one of: gpt-5.6-luna, gpt-5.6-terra, gpt-5.6-sol');
-    return { command: 'prompt', promptText, effort, model };
-  }
+  if (first === 'prompt') return parsePromptArgs(rest);
   const effortTokens = rest.filter((value) => value.startsWith('--effort='));
   if (effortTokens.length > 1) throw new Error('Only one --effort option is allowed');
   const effortToken = effortTokens[0];
@@ -151,4 +136,3 @@ export function parseArgs(args) {
     ...(dryRunTokens.length ? { dryRun: true } : {}),
   };
 }
-
