@@ -5,14 +5,15 @@ requirements, known defects, or commitments.
 
 ## CLI and workflow
 
+- Centralize shared option validation for effort and model selection so direct,
+  grouped, and custom-prompt command forms cannot drift.
+
 - Add a `codescope inspect` command that prints the exact files and byte/line
   counts selected for a profile without contacting OpenAI.
 - Add a `--output <path>` option for saving the structured result directly to a
   file while retaining the normal terminal summary.
 - Add a `--format json|markdown` presentation option for consumers that want a
   human-readable report without changing the validated provider result.
-- Add a `codescope profiles` command that prints the available profiles and
-  their source selection and purpose.
 - Add a local configuration file for repository-specific defaults such as the
   model, effort, test timeout, and default profile.
 

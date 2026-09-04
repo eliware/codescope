@@ -27,3 +27,13 @@ test('rejects unsupported clients and invalid counts', async () => {
     runDryRun({ client, request, signal: {}, model: request.model, usage: false }),
   ).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
 });
+
+test('uses the default model for cost calculation when omitted', async () => {
+  const result = await runDryRun({
+    client: { responses: { inputTokens: { count: async () => ({ input_tokens: 0 }) } } },
+    request: { model: undefined },
+    signal: new AbortController().signal,
+    usage: true,
+  });
+  expect(result.usage.estimated_cost_usd).toBe(0);
+});

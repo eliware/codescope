@@ -1,28 +1,15 @@
-import { findAllFiles } from '../find/files.mjs';
-import { combineCodeFiles, combineMdFiles } from './files.mjs';
-import { combinePackageJson } from './package-json.mjs';
-import { combineConfigFiles } from './configs.mjs';
-import { describeOtherFiles } from './other-files.mjs';
+import { collectAllSections } from './all-sections.mjs';
 
 export async function combineAllFiles(root, options = {}) {
-  const inventory = await findAllFiles(root, options);
-  const [packageJson, configs, md, implementation, tests] = await Promise.all([
-    combinePackageJson(root, options),
-    combineConfigFiles(root, { ...options, inventory }),
-    combineMdFiles(root, options),
-    combineCodeFiles(root, { ...options, noTests: true }),
-    combineCodeFiles(root, { ...options, testsOnly: true }),
-  ]);
-  const otherFiles = await describeOtherFiles(root, inventory, options);
-  const otherSection = `===== other files (names and sizes only) =====\n${otherFiles.join('\n')}\n`;
+  const sections = await collectAllSections(root, options);
   const combined = [
-    packageJson,
-    configs,
-    md,
-    implementation,
-    tests,
-    options.testResults,
-    otherSection,
+    sections.packageJson,
+    sections.configs,
+    sections.md,
+    sections.implementation,
+    sections.tests,
+    sections.testResults,
+    sections.other,
   ]
     .filter(Boolean)
     .join('\n');

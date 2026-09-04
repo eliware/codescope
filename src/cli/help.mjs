@@ -1,25 +1,8 @@
-export function usage() {
-  return `## Owner workflow
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-1. Run \`codescope all\` exactly once at the beginning of this iteration (allow at least a 60-second timeout). Do not rerun it after making fixes; the goal harness owns subsequent iterations.
-2. Fix every issue reported by that single CodeScope run.
-3. Implement every practical suggestion reported by that single CodeScope run.
-4. Run \`npm test\` and restore genuine 100×4 coverage.
-5. For findings rejected by design:
-   - First clarify the relevant documentation.
-6. Every finding must receive an action:
-   - Fix or implementation
-   - Documentation update
-7. Organize changes into separate, focused commits:
-   - One commit per independent fix or tightly related group.
-   - Include matching tests and documentation in the relevant commit.
-   - Avoid combining unrelated fixes.
-   - Avoid splitting trivial parts of one fix into unnecessary commits.
-9. Validate each focused change when practical using the repository’s normal validation commands, but do not rerun \`codescope all\`.
-10. Report every original issue and suggestion from the single CodeScope run with:
-    - Final disposition
-    - Relevant commit hash
-    - Validation performed
-11. Include all commit hashes and final validation results.
-12. Only push and mark the goal complete when the final report for this iteration is pass with 0 issues and 0 suggestions. Do not rerun CodeScope to verify fixes; leave re-iteration to the goal harness.`;
+const helpPath = fileURLToPath(new URL('../../docs/quick-start.md', import.meta.url));
+
+export function usage() {
+  return readFileSync(helpPath, 'utf8');
 }

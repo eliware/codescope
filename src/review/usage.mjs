@@ -1,4 +1,4 @@
-import { calculateUsageCost } from '../pricing/calculator.mjs';
+import { calculateUsageCostBreakdown } from '../pricing/calculator.mjs';
 
 export function withReviewUsage(result, providerResponse, model, includeUsage) {
   if (!includeUsage) return result;
@@ -7,7 +7,7 @@ export function withReviewUsage(result, providerResponse, model, includeUsage) {
     usage: providerResponse.usage
       ? {
           ...providerResponse.usage,
-          estimated_cost_usd: calculateUsageCost(model ?? 'gpt-5.6-luna', providerResponse.usage),
+          ...calculateUsageCostBreakdown(model ?? 'gpt-5.6-luna', providerResponse.usage),
         }
       : null,
   };

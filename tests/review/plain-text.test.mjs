@@ -29,5 +29,8 @@ test('rejects empty custom prompts', () => {
 test('parses structured JSON responses', () => {
   expect(parsePlainTextJsonResponse({ output_text: '{"ok":true}' })).toEqual({ ok: true });
   expect(() => parsePlainTextJsonResponse({ output_text: 'not json' })).toThrow('structured JSON');
+  expect(() => parsePlainTextJsonResponse({ output_text: 'not json' })).toThrow(
+    expect.objectContaining({ code: 'INVALID_RESPONSE' }),
+  );
   expect(() => parsePlainTextJsonResponse({})).toThrow('structured JSON');
 });

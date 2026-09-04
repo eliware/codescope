@@ -1,48 +1,16 @@
-import { fs, registerSignals } from '@eliware/common';
-import { createOpenAI } from '@eliware/openai';
-import { combineMjsFiles } from '../combine/files.mjs';
-import { prompt as defaultPrompt } from '../prompt.mjs';
-import { defaultEnvFile } from './config.mjs';
-import { lstat, stat } from 'node:fs/promises';
-import { parseProviderResult } from './provider-result.mjs';
-import { writeFallbackResult, writeJsonResult } from './output.mjs';
-import { prepareRequest } from './request.mjs';
 import { removeSignalHandlers } from './cleanup.mjs';
-import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 import { validateReviewOptions } from './options.mjs';
-import { loadReviewEnvironment } from './environment.mjs';
-import { collectReviewTestEvidence } from './test-evidence.mjs';
-import { parsePlainTextJsonResponse, preparePlainTextRequest } from './plain-text.mjs';
-import { runDryRun } from './dry-run.mjs';
 import { initializeReviewClient } from './client.mjs';
 import { registerReviewSignals } from './signals.mjs';
-import { requestProviderResponse } from './provider-request.mjs';
-import { createIncompleteResult, createProviderFailure } from './failure.mjs';
-import { withReviewUsage } from './usage.mjs';
+import { createReviewDefaults } from './defaults.mjs';
+import { resolveReviewSetup } from './setup.mjs';
+import { collectReviewEvidence } from './evidence.mjs';
+import { executeReviewSession } from './session.mjs';
+import { prepareReviewRequest } from './request-phase.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
-  const defaults = {
-    write: process.stdout.write.bind(process.stdout),
-    readFile: fs.promises.readFile,
-    envFile: defaultEnvFile(),
-    prompt: defaultPrompt,
-    combine: combineMjsFiles,
-    maxSourceChars: 2_000_000,
-    usage: false,
-    dryRun: false,
-    includesTests: false,
-    omitTestResults: false,
-    testTimeoutMs: 30_000,
-    runTestCommand: collectTestResults,
-    redactTestOutput,
-    model: undefined,
-    createClient: createOpenAI,
-    register: registerSignals,
-    inspectFile: lstat,
-    inspectPermissions: stat,
-    platform: process.platform,
-  };
+  const defaults = createReviewDefaults();
   const {
     write,
     readFile,
@@ -84,7 +52,7 @@ export async function runReview(cwd, options) {
     register,
   });
   // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
-  const environment = await loadReviewEnvironment({
+  const { token } = await resolveReviewSetup({
     envFile,
     readFile,
     readEnvFile,
@@ -92,85 +60,36 @@ export async function runReview(cwd, options) {
     inspectPermissions,
     platform,
   });
-  const token = environment.OPENAI_API_TOKEN?.trim();
-  if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
-  const testResults = await collectReviewTestEvidence({
+  const { testResults, combined } = await collectReviewEvidence({
     cwd,
     includesTests,
     omitTestResults,
     testTimeoutMs,
     runTestCommand,
     redactOutput,
-  });
-  const combined = await combine(cwd, {
+    combine,
     readDirectory,
-    readFileContents: readFile,
-    // Injected filesystem adapters are testable collaborators; native scans validate symlinks in the finder.
-    validateSymlinks: readFile === fs.promises.readFile,
-    maxChars: maxSourceChars,
-    testResults,
+    readFile,
+    maxSourceChars,
   });
 
-  const request = prepareRequest(prompt, combined);
-  if (model) request.model = model;
-
-  if (plainText !== undefined) {
-    preparePlainTextRequest(request, plainText, combined);
-  }
+  const request = prepareReviewRequest(prompt, combined, model, plainText);
 
   const controller = new AbortController();
   const client = initializeReviewClient(createClient, token);
   let signals;
-  let providerResponse;
-  let providerResponseReceived = false;
   try {
     signals = registerReviewSignals(register, controller);
-    try {
-      const toolNames = (request.tools ?? []).map((tool) => tool?.name);
-      const combined =
-        request.tool_choice === 'auto' &&
-        toolNames.includes('submit_review') &&
-        toolNames.includes('submit_suggestions');
-      if (dryRun) {
-        const output = await runDryRun({
-          client,
-          request,
-          signal: controller.signal,
-          model: request.model,
-          usage,
-        });
-        await writeJsonResult(write, output);
-        return output;
-      }
-      providerResponse = await requestProviderResponse(
-        client,
-        request,
-        combined,
-        controller.signal,
-      );
-      providerResponseReceived = true;
-      if (plainText !== undefined) {
-        const output = parsePlainTextJsonResponse(providerResponse);
-        await writeJsonResult(write, output, 'prompt');
-        return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
-      }
-      const result = parseProviderResult(providerResponse, request, combined);
-      if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) {
-        result.verdict = 'block';
-      }
-      const output = withReviewUsage(result, providerResponse, request.model, usage);
-
-      await writeJsonResult(write, output);
-      return output;
-    } catch (cause) {
-      if (providerResponseReceived) {
-        const fallback = createIncompleteResult(cause);
-        await writeFallbackResult(write, fallback);
-      }
-      const failure = createProviderFailure(cause);
-      if (cause?.code) failure.code = cause.code;
-      throw failure;
-    }
+    return await executeReviewSession({
+      client,
+      request,
+      signal: controller.signal,
+      write,
+      dryRun,
+      usage,
+      plainText,
+      testResults,
+    });
   } finally {
     controller.abort();
     removeSignalHandlers(signals);

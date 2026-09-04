@@ -4,7 +4,8 @@ import { findFiles } from '../find/files.mjs';
 import { formatSourceSection } from './section-format.mjs';
 import { validateCombineOptions } from './policies.mjs';
 import { readSourceFile } from './read-file.mjs';
-import { addBatchLength, assertWithinLimit, getBatchSize } from './limits.mjs';
+import { assertWithinLimit, getBatchSize } from './limits.mjs';
+import { readBatches } from './batches.mjs';
 
 export async function combineFiles(
   root,
@@ -30,35 +31,21 @@ export async function combineFiles(
   const pathApi = path;
   const rootPath = pathApi.resolve(root);
 
-  const sections = [];
-  let totalChars = 0;
-
   const batchSize = getBatchSize(maxChars, concurrency);
-  for (let start = 0; start < files.length; start += batchSize) {
-    const batch = await Promise.all(
-      files.slice(start, start + batchSize).map(async (relativePath) => {
-        const resolvedPath = pathApi.resolve(rootPath, relativePath);
-
-        const contents = await readSourceFile(relativePath, resolvedPath, {
-          readFileContents,
-          inspectFile,
-          validateSymlinks,
-        });
-
-        if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
-
-        return formatSourceSection(relativePath, contents);
-      }),
-    );
-
-    totalChars = addBatchLength(
-      totalChars,
-      batch.reduce((total, section) => total + section.length, 0),
-      batch.length,
-    );
-    assertWithinLimit(totalChars, maxChars);
-    sections.push(...batch);
-  }
+  const sections = await readBatches(files, {
+    batchSize,
+    maxChars,
+    read: async (relativePath) => {
+      const resolvedPath = pathApi.resolve(rootPath, relativePath);
+      const contents = await readSourceFile(relativePath, resolvedPath, {
+        readFileContents,
+        inspectFile,
+        validateSymlinks,
+      });
+      if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
+      return formatSourceSection(relativePath, contents);
+    },
+  });
   return sections.join('\n');
 }
 

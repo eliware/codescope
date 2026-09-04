@@ -34,6 +34,7 @@
     "src/",
     "README.md",
     "docs/",
+    "scripts/",
     "specs/",
     "KNOWN_ISSUES.md",
     "NEW_FEATURE_SUGGESTIONS.md",
@@ -45,8 +46,8 @@
     "lint": "eliware-test --lint",
     "pack": "npm pack --dry-run",
     "benchmark:efforts": "node scripts/benchmark-efforts.mjs",
-    "format": "prettier --write bin src tests",
-    "format:check": "prettier --check bin src tests"
+    "format": "prettier --write bin src tests README.md AGENTS.md RELEASE_NOTES.md docs specs *.md",
+    "format:check": "prettier --check bin src tests README.md AGENTS.md RELEASE_NOTES.md docs specs *.md"
   },
   "engines": {
     "node": ">=26"

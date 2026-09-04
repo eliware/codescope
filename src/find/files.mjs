@@ -5,6 +5,7 @@ import { matchesFile } from './extensions.mjs';
 import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './root-policy.mjs';
 import { classifyEntry } from './entry-types.mjs';
 import { readDirectoryEntries } from './read-entries.mjs';
+import { walkDirectories } from './walk.mjs';
 
 export async function findFiles(
   root,
@@ -23,32 +24,26 @@ export async function findFiles(
   const pathApi = path;
   root = pathApi.resolve(root);
 
-  if (readDirectory === readdir || inspectRoot !== lstat) {
+  try {
     const metadata = await inspectRoot(root);
     validateScanRootMetadata(metadata);
+  } catch (cause) {
+    // Injected directory adapters may model virtual roots that do not exist on disk.
+    if (readDirectory === readdir || cause?.code !== 'ENOENT') throw cause;
   }
 
   const results = [];
-  const pending = [root];
-  while (pending.length > 0) {
-    const directory = pending.pop();
-    const entries = await readDirectoryEntries(readDirectory, directory, root, pathApi);
-    for (const entry of entries) {
-      const entryType = classifyEntry(entry, pathApi.relative(root, directory));
-      if (entryType.skip) continue;
-      const { isDirectory, isFile } = entryType;
-      const childPath = pathApi.resolve(directory, entry.name);
-
-      const normalizedName = entry.name;
-      if (isDirectory && !isIgnoredDirectory(normalizedName, pathApi.relative(root, directory)))
-        pending.push(childPath);
-      else if (isFile && matchesFile(normalizedName, extension, testsOnly, noTests)) {
-        results.push(
-          pathApi.relative(root, pathApi.join(directory, entry.name)).split(/[\\/]/u).join('/'),
-        );
-      }
-    }
-  }
+  await walkDirectories(root, {
+    readEntries: (directory, scanRoot) => readDirectoryEntries(readDirectory, directory, scanRoot, pathApi),
+    classify: (entry, directory, scanRoot) => classifyEntry(entry, pathApi.relative(scanRoot, directory)),
+    shouldDescend: (name, directory, scanRoot) =>
+      !isIgnoredDirectory(name, pathApi.relative(scanRoot, directory)),
+    resolveChild: (directory, name) => pathApi.resolve(directory, name),
+    onFile: (name, directory, scanRoot) => {
+      if (matchesFile(name, extension, testsOnly, noTests))
+        results.push(pathApi.relative(scanRoot, pathApi.join(directory, name)).split(/[\\/]/u).join('/'));
+    },
+  });
   return results.sort();
 }
 

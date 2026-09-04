@@ -2,9 +2,9 @@ import { runReview } from '../review/lifecycle.mjs';
 import { getProfile } from '../profiles/index.mjs';
 import { isValidReviewResult, isValidSuggestionResult } from '../review-response.mjs';
 import { EXIT_CODES, errorExitCode } from './errors.mjs';
-import { VERSION } from './version.mjs';
-import { usage } from './help.mjs';
 import { parseArgs } from './args.mjs';
+import { dispatchMeta } from './dispatch-meta.mjs';
+import { statusForPromptResult, statusForReviewResult } from './status-result.mjs';
 
 export async function main(
   args,
@@ -28,22 +28,7 @@ export async function main(
       dryRun,
       promptText,
     } = parseArgs(args);
-    if (option && ['--help', '-h'].includes(option)) {
-      output(usage());
-      return 0;
-    }
-    if (option === '--version' || option === '-v') {
-      output(VERSION);
-      return 0;
-    }
-    if (command === 'help') {
-      output(usage());
-      return 0;
-    }
-    if (command === 'version') {
-      output(VERSION);
-      return 0;
-    }
+    if (dispatchMeta(command, option, output)) return EXIT_CODES.PASS;
     if (command === 'prompt') {
       const { combine, prompt: profilePrompt } = getProfile('all', 'review');
       const prompt = structuredClone(profilePrompt);
@@ -58,14 +43,12 @@ export async function main(
         model,
         write,
       });
-      return typeof result?.text === 'string' ? EXIT_CODES.PASS : EXIT_CODES.RESPONSE;
+      return statusForPromptResult(result);
     }
     const target = command.slice('analyze-'.length);
     const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
     const { combine, prompt: profilePrompt, includesTests } = getProfile(target, effectiveMode);
     const prompt = structuredClone(profilePrompt);
-    if (option === '--omit-test-results' && !includesTests)
-      throw new Error(`Option --omit-test-results is not valid for ${target}`);
     const reviewOptions = {
       write,
       combine,
@@ -87,25 +70,24 @@ export async function main(
     const isCombined = ['all', 'release'].includes(target) && mode === 'review';
     const effectivePrompt = reviewOptions.prompt;
     const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
-    if (
-      (!isSuggestion &&
-        (isCombined
-          ? !isValidReviewResult(
+    const isValid =
+      isSuggestion
+        ? suggestionResultIsValid
+        : isCombined
+          ? isValidReviewResult(
               { issues: result?.issues, verdict: result?.verdict },
               { tools: [effectivePrompt.tools[0]] },
-            ) ||
-            !isValidSuggestionResult(
+            ) &&
+            isValidSuggestionResult(
               { suggestions: result?.suggestions },
               { tools: [effectivePrompt.tools[1]] },
             )
-          : !isValidReviewResult(result, effectivePrompt))) ||
-      (isSuggestion && !suggestionResultIsValid)
-    ) {
+          : isValidReviewResult(result, effectivePrompt);
+    if (!isValid) {
       error('codescope: review returned no validated pass-or-block verdict');
-      return EXIT_CODES.RESPONSE;
+      return statusForReviewResult(result, { isSuggestion, isValid: false });
     }
-    if (isSuggestion) return EXIT_CODES.PASS;
-    return result.verdict === 'block' ? EXIT_CODES.BLOCKED : EXIT_CODES.PASS;
+    return statusForReviewResult(result, { isSuggestion, isValid: true });
   } catch (cause) {
     error(`codescope: ${cause instanceof Error ? cause.message : String(cause)}`);
     if (cause instanceof Error && cause.message.startsWith('Unknown command'))

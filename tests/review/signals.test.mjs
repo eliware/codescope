@@ -19,3 +19,8 @@ test('wraps signal registration failures', () => {
     }, new AbortController()),
   ).toThrow('Unable to register signal handlers');
 });
+
+test('formats non-error signal registration failures', () => {
+  expect(() => registerReviewSignals(() => { throw 'failed'; }, new AbortController()))
+    .toThrow(/failed/);
+});

@@ -45,6 +45,16 @@ test('rejects a symlinked scan root', async () => {
   ).rejects.toThrow('symlinked scan roots');
 });
 
+test('inspects the scan root even with an injected directory reader', async () => {
+  const inspected = [];
+  const inspectRoot = async (root) => {
+    inspected.push(root);
+    return { isSymbolicLink: () => false };
+  };
+  await findFiles('/virtual-root', '.mjs', { readDirectory: async () => [], inspectRoot });
+  expect(inspected).toEqual([path.resolve('/virtual-root')]);
+});
+
 test('rejects invalid roots, entries, and directory results', async () => {
   await expect(findFiles(null, '.mjs', { readDirectory: async () => [] })).rejects.toThrow(
     'path string',

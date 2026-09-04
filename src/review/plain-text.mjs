@@ -20,6 +20,8 @@ export function parsePlainTextJsonResponse(response) {
   try {
     return JSON.parse(outputText);
   } catch (cause) {
-    throw new Error('Invalid structured JSON response', { cause });
+    const error = new Error('Invalid structured JSON response', { cause });
+    error.code = 'INVALID_RESPONSE';
+    throw error;
   }
 }

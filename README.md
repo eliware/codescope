@@ -85,7 +85,7 @@ npm run pack
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions.
 
-Use `codescope prompt "your question"` for an ad hoc plain-text request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools and prints the model's final text response directly. Optional `--effort=` and `--model=` overrides are supported.
+Use `codescope prompt "your question"` for an ad hoc plain-text request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools and prints the model's final text response directly. Optional `--effort=` and `--model=` overrides are supported. Use `--` before options when the prompt itself begins with a dash, for example `codescope prompt --summarize this repository -- --effort=low`.
 
 `codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page.
 

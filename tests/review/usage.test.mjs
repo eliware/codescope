@@ -21,3 +21,10 @@ test('adds provider usage and calculated cost when enabled', () => {
   });
   expect(withReviewUsage({}, {}, 'gpt-5.6-luna', true).usage).toBeNull();
 });
+
+test('adds a zeroed breakdown when the provider reports empty usage', () => {
+  expect(withReviewUsage({}, { usage: {} }, undefined, true).usage).toMatchObject({
+    input_tokens: 0,
+    estimated_cost_usd: 0,
+  });
+});

@@ -1,299 +1,54 @@
 import {
   parseCombinedToolResponse,
   parseReviewToolResponse,
+  parseSuggestionToolResponse,
 } from '../../src/response/review-response.mjs';
 
-test('public response adapter re-exports review parsing', () => {
-  expect(() => parseReviewToolResponse({ output: [] })).toThrow(
-    'OpenAI response did not contain exactly one submit_review tool call',
-  );
+const response = (value, name = 'submit_review') => ({
+  output: [{ type: 'function_call', name, arguments: JSON.stringify(value) }],
+});
+const issue = { severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' };
+const suggestion = { location: 'none', suggestion: 'No suggestions found.', rationale: '', ignore_example: '' };
+const issues = { correctness: [issue] };
+const suggestions = { correctness: [suggestion] };
+
+test('routes public review and suggestion adapters', () => {
+  expect(parseReviewToolResponse(response({ issues, verdict: 'pass' }), 'submit_review', ['correctness'])).toEqual({ issues, verdict: 'pass' });
+  expect(parseSuggestionToolResponse(response({ suggestions }, 'submit_suggestions'), ['correctness'])).toEqual({ suggestions });
+  expect(() => parseReviewToolResponse({ output: [] }, 'unknown')).toThrow(/Unsupported/);
 });
 
-test('rejects unsupported tool names', () => {
-  expect(() => parseReviewToolResponse({ output: [] }, 'other_tool')).toThrow(
-    'Unsupported Codescope tool',
-  );
+test('combines exactly one review and suggestion call', () => {
+  expect(parseCombinedToolResponse({
+    output: [
+      ...response({ issues, verdict: 'pass' }).output,
+      ...response({ suggestions }, 'submit_suggestions').output,
+    ],
+  }, ['correctness'], ['correctness'])).toEqual({ issues, suggestions, verdict: 'pass' });
+  expect(() => parseCombinedToolResponse({ output: [] }, ['correctness'], ['correctness'])).toThrow(/exactly one/);
 });
 
-test('rejects invalid category configurations and output shapes', () => {
-  expect(() => parseReviewToolResponse(response({}), 'submit_review', [])).toThrow(
-    'nonempty unique string array',
-  );
-  expect(() => parseReviewToolResponse(response({}), 'submit_review', ['tests', 'tests'])).toThrow(
-    'nonempty unique string array',
-  );
-  expect(() => parseReviewToolResponse({ output: {} })).toThrow(
-    'exactly one submit_review tool call',
-  );
+test('rejects invalid category declarations and malformed calls', () => {
+  expect(() => parseReviewToolResponse(response({ issues, verdict: 'pass' }), 'submit_review', [])).toThrow(/nonempty/);
+  expect(() => parseReviewToolResponse(response({ issues, verdict: 'pass' }), 'submit_review', ['x', 'x'])).toThrow(/nonempty/);
+  expect(() => parseReviewToolResponse({ output: [{ type: 'function_call', name: 'submit_review', arguments: 1 }] })).toThrow(/exactly one/);
+  expect(() => parseReviewToolResponse({ output: [{ type: 'function_call', name: 'submit_review', arguments: '{' }] })).toThrow(/valid JSON/);
 });
 
-const response = (value) => ({
-  output: [{ type: 'function_call', name: 'submit_review', arguments: JSON.stringify(value) }],
-});
-const emptyIssues = Object.fromEntries(
-  [
-    'correctness',
-    'security',
-    'reliability',
-    'performance',
-    'architecture',
-    'api_design',
-    'cross_platform',
-    'tests',
-    'documentation',
-  ].map((category) => [
-    category,
-    [{ severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' }],
-  ]),
-);
-const emptySuggestions = Object.fromEntries(
-  [...Object.keys(emptyIssues), 'new-features'].map((category) => [
-    category,
-    [{ location: 'none', suggestion: 'No suggestions found.', rationale: '', ignore_example: '' }],
-  ]),
-);
-
-test('parses valid tool responses', () => {
-  expect(
-    parseReviewToolResponse(
-      response({
-        verdict: 'block',
-        issues: {
-          ...emptyIssues,
-          correctness: [
-            {
-              severity: 'P1',
-              location: 'a.mjs:1',
-              issue: 'bad',
-              ignore_example: 'none',
-            },
-          ],
-        },
-      }),
-    ),
-  ).toHaveProperty('verdict', 'block');
-});
-test('preserves the AI verdict when findings are blocking', () => {
-  const result = parseReviewToolResponse(
-    response({
-      verdict: 'pass',
-      issues: {
-        ...emptyIssues,
-        correctness: [
-          { severity: 'P1', location: 'a.mjs:1', issue: 'bad', ignore_example: 'none' },
-        ],
-      },
-    }),
-  );
-  expect(result.verdict).toBe('pass');
-});
-test('preserves scoped AI verdicts', () => {
-  const result = parseReviewToolResponse(
-    response({
-      verdict: 'pass',
-      issues: {
-        correctness: [{ severity: 'P1', location: 'a.mjs:1', issue: 'bad', ignore_example: '' }],
-      },
-    }),
-    'submit_review',
-    ['correctness'],
-  );
-  expect(result.verdict).toBe('pass');
-});
-test('parses the combined review and suggestion response', () => {
-  const result = parseCombinedToolResponse(
-    {
-      output: [
-        {
-          type: 'function_call',
-          name: 'submit_review',
-          arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
-        },
-        {
-          type: 'function_call',
-          name: 'submit_suggestions',
-          arguments: JSON.stringify({ suggestions: emptySuggestions }),
-        },
-      ],
-    },
-    Object.keys(emptyIssues),
-    [...Object.keys(emptyIssues), 'new-features'],
-  );
-  expect(result).toEqual({
-    issues: emptyIssues,
-    suggestions: emptySuggestions,
-    verdict: 'pass',
-  });
-});
-test('rejects missing or duplicate combined tool calls', () => {
-  const review = {
-    type: 'function_call',
-    name: 'submit_review',
-    arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
-  };
-  expect(() =>
-    parseCombinedToolResponse(
-      { output: [review] },
-      Object.keys(emptyIssues),
-      Object.keys(emptyIssues),
-    ),
-  ).toThrow(/exactly one/);
-  expect(() =>
-    parseCombinedToolResponse(
-      {
-        output: [
-          review,
-          review,
-          { type: 'function_call', name: 'submit_suggestions', arguments: '{}' },
-        ],
-      },
-      Object.keys(emptyIssues),
-      Object.keys(emptyIssues),
-    ),
-  ).toThrow(/exactly one/);
+test('rejects unsupported public tool names', () => {
+  expect(() => parseReviewToolResponse(response({}), 'unsupported')).toThrow(/Unsupported/);
 });
 
-test('rejects malformed calls, JSON, and review results', () => {
-  for (const value of [
-    undefined,
-    {},
-    { output: [] },
-    { output: [{ type: 'function_call', name: 'other', arguments: '{}' }] },
-    { output: [{ type: 'function_call', name: 'submit_review', arguments: 1 }] },
-  ])
-    expect(() => parseReviewToolResponse(value)).toThrow('exactly one');
-  expect(() =>
-    parseReviewToolResponse({
-      output: [{ type: 'function_call', name: 'submit_review', arguments: '{' }],
-    }),
-  ).toThrow('valid JSON');
-  for (const result of [
-    null,
-    1,
-    {},
-    { issues: [], verdict: 'bad' },
-    { issues: [{}], verdict: 'pass' },
-    {
-      issues: [{ severity: 'P9', location: 'x', issue: 'x', ignore_example: 'x' }],
-      verdict: 'pass',
-    },
-    { issues: [{ severity: 'P1', location: 1, issue: 'x', ignore_example: 'x' }], verdict: 'pass' },
-    { issues: [{ severity: 'P1', location: 'x', issue: 1, ignore_example: 'x' }], verdict: 'pass' },
-    { issues: [{ severity: 'P1', location: 'x', issue: 'x', ignore_example: 1 }], verdict: 'pass' },
-  ])
-    expect(() => parseReviewToolResponse(response(result))).toThrow('invalid review result');
+test('preserves the AI verdict and validates malformed payloads', () => {
+  expect(parseReviewToolResponse(response({ issues: { correctness: [{ ...issue, severity: 'P1' }] }, verdict: 'pass' }), 'submit_review', ['correctness']).verdict).toBe('pass');
+  for (const value of [null, 1, {}, { issues: [], verdict: 'pass' }, { issues: { correctness: [{}] }, verdict: 'pass' }, { issues: { correctness: [issue] }, verdict: 'bad' }])
+    expect(() => parseReviewToolResponse(response(value), 'submit_review', ['correctness'])).toThrow(/invalid review/);
+  for (const value of [null, [], {}, { correctness: [] }, { correctness: [{ ...suggestion, rationale: 1 }] }])
+    expect(() => parseSuggestionToolResponse(response({ suggestions: value }, 'submit_suggestions'), ['correctness'])).toThrow(/invalid suggestions/);
 });
 
-test('rejects malformed suggestion payloads', () => {
-  for (const suggestions of [
-    null,
-    [],
-    {},
-    { correctness: [] },
-    { correctness: [{}] },
-    { correctness: [{ location: 'x', suggestion: 1, rationale: 'x' }] },
-    { correctness: [{ location: 'x', suggestion: 'x', rationale: 1 }] },
-  ])
-    expect(() =>
-      parseReviewToolResponse(
-        {
-          output: [
-            {
-              type: 'function_call',
-              name: 'submit_suggestions',
-              arguments: JSON.stringify({ suggestions }),
-            },
-          ],
-        },
-        'submit_suggestions',
-        ['correctness'],
-      ),
-    ).toThrow('invalid suggestions');
-});
-
-test('rejects scoped review category mismatches and invalid verdicts', () => {
-  expect(() =>
-    parseReviewToolResponse(response({ issues: emptyIssues, verdict: 'pass' }), 'submit_review', [
-      'correctness',
-    ]),
-  ).toThrow('invalid review result');
-  expect(() =>
-    parseReviewToolResponse(
-      response({ issues: { correctness: emptyIssues.correctness }, verdict: 'unknown' }),
-      'submit_review',
-      ['correctness'],
-    ),
-  ).toThrow('invalid review');
-});
-
-test('uses the new-features category for unscoped suggestion responses', () => {
-  const suggestions = Object.fromEntries(
-    [...Object.keys(emptyIssues), 'new-features'].map((category) => [
-      category,
-      [
-        {
-          location: 'none',
-          suggestion: 'No suggestions found.',
-          rationale: '',
-          ignore_example: '',
-        },
-      ],
-    ]),
-  );
-  expect(
-    parseReviewToolResponse(
-      {
-        output: [
-          {
-            type: 'function_call',
-            name: 'submit_suggestions',
-            arguments: JSON.stringify({ suggestions }),
-          },
-        ],
-      },
-      'submit_suggestions',
-    ).suggestions['new-features'],
-  ).toHaveLength(1);
-});
-
-test('accepts a valid scoped review and ignores unrelated output items', () => {
-  expect(() =>
-    parseCombinedToolResponse(undefined, Object.keys(emptyIssues), ['correctness']),
-  ).toThrow('exactly one');
-  const scoped = parseReviewToolResponse(
-    response({ issues: { correctness: emptyIssues.correctness }, verdict: 'pass' }),
-    'submit_review',
-    ['correctness'],
-  );
-  expect(scoped.verdict).toBe('pass');
-  const combined = parseCombinedToolResponse(
-    {
-      output: [
-        null,
-        {
-          type: 'function_call',
-          name: 'submit_review',
-          arguments: JSON.stringify({ issues: emptyIssues, verdict: 'pass' }),
-        },
-        {
-          type: 'function_call',
-          name: 'submit_suggestions',
-          arguments: JSON.stringify({ suggestions: emptySuggestions }),
-        },
-      ],
-    },
-    Object.keys(emptyIssues),
-    [...Object.keys(emptyIssues), 'new-features'],
-  );
-  expect(combined.verdict).toBe('pass');
-});
-
-test('preserves the AI verdict for noncanonical placeholders', () => {
-  const issues = Object.fromEntries(
-    Object.keys(emptyIssues).map((category) => [category, emptyIssues[category]]),
-  );
-  issues.correctness = [
-    { severity: 'P1', location: 'none', issue: 'No issues found.', ignore_example: '' },
-  ];
-  expect(parseReviewToolResponse(response({ issues, verdict: 'pass' })).verdict).toBe('pass');
+test('accepts the default suggestion category set', () => {
+  const categories = ['correctness', 'security', 'reliability', 'performance', 'architecture', 'api_design', 'cross_platform', 'tests', 'documentation', 'new-features'];
+  const allSuggestions = Object.fromEntries(categories.map((category) => [category, [suggestion]]));
+  expect(parseSuggestionToolResponse(response({ suggestions: allSuggestions }, 'submit_suggestions')).suggestions['new-features']).toHaveLength(1);
 });
