@@ -6,7 +6,7 @@ import { defaultEnvFile, loadEnv } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
 import { parseCombinedToolResponse, parseReviewToolResponse } from '../response/review-response.mjs';
 import { prepareRequest } from './request.mjs';
-import { removeSignalHandlers } from '../review-cleanup.mjs';
+import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { collectTestResults, redactTestOutput } from './test-results.mjs';
 export { collectTestResults, redactTestOutput } from './test-results.mjs';

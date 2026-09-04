@@ -1,4 +1,4 @@
-import { removeSignalHandlers } from '../src/review-cleanup.mjs';
+import { removeSignalHandlers } from '../../src/review/cleanup.mjs';
 
 test('removes registered handlers when available and tolerates absent handlers', () => {
   let removed = false;
