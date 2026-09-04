@@ -10,9 +10,11 @@ test('reads bounded batches and accounts for total size', async () => {
 });
 
 test('rejects a batch that exceeds the aggregate limit', async () => {
-  await expect(readBatches(['long'], {
-    batchSize: 1,
-    maxChars: 2,
-    read: async () => 'long',
-  })).rejects.toThrow(/limit/);
+  await expect(
+    readBatches(['long'], {
+      batchSize: 1,
+      maxChars: 2,
+      read: async () => 'long',
+    }),
+  ).rejects.toThrow(/limit/);
 });

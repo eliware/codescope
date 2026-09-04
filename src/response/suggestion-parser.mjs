@@ -1,4 +1,8 @@
-import { categoryPrompt, DEFAULT_SUGGESTION_CATEGORIES, validateCategories } from './categories.mjs';
+import {
+  categoryPrompt,
+  DEFAULT_SUGGESTION_CATEGORIES,
+  validateCategories,
+} from './categories.mjs';
 import { isValidSuggestionResult } from './validators.mjs';
 import { parseToolArguments } from './tool-parser.mjs';
 import { responseError } from './calls.mjs';

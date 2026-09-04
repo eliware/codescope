@@ -34,11 +34,24 @@ test('rejects invalid review options', () => {
 });
 
 test('rejects invalid scalar and collaborator options', () => {
-  const valid = { maxSourceChars: 1, testTimeoutMs: 1, write: () => {}, readFile: () => {}, readEnvFile: () => {}, combine: () => {}, runTestCommand: () => {}, redactOutput: () => {}, createClient: () => {}, register: () => {} };
+  const valid = {
+    maxSourceChars: 1,
+    testTimeoutMs: 1,
+    write: () => {},
+    readFile: () => {},
+    readEnvFile: () => {},
+    combine: () => {},
+    runTestCommand: () => {},
+    redactOutput: () => {},
+    createClient: () => {},
+    register: () => {},
+  };
   expect(() => validateReviewOptions('repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: 0 })).toThrow(/positive/);
   expect(() => validateReviewOptions('repo', { ...valid, testTimeoutMs: 0 })).toThrow(/positive/);
   expect(() => validateReviewOptions('repo', { ...valid, write: null })).toThrow(/write/);
-  expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(/finite/);
+  expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(
+    /finite/,
+  );
   expect(() => validateReviewOptions('', valid)).toThrow(/cwd/);
 });

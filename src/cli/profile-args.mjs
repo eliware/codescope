@@ -9,7 +9,10 @@ export function parseProfileArgs(profile, tokens) {
   if (!PROFILE_NAMES.includes(profile)) throw new Error(`Unknown command: ${profile}`);
   if (['--version', '-v'].includes(timeout.remaining[0]))
     throw new Error(`Option ${timeout.remaining[0]} is not valid for ${profile}`);
-  if (timeout.remaining.length > 1 || (timeout.remaining.length === 1 && !validOptions.has(timeout.remaining[0])))
+  if (
+    timeout.remaining.length > 1 ||
+    (timeout.remaining.length === 1 && !validOptions.has(timeout.remaining[0]))
+  )
     throw new Error(`Unexpected arguments: ${tokens.join(' ')}`);
   return {
     command: `analyze-${profile}`,

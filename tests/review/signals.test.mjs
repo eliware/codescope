@@ -21,6 +21,9 @@ test('wraps signal registration failures', () => {
 });
 
 test('formats non-error signal registration failures', () => {
-  expect(() => registerReviewSignals(() => { throw 'failed'; }, new AbortController()))
-    .toThrow(/failed/);
+  expect(() =>
+    registerReviewSignals(() => {
+      throw 'failed';
+    }, new AbortController()),
+  ).toThrow(/failed/);
 });

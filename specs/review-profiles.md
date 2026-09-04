@@ -10,7 +10,7 @@ and priority filters.
 
 The `all` operation combines code, tests, documentation, package metadata,
 test evidence, and the remaining-file inventory. It requests one review result
-and one suggestion result in parallel, then prints their merged result.
+and one unified review result covering implementation, tests, and Markdown context.
 
 ## Priorities
 

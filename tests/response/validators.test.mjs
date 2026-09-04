@@ -8,7 +8,16 @@ test('validates the focused review and suggestion result contracts', () => {
   expect(
     isValidReviewResult(
       {
-        issues: { security: [{ severity: 'P1', location: 'a:1', issue: 'x', ignore_example: '' }] },
+        issues: {
+          security: [
+            {
+              severity: 'P1',
+              location: 'a:1',
+              issue: 'x',
+              ignore_example: '// codescope ignore: x is intentional.',
+            },
+          ],
+        },
         verdict: 'block',
       },
       prompt('issues', 'security'),
@@ -18,7 +27,14 @@ test('validates the focused review and suggestion result contracts', () => {
     isValidSuggestionResult(
       {
         suggestions: {
-          security: [{ location: 'a:1', suggestion: 'x', rationale: 'y', ignore_example: '' }],
+          security: [
+            {
+              location: 'a:1',
+              suggestion: 'x',
+              rationale: 'y',
+              ignore_example: '// codescope ignore: x is intentionally deferred.',
+            },
+          ],
         },
       },
       prompt('suggestions', 'security'),
@@ -26,4 +42,31 @@ test('validates the focused review and suggestion result contracts', () => {
   ).toBe(true);
   expect(isValidReviewResult({}, undefined)).toBe(false);
   expect(isValidSuggestionResult({}, undefined)).toBe(false);
+  expect(
+    isValidReviewResult(
+      {
+        issues: { security: [{ severity: 'P1', location: 'a:1', issue: 'x', ignore_example: '' }] },
+        verdict: 'block',
+      },
+      prompt('issues', 'security'),
+    ),
+  ).toBe(false);
+  expect(
+    isValidReviewResult(
+      {
+        issues: {
+          security: [
+            {
+              severity: 'P1',
+              location: 'a:1',
+              issue: 'x',
+              ignore_example: '// codescope ignore: x is intentional.',
+            },
+          ],
+        },
+        verdict: 'block',
+      },
+      prompt('issues', 'security'),
+    ),
+  ).toBe(true);
 });

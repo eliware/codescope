@@ -30,8 +30,8 @@ const updateSummary = (npmTest, results) => {
 
 await mkdir(logDirectory, { recursive: true });
 console.log(`Running npm test in ${cwd}`);
-const testCommand = process.platform === 'win32' ? process.env.ComSpec : 'npm';
-const testArgs = process.platform === 'win32' ? ['/d', '/s', '/c', 'npm test'] : ['test'];
+const testCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const testArgs = ['test'];
 const testResult = await runProcess(testCommand, testArgs, cwd);
 await writeFile(resolve(logDirectory, 'npm-test.log'), testResult.output, 'utf8');
 const completedResults = [];
@@ -44,21 +44,28 @@ if (testResult.code !== 0) {
 } else {
   console.log(`Running codescope all for ${efforts.join(', ')} in parallel`);
   const started = performance.now();
-  const results = await Promise.all(
-    efforts.map(async (effort) => {
+  const runEffort = async (effort) => {
       const result = await runProcess(process.execPath, [
         executable,
         'all',
         `--model=${model}`,
         `--effort=${effort}`,
         '--usage',
-      ]);
+      ], cwd);
       await writeFile(resolve(logDirectory, `codescope-all-${effort}.log`), result.output, 'utf8');
       completedResults.push({ effort, ...result });
       await updateSummary(testResult, completedResults);
       return { effort, ...result };
-    }),
-  );
+  };
+  const results = [];
+  const workers = Array.from({ length: Math.min(2, efforts.length) }, async () => {
+    while (results.length < efforts.length) {
+      const effort = efforts[results.length];
+      if (!effort) return;
+      results.push(await runEffort(effort));
+    }
+  });
+  await Promise.all(workers);
 
   if (benchmarkExitCode(results, efforts.length) !== 0) {
     console.error('One or more provider benchmark runs failed; benchmark is incomplete');

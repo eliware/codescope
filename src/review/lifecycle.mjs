@@ -20,6 +20,7 @@ export async function runReview(cwd, options) {
     prompt,
     combine,
     maxSourceChars,
+    platform,
     usage,
     dryRun,
     includesTests,
@@ -33,7 +34,6 @@ export async function runReview(cwd, options) {
     register,
     inspectFile,
     inspectPermissions,
-    platform,
   } = { ...defaults, ...options };
   validateReviewOptions(cwd, {
     maxSourceChars,
@@ -71,6 +71,7 @@ export async function runReview(cwd, options) {
     readDirectory,
     readFile,
     maxSourceChars,
+    platform,
   });
 
   const request = prepareReviewRequest(prompt, combined, model, plainText);

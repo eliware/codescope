@@ -58,5 +58,5 @@ test('rejects invalid prompt structures', () => {
   );
   expect(() =>
     prepareRequest({ input: [message([{ type: 'input_text', text: 'custom' }])] }, 'SOURCE'),
-  ).toThrow('placeholder');
+  ).toThrow('developer text must contain');
 });

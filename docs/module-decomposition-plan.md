@@ -227,41 +227,41 @@ change, no orchestrator owns leaf policy, and no test suite proxies another.
 - [x] Extract grouped and direct profile parsing into focused modules.
 - [x] Extract CLI metadata dispatch and result-status mapping.
 - [x] Separate response tool-argument parsing, review parsing, suggestion
-  parsing, and combined-call parsing.
+      parsing, and combined-call parsing.
 - [x] Split shared prompt policy into identity, contract, priority, and verdict
-  responsibilities.
+      responsibilities.
 - [x] Split priority policy into independent P0/P1 and P2/P3 policy modules.
 - [x] Extract review defaults, environment/token setup, and evidence assembly
-  from the lifecycle coordinator.
+      from the lifecycle coordinator.
 - [x] Extract provider execution, response parsing, output, fallback, usage,
-  and test-verdict handling into the review-session sub-orchestrator.
+      and test-verdict handling into the review-session sub-orchestrator.
 - [x] Extract request preparation and custom-prompt/model application from the
-  review lifecycle coordinator.
+      review lifecycle coordinator.
 - [x] Add focused mirrored tests for the new CLI, response, policy, setup, and
-  evidence leaves.
+      evidence leaves.
 - [x] Add intentional export-contract tests for the public root barrels.
 - [x] Remove the orphan prompt index suite after its focused coverage was
-  represented by the existing prompt-module tests.
+      represented by the existing prompt-module tests.
 - [x] Split the response adapter coverage into focused parser, routing, and
-  validation contract tests.
+      validation contract tests.
 - [x] Finish CLI dispatch decomposition and mirrored mapping/tests.
 - [x] Finish response validation/error mapping checks.
 - [x] Finish prompt composition tests and mirrored mapping.
 - [x] Decompose provider execution, result handling, output, usage, failure,
-  signal, and cleanup orchestration into review-session leaves.
+      signal, and cleanup orchestration into review-session leaves.
 - [x] Reduce the lifecycle integration suite to orchestration-only coverage.
 - [x] Extract finder traversal state into `find/walk.mjs`.
 - [x] Extract combine batch scheduling and limit accounting into
-  `combine/batches.mjs`.
+      `combine/batches.mjs`.
 - [x] Separate pricing models, thresholds, and usage normalization from
-  pricing arithmetic.
+      pricing arithmetic.
 - [x] Separate benchmark process execution and summary persistence from the
-  benchmark entry script.
+      benchmark entry script.
 - [x] Finish remaining finder, combine-all, and benchmark profile-routing
-  boundaries; `find/files.mjs`, `combine/files.mjs`, `combine/all.mjs`, and
-  the benchmark script now retain orchestration only while traversal, section
-  collection, batching, process execution, and summary persistence live in
-  dedicated modules.
+      boundaries; `find/files.mjs`, `combine/files.mjs`, `combine/all.mjs`, and
+      the benchmark script now retain orchestration only while traversal, section
+      collection, batching, process execution, and summary persistence live in
+      dedicated modules.
 - [x] Remove all remaining mapping drift and proxy/orphan suites.
 - [x] Pass strict architecture validation with no exemptions (source/test
-  mapping, monolith limits, tests, coverage, and lint are clean).
+      mapping, monolith limits, tests, coverage, and lint are clean).

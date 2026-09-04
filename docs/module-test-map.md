@@ -16,10 +16,10 @@ This map records the current decomposition boundary. Executable modules under a 
 
 ## Composition boundaries
 
-- `src/prompt.mjs` is the public prompt assembly adapter; its integration contract is in `tests/prompts/index.test.mjs`.
+- `src/prompt.mjs` is the public prompt assembly adapter; its integration contract is covered by the focused suites under `tests/prompts/`.
 - `src/cli.mjs`, `src/find-*.mjs`, `src/combine-*.mjs`, `src/review*.mjs`, and `src/pricing.mjs` are public re-export barrels. Their underlying responsibility modules and composition behavior are tested in the directories above.
 - `src/prompts/policy.mjs` owns shared priority/evidence guidance and is covered by `tests/prompts/policy.test.mjs`.
-- `tests/cli/commands.test.mjs` covers public CLI dispatch across the focused CLI modules.
+- Focused suites under `tests/cli/` cover public CLI dispatch across the CLI modules.
 - The former top-level catch-all prompt, CLI, and response-adapter tests have been relocated into the mirrored responsibility trees.
 
 The production inventory is intentionally explicit through the responsibility-directory globs above; a new production module requires a matching focused test or an explicit pure-barrel exception documented here.

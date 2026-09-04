@@ -8,10 +8,14 @@ test('maps typed errors to documented exit codes', () => {
 });
 
 test('maps lifecycle and configuration errors', () => {
-  expect(errorExitCode(Object.assign(new Error('API failure'), { code: 'API' }))).toBe(EXIT_CODES.API);
+  expect(errorExitCode(Object.assign(new Error('API failure'), { code: 'API' }))).toBe(
+    EXIT_CODES.API,
+  );
   expect(errorExitCode(new Error('SIGINT received'))).toBe(EXIT_CODES.SIGINT);
   expect(errorExitCode(new Error('signal termination'))).toBe(EXIT_CODES.SIGTERM);
-  expect(errorExitCode(Object.assign(new Error('timed out'), { code: 'ETIMEDOUT' }))).toBe(EXIT_CODES.TEST_TIMEOUT);
+  expect(errorExitCode(Object.assign(new Error('timed out'), { code: 'ETIMEDOUT' }))).toBe(
+    EXIT_CODES.TEST_TIMEOUT,
+  );
   expect(errorExitCode(new Error('Unexpected arguments'))).toBe(EXIT_CODES.USAGE);
   expect(errorExitCode(new Error('OPENAI_API_TOKEN missing'))).toBe(EXIT_CODES.CONFIGURATION);
   expect(errorExitCode(new Error('Unable to read source file'))).toBe(EXIT_CODES.INPUT);

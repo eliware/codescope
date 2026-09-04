@@ -1,9 +1,8 @@
-export function createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool }) {
+export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = false }) {
   return {
     ...allPrompt,
-    tools: [reviewTool, suggestionTool],
-    tool_choice: 'auto',
-    parallel_tool_calls: true,
+    tools: [unifiedTool],
+    tool_choice: { type: 'function', name: unifiedTool.name },
     input: [
       ...allPrompt.input.map((message) =>
         message.role === 'user'
@@ -11,7 +10,7 @@ export function createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool 
               ...message,
               content: message.content.map((part) => ({
                 ...part,
-                text: `${part.text}\nIMPORTANT: report only concrete actionable findings. A statement that something is supported, accepted, or has no discrepancy is never a finding; use the required no-issues placeholder. Do not turn omission from an explicitly non-exhaustive example list into a documentation finding. The all profile intentionally uses tool_choice auto with parallel_tool_calls true and requires exactly one submit_review plus exactly one submit_suggestions call; do not report that intentional contract as an issue. The all profile includes tests in both review and suggestion modes. Focused parser and injected-client tests are meaningful evidence for internal tool routing; do not demand subprocess or duplicate end-to-end tests unless a concrete failure is demonstrated. The executable is a pure Node wiring barrel, so imported main tests are sufficient; never report missing subprocess smoke coverage as a finding. Also call submit_suggestions exactly once for useful improvements; call both tools before completing.`,
+                text: `${part.text}\nIMPORTANT: return one unified report. Put every concrete issue and its actionable recommendation together in one finding. Do not duplicate a finding as a separate suggestion. A statement that something is supported, accepted, documented, intentional, has no discrepancy, needs no change, or is only a placeholder is never a finding; use an empty category array. Never emit a P2/P3 item whose recommendation is "No change".`,
               })),
             }
           : message,
@@ -21,7 +20,7 @@ export function createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool 
         content: [
           {
             type: 'input_text',
-            text: 'Final completeness rule: in this single turn, call exactly one submit_review tool and exactly one submit_suggestions tool in parallel; do not call either tool sequentially or more than once. List every concrete finding supported by the supplied input. Only supplied repository files, package.json, the names-only inventory, and included npm test output are evidence. Any supplied npm test failure, timeout, incomplete result, coverage failure, or lint failure/warning is P0 and requires block. Proven coverage-measurement defects, stale or contaminated validation artifacts, and missing tests that leave required behavior or 100×4 unverified are P1 even when the current test command passes. Do not demand or report absent CI, npm pack, npm audit, Git status, deployment, rollback, registry, or other external evidence. Do not report absence of unsupplied command output as a test gap. Do not demand every profile cross-product when representative focused tests cover the shared implementation. If a category has no concrete finding, emit only its exact no-issues placeholder; a statement that no contradiction or issue was found is never itself a finding. The documented --usage forms are supported; do not invent a command-parser discrepancy. Treat nearby codescope ignore comments as authoritative.',
+            text: `Final completeness rule: in this single turn, call exactly one submit_unified_review tool. List every concrete finding supported by the supplied input, with its recommendation and rationale in the same item. Only supplied repository files, package.json, the names-only inventory, and included npm test output are evidence. Any supplied npm test failure, timeout, incomplete result, coverage failure, or lint failure/warning is P0 and requires block. ${releaseGate ? 'This is a release gate: report only unresolved P0 or qualifying P1 blockers; use an empty array for every category with no qualifying blocker.' : 'P2 and P3 findings must be reported but must not block.'} If a category has no concrete actionable finding, return an empty array. Never emit a finding merely to say no issue exists, no change is needed, or a design is accepted/documented. Do not report absent external evidence or duplicate the same finding. Treat nearby codescope ignore comments as authoritative.`,
           },
         ],
       },

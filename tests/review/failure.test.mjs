@@ -12,7 +12,7 @@ test('creates an explicit incomplete result for partial provider output', () => 
     issues: 'not submitted',
     suggestions: 'not submitted',
     error: 'invalid response',
-    response: { output: [] },
+    response: { response_error: 'Provider response was not accepted by the response contract' },
   });
 });
 
@@ -21,6 +21,18 @@ test('omits provider response when none was received', () => {
     issues: 'not submitted',
     suggestions: 'not submitted',
     error: 'no response',
+  });
+});
+
+test('redacts serializable provider response summaries', () => {
+  const result = createIncompleteResult(new Error('invalid response'), {
+    output_text: 'TOKEN=secret',
+    usage: { input_tokens: 1 },
+  });
+  expect(result.response).toEqual({
+    output_text: 'TOKEN=[redacted]',
+    usage: { input_tokens: 1 },
+    response_error: 'Provider response was not accepted by the response contract',
   });
 });
 

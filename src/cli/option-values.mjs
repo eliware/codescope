@@ -19,12 +19,16 @@ export function parseOptionValues(tokens) {
     model,
     dryRun: dryRunTokens.length > 0,
     remaining: tokens.filter(
-      (value) => !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',
+      (value) =>
+        !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',
     ),
   };
 }
 
-export function parseTimeoutOption(tokens, usage = 'Usage: codescope review|suggest <profile> [options]') {
+export function parseTimeoutOption(
+  tokens,
+  usage = 'Usage: codescope review|suggest <profile> [options]',
+) {
   const indexes = tokens.flatMap((value, index) => (value === '--test-timeout' ? [index] : []));
   if (indexes.length > 1) throw new Error('Only one --test-timeout option is allowed');
   if (!indexes.length) return { remaining: tokens, testTimeout: undefined };

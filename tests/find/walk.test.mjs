@@ -3,9 +3,14 @@ import { walkDirectories } from '../../src/find/walk.mjs';
 test('walks directories, skips entries, and reports files', async () => {
   const files = [];
   await walkDirectories('root', {
-    readEntries: async (directory) => directory === 'root'
-      ? [{ name: 'nested', kind: 'directory' }, { name: 'skip', skip: true }, { name: 'a.mjs', kind: 'file' }]
-      : [{ name: 'b.mjs', kind: 'file' }],
+    readEntries: async (directory) =>
+      directory === 'root'
+        ? [
+            { name: 'nested', kind: 'directory' },
+            { name: 'skip', skip: true },
+            { name: 'a.mjs', kind: 'file' },
+          ]
+        : [{ name: 'b.mjs', kind: 'file' }],
     classify: (entry) => ({
       skip: entry.skip,
       isDirectory: entry.kind === 'directory',

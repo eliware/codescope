@@ -49,14 +49,66 @@ test('handles permission and inspection failures with context', async () => {
     environment: {},
   };
   await expect(loadReviewEnvironment(defaults)).rejects.toThrow(/readable/);
-  await expect(loadReviewEnvironment({ ...defaults, inspectPermissions: async () => { throw new Error('stat'); } })).rejects.toThrow(/Unable to inspect/);
-  await expect(loadReviewEnvironment({ ...defaults, readEnvFile: async () => { throw Object.assign(new Error('read'), { code: 'EIO' }); } })).rejects.toThrow(/Unable to read/);
-  await expect(loadReviewEnvironment({ ...defaults, inspectFile: async () => { throw 'stat'; } })).rejects.toThrow(/Unable to inspect/);
-  await expect(loadReviewEnvironment({ ...defaults, readEnvFile: async () => { throw 'read'; } })).rejects.toThrow(/Unable to read/);
-  await expect(loadReviewEnvironment({ ...defaults, inspectPermissions: async () => { throw Object.assign(new Error('missing'), { code: 'ENOENT' }); } })).resolves.toBeDefined();
-  await expect(loadReviewEnvironment({ ...defaults, inspectPermissions: async () => { throw 'permissions'; } })).rejects.toThrow(/Unable to inspect/);
-  await expect(loadReviewEnvironment({ ...defaults, inspectFile: async () => { throw Object.assign(new Error('missing'), { code: 'ENOENT' }); }, inspectPermissions: async () => ({ mode: 0 }) })).resolves.toBeDefined();
-  await expect(loadReviewEnvironment({ ...defaults, inspectPermissions: async () => ({ mode: 0 }) })).resolves.toBeDefined();
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      inspectPermissions: async () => {
+        throw new Error('stat');
+      },
+    }),
+  ).rejects.toThrow(/Unable to inspect/);
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      readEnvFile: async () => {
+        throw Object.assign(new Error('read'), { code: 'EIO' });
+      },
+    }),
+  ).rejects.toThrow(/Unable to read/);
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      inspectFile: async () => {
+        throw 'stat';
+      },
+    }),
+  ).rejects.toThrow(/Unable to inspect/);
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      readEnvFile: async () => {
+        throw 'read';
+      },
+    }),
+  ).rejects.toThrow(/Unable to read/);
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      inspectPermissions: async () => {
+        throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+      },
+    }),
+  ).resolves.toBeDefined();
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      inspectPermissions: async () => {
+        throw 'permissions';
+      },
+    }),
+  ).rejects.toThrow(/Unable to inspect/);
+  await expect(
+    loadReviewEnvironment({
+      ...defaults,
+      inspectFile: async () => {
+        throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+      },
+      inspectPermissions: async () => ({ mode: 0 }),
+    }),
+  ).resolves.toBeDefined();
+  await expect(
+    loadReviewEnvironment({ ...defaults, inspectPermissions: async () => ({ mode: 0 }) }),
+  ).resolves.toBeDefined();
 });
 
 test('skips default-file protections for custom files and Windows', async () => {
@@ -65,8 +117,12 @@ test('skips default-file protections for custom files and Windows', async () => 
     envFile: 'custom.env',
     readFile,
     readEnvFile: async () => 'OPENAI_API_TOKEN=custom',
-    inspectFile: async () => { throw new Error('not called'); },
-    inspectPermissions: async () => { throw new Error('not called'); },
+    inspectFile: async () => {
+      throw new Error('not called');
+    },
+    inspectPermissions: async () => {
+      throw new Error('not called');
+    },
     platform: 'win32',
     environment: {},
   });

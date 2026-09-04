@@ -22,9 +22,14 @@ test('parses and validates a timeout option', () => {
     remaining: ['--usage'],
     testTimeout: '30',
   });
-  expect(parseTimeoutOption(['--usage'])).toEqual({ remaining: ['--usage'], testTimeout: undefined });
+  expect(parseTimeoutOption(['--usage'])).toEqual({
+    remaining: ['--usage'],
+    testTimeout: undefined,
+  });
   expect(() => parseTimeoutOption(['--test-timeout'])).toThrow(/Usage/);
   expect(() => parseTimeoutOption(['--test-timeout', '0'])).toThrow(/Usage/);
   expect(() => parseTimeoutOption(['--test-timeout', 'x'])).toThrow(/Usage/);
-  expect(() => parseTimeoutOption(['--test-timeout', '1', '--test-timeout', '2'])).toThrow(/Only one/);
+  expect(() => parseTimeoutOption(['--test-timeout', '1', '--test-timeout', '2'])).toThrow(
+    /Only one/,
+  );
 });

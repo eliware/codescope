@@ -20,17 +20,14 @@ export async function executeReviewSession({
   let providerResponse;
   let providerResponseReceived = false;
   const toolNames = (request.tools ?? []).map((tool) => tool?.name);
-  const combined =
-    request.tool_choice === 'auto' &&
-    toolNames.includes('submit_review') &&
-    toolNames.includes('submit_suggestions');
+  const combined = toolNames.includes('submit_unified_review');
   try {
     if (dryRun) {
       const output = await runDryRun({ client, request, signal, model: request.model, usage });
       await writeJsonResult(write, output);
       return output;
     }
-    providerResponse = await requestProviderResponse(client, request, combined, signal);
+    providerResponse = await requestProviderResponse(client, request, signal);
     providerResponseReceived = true;
     if (plainText !== undefined) {
       const output = parsePlainTextJsonResponse(providerResponse);
@@ -43,7 +40,8 @@ export async function executeReviewSession({
     await writeJsonResult(write, output);
     return output;
   } catch (cause) {
-    if (providerResponseReceived) await writeFallbackResult(write, createIncompleteResult(cause, providerResponse));
+    if (providerResponseReceived)
+      await writeFallbackResult(write, createIncompleteResult(cause, providerResponse));
     const failure = createProviderFailure(cause);
     if (cause?.code) failure.code = cause.code;
     throw failure;

@@ -1,13 +1,12 @@
 import { createCombinedAllPrompt } from '../../src/prompts/combined.mjs';
 
-test('builds the parallel review and suggestion request', () => {
+test('builds the unified single-tool request', () => {
   const result = createCombinedAllPrompt({
     allPrompt: { input: [{ role: 'user', content: [{ type: 'input_text', text: 'review' }] }] },
-    reviewTool: 'review',
-    suggestionTool: 'suggest',
+    unifiedTool: { name: 'submit_unified_review' },
   });
-  expect(result.tools).toEqual(['review', 'suggest']);
-  expect(result.tool_choice).toBe('auto');
-  expect(result.parallel_tool_calls).toBe(true);
-  expect(result.input[0].content[0].text).toContain('exactly one submit_review');
+  expect(result.tools).toEqual([{ name: 'submit_unified_review' }]);
+  expect(result.tool_choice).toEqual({ type: 'function', name: 'submit_unified_review' });
+  expect(result.parallel_tool_calls).toBeUndefined();
+  expect(result.input[0].content[0].text).toContain('one unified report');
 });

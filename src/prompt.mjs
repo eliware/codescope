@@ -1,6 +1,6 @@
 import {
   createReviewTool,
-  createSuggestionTool,
+  createUnifiedTool,
   reviewTool,
   suggestionTool,
 } from './prompts/tool-schemas.mjs';
@@ -10,13 +10,13 @@ import { createCombinedAllPrompt } from './prompts/combined.mjs';
 import { createAllPrompt } from './prompts/all.mjs';
 import { createReviewProfiles } from './prompts/review-profiles.mjs';
 import { createProfilePrompt } from './prompts/builders.mjs';
-import { SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export {
   createReviewTool,
   reviewTool,
   createSuggestionTool,
+  createUnifiedTool,
   suggestionTool,
 } from './prompts/tool-schemas.mjs';
 
@@ -28,14 +28,14 @@ export const profilePrompt = (focus, tool = reviewTool) =>
 const reviewProfiles = createReviewProfiles({ profilePrompt, reviewTool });
 export const { prompt, mdPrompt } = reviewProfiles;
 export const allPrompt = createAllPrompt(profilePrompt);
-export const combinedAllPrompt = createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool });
-const releaseSuggestionTool = createSuggestionTool(
-  SUGGESTION_CATEGORIES.filter((category) => category !== 'new-features'),
-);
+export const combinedAllPrompt = createCombinedAllPrompt({
+  allPrompt,
+  unifiedTool: createUnifiedTool(),
+});
 export const releasePrompt = createCombinedAllPrompt({
   allPrompt,
-  reviewTool,
-  suggestionTool: releaseSuggestionTool,
+  unifiedTool: createUnifiedTool(),
+  releaseGate: true,
 });
 export const { codeTestsDocsPrompt, refactorPrompt } = reviewProfiles;
 export const {

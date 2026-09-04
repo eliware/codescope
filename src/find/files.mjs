@@ -34,14 +34,18 @@ export async function findFiles(
 
   const results = [];
   await walkDirectories(root, {
-    readEntries: (directory, scanRoot) => readDirectoryEntries(readDirectory, directory, scanRoot, pathApi),
-    classify: (entry, directory, scanRoot) => classifyEntry(entry, pathApi.relative(scanRoot, directory)),
+    readEntries: (directory, scanRoot) =>
+      readDirectoryEntries(readDirectory, directory, scanRoot, pathApi),
+    classify: (entry, directory, scanRoot) =>
+      classifyEntry(entry, pathApi.relative(scanRoot, directory)),
     shouldDescend: (name, directory, scanRoot) =>
       !isIgnoredDirectory(name, pathApi.relative(scanRoot, directory)),
     resolveChild: (directory, name) => pathApi.resolve(directory, name),
     onFile: (name, directory, scanRoot) => {
       if (matchesFile(name, extension, testsOnly, noTests))
-        results.push(pathApi.relative(scanRoot, pathApi.join(directory, name)).split(/[\\/]/u).join('/'));
+        results.push(
+          pathApi.relative(scanRoot, pathApi.join(directory, name)).split(/[\\/]/u).join('/'),
+        );
     },
   });
   return results.sort();

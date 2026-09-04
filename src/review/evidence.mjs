@@ -12,6 +12,7 @@ export async function collectReviewEvidence({
   readDirectory,
   readFile,
   maxSourceChars,
+  platform,
 }) {
   const testResults = await collectReviewTestEvidence({
     cwd,
@@ -20,6 +21,7 @@ export async function collectReviewEvidence({
     testTimeoutMs,
     runTestCommand,
     redactOutput,
+    platform,
   });
   const combined = await combine(cwd, {
     readDirectory,

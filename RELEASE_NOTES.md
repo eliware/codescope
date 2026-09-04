@@ -5,7 +5,7 @@
 ### Structured reviews and profile workflows
 
 - Review profiles return validated structured `submit_review` and `submit_suggestions` results.
-- The comprehensive `all` profile requests exactly one review and one suggestion tool call in parallel and merges both results into one JSON document.
+- The comprehensive `all` profile requests exactly one unified review tool call and returns one JSON document containing findings and the authoritative verdict.
 - Review and suggestion schemas adapt to the selected profile categories, require nonempty category arrays, and include explicit no-issue/no-suggestion placeholders.
 - Comprehensive reviews use the binary `pass` or `block` verdict; only unresolved P0 or qualifying P1 issues block under the documented evidence and release-scope criteria.
 - Tool-result validation rejects malformed payloads, duplicate calls, unsupported fields, and invalid category shapes before output.

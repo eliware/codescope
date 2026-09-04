@@ -16,7 +16,7 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
           properties: Object.fromEntries(
             categories.map((category) => [
               category,
-              { type: 'array', minItems: 1, items: { $ref: '#/$defs/issue' } },
+              { type: 'array', items: { $ref: '#/$defs/issue' } },
             ]),
           ),
           required: [...categories],
@@ -32,7 +32,11 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
             severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
             location: { type: 'string' },
             issue: { type: 'string' },
-            ignore_example: { type: 'string' },
+            ignore_example: {
+              type: 'string',
+              minLength: 1,
+              description: 'A complete copy-pasteable // codescope ignore: ... comment.',
+            },
           },
           required: ['severity', 'location', 'issue', 'ignore_example'],
         },
@@ -59,7 +63,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
           properties: Object.fromEntries(
             categories.map((category) => [
               category,
-              { type: 'array', minItems: 1, items: { $ref: '#/$defs/suggestion' } },
+              { type: 'array', items: { $ref: '#/$defs/suggestion' } },
             ]),
           ),
           required: [...categories],
@@ -74,7 +78,11 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
             location: { type: 'string' },
             suggestion: { type: 'string' },
             rationale: { type: 'string' },
-            ignore_example: { type: 'string' },
+            ignore_example: {
+              type: 'string',
+              minLength: 1,
+              description: 'A complete copy-pasteable // codescope ignore: ... comment.',
+            },
           },
           required: ['location', 'suggestion', 'rationale', 'ignore_example'],
         },
@@ -84,3 +92,61 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
 }
 
 export const suggestionTool = createSuggestionTool();
+
+export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
+  return {
+    type: 'function',
+    name: 'submit_unified_review',
+    description:
+      'Return one consolidated Codescope review with each finding and its recommendation together.',
+    strict: true,
+    parameters: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        findings: {
+          type: 'object',
+          additionalProperties: false,
+          properties: Object.fromEntries(
+            categories.map((category) => [
+              category,
+              {
+                type: 'array',
+                items: { $ref: '#/$defs/finding' },
+              },
+            ]),
+          ),
+          required: [...categories],
+        },
+        verdict: { type: 'string', enum: ['pass', 'block'] },
+      },
+      required: ['findings', 'verdict'],
+      $defs: {
+        finding: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+            location: { type: 'string' },
+            finding: { type: 'string' },
+            recommendation: { type: 'string' },
+            rationale: { type: 'string' },
+            ignore_example: {
+              type: 'string',
+              minLength: 1,
+              description: 'A complete copy-pasteable // codescope ignore: ... comment.',
+            },
+          },
+          required: [
+            'severity',
+            'location',
+            'finding',
+            'recommendation',
+            'rationale',
+            'ignore_example',
+          ],
+        },
+      },
+    },
+  };
+}

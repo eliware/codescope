@@ -20,5 +20,5 @@ repository.
 - Review output is structured JSON.
 - Review findings use P0–P3 priorities; only unresolved P0 or qualifying P1 findings block a review verdict.
 - Suggestion profiles return recommendations and do not create a review verdict.
-- `all` runs the comprehensive review and suggestion calls together and merges their results.
+- `all` runs the comprehensive unified review and merges the findings into one structured result.
 - The tool is read-only apart from its own output and optional benchmark artifacts.

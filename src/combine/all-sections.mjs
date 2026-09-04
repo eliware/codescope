@@ -6,13 +6,11 @@ import { describeOtherFiles } from './other-files.mjs';
 
 export async function collectAllSections(root, options = {}) {
   const inventory = await findAllFiles(root, options);
-  const [packageJson, configs, md, implementation, tests] = await Promise.all([
-    combinePackageJson(root, options),
-    combineConfigFiles(root, { ...options, inventory }),
-    combineMdFiles(root, options),
-    combineCodeFiles(root, { ...options, noTests: true }),
-    combineCodeFiles(root, { ...options, testsOnly: true }),
-  ]);
+  const packageJson = await combinePackageJson(root, options);
+  const configs = await combineConfigFiles(root, { ...options, inventory });
+  const md = await combineMdFiles(root, options);
+  const implementation = await combineCodeFiles(root, { ...options, noTests: true });
+  const tests = await combineCodeFiles(root, { ...options, testsOnly: true });
   const otherFiles = await describeOtherFiles(root, inventory, options);
   return {
     packageJson,

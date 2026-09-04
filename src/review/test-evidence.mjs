@@ -5,11 +5,12 @@ export async function collectReviewTestEvidence({
   testTimeoutMs,
   runTestCommand,
   redactOutput,
+  platform,
 }) {
   if (!includesTests || omitTestResults) return undefined;
   let testResults;
   try {
-    testResults = await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput);
+    testResults = await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput, platform);
   } catch (cause) {
     testResults = `===== npm test =====\nexit code: unknown\n${redactOutput(String(cause))}`;
   }

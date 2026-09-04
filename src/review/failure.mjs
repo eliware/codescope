@@ -1,3 +1,5 @@
+import { redactTestOutput } from './redaction.mjs';
+
 export function createProviderFailure(cause) {
   return new Error(
     `OpenAI request failed: ${cause instanceof Error ? cause.message : String(cause)}`,
@@ -9,11 +11,26 @@ function preserveProviderResponse(response) {
   if (response === undefined) return undefined;
   try {
     JSON.stringify(response);
-    return response;
+    return {
+      ...(typeof response.output_text === 'string'
+        ? { output_text: redactTestOutput(response.output_text) }
+        : {}),
+      ...(response.usage && typeof response.usage === 'object'
+        ? {
+            usage: Object.fromEntries(
+              Object.entries(response.usage).filter(([, value]) => Number.isFinite(value)),
+            ),
+          }
+        : {}),
+      response_error: 'Provider response was not accepted by the response contract',
+    };
   } catch {
     try {
       return {
-        output_text: typeof response.output_text === 'string' ? response.output_text : undefined,
+        output_text:
+          typeof response.output_text === 'string'
+            ? redactTestOutput(response.output_text)
+            : undefined,
         response_error: 'Provider response could not be serialized',
       };
     } catch {

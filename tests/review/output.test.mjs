@@ -35,5 +35,13 @@ test('does not replace a provider failure when fallback writing fails', async ()
 });
 
 test('formats non-error writer failures', async () => {
-  await expect(writeJsonResult(() => { throw 'disk full'; }, {}, 'custom')).rejects.toThrow(/disk full/);
+  await expect(
+    writeJsonResult(
+      () => {
+        throw 'disk full';
+      },
+      {},
+      'custom',
+    ),
+  ).rejects.toThrow(/disk full/);
 });

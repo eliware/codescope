@@ -5,6 +5,7 @@ import { EXIT_CODES, errorExitCode } from './errors.mjs';
 import { parseArgs } from './args.mjs';
 import { dispatchMeta } from './dispatch-meta.mjs';
 import { statusForPromptResult, statusForReviewResult } from './status-result.mjs';
+import { isValidUnifiedResult } from '../response/unified-parser.mjs';
 
 export async function main(
   args,
@@ -70,19 +71,14 @@ export async function main(
     const isCombined = ['all', 'release'].includes(target) && mode === 'review';
     const effectivePrompt = reviewOptions.prompt;
     const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
-    const isValid =
-      isSuggestion
-        ? suggestionResultIsValid
-        : isCombined
-          ? isValidReviewResult(
-              { issues: result?.issues, verdict: result?.verdict },
-              { tools: [effectivePrompt.tools[0]] },
-            ) &&
-            isValidSuggestionResult(
-              { suggestions: result?.suggestions },
-              { tools: [effectivePrompt.tools[1]] },
-            )
-          : isValidReviewResult(result, effectivePrompt);
+    const isValid = isSuggestion
+      ? suggestionResultIsValid
+      : isCombined
+        ? isValidUnifiedResult(
+            result,
+            Object.keys(effectivePrompt.tools[0].parameters.properties.findings.properties),
+          )
+        : isValidReviewResult(result, effectivePrompt);
     if (!isValid) {
       error('codescope: review returned no validated pass-or-block verdict');
       return statusForReviewResult(result, { isSuggestion, isValid: false });

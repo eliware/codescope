@@ -18,3 +18,14 @@ test('returns no entries when all files are supplied elsewhere', async () => {
     describeOtherFiles('repo', ['package.json', 'README.md', '.github/ci.yml', 'src/app.mjs']),
   ).resolves.toEqual([]);
 });
+
+test('omits files after the aggregate metadata budget', async () => {
+  const result = await describeOtherFiles(
+    'repo',
+    Array.from({ length: 32 }, (_, index) => `large-${index}.txt`),
+    {
+      readFileContents: async () => Buffer.alloc(1_500_000, 'x'),
+    },
+  );
+  expect(result.some((entry) => entry.includes('omitted'))).toBe(true);
+});
