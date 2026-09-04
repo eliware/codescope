@@ -5,7 +5,7 @@ import { prompt as defaultPrompt } from './prompt.mjs';
 import { defaultEnvFile, loadEnv } from './review/config.mjs';
 import { lstat, stat } from 'node:fs/promises';
 import { parseCombinedToolResponse, parseReviewToolResponse } from './review-response.mjs';
-import { prepareRequest } from './review-request.mjs';
+import { prepareRequest } from './review/request.mjs';
 import { removeSignalHandlers } from './review-cleanup.mjs';
 import { calculateUsageCost } from './pricing.mjs';
 import { collectTestResults, redactTestOutput } from './review/test-results.mjs';
