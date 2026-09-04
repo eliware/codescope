@@ -1,6 +1,6 @@
 import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
-import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
 import { createSuggestionProfiles } from './prompts/suggestion-profiles.mjs';
+import { createAnalysisProfiles } from './prompts/analysis-profiles.mjs';
 import { createReviewProfiles } from './prompts/review-profiles.mjs';
 import { createProfilePrompt } from './prompts/builders.mjs';
 
@@ -247,5 +247,7 @@ export const {
   quickWinsPrompt,
   prioritizePrompt,
 } = createSuggestionProfiles({ profilePrompt, suggestionTool });
-export const priorityPrompt = (maximum) => createPriorityPrompt(maximum, { profilePrompt, createReviewTool });
-export const createAnalysisPrompt = (subject) => buildAnalysisPrompt(subject, { profilePrompt });
+export const { priorityPrompt, analysisPrompt: createAnalysisPrompt } = createAnalysisProfiles({
+  profilePrompt,
+  createReviewTool,
+});
