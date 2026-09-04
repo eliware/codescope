@@ -1,4 +1,4 @@
-import { benchmarkExitCode } from '../src/benchmark-status.mjs';
+import { benchmarkExitCode } from '../../src/benchmark/status.mjs';
 
 test('returns success only when every expected benchmark completes cleanly', () => {
   expect(benchmarkExitCode([{ code: 0 }], 1)).toBe(0);
