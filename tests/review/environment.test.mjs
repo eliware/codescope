@@ -128,3 +128,57 @@ test('skips default-file protections for custom files and Windows', async () => 
   });
   expect(environment.OPENAI_API_TOKEN).toBe('custom');
 });
+
+test('rejects an explicitly unrestricted Windows default environment file', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile: defaultEnvFile(),
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => ({ aclRestricted: false }),
+      platform: 'win32',
+    }),
+  ).rejects.toThrow(/other users/);
+});
+
+test('allows a missing Windows default environment file', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile: defaultEnvFile(),
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => {
+        throw { code: 'ENOENT' };
+      },
+      platform: 'win32',
+    }),
+  ).resolves.toBeDefined();
+});
+
+test('wraps Windows permission inspection failures', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile: defaultEnvFile(),
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => {
+        throw new Error('acl');
+      },
+      platform: 'win32',
+    }),
+  ).rejects.toThrow(/Unable to inspect/);
+});
+
+test('preserves non-Error Windows permission failures in context', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile: defaultEnvFile(),
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => {
+        throw 'acl failure';
+      },
+      platform: 'win32',
+    }),
+  ).rejects.toThrow(/acl failure/);
+});

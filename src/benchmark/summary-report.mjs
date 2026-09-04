@@ -1,4 +1,5 @@
 import { calculateUsageCost } from '../pricing.mjs';
+import { normalizeUsage } from '../pricing.mjs';
 
 export function parseBenchmarkOutput(output) {
   try {
@@ -25,8 +26,15 @@ export function reportBenchmarkResult(effort, result, npmTest, model) {
   const usage = report?.usage;
   const inputTokens = usage?.input_tokens ?? null;
   const outputTokens = usage?.output_tokens ?? null;
-  const cost =
-    inputTokens === null || outputTokens === null ? null : calculateUsageCost(model, usage);
+  let cost = null;
+  if (inputTokens !== null && outputTokens !== null) {
+    try {
+      normalizeUsage(usage);
+      cost = calculateUsageCost(model, usage);
+    } catch {
+      cost = null;
+    }
+  }
   return {
     effort,
     issues: report ? countFindings(report.issues, 'issue', 'No issues found.') : null,

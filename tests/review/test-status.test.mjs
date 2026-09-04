@@ -6,6 +6,9 @@ test('blocks failed and timed-out test evidence', () => {
     true,
   );
   expect(testEvidenceBlocks('===== npm test =====\nexit code: 0\npassed')).toBe(false);
+  expect(testEvidenceBlocks('===== npm test =====\nFAIL tests/app.test.mjs')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\nnpm ERR! code ELIFECYCLE')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\nError: assertion failed')).toBe(true);
 });
 
 test('ignores absent or unrelated evidence', () => {

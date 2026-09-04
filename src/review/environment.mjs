@@ -46,6 +46,17 @@ export async function loadReviewEnvironment({
         );
     }
   }
+  if (readEnvFile === readFile && envFile === defaultEnvFile() && platform === 'win32') {
+    const metadata = await inspectPermissions(envFile).catch((cause) => {
+      if (cause?.code === 'ENOENT') return undefined;
+      throw new Error(
+        `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
+        { cause },
+      );
+    });
+    if (metadata?.aclRestricted === false)
+      throw new Error('~/.codescope must not be readable by other users');
+  }
   loadEnv(envText, environment);
   return environment;
 }

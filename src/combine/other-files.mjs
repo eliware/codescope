@@ -47,7 +47,9 @@ export async function describeOtherFiles(
       }
     }
   };
-  await Promise.all(Array.from({ length: Math.min(16, paths.length) }, worker));
+  // Keep the bounded metadata scan from creating a large wave of reads after
+  // the aggregate budget has already been reserved by earlier workers.
+  await Promise.all(Array.from({ length: Math.min(4, paths.length) }, worker));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
 }
 

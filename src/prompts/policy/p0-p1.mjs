@@ -7,6 +7,13 @@ release-blocking P0 regardless of whether the test is required or optional.
 - Active service outage affecting a required service.
 - Confirmed or imminent irreversible data loss or corruption.
 - Confirmed critical credential, secret, or private-key exposure.
+- Any supplied source, documentation, configuration, or test output that
+  contains a credential, token, password, private key, or other secret is P0.
+  This applies equally when the value is visible and when CodeScope has
+  replaced it with a redaction marker: treat the redacted evidence as proof
+  that secret material was present, and report the path or output location.
+  The recommended action must include immediate credential rotation or
+  revocation, followed by removal from the supplied source or output.
 - A security defect that permits immediate unauthorized access or destructive control.
 - A production action currently causing uncontrolled damage.
 - Any Istanbul ignore outside a pure barrel/re-export file.

@@ -78,6 +78,33 @@ test('reports malformed output without usage', () => {
   });
 });
 
+test('does not fail when usage has malformed nested details', () => {
+  expect(
+    reportBenchmarkResult(
+      'none',
+      {
+        output: JSON.stringify({
+          usage: {
+            input_tokens: 10,
+            output_tokens: 4,
+            input_tokens_details: { cached_tokens: 'unknown' },
+          },
+          verdict: 'pass',
+        }),
+        elapsedMs: 1,
+        code: 0,
+      },
+      { elapsedMs: 1 },
+      'gpt-5.6-luna',
+    ),
+  ).toMatchObject({
+    inputTokens: 10,
+    outputTokens: 4,
+    estimatedCostUsd: null,
+    verdict: 'pass',
+  });
+});
+
 test('does not mark a signaled zero-code benchmark complete', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'codescope-benchmark-signal-'));
   const file = path.join(directory, 'summary.json');
