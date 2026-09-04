@@ -1,10 +1,7 @@
+import { exactKeys } from './response/exact-keys.mjs';
+
 const responseError = (message, cause) =>
   Object.assign(new Error(message, { cause }), { code: 'INVALID_RESPONSE' });
-
-const exactKeys = (value, keys) =>
-  value !== null && typeof value === 'object' && !Array.isArray(value) &&
-  Object.getPrototypeOf(value) === Object.prototype && Object.keys(value).length === keys.length &&
-  Object.keys(value).every((key) => keys.includes(key));
 
 const toolCategories = (prompt, field) => Object.keys(
   prompt?.tools?.[0]?.parameters?.properties?.[field]?.properties ?? {},
