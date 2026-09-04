@@ -1,6 +1,6 @@
 import os from 'node:os';
 import path from 'node:path';
-import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
+import { defaultEnvFile, loadEnv } from '../../src/review/config.mjs';
 
 test('resolves the default config below the user home directory', () => {
   expect(defaultEnvFile()).toBe(path.join(os.homedir(), '.codescope'));
