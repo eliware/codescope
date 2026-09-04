@@ -22,7 +22,7 @@ import {
   REVIEW_CATEGORIES,
   SUGGESTION_CATEGORIES,
 } from './prompt.mjs';
-import { PROFILE_FILES, PROFILE_NAMES, getProfileFiles } from './profiles/metadata.mjs';
+import { getProfileFiles } from './profiles/metadata.mjs';
 export { PROFILE_NAMES } from './profiles/metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
