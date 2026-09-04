@@ -15,17 +15,22 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
       directory('.nyc_output'),
       file('a.mjs'),
       file('guide.md'),
+      directory('src'),
     ],
     [path.join(root, 'z')]: [file('deep.mjs'), file('deep.test.mjs')],
+    [path.join(root, 'src')]: [directory('coverage')],
+    [path.join(root, 'src', 'coverage')]: [file('legitimate.mjs')],
   };
   const readDirectory = async (root) => tree[root] ?? [];
   expect(await findMjsFiles(root, { readDirectory })).toEqual([
     'a.mjs',
+    'src/coverage/legitimate.mjs',
     'z/deep.mjs',
     'z/deep.test.mjs',
   ]);
   expect(await findMjsFiles(root, { readDirectory, noTests: true })).toEqual([
     'a.mjs',
+    'src/coverage/legitimate.mjs',
     'z/deep.mjs',
   ]);
   expect(await findMjsFiles(root, { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);

@@ -7,3 +7,9 @@ test('applies finder extension and test policies', () => {
   expect(matchesFile('a.test.mjs', ['.mjs'], false, true)).toBe(false);
   expect(matchesFile('guide.md', '.md', false, false)).toBe(true);
 });
+
+test('only ignores generated coverage directories at the scan root', () => {
+  expect(isIgnoredDirectory('coverage')).toBe(true);
+  expect(isIgnoredDirectory('coverage', 'src')).toBe(false);
+  expect(isIgnoredDirectory('.nyc_output', 'src')).toBe(false);
+});

@@ -76,7 +76,7 @@ export async function findFiles(
       const normalizedName = entry.name;
       if (
         isDirectory &&
-        !isIgnoredDirectory(normalizedName)
+        !isIgnoredDirectory(normalizedName, pathApi.relative(root, directory))
       )
         pending.push(childPath);
       else if (

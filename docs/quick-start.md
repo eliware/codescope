@@ -114,7 +114,7 @@ The `cross-platform` profile evaluates portability within the host platforms and
 
 Use the initial `all` result as the combined baseline; subsequent iterations are owned by the goal harness.
 
-This final pass includes package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, every `.md` file, and a names-only inventory of other repository files, then checks implementation, tests, and Markdown inconsistencies together. Git metadata, dependencies, coverage output, and coverage data are excluded. It reports findings across all of those categories in one result. Run it after the focused reviews, not as the first pass, so its output is easier to act on. Test evidence is inserted before the Markdown source in the combined input.
+This final pass includes package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, every `.md` file, and a names-only inventory of other repository files, then checks implementation, tests, and Markdown inconsistencies together. Git metadata, dependencies, root-level generated coverage output (`coverage/` and `.nyc_output/`), and coverage data are excluded; legitimate nested source directories such as `src/coverage/` are included. It reports findings across all of those categories in one result. Run it after the focused reviews, not as the first pass, so its output is easier to act on. Test evidence is inserted before the Markdown source in the combined input.
 
 ## 8. Review everything from every angle
 
