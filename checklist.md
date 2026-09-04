@@ -4,7 +4,7 @@ Baseline rollback commit: `68b94de6090cef4efc18bebe83b51129882d8486`
 
 - [x] Create mirrored `src/` and `tests/` responsibility directories. (`5b85cb2`)
 - [ ] Inventory every production module and assign exactly one matching test module.
-- [ ] Move benchmark status parsing, aggregation, and formatting into `src/benchmark/` with mirrored tests.
+- [x] Move benchmark status parsing, aggregation, and formatting into `src/benchmark/` with mirrored tests. (`b0276b5`)
 - [ ] Split `src/cli.mjs` into constants, version, errors, options, argument parsing, help, output, commands, dispatch, and main modules.
 - [ ] Move CLI tests into matching `tests/cli/` modules and remove `tests/cli.test.mjs`.
 - [ ] Split `src/cli-profiles.mjs` into profile metadata, names, source selection, prompt selection, category selection, tool selection, and profile building.
