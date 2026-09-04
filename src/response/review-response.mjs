@@ -1,8 +1,6 @@
 import { isValidReviewResult, isValidSuggestionResult } from './validators.mjs';
+import { getFunctionCalls, responseError } from './calls.mjs';
 export { isValidReviewResult, isValidSuggestionResult } from './validators.mjs';
-
-const responseError = (message, cause) =>
-  Object.assign(new Error(message, { cause }), { code: 'INVALID_RESPONSE' });
 
 export function parseReviewToolResponse(response, toolName = 'submit_review', categories) {
   // codescope ignore: profile-generated category names are intentionally accepted so scoped tools expose exactly their requested schema.
@@ -29,9 +27,7 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
     new Set(expectedCategories).size !== expectedCategories.length
   )
     throw new Error('Response categories must be a nonempty unique string array');
-  const calls = (Array.isArray(response?.output) ? response.output : []).filter(
-    (item) => item?.type === 'function_call' && item.name === toolName,
-  );
+  const calls = getFunctionCalls(response, toolName);
   if (calls.length !== 1 || typeof calls[0].arguments !== 'string')
     throw responseError(`OpenAI response did not contain exactly one ${toolName} tool call`);
   let result;
@@ -52,10 +48,7 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
 }
 
 export function parseCombinedToolResponse(response, reviewCategories, suggestionCategories) {
-  const submitted = (name) =>
-    (Array.isArray(response?.output) ? response.output : []).filter(
-      (item) => item?.type === 'function_call' && item.name === name,
-    );
+  const submitted = (name) => getFunctionCalls(response, name);
   if (submitted('submit_review').length !== 1 || submitted('submit_suggestions').length !== 1) {
     const error = new Error(
       'OpenAI response did not contain exactly one review and suggestion tool call',
