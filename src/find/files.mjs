@@ -2,9 +2,9 @@ import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isIgnoredDirectory } from './policies.mjs';
 import { matchesFile } from './extensions.mjs';
-import { validateEntryNames } from './entries.mjs';
 import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './root-policy.mjs';
 import { classifyEntry } from './entry-types.mjs';
+import { readDirectoryEntries } from './read-entries.mjs';
 
 export async function findFiles(
   root,
@@ -33,24 +33,7 @@ export async function findFiles(
   const pending = [root];
   while (pending.length > 0) {
     const directory = pending.pop();
-    let entries;
-    try {
-      entries = await readDirectory(directory, { withFileTypes: true });
-    } catch (cause) {
-      throw new Error(
-        `Unable to scan ${pathApi.relative(root, directory) || '.'}: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
-    }
-    if (!Array.isArray(entries))
-      throw new Error(
-        `Unable to scan ${pathApi.relative(root, directory) || '.'}: directory reader returned a non-array`,
-      );
-    validateEntryNames(entries, pathApi.relative(root, directory));
-
-    entries.sort(
-      (left, right) => Number(left.name > right.name) - Number(left.name < right.name),
-    );
+    const entries = await readDirectoryEntries(readDirectory, directory, root, pathApi);
     for (const entry of entries) {
       const entryType = classifyEntry(entry, pathApi.relative(root, directory));
       if (entryType.skip) continue;
