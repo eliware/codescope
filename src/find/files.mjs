@@ -1,6 +1,7 @@
 import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { isIgnoredDirectory, matchesFile } from './policies.mjs';
+import { isIgnoredDirectory } from './policies.mjs';
+import { matchesFile } from './extensions.mjs';
 import { validateEntryNames } from './entries.mjs';
 
 export async function findFiles(
