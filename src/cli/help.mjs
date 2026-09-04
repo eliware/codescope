@@ -7,14 +7,10 @@ export function usage() {
 4. Run \`npm test\` and restore genuine 100×4 coverage.
 5. For findings rejected by design:
    - First clarify the relevant documentation.
-   - If documentation alone is insufficient, add a narrowly scoped CodeScope ignore beside the affected code.
-   - Never use ignores to hide real defects.
-6. If a finding appears already ignored or documented as out of scope, treat that as insufficiently explicit. Strengthen the documentation or add a scoped ignore at the specific code location.
-7. Every finding must receive an action:
+6. Every finding must receive an action:
    - Fix or implementation
    - Documentation update
-   - Narrowly scoped ignore with justification
-8. Organize changes into separate, focused commits:
+7. Organize changes into separate, focused commits:
    - One commit per independent fix or tightly related group.
    - Include matching tests and documentation in the relevant commit.
    - Avoid combining unrelated fixes.

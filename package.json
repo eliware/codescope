@@ -35,6 +35,7 @@
     "README.md",
     "docs/",
     "specs/",
+    "KNOWN_ISSUES.md",
     "LICENSE",
     "RELEASE_NOTES.md"
   ],
