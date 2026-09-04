@@ -1,4 +1,4 @@
-import { getProfile, PROFILE_NAMES } from '../src/cli-profiles.mjs';
+import { getProfile, PROFILE_NAMES } from '../../src/profiles/index.mjs';
 
 test('exposes a profile strategy for every public profile', () => {
   for (const name of PROFILE_NAMES) {

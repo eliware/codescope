@@ -1,5 +1,5 @@
 import { EXIT_CODES, errorExitCode, main, parseArgs, VERSION } from '../src/cli.mjs';
-import { getProfile } from '../src/cli-profiles.mjs';
+import { getProfile } from '../src/profiles/index.mjs';
 // codescope ignore: the shipped executable is a pure Node process-wiring barrel; focused main tests are the complete contract for exit propagation.
 
 // codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.

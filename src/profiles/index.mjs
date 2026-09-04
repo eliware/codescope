@@ -2,11 +2,11 @@ import {
   createReviewTool,
   createSuggestionTool,
   SUGGESTION_CATEGORIES,
-} from './prompt.mjs';
-import { getProfileFiles } from './profiles/metadata.mjs';
-import { getPromptRouting } from './profiles/prompt-routing.mjs';
-import { createProfileCombiner } from './profiles/source-selection.mjs';
-export { PROFILE_NAMES } from './profiles/metadata.mjs';
+} from '../prompt.mjs';
+import { getProfileFiles } from './metadata.mjs';
+import { getPromptRouting } from './prompt-routing.mjs';
+import { createProfileCombiner } from './source-selection.mjs';
+export { PROFILE_NAMES } from './metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
   const profileFiles = getProfileFiles(profile);

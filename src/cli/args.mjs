@@ -1,4 +1,4 @@
-import { PROFILE_NAMES } from '../cli-profiles.mjs';
+import { PROFILE_NAMES } from '../profiles/index.mjs';
 
 export function parseArgs(args) {
   // codescope ignore: grouped review/suggest commands intentionally share one concise option grammar; direct profiles retain their legacy aliases.

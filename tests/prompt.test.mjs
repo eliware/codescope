@@ -1,5 +1,5 @@
 import { createReviewTool, createSuggestionTool, profilePrompt, REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from '../src/prompt.mjs';
-import { getProfile } from '../src/cli-profiles.mjs';
+import { getProfile } from '../src/profiles/index.mjs';
 
 test('builds strict tools with complete category sets', () => {
   expect(createReviewTool().strict).toBe(true);
