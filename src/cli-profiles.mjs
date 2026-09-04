@@ -22,35 +22,13 @@ import {
   REVIEW_CATEGORIES,
   SUGGESTION_CATEGORIES,
 } from './prompt.mjs';
-
-const PROFILE_FILES = {
-  refactor: [true, false, false],
-  architecture: [true, false, false],
-  'new-features': [true, false, false],
-  all: [true, true, true],
-  security: [true, false, false],
-  performance: [true, false, false],
-  reliability: [true, false, false],
-  'api-design': [true, false, false],
-  'cross-platform': [true, false, false],
-  dependencies: [true, false, false],
-  observability: [true, false, false],
-  accessibility: [true, false, false],
-
-  'quick-wins': [true, false, false],
-  prioritize: [true, false, false],
-  p0: [true, false, false],
-  'p0-1': [true, false, false],
-  'p0-2': [true, false, false],
-  'p0-3': [true, false, false],
-};
-export const PROFILE_NAMES = Object.freeze(Object.keys(PROFILE_FILES));
+import { PROFILE_FILES, PROFILE_NAMES, getProfileFiles } from './profiles/metadata.mjs';
+export { PROFILE_NAMES } from './profiles/metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
-  if (!Object.hasOwn(PROFILE_FILES, profile))
-    throw new Error(`Unknown analysis profile: ${profile}`);
+  const profileFiles = getProfileFiles(profile);
   if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
-  const [implementation, tests, docs] = PROFILE_FILES[profile];
+  const [implementation, tests, docs] = profileFiles;
   const reviewSources = mode === 'review';
   const combine = (root, options) =>
     combineSelectedFiles(root, {
