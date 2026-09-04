@@ -5,6 +5,7 @@ import { prompt as defaultPrompt } from '../prompt.mjs';
 import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
 import { parseProviderResult } from './provider-result.mjs';
+import { writeFallbackResult, writeJsonResult } from './output.mjs';
 import { prepareRequest } from './request.mjs';
 import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
@@ -178,7 +179,7 @@ export async function runReview(cwd, options) {
             }),
           };
         }
-        await write(`${JSON.stringify(output, null, 2)}\n`);
+        await writeJsonResult(write, output);
         return output;
       }
       providerResponse = await client.responses.create(
@@ -193,11 +194,7 @@ export async function runReview(cwd, options) {
       providerResponseReceived = true;
       if (plainText !== undefined) {
         const output = parsePlainTextJsonResponse(providerResponse);
-        try {
-          await write(`${JSON.stringify(output, null, 2)}\n`);
-        } catch (cause) {
-          throw new Error(`Unable to write prompt output: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
-        }
+        await writeJsonResult(write, output, 'prompt');
         return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
       }
       const result = parseProviderResult(providerResponse, request, combined);
@@ -219,14 +216,7 @@ export async function runReview(cwd, options) {
           }
         : result;
 
-      try {
-        await write(`${JSON.stringify(output, null, 2)}\n`);
-      } catch (cause) {
-        throw new Error(
-          `Unable to write review output: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
-      }
+      await writeJsonResult(write, output);
       return output;
     } catch (cause) {
       if (providerResponseReceived) {
@@ -235,11 +225,7 @@ export async function runReview(cwd, options) {
           suggestions: 'not submitted',
           error: cause instanceof Error ? cause.message : String(cause),
         };
-        try {
-          await write(`${JSON.stringify(fallback, null, 2)}\n`);
-        } catch {
-          // Preserve the original validation/provider failure when fallback output cannot be written.
-        }
+        await writeFallbackResult(write, fallback);
       }
       const failure = new Error(
         `OpenAI request failed: ${cause instanceof Error ? cause.message : String(cause)}`,
