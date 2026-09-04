@@ -2,7 +2,7 @@ import { fs, registerSignals } from '@eliware/common';
 import { createOpenAI } from '@eliware/openai';
 import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
-import { defaultEnvFile, loadEnv } from './config.mjs';
+import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
 import { parseCombinedToolResponse, parseReviewToolResponse } from '../response/review-response.mjs';
 import { prepareRequest } from './request.mjs';
@@ -10,6 +10,7 @@ import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 import { validateReviewOptions } from './options.mjs';
+import { loadReviewEnvironment } from './environment.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -76,50 +77,14 @@ export async function runReview(cwd, options) {
   });
   // codescope ignore: runReview intentionally exposes injected collaborators and caller-owned mode consistency for deterministic package tests.
   // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
-  const environment = { ...process.env };
-  let envText = '';
-
-  if (readEnvFile === readFile && envFile === defaultEnvFile()) {
-    // codescope ignore: ~/.codescope lstat-before-read symlink-swap race is an accepted user-config threat-model boundary.
-    try {
-      const metadata = await inspectFile(envFile);
-      if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');
-    } catch (cause) {
-      if (cause?.code !== 'ENOENT')
-        throw new Error(
-          `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
-    }
-  }
-
-  try {
-    envText = await readEnvFile(envFile, 'utf8');
-  } catch (cause) {
-    if (cause?.code !== 'ENOENT')
-      throw new Error(
-        `Unable to read ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
-  }
-
-  if (readEnvFile === readFile && envFile === defaultEnvFile() && platform !== 'win32') {
-    // codescope ignore: profile-specific runReview dispatch is covered by prompt-construction and injected-client tests; subprocess and every-profile integration duplication is intentionally out of scope.
-    try {
-      const metadata = await inspectPermissions(envFile);
-      if ((metadata.mode & 0o077) !== 0)
-        throw new Error('~/.codescope must not be readable by group or other users');
-    } catch (cause) {
-      if (cause?.code === 'ENOENT') {
-      } else if (cause?.message?.includes('must not be readable')) throw cause;
-      else
-        throw new Error(
-          `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
-    }
-  }
-  loadEnv(envText, environment);
+  const environment = await loadReviewEnvironment({
+    envFile,
+    readFile,
+    readEnvFile,
+    inspectFile,
+    inspectPermissions,
+    platform,
+  });
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
   let testResults;
