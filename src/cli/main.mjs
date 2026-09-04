@@ -1,4 +1,4 @@
-import { runReview } from '../review.mjs';
+import { runReview } from '../review/lifecycle.mjs';
 import { getProfile } from '../profiles/index.mjs';
 import { isValidReviewResult, isValidSuggestionResult } from '../review-response.mjs';
 import { EXIT_CODES, errorExitCode } from './errors.mjs';
@@ -106,4 +106,3 @@ export async function main(
     return errorExitCode(cause);
   }
 }
-
