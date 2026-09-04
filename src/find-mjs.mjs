@@ -1,6 +1,7 @@
 import { lstat, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { isCodeExtension, isIgnoredDirectory, matchesFile } from './find/policies.mjs';
+import { validateEntryNames } from './find/entries.mjs';
 
 export async function findFiles(
   root,
@@ -47,19 +48,7 @@ export async function findFiles(
       throw new Error(
         `Unable to scan ${pathApi.relative(root, directory) || '.'}: directory reader returned a non-array`,
       );
-    for (const entry of entries) {
-      if (
-        typeof entry.name !== 'string' ||
-        !entry.name ||
-        entry.name === '.' ||
-        entry.name === '..' ||
-        entry.name.includes('/') ||
-        entry.name.includes('\\')
-      )
-        throw new Error(
-          `Invalid directory entry name in ${pathApi.relative(root, directory) || '.'}`,
-        );
-    }
+    validateEntryNames(entries, pathApi.relative(root, directory));
 
     entries.sort(
       (left, right) => Number(left.name > right.name) - Number(left.name < right.name),
