@@ -18,6 +18,7 @@ import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { initializeReviewClient } from './client.mjs';
 import { registerReviewSignals } from './signals.mjs';
 import { requestProviderResponse } from './provider-request.mjs';
+import { createIncompleteResult, createProviderFailure } from './failure.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -174,17 +175,10 @@ export async function runReview(cwd, options) {
       return output;
     } catch (cause) {
       if (providerResponseReceived) {
-        const fallback = {
-          issues: 'not submitted',
-          suggestions: 'not submitted',
-          error: cause instanceof Error ? cause.message : String(cause),
-        };
+        const fallback = createIncompleteResult(cause);
         await writeFallbackResult(write, fallback);
       }
-      const failure = new Error(
-        `OpenAI request failed: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
+      const failure = createProviderFailure(cause);
       if (cause?.code) failure.code = cause.code;
       throw failure;
     }
