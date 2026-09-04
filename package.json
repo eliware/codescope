@@ -34,6 +34,7 @@
     "src/",
     "README.md",
     "docs/",
+    "specs/",
     "LICENSE",
     "RELEASE_NOTES.md"
   ],

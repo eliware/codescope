@@ -83,7 +83,6 @@ export async function runReview(cwd, options) {
     createClient,
     register,
   });
-  // codescope ignore: runReview intentionally exposes injected collaborators and caller-owned mode consistency for deterministic package tests.
   // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
   const environment = await loadReviewEnvironment({
     envFile,
@@ -126,14 +125,12 @@ export async function runReview(cwd, options) {
   let providerResponseReceived = false;
   try {
     signals = registerReviewSignals(register, controller);
-    // codescope ignore: profile-specific runReview dispatch is covered by prompt-construction and injected-client tests; subprocess and every-profile integration duplication is intentionally out of scope.
     try {
       const toolNames = (request.tools ?? []).map((tool) => tool?.name);
       const combined =
         request.tool_choice === 'auto' &&
         toolNames.includes('submit_review') &&
         toolNames.includes('submit_suggestions');
-      // codescope ignore: streaming and async-iterable provider responses are intentionally unsupported; the request requires one complete structured response.
       if (dryRun) {
         const output = await runDryRun({
           client,

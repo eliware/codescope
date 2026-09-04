@@ -9,7 +9,6 @@
 - Review and suggestion schemas adapt to the selected profile categories, require nonempty category arrays, and include explicit no-issue/no-suggestion placeholders.
 - Comprehensive reviews use the binary `pass` or `block` verdict; only unresolved P0 or qualifying P1 issues block under the documented evidence and release-scope criteria.
 - Tool-result validation rejects malformed payloads, duplicate calls, unsupported fields, and invalid category shapes before output.
-- Nearby `codescope ignore:` annotations are supplied as scoped guidance, while uncovered behavior remains reportable.
 
 ### CLI and configuration
 
@@ -48,7 +47,6 @@
 
 ### Review policies
 
-- Global review guidance honors nearby `codescope ignore:` annotations as scoped suppression directives.
 - One annotation can describe multiple intentional behaviors.
 - Partially covered findings identify only the uncovered residual behavior and provide copyable replacement ignore text when appropriate.
 - Release reviews use a binary `pass` or `block` verdict and omit ignored or intentional findings from the report.
@@ -59,7 +57,6 @@
 - Profile dispatch coverage includes the complete supported profile set.
 - Configuration, adapter boundaries, cleanup behavior, and accepted platform limitations are documented for focused review.
 - Review profiles emit one structured review and optional `--usage` metadata; no automatic guidance text is appended.
-- Reported issues include a copy-paste-ready `// codescope ignore:` example; partially covered issues include a complete replacement annotation when needed.
 
 ## v2.0.0
 

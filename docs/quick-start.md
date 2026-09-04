@@ -150,13 +150,7 @@ For each profile:
 4. Rerun the same profile.
 5. Continue until the result is stable, then move to the next profile.
 
-If behavior is intentional and should be excluded from every profile, add one nearby inline comment with the explicit marker and describe the complete scope. For example:
-
-```js
-// codescope ignore: bounded reads and serialized finite-limit reads keep memory predictable for large repositories.
-```
-
-Codescope supplies the behavior described after `codescope ignore:` to the AI as scoped review guidance. One comment can name multiple intentional behaviors; multiple comments on the same line are unnecessary. If a finding is only partly covered, Codescope explains why the residual behavior is outside the comment scope and suggests either fixing it or expanding the same comment to explicitly include it. Ordinary comments remain context and do not suppress findings; unrelated issues in the same code are still reported.
+If behavior is intentional, document the design decision near the affected code. The review may still report behavior that is not covered by the documented decision.
 
 Use `--usage` after grouped or direct review/suggestion syntax when you want API usage metadata included; it is not a standalone command:
 

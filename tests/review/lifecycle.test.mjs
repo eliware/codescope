@@ -8,7 +8,6 @@ import { createSuggestionTool, defaultDeveloperText, profilePrompt } from '../..
 import { createReviewTool } from '../../src/prompt.mjs';
 import { defaultEnvFile } from '../../src/review/config.mjs';
 import { getProfile } from '../../src/profiles/index.mjs';
-// codescope ignore: real child-process npm-test execution and cross-product provider-failure interactions are delegated to Node/OpenAI; injected executors plus parser tests provide complete deterministic coverage for this package.
 
 const emptyIssuesJson = JSON.stringify({
   issues: Object.fromEntries(
@@ -33,7 +32,6 @@ const emptyIssuesJson = JSON.stringify({
 const validPrompt = (text = '<combine-mjs here>') => ({
   input: [{ role: 'developer', content: [{ type: 'input_text', text }] }],
 });
-// codescope ignore: the async-generator helper is retained only as a fixture for rejected legacy streaming behavior; production requests are non-streamed.
 const base = (overrides = {}) => ({
   readEnvFile: async () => 'OPENAI_API_TOKEN=test-token',
   combine: async () => 'source',
@@ -171,7 +169,6 @@ test('counts prepared input without creating a model response during dry runs', 
     }),
   );
   expect(created).toBe(false);
-  // codescope ignore: dry-run request-shape assertions intentionally cover endpoint selection; token counting receives the prepared request.
   expect(counted.input).toEqual(expect.any(Array));
   expect(result).toEqual({ model: undefined, estimated_input_tokens: 1234 });
   expect(JSON.parse(writes[0])).toEqual(result);
@@ -252,9 +249,6 @@ test('rejects non-string test evidence', async () => {
   ).rejects.toThrow('Test runner must return a string');
 });
 
-// codescope ignore: lint and pack are npm-tooling gates, not review-response behavior; this suite intentionally supplies deterministic npm-test evidence only.
-// codescope ignore: suggestion and combined response behavior is covered by focused injected-client and parser tests; redundant provider/subprocess cases are intentionally out of scope.
-// codescope ignore: combined and suggestion response paths are intentionally covered by focused injected-client/parser tests; provider call-selection behavior is outside the deterministic unit-test boundary.
 test('runs suggestion-mode tool output', async () => {
   const suggestions = {
     suggestions: {
@@ -396,7 +390,6 @@ test('routes a public suggestion profile to submit_suggestions', async () => {
   expect(JSON.parse(output[0]).suggestions['new-features']).toHaveLength(1);
 });
 
-// codescope ignore: subprocess mechanics are delegated to Node child_process; focused injected-result tests cover this contract without recursively running this suite.
 test('collects test results for test-inclusive profiles', async () => {
   let receivedOptions;
   await runReview(
@@ -468,7 +461,6 @@ test('does not override the AI verdict for noncanonical test evidence', async ()
   expect(result.verdict).toBe('pass');
 });
 
-// codescope ignore: subprocess mechanics are delegated to Node child_process; injected executors are the complete focused contract for this package and real subprocess integration is intentionally out of scope.
 test('formats test command failures and timeouts', async () => {
   await expect(collectTestResults('/root', 0, async () => ({}))).rejects.toThrow(
     'Test timeout must be positive',
@@ -504,7 +496,6 @@ test('preserves a resolved nonzero executor status', async () => {
   ).resolves.toContain('exit code: 2');
 });
 
-// codescope ignore: redaction tests cover the documented credential patterns; unsupported custom secret formats are intentionally outside the fixed runner contract.
 test('redacts secrets from successful test output', async () => {
   const output = await collectTestResults('/root', 30_000, async () => ({
     stdout: 'token=abc123 CUSTOM_SECRET=hidden Bearer eyJabc sk-live_secret',
@@ -684,7 +675,6 @@ test('uses forced tool choice when both tools are supplied', async () => {
   expect(request.parallel_tool_calls).toBe(false);
 });
 
-// codescope ignore: native filesystem plus live-provider end-to-end coverage is intentionally outside the deterministic unit-test contract; injected collaborators cover the package behavior.
 test('covers default config permission outcomes on non-Windows platforms', async () => {
   const common = {
     environment: { OPENAI_API_TOKEN: 'test-token' },

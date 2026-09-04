@@ -26,7 +26,7 @@ pre-push item is checked and the exact release version has been approved.
 - [ ] Run `codescope all` once on the final intended source state and record the complete issues, suggestions, verdict, and usage output.
 - [ ] Fix every reported issue that is in scope.
 - [ ] Implement every practical suggestion that belongs in this release.
-- [ ] For intentional behavior, clarify the documentation first; only if needed add one narrowly scoped `codescope ignore:` comment beside the affected code with a complete justification.
+- [ ] For intentional behavior, clarify the relevant documentation beside the affected code.
 - [ ] Do not use ignores to hide defects, missing tests, coverage gaps, or unsupported release behavior.
 - [ ] Confirm all P0/P1 findings are resolved and P2/P3 findings have an explicit disposition.
 - [ ] Confirm no Istanbul ignore exists outside a pure barrel/re-export file.

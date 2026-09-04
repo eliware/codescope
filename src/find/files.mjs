@@ -23,7 +23,6 @@ export async function findFiles(
   const pathApi = path;
   root = pathApi.resolve(root);
 
-  // codescope ignore: injected directory adapters intentionally own root validation; native scans validate the root with lstat.
   if (readDirectory === readdir || inspectRoot !== lstat) {
     const metadata = await inspectRoot(root);
     validateScanRootMetadata(metadata);

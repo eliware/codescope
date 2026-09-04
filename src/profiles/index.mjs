@@ -24,7 +24,6 @@ export function getProfile(profile, mode = 'review') {
     const tool = createReviewTool(suggestionCategories);
     prompt.tools = [tool];
     prompt.tool_choice = { type: 'function', name: tool.name };
-    // codescope ignore: review all intentionally keeps both review tools and auto selection so one request can return issues and suggestions; every other review profile is single-tool.
   }
   return { combine, prompt, includesTests: reviewSources || tests };
 }

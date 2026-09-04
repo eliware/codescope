@@ -24,7 +24,7 @@
 - Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, and release readiness.
 - Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
 - Token and cost estimates, model selection, reasoning-effort controls, and configurable test timeouts.
-- Symlink-safe discovery and inline `codescope ignore:` guidance for intentional behavior.
+- Symlink-safe discovery and documented boundaries for intentional behavior.
 - Read-only analysis that does not modify the reviewed repository.
 
 ## Requirements
@@ -66,6 +66,7 @@ codescope --help
 ```
 
 See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow and profile list.
+See [specs/](specs/) for the detailed behavior specifications.
 
 ## Configuration
 
@@ -79,34 +80,19 @@ npm run lint
 npm run pack
 ```
 
-`npm run pack` performs a local `npm pack --dry-run` validation of the publishable file set. Its output is not automatically sent to OpenAI; provide that evidence separately when a review needs to assess package contents.
+`codescope all` is the main comprehensive review and suggestion command. It reports P0–P3 findings, but only unresolved P0 or qualifying P1 issues block the verdict.
 
-Reviews use built-in prompts and write one completed structured result. On the CLI, invalid provider tool responses received after the request produce diagnostic fallback JSON and a nonzero exit code; programmatic `runReview` callers receive a rejected error. Failures before a provider response do not produce fallback JSON.
-
-The CLI intentionally documents only the public `~/.codescope` configuration path. The internal programmatic `runReview` API can receive an explicit environment-file path through its options.
-
-`new-features` is suggestion-only: `codescope new-features` is an alias for the corresponding suggestion profile and does not produce issue verdicts.
-
-Symlink policy: file discovery includes only real filesystem entries. Any entry reported as a symbolic link is skipped, whether it is a file or directory; symlink targets are never followed, scanned, combined, or sent to OpenAI. Native root inspection also rejects a symlink root. This means a symlink to an otherwise valid source file is intentionally excluded.
-
-`codescope all` is the main comprehensive review and suggestion command. It reviews package metadata, all `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, all `.test.js`, `.test.cjs`, and `.test.mjs` test files, Markdown, and a names-only inventory of other repository files together. Git metadata, dependencies, root-level generated coverage output (`coverage/` and `.nyc_output/`), and coverage data are excluded; legitimate nested source directories such as `src/coverage/` are included. It makes exactly one review-tool call and one suggestion-tool call in parallel, and merges both into one JSON result. It reports P0–P3 findings, but only unresolved P0 or qualifying P1 issues block the verdict.
-
-Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions. File discovery is performed internally below the current working directory. Package metadata is included first, followed by the files selected by the profile. Symlinked files and directories are excluded and never followed.
+Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions.
 
 Use `codescope prompt "your question"` for an ad hoc plain-text request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools and prints the model's final text response directly. Optional `--effort=` and `--model=` overrides are supported.
 
-`codescope --help` is the single help page. It explains what Codescope does, how files are selected and reviewed, all analysis profiles, and how to annotate intentional behavior with inline comments so it is not reported as a false positive. To guide the AI away from intentional behavior, place one nearby comment containing `codescope ignore:` followed by the complete scope to ignore, such as `// codescope ignore: x, y, and z are intentional policy constraints.` The marker is supplied as scoped review guidance, not enforced by a local parser. If a finding extends beyond that scope, Codescope reports only the uncovered behavior and suggests either fixing it or expanding the same comment. Unrelated issues remain reportable. A profile may also be followed by `--help` to display that same page.
-
-<!-- codescope ignore: this documentation accurately describes test-result ordering; the selected source combiner places test evidence before documentation. -->
-<!-- codescope ignore: --usage documentation intentionally describes the final structured JSON result uniformly for review and suggestion commands; no separate appended footer is promised. -->
+`codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page.
 
 Append `--usage` to either grouped (`codescope review all`) or direct (`codescope all`) syntax to include API usage metadata in the final JSON result.
 
 Append `--dry-run` to prepare the same review request and ask OpenAI for its estimated input-token count without running a model review. The option reports the selected model and estimated input tokens; combine it with `--usage` when you want the count under `usage` as well.
 
 When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated.
-<!-- codescope ignore: the following profile list is explicitly illustrative, not exhaustive; omitted valid profiles are not documentation defects. -->
-
 Review profiles that include tests use package metadata, implementation files, test files, test results, and Markdown files. They run `npm test` in the target repository with a 30-second timeout by default. Use `--omit-test-results` to skip that command or `--test-timeout 120` to override the timeout. Suggestion profiles do not run tests.
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.

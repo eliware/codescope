@@ -8,7 +8,6 @@ export function validateCombineOptions(root, { concurrency, maxChars, platform }
     (maxChars !== Number.POSITIVE_INFINITY && !Number.isInteger(maxChars))
   )
     throw new Error('maxChars must be a positive integer or Infinity');
-  // codescope ignore: Windows-style roots are intentionally supported only on Windows hosts; native path semantics are required on the supported platform.
   if (platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
     throw new Error('Windows-style source roots require a Windows host');
 }

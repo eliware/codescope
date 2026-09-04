@@ -2,7 +2,6 @@ import { PROFILE_NAMES } from '../profiles/index.mjs';
 import { parsePromptArgs } from './prompt-args.mjs';
 
 export function parseArgs(args) {
-  // codescope ignore: grouped review/suggest commands intentionally share one concise option grammar; direct profiles retain their legacy aliases.
   const [first = 'help', ...rest] = args;
   if (first === 'prompt') return parsePromptArgs(rest);
   const effortTokens = rest.filter((value) => value.startsWith('--effort='));
@@ -37,7 +36,6 @@ export function parseArgs(args) {
     const remaining = options.filter(
       (_, index) => timeoutIndex < 0 || (index !== timeoutIndex && index !== timeoutIndex + 1),
     );
-    // codescope ignore: grouped dry-run is removed before shared option validation and preserved on the returned parse result.
     if (
       !profile ||
       (timeoutIndex >= 0 && (!/^\d+$/u.test(timeout ?? '') || Number(timeout) < 1)) ||

@@ -9,7 +9,6 @@ import {
 export { isValidReviewResult, isValidSuggestionResult } from './validators.mjs';
 
 export function parseReviewToolResponse(response, toolName = 'submit_review', categories) {
-  // codescope ignore: profile-generated category names are intentionally accepted so scoped tools expose exactly their requested schema.
   if (!['submit_review', 'submit_suggestions'].includes(toolName))
     throw new Error(`Unsupported Codescope tool: ${toolName}`);
   const allCategories = DEFAULT_REVIEW_CATEGORIES;
@@ -31,7 +30,6 @@ export function parseReviewToolResponse(response, toolName = 'submit_review', ca
       throw responseError('OpenAI submit_suggestions returned an invalid suggestions result');
     return result;
   }
-  // codescope ignore: submit_suggestions has a distinct payload and returns immediately after its own complete validation; review-only issues checks must not apply.
   if (!isValidReviewResult(result, categoryPrompt(expectedCategories, 'issues')))
     throw responseError('OpenAI submit_review returned an invalid review result');
   return result;

@@ -36,7 +36,6 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
   expect(await findMjsFiles(root, { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);
   expect(await findMdFiles(root, { readDirectory })).toEqual(['guide.md']);
 });
-// codescope ignore: injected reader root symlink rejection is directly covered here; adapter-owned entry metadata is intentionally not revalidated by the scanner.
 test('rejects a symlinked scan root', async () => {
   await expect(
     findFiles('fixture-root', '.mjs', {

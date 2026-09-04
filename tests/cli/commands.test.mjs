@@ -1,8 +1,5 @@
 import { EXIT_CODES, errorExitCode, main, parseArgs, VERSION } from '../../src/cli.mjs';
 import { getProfile } from '../../src/profiles/index.mjs';
-// codescope ignore: the shipped executable is a pure Node process-wiring barrel; focused main tests are the complete contract for exit propagation.
-
-// codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.
 
 const emptyIssues = Object.fromEntries(
   [
@@ -41,9 +38,7 @@ const validReviewFor = (profile, verdict = 'pass') => {
     ),
   };
 };
-// codescope ignore: npm test is the only runtime evidence contract exercised here; lint and pack are separate npm-tooling gates run by the handoff workflow, not behaviors of this CLI test suite.
 
-// codescope ignore: lint and pack are handoff commands, not CLI runtime behavior; this test intentionally supplies npm-test evidence only.
 test('covers effort and timeout argument validation paths', () => {
   expect(parseArgs(['review', 'all', '--effort=max', '--test-timeout', '45'])).toMatchObject({
     effort: 'max',

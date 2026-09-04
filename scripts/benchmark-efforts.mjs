@@ -1,4 +1,3 @@
-// codescope ignore: this is an intentionally manual, live-provider benchmarking utility; its subprocess timing and persistence are validated by running the benchmark itself rather than by the product test suite.
 import { mkdir, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
@@ -83,7 +82,6 @@ const writeSummary = async (npmTest, results) => {
   await writeFile(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
 };
 
-// codescope ignore: benchmark summary persistence is best-effort manual tooling; failed summary writes are intentionally not recovered.
 const updateSummary = (npmTest, results) => {
   summaryWrite = summaryWrite.then(() => writeSummary(npmTest, results));
   return summaryWrite;

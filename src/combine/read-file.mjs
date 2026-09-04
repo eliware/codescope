@@ -8,7 +8,6 @@ export async function readSourceFile(
   try {
     if (readFileContents === readFile || validateSymlinks) {
       const metadata = await inspectFile(rootPath);
-      // codescope ignore: this portable read-only scanner accepts the lstat-before-read TOCTOU race, symlink replacement race, and lack of atomic no-follow filesystem reads.
       if (metadata.isSymbolicLink()) throw new Error('symlinked source files are not supported');
       if (!metadata.isFile()) throw new Error('source path is not a regular file');
     }
