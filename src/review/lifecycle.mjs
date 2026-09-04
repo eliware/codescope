@@ -17,6 +17,7 @@ import { runDryRun } from './dry-run.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { initializeReviewClient } from './client.mjs';
 import { registerReviewSignals } from './signals.mjs';
+import { requestProviderResponse } from './provider-request.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -143,15 +144,7 @@ export async function runReview(cwd, options) {
         await writeJsonResult(write, output);
         return output;
       }
-      providerResponse = await client.responses.create(
-        {
-          ...request,
-          input: request.input,
-          tool_choice: request.tool_choice,
-          parallel_tool_calls: combined,
-        },
-        { signal: controller.signal },
-      );
+      providerResponse = await requestProviderResponse(client, request, combined, controller.signal);
       providerResponseReceived = true;
       if (plainText !== undefined) {
         const output = parsePlainTextJsonResponse(providerResponse);
