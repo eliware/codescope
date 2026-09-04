@@ -9,6 +9,7 @@ import { prepareRequest } from './request.mjs';
 import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
+import { validateReviewOptions } from './options.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -57,18 +58,13 @@ export async function runReview(cwd, options) {
     inspectPermissions,
     platform,
   } = { ...defaults, ...options };
-  if (typeof cwd !== 'string' || !cwd) throw new Error('runReview cwd must be a non-empty path string');
-  if (!Number.isFinite(maxSourceChars) && maxSourceChars !== Infinity)
-    throw new Error('runReview maxSourceChars must be finite or Infinity');
-  if (maxSourceChars < 1) throw new Error('runReview maxSourceChars must be positive');
-  if (!Number.isFinite(testTimeoutMs) || testTimeoutMs < 1)
-    throw new Error('runReview testTimeoutMs must be positive');
-  for (const [name, value] of Object.entries({ usage, dryRun, includesTests, omitTestResults }))
-    if (value !== undefined && typeof value !== 'boolean')
-      throw new Error(`runReview option ${name} must be a boolean`);
-  // codescope ignore: runReview intentionally exposes injected collaborators and caller-owned mode consistency for deterministic package tests.
-  // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
-  for (const [name, value] of Object.entries({
+  validateReviewOptions(cwd, {
+    maxSourceChars,
+    testTimeoutMs,
+    usage,
+    dryRun,
+    includesTests,
+    omitTestResults,
     write,
     readFile,
     readEnvFile,
@@ -77,8 +73,9 @@ export async function runReview(cwd, options) {
     redactOutput,
     createClient,
     register,
-  }))
-    if (typeof value !== 'function') throw new Error(`runReview option ${name} must be a function`);
+  });
+  // codescope ignore: runReview intentionally exposes injected collaborators and caller-owned mode consistency for deterministic package tests.
+  // Programmatic callers own the consistency of injected filesystem collaborators; the CLI uses the secure defaults.
   const environment = { ...process.env };
   let envText = '';
 
