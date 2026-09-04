@@ -16,6 +16,7 @@ import { parsePlainTextJsonResponse, preparePlainTextRequest } from './plain-tex
 import { runDryRun } from './dry-run.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { initializeReviewClient } from './client.mjs';
+import { registerReviewSignals } from './signals.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -122,18 +123,7 @@ export async function runReview(cwd, options) {
   let providerResponse;
   let providerResponseReceived = false;
   try {
-    try {
-      signals = register({
-        exit: false,
-        signal: controller.signal,
-        shutdownHook: () => controller.abort(),
-      });
-    } catch (cause) {
-      throw new Error(
-        `Unable to register signal handlers: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
-    }
+    signals = registerReviewSignals(register, controller);
     // codescope ignore: profile-specific runReview dispatch is covered by prompt-construction and injected-client tests; subprocess and every-profile integration duplication is intentionally out of scope.
     try {
       const toolNames = (request.tools ?? []).map((tool) => tool?.name);
