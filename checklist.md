@@ -1,5 +1,7 @@
 # Single-responsibility decomposition checklist
 
+Baseline rollback commit: `68b94de6090cef4efc18bebe83b51129882d8486`
+
 - [ ] Create mirrored `src/` and `tests/` responsibility directories.
 - [ ] Inventory every production module and assign exactly one matching test module.
 - [ ] Move benchmark status parsing, aggregation, and formatting into `src/benchmark/` with mirrored tests.
