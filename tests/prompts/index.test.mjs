@@ -1,5 +1,5 @@
-import { createReviewTool, createSuggestionTool, profilePrompt, REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from '../src/prompt.mjs';
-import { getProfile } from '../src/profiles/index.mjs';
+import { createReviewTool, createSuggestionTool, profilePrompt, REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from '../../src/prompt.mjs';
+import { getProfile } from '../../src/profiles/index.mjs';
 
 test('builds strict tools with complete category sets', () => {
   expect(createReviewTool().strict).toBe(true);
@@ -36,3 +36,5 @@ test('preserves non-text prompt parts', () => {
 function getProfileText() {
   return getProfile('architecture').prompt.input[1].content[0].text;
 }
+
+
