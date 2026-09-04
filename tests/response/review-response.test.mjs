@@ -1,4 +1,4 @@
-import { parseCombinedToolResponse, parseReviewToolResponse } from '../../src/review-response.mjs';
+import { parseCombinedToolResponse, parseReviewToolResponse } from '../../src/response/review-response.mjs';
 
 test('rejects unsupported tool names', () => {
   expect(() => parseReviewToolResponse({ output: [] }, 'other_tool')).toThrow(
