@@ -288,5 +288,3 @@ export async function main(
     return errorExitCode(cause);
   }
 }
-
-export { VERSION };
