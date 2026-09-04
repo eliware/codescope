@@ -1,5 +1,5 @@
-import { EXIT_CODES, errorExitCode, main, parseArgs, VERSION } from '../src/cli.mjs';
-import { getProfile } from '../src/profiles/index.mjs';
+import { EXIT_CODES, errorExitCode, main, parseArgs, VERSION } from '../../src/cli.mjs';
+import { getProfile } from '../../src/profiles/index.mjs';
 // codescope ignore: the shipped executable is a pure Node process-wiring barrel; focused main tests are the complete contract for exit propagation.
 
 // codescope ignore: npm lint and pack are independent npm-tooling gates; this focused suite tests CLI result handling without launching those external commands.
@@ -433,3 +433,5 @@ test('treats direct new-features as a suggestion-only profile', async () => {
   ).toBe(EXIT_CODES.PASS);
   expect(options.prompt.tools[0].name).toBe('submit_suggestions');
 });
+
+
