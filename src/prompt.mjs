@@ -1,6 +1,7 @@
 import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
 import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
 import { createImplementationOnlyPrompt } from './prompts/suggestions.mjs';
+import { createReviewProfiles } from './prompts/review-profiles.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
@@ -226,12 +227,8 @@ export const profilePrompt = (focus, tool = reviewTool) => ({
     },
   ],
 });
-export const prompt = profilePrompt(
-  'review selected source files for actionable implementation issues.',
-);
-export const mdPrompt = profilePrompt(
-  'Find documentation inconsistencies only. Report each inconsistency with its Markdown path and line number(s). Do not report standalone code issues or style preferences.',
-);
+const reviewProfiles = createReviewProfiles({ profilePrompt, reviewTool });
+export const { prompt, mdPrompt } = reviewProfiles;
 export const allPrompt = profilePrompt(
   'Review all supplied implementation, test, and documentation content from every angle in one consolidated report. Report all actionable findings, including P0, P1, P2, and P3; P2 and P3 findings must be reported but must not affect the verdict. Apply the Eliware release-contract and validation-integrity rules exactly; a passing test command does not downgrade a proven coverage or validation defect. Never report a documentation issue unless there is a concrete contradiction or unsupported claim; if your analysis says no discrepancy exists, emit the exact Documentation placeholder instead. A statement that no discrepancy exists is never an issue. Classify documentation discrepancies and test gaps as P1 only when they satisfy every CEO P1 condition; otherwise use P2 or P3. Do not demand subprocess integration tests when focused injected-executor tests are explicitly marked as the complete contract for delegated runtime behavior. Every issue category array must contain at least one item; when empty, emit one P3 placeholder with location `none`, issue `No issues found.`, and empty `ignore_example`. Group findings under these headings, in exactly this order: Correctness, Security, Reliability, Performance, Architecture, API Design, Cross Platform, Tests, Documentation. Assign each underlying issue to one best-fit category only; do not duplicate the same issue across categories. Honor all global ignore rules and apply the global pass/block criteria.',
 );
@@ -263,12 +260,7 @@ export const combinedAllPrompt = {
     },
   ],
 };
-export const codeTestsDocsPrompt = profilePrompt(
-  'Find conflicts between documentation and code only. Report each conflict with the relevant path and line number(s). Do not report standalone code or documentation issues.',
-);
-export const refactorPrompt = profilePrompt(
-  'Identify meaningful monolithic-file responsibility splits and suggest smaller single-purpose structures. Return concise suggestions with paths and line number(s). Do not report ordinary implementation issues, style preferences, or intentional policies.',
-);
+export const { codeTestsDocsPrompt, refactorPrompt } = reviewProfiles;
 const implementationOnlyPrompt = (instruction) =>
   createImplementationOnlyPrompt(instruction, { profilePrompt, suggestionTool });
 export const architecturePrompt = implementationOnlyPrompt(
