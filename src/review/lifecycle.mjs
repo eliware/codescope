@@ -4,7 +4,7 @@ import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
 import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
-import { parseCombinedToolResponse, parseReviewToolResponse } from '../response/review-response.mjs';
+import { parseProviderResult } from './provider-result.mjs';
 import { prepareRequest } from './request.mjs';
 import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
@@ -144,7 +144,6 @@ export async function runReview(cwd, options) {
         request.tool_choice === 'auto' &&
         toolNames.includes('submit_review') &&
         toolNames.includes('submit_suggestions');
-      const toolName = request.tool_choice?.name ?? 'submit_review';
       // codescope ignore: streaming and async-iterable provider responses are intentionally unsupported; the request requires one complete structured response.
       if (dryRun) {
         const {
@@ -201,24 +200,7 @@ export async function runReview(cwd, options) {
         }
         return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
       }
-      const toolCategories = (tool) => {
-        const categories = Object.keys(
-          tool?.parameters?.properties?.issues?.properties ??
-            tool?.parameters?.properties?.suggestions?.properties ??
-            {},
-        );
-        return categories.length ? categories : undefined;
-      };
-      const categories = toolCategories(request.tools?.[0]);
-      const result = combined
-        ? parseCombinedToolResponse(
-            providerResponse,
-            toolCategories(request.tools?.find((tool) => tool.name === 'submit_review')),
-            toolCategories(request.tools?.find((tool) => tool.name === 'submit_suggestions')),
-          )
-        : toolName === 'submit_suggestions'
-          ? parseReviewToolResponse(providerResponse, 'submit_suggestions', categories)
-          : parseReviewToolResponse(providerResponse, 'submit_review', categories);
+      const result = parseProviderResult(providerResponse, request, combined);
       if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) {
         result.verdict = 'block';
       }
