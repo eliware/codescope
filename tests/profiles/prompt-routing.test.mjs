@@ -5,6 +5,8 @@ test('routes profile prompts and scoped categories', () => {
   expect(getPromptRouting('all', 'review').promptSource.tools.length).toBe(2);
   const release = getPromptRouting('release', 'review').promptSource;
   expect(release.tools.map((tool) => tool.name)).toEqual(['submit_review', 'submit_suggestions']);
-  expect(Object.keys(release.tools[1].parameters.properties.suggestions.properties)).not.toContain('new-features');
+  expect(Object.keys(release.tools[1].parameters.properties.suggestions.properties)).not.toContain(
+    'new-features',
+  );
   expect(getPromptRouting('unlisted', 'review').promptSource).toBeDefined();
 });

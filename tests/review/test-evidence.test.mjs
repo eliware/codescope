@@ -8,14 +8,40 @@ const base = {
 };
 
 test('skips test execution when tests are not included', async () => {
-  await expect(collectReviewTestEvidence({ ...base, includesTests: false, runTestCommand: () => { throw new Error('unexpected'); } })).resolves.toBeUndefined();
+  await expect(
+    collectReviewTestEvidence({
+      ...base,
+      includesTests: false,
+      runTestCommand: () => {
+        throw new Error('unexpected');
+      },
+    }),
+  ).resolves.toBeUndefined();
 });
 
 test('returns successful test output', async () => {
-  await expect(collectReviewTestEvidence({ ...base, includesTests: true, omitTestResults: false })).resolves.toBe('test output');
+  await expect(
+    collectReviewTestEvidence({ ...base, includesTests: true, omitTestResults: false }),
+  ).resolves.toBe('test output');
 });
 
 test('formats runner failures and rejects invalid runner output', async () => {
-  await expect(collectReviewTestEvidence({ ...base, includesTests: true, omitTestResults: false, runTestCommand: async () => { throw new Error('failed'); } })).resolves.toContain('failed');
-  await expect(collectReviewTestEvidence({ ...base, includesTests: true, omitTestResults: false, runTestCommand: async () => 42 })).rejects.toThrow('string');
+  await expect(
+    collectReviewTestEvidence({
+      ...base,
+      includesTests: true,
+      omitTestResults: false,
+      runTestCommand: async () => {
+        throw new Error('failed');
+      },
+    }),
+  ).resolves.toContain('failed');
+  await expect(
+    collectReviewTestEvidence({
+      ...base,
+      includesTests: true,
+      omitTestResults: false,
+      runTestCommand: async () => 42,
+    }),
+  ).rejects.toThrow('string');
 });

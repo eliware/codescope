@@ -5,8 +5,10 @@ test('creates review and suggestion source selectors', async () => {
     readDirectory: async () => [],
     readFileContents: async () => '{}',
   };
-  await expect(createProfileCombiner([true, false, false], 'review')('/repo', options))
-    .resolves.toContain('package.json');
-  await expect(createProfileCombiner([true, false, true], 'suggest')('/repo', options))
-    .resolves.toContain('package.json');
+  await expect(
+    createProfileCombiner([true, false, false], 'review')('/repo', options),
+  ).resolves.toContain('package.json');
+  await expect(
+    createProfileCombiner([true, false, true], 'suggest')('/repo', options),
+  ).resolves.toContain('package.json');
 });

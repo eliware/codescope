@@ -1,4 +1,8 @@
-import { API_PRICING, calculateUsageCost, LONG_CONTEXT_INPUT_THRESHOLD } from '../../src/pricing/calculator.mjs';
+import {
+  API_PRICING,
+  calculateUsageCost,
+  LONG_CONTEXT_INPUT_THRESHOLD,
+} from '../../src/pricing/calculator.mjs';
 
 test('exposes current model rates and calculates standard usage', () => {
   expect(Object.keys(API_PRICING)).toEqual(['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol']);

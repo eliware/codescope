@@ -128,8 +128,10 @@ test('validates real files and wraps all read failures', async () => {
   ).rejects.toThrow('symlinked');
 });
 test('combineCodeFiles delegates to the supported implementation extensions', async () => {
-  await expect(combineCodeFiles('/root', {
-    readDirectory: async () => [],
-    readFileContents: async () => '',
-  })).resolves.toBe('');
+  await expect(
+    combineCodeFiles('/root', {
+      readDirectory: async () => [],
+      readFileContents: async () => '',
+    }),
+  ).resolves.toBe('');
 });

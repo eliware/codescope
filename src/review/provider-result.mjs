@@ -1,4 +1,7 @@
-import { parseCombinedToolResponse, parseReviewToolResponse } from '../response/review-response.mjs';
+import {
+  parseCombinedToolResponse,
+  parseReviewToolResponse,
+} from '../response/review-response.mjs';
 
 export function toolCategories(tool) {
   const categories = Object.keys(

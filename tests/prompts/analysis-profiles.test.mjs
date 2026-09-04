@@ -6,5 +6,7 @@ test('creates priority and subject-analysis adapters', () => {
     createReviewTool: () => 'review-tool',
   });
   expect(profiles.priorityPrompt(1)).toMatchObject({ tool: 'review-tool' });
-  expect(profiles.analysisPrompt('security')).toMatchObject({ focus: expect.stringContaining('security') });
+  expect(profiles.analysisPrompt('security')).toMatchObject({
+    focus: expect.stringContaining('security'),
+  });
 });

@@ -15,7 +15,15 @@ export async function combineAllFiles(root, options = {}) {
   ]);
   const otherFiles = await describeOtherFiles(root, inventory, options);
   const otherSection = `===== other files (names and sizes only) =====\n${otherFiles.join('\n')}\n`;
-  const combined = [packageJson, configs, md, implementation, tests, options.testResults, otherSection]
+  const combined = [
+    packageJson,
+    configs,
+    md,
+    implementation,
+    tests,
+    options.testResults,
+    otherSection,
+  ]
     .filter(Boolean)
     .join('\n');
   if (Number.isFinite(options.maxChars) && combined.length > options.maxChars)

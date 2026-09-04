@@ -52,7 +52,11 @@ export async function combineFiles(
       }),
     );
 
-    totalChars = addBatchLength(totalChars, batch.reduce((total, section) => total + section.length, 0), batch.length);
+    totalChars = addBatchLength(
+      totalChars,
+      batch.reduce((total, section) => total + section.length, 0),
+      batch.length,
+    );
     assertWithinLimit(totalChars, maxChars);
     sections.push(...batch);
   }

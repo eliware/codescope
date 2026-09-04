@@ -1,20 +1,24 @@
-export function validateReviewOptions(cwd, {
-  maxSourceChars,
-  testTimeoutMs,
-  usage,
-  dryRun,
-  includesTests,
-  omitTestResults,
-  write,
-  readFile,
-  readEnvFile,
-  combine,
-  runTestCommand,
-  redactOutput,
-  createClient,
-  register,
-}) {
-  if (typeof cwd !== 'string' || !cwd) throw new Error('runReview cwd must be a non-empty path string');
+export function validateReviewOptions(
+  cwd,
+  {
+    maxSourceChars,
+    testTimeoutMs,
+    usage,
+    dryRun,
+    includesTests,
+    omitTestResults,
+    write,
+    readFile,
+    readEnvFile,
+    combine,
+    runTestCommand,
+    redactOutput,
+    createClient,
+    register,
+  },
+) {
+  if (typeof cwd !== 'string' || !cwd)
+    throw new Error('runReview cwd must be a non-empty path string');
   if (!Number.isFinite(maxSourceChars) && maxSourceChars !== Infinity)
     throw new Error('runReview maxSourceChars must be finite or Infinity');
   if (maxSourceChars < 1) throw new Error('runReview maxSourceChars must be positive');

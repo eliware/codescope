@@ -17,5 +17,7 @@ test('combines selected implementation, tests, results, and docs in order', asyn
 });
 
 test('returns package metadata when no optional sections are selected', async () => {
-  await expect(combineSelectedFiles('/repo', { readFileContents: async () => '{"name":"x"}' })).resolves.toContain('package.json');
+  await expect(
+    combineSelectedFiles('/repo', { readFileContents: async () => '{"name":"x"}' }),
+  ).resolves.toContain('package.json');
 });

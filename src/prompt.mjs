@@ -1,4 +1,9 @@
-import { createReviewTool, createSuggestionTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
+import {
+  createReviewTool,
+  createSuggestionTool,
+  reviewTool,
+  suggestionTool,
+} from './prompts/tool-schemas.mjs';
 import { createSuggestionProfiles } from './prompts/suggestion-profiles.mjs';
 import { createAnalysisProfiles } from './prompts/analysis-profiles.mjs';
 import { createCombinedAllPrompt } from './prompts/combined.mjs';
@@ -8,7 +13,12 @@ import { createProfilePrompt } from './prompts/builders.mjs';
 import { SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
-export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
+export {
+  createReviewTool,
+  reviewTool,
+  createSuggestionTool,
+  suggestionTool,
+} from './prompts/tool-schemas.mjs';
 
 export { defaultDeveloperText } from './prompts/guidance.mjs';
 import { globalReviewInstructions } from './prompts/policy.mjs';
@@ -19,8 +29,14 @@ const reviewProfiles = createReviewProfiles({ profilePrompt, reviewTool });
 export const { prompt, mdPrompt } = reviewProfiles;
 export const allPrompt = createAllPrompt(profilePrompt);
 export const combinedAllPrompt = createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool });
-const releaseSuggestionTool = createSuggestionTool(SUGGESTION_CATEGORIES.filter((category) => category !== 'new-features'));
-export const releasePrompt = createCombinedAllPrompt({ allPrompt, reviewTool, suggestionTool: releaseSuggestionTool });
+const releaseSuggestionTool = createSuggestionTool(
+  SUGGESTION_CATEGORIES.filter((category) => category !== 'new-features'),
+);
+export const releasePrompt = createCombinedAllPrompt({
+  allPrompt,
+  reviewTool,
+  suggestionTool: releaseSuggestionTool,
+});
 export const { codeTestsDocsPrompt, refactorPrompt } = reviewProfiles;
 export const {
   architecturePrompt,

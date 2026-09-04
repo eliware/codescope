@@ -32,7 +32,12 @@ const validReviewFor = (profile, verdict = 'pass') => {
   return {
     verdict,
     issues: Object.fromEntries(
-      categories.map((category) => [category, emptyIssues[category] ?? [{ severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' }]]),
+      categories.map((category) => [
+        category,
+        emptyIssues[category] ?? [
+          { severity: 'P3', location: 'none', issue: 'No issues found.', ignore_example: '' },
+        ],
+      ]),
     ),
   };
 };
@@ -49,7 +54,9 @@ test('covers effort and timeout argument validation paths', () => {
     effort: 'high',
     testTimeout: '45',
   });
-  expect(parseArgs(['architecture', '--model=gpt-5.6-terra'])).toMatchObject({ model: 'gpt-5.6-terra' });
+  expect(parseArgs(['architecture', '--model=gpt-5.6-terra'])).toMatchObject({
+    model: 'gpt-5.6-terra',
+  });
   expect(parseArgs(['all', '--dry-run'])).toMatchObject({ dryRun: true });
   expect(parseArgs(['review', 'all', '--dry-run'])).toMatchObject({ dryRun: true });
   expect(() => parseArgs(['all', '--dry-run', '--dry-run'])).toThrow(/Only one/);
@@ -92,7 +99,10 @@ test('rejects invalid custom prompt options and forwards effort', async () => {
   expect(() => parseArgs(['prompt', 'x', '--model=bad'])).toThrow(/Model/);
   let received;
   await main(['prompt', 'x', '--effort=medium'], {
-    review: async (_cwd, options) => { received = options; return { text: 'ok' }; },
+    review: async (_cwd, options) => {
+      received = options;
+      return { text: 'ok' };
+    },
   });
   expect(received.prompt.reasoning.effort).toBe('medium');
   expect(await main(['prompt', 'x'], { review: async () => ({}) })).toBe(EXIT_CODES.RESPONSE);
@@ -101,10 +111,14 @@ test('rejects invalid custom prompt options and forwards effort', async () => {
 test('uses input exit code for unclassified errors and string failures', async () => {
   expect(errorExitCode(new Error('unclassified'))).toBe(EXIT_CODES.INPUT);
   const errors = [];
-  expect(await main(['architecture'], {
-    review: async () => { throw 'bad input'; },
-    error: (value) => errors.push(value),
-  })).toBe(EXIT_CODES.INPUT);
+  expect(
+    await main(['architecture'], {
+      review: async () => {
+        throw 'bad input';
+      },
+      error: (value) => errors.push(value),
+    }),
+  ).toBe(EXIT_CODES.INPUT);
   expect(errors[0]).toContain('bad input');
 });
 test('passes effort and timeout overrides to review', async () => {
@@ -148,7 +162,10 @@ test('returns success for dry-run token estimates', async () => {
 
 test('maps verdicts and lifecycle failures to documented exit codes', async () => {
   expect(
-    await main(['architecture'], { review: async () => validReviewFor('architecture', 'block'), error: () => {} }),
+    await main(['architecture'], {
+      review: async () => validReviewFor('architecture', 'block'),
+      error: () => {},
+    }),
   ).toBe(EXIT_CODES.BLOCKED);
   expect(errorExitCode(new Error('Unexpected arguments'))).toBe(EXIT_CODES.USAGE);
   expect(errorExitCode(new Error('OPENAI_API_TOKEN is missing'))).toBe(EXIT_CODES.CONFIGURATION);
@@ -174,7 +191,9 @@ test('accepts a successful suggestion result without a verdict', async () => {
     await main(['suggest', 'new-features'], {
       review: async () => ({
         suggestions: {
-          'new-features': [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }],
+          'new-features': [
+            { location: 'none', suggestion: 'none', rationale: '', ignore_example: '' },
+          ],
         },
       }),
     }),
@@ -206,9 +225,9 @@ test('rejects duplicate test timeout options', () => {
 });
 
 test('rejects test-result options for profiles without tests', async () => {
-  expect(
-    await main(['suggest', 'new-features', '--omit-test-results'], { error: () => {} }),
-  ).toBe(EXIT_CODES.USAGE);
+  expect(await main(['suggest', 'new-features', '--omit-test-results'], { error: () => {} })).toBe(
+    EXIT_CODES.USAGE,
+  );
 });
 
 test('rejects unknown grouped profiles during argument parsing', () => {
@@ -255,10 +274,15 @@ test('routes grouped suggest all through the combined tool contract', async () =
     await main(['suggest', 'all'], {
       review: async (_cwd, received) => {
         options = received;
-        const categories = Object.keys(received.prompt.tools[0].parameters.properties.suggestions.properties);
+        const categories = Object.keys(
+          received.prompt.tools[0].parameters.properties.suggestions.properties,
+        );
         return {
           suggestions: Object.fromEntries(
-            categories.map((category) => [category, [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }]]),
+            categories.map((category) => [
+              category,
+              [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }],
+            ]),
           ),
         };
       },
@@ -286,7 +310,10 @@ test('parses direct analysis profiles', () => {
     command: 'analyze-all',
     option: undefined,
   });
-  expect(parseArgs(['architecture', '--help'])).toEqual({ command: 'analyze-architecture', option: '--help' });
+  expect(parseArgs(['architecture', '--help'])).toEqual({
+    command: 'analyze-architecture',
+    option: '--help',
+  });
   expect(() => parseArgs(['find'])).toThrow(/Unknown command/);
   expect(() => parseArgs(['architecture', '--no-tests'])).toThrow(/Unexpected arguments/);
 });
@@ -387,11 +414,21 @@ test('runs direct analysis profiles without appending guidance', async () => {
             ? {
                 verdict: 'pass',
                 issues: emptyIssues,
-                suggestions: Object.fromEntries(Object.entries(emptySuggestions).filter(([category]) => profile === 'all' || category !== 'new-features')),
+                suggestions: Object.fromEntries(
+                  Object.entries(emptySuggestions).filter(
+                    ([category]) => profile === 'all' || category !== 'new-features',
+                  ),
+                ),
               }
             : profile === 'new-features'
-            ? { suggestions: { 'new-features': [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }] } }
-            : validReviewFor(profile);
+              ? {
+                  suggestions: {
+                    'new-features': [
+                      { location: 'none', suggestion: 'none', rationale: '', ignore_example: '' },
+                    ],
+                  },
+                }
+              : validReviewFor(profile);
         },
         write: (v) => output.push(v),
       }),
@@ -423,15 +460,17 @@ test('treats direct new-features as a suggestion-only profile', async () => {
   let options;
   expect(
     await main(['new-features'], {
-      review: async (_cwd, value) =>
-        ((options = value), {
+      review: async (_cwd, value) => (
+        (options = value),
+        {
           suggestions: {
-            'new-features': [{ location: 'none', suggestion: 'none', rationale: '', ignore_example: '' }],
+            'new-features': [
+              { location: 'none', suggestion: 'none', rationale: '', ignore_example: '' },
+            ],
           },
-        }),
+        }
+      ),
     }),
   ).toBe(EXIT_CODES.PASS);
   expect(options.prompt.tools[0].name).toBe('submit_suggestions');
 });
-
-

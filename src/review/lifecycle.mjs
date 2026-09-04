@@ -145,7 +145,12 @@ export async function runReview(cwd, options) {
         await writeJsonResult(write, output);
         return output;
       }
-      providerResponse = await requestProviderResponse(client, request, combined, controller.signal);
+      providerResponse = await requestProviderResponse(
+        client,
+        request,
+        combined,
+        controller.signal,
+      );
       providerResponseReceived = true;
       if (plainText !== undefined) {
         const output = parsePlainTextJsonResponse(providerResponse);

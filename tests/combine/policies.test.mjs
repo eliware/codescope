@@ -11,5 +11,7 @@ test('rejects invalid concurrency, limits, and foreign roots', () => {
   expect(() => validateCombineOptions('repo', { ...valid, concurrency: 0 })).toThrow(/concurrency/);
   expect(() => validateCombineOptions('repo', { ...valid, maxChars: 0 })).toThrow(/maxChars/);
   expect(() => validateCombineOptions('repo', { ...valid, maxChars: 1.5 })).toThrow(/maxChars/);
-  expect(() => validateCombineOptions('C:\\repo', { ...valid, platform: 'linux' })).toThrow(/Windows-style/);
+  expect(() => validateCombineOptions('C:\\repo', { ...valid, platform: 'linux' })).toThrow(
+    /Windows-style/,
+  );
 });

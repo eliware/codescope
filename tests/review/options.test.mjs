@@ -23,8 +23,12 @@ test('accepts valid review options', () => {
 
 test('rejects invalid review options', () => {
   expect(() => validateReviewOptions('', valid)).toThrow(/cwd/);
-  expect(() => validateReviewOptions('/repo', { ...valid, maxSourceChars: 0 })).toThrow(/maxSourceChars/);
-  expect(() => validateReviewOptions('/repo', { ...valid, testTimeoutMs: 0 })).toThrow(/testTimeoutMs/);
+  expect(() => validateReviewOptions('/repo', { ...valid, maxSourceChars: 0 })).toThrow(
+    /maxSourceChars/,
+  );
+  expect(() => validateReviewOptions('/repo', { ...valid, testTimeoutMs: 0 })).toThrow(
+    /testTimeoutMs/,
+  );
   expect(() => validateReviewOptions('/repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('/repo', { ...valid, write: null })).toThrow(/write/);
 });

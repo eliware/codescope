@@ -1,9 +1,21 @@
-export const EXIT_CODES = Object.freeze({ PASS: 0, BLOCKED: 1, USAGE: 2, CONFIGURATION: 3, INPUT: 4, API: 5, RESPONSE: 6, TEST_TIMEOUT: 124, SIGINT: 130, SIGTERM: 143 });
+export const EXIT_CODES = Object.freeze({
+  PASS: 0,
+  BLOCKED: 1,
+  USAGE: 2,
+  CONFIGURATION: 3,
+  INPUT: 4,
+  API: 5,
+  RESPONSE: 6,
+  TEST_TIMEOUT: 124,
+  SIGINT: 130,
+  SIGTERM: 143,
+});
 
 const errorText = (cause) => {
   const messages = [];
   for (let current = cause; current; current = current.cause)
-    if (current instanceof Error || typeof current?.message === 'string') messages.push(current.message);
+    if (current instanceof Error || typeof current?.message === 'string')
+      messages.push(current.message);
   return messages.join(' ');
 };
 
@@ -14,10 +26,19 @@ export function errorExitCode(cause) {
   if (/SIGINT|signal interrupt|AbortError/u.test(text)) return EXIT_CODES.SIGINT;
   if (/SIGTERM|signal termination/u.test(text)) return EXIT_CODES.SIGTERM;
   if (cause?.code === 'ETIMEDOUT' || /timed out/u.test(text)) return EXIT_CODES.TEST_TIMEOUT;
-  if (/Usage:|Unknown command|Unknown option|Unexpected arguments|Effort must be|not valid for/u.test(text)) return EXIT_CODES.USAGE;
-  if (/OPENAI_API_TOKEN|\.codescope|environment variable/u.test(text)) return EXIT_CODES.CONFIGURATION;
+  if (
+    /Usage:|Unknown command|Unknown option|Unexpected arguments|Effort must be|not valid for/u.test(
+      text,
+    )
+  )
+    return EXIT_CODES.USAGE;
+  if (/OPENAI_API_TOKEN|\.codescope|environment variable/u.test(text))
+    return EXIT_CODES.CONFIGURATION;
   if (/Unable to (read|inspect)|ENOENT|input file|source file/u.test(text)) return EXIT_CODES.INPUT;
-  if (/Invalid (review|suggestion|combined|tool|function) response|verdict|category array/u.test(text)) return EXIT_CODES.RESPONSE;
+  if (
+    /Invalid (review|suggestion|combined|tool|function) response|verdict|category array/u.test(text)
+  )
+    return EXIT_CODES.RESPONSE;
   if (/OpenAI|API request|initialize OpenAI|authentication/u.test(text)) return EXIT_CODES.API;
   return EXIT_CODES.INPUT;
 }

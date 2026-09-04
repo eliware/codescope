@@ -1,8 +1,4 @@
-import {
-  createReviewTool,
-  createSuggestionTool,
-  SUGGESTION_CATEGORIES,
-} from '../prompt.mjs';
+import { createReviewTool, createSuggestionTool, SUGGESTION_CATEGORIES } from '../prompt.mjs';
 import { getProfileFiles } from './metadata.mjs';
 import { getPromptRouting } from './prompt-routing.mjs';
 import { createProfileCombiner } from './source-selection.mjs';

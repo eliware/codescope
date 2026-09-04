@@ -182,6 +182,6 @@ The effort benchmark runs `none`, `low`, `medium`, and `high` in parallel. OpenA
 The current supported profiles are `architecture`, `api-design`, `cross-platform`, `refactor`,
 `security`, `reliability`, `performance`, `dependencies`,
 `observability`, `accessibility`, `quick-wins`, `prioritize`, `p0`, `p0-1`,
-`p0-2`, `p0-3`, `new-features`, and `all`. Use `codescope review <profile>`
+`p0-2`, `p0-3`, `new-features`, `release`, and `all`. Use `codescope review <profile>`
 for issue review or `codescope suggest <profile>` for suggestions; direct
 profile names are supported shorthand. `new-features` is suggestion-only.

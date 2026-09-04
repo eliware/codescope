@@ -2,5 +2,9 @@ import { createReviewTool, createSuggestionTool } from '../../src/prompts/tool-s
 
 test('creates strict schemas for selected categories', () => {
   expect(createReviewTool(['security']).strict).toBe(true);
-  expect(Object.keys(createSuggestionTool(['new-features']).parameters.properties.suggestions.properties)).toEqual(['new-features']);
+  expect(
+    Object.keys(
+      createSuggestionTool(['new-features']).parameters.properties.suggestions.properties,
+    ),
+  ).toEqual(['new-features']);
 });

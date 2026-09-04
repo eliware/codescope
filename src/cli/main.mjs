@@ -91,7 +91,16 @@ export async function main(
     const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
     if (
       (!isSuggestion &&
-        (isCombined ? !isValidReviewResult({ issues: result?.issues, verdict: result?.verdict }, { tools: [effectivePrompt.tools[0]] }) || !isValidSuggestionResult({ suggestions: result?.suggestions }, { tools: [effectivePrompt.tools[1]] }) : !isValidReviewResult(result, effectivePrompt))) ||
+        (isCombined
+          ? !isValidReviewResult(
+              { issues: result?.issues, verdict: result?.verdict },
+              { tools: [effectivePrompt.tools[0]] },
+            ) ||
+            !isValidSuggestionResult(
+              { suggestions: result?.suggestions },
+              { tools: [effectivePrompt.tools[1]] },
+            )
+          : !isValidReviewResult(result, effectivePrompt))) ||
       (isSuggestion && !suggestionResultIsValid)
     ) {
       error('codescope: review returned no validated pass-or-block verdict');

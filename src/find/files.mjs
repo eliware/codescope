@@ -41,15 +41,9 @@ export async function findFiles(
       const childPath = pathApi.resolve(directory, entry.name);
 
       const normalizedName = entry.name;
-      if (
-        isDirectory &&
-        !isIgnoredDirectory(normalizedName, pathApi.relative(root, directory))
-      )
+      if (isDirectory && !isIgnoredDirectory(normalizedName, pathApi.relative(root, directory)))
         pending.push(childPath);
-      else if (
-        isFile &&
-        matchesFile(normalizedName, extension, testsOnly, noTests)
-      ) {
+      else if (isFile && matchesFile(normalizedName, extension, testsOnly, noTests)) {
         results.push(
           pathApi.relative(root, pathApi.join(directory, entry.name)).split(/[\\/]/u).join('/'),
         );

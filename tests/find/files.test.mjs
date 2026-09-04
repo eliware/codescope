@@ -174,8 +174,10 @@ test('classifies JavaScript test extensions separately from implementation', asy
   ]);
 });
 test('findAllFiles exposes the unrestricted extension strategy', async () => {
-  await expect(findAllFiles('/root', {
-    readDirectory: async () => [],
-    inspectRoot: async () => ({ isSymbolicLink: () => false }),
-  })).resolves.toEqual([]);
+  await expect(
+    findAllFiles('/root', {
+      readDirectory: async () => [],
+      inspectRoot: async () => ({ isSymbolicLink: () => false }),
+    }),
+  ).resolves.toEqual([]);
 });

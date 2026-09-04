@@ -1,7 +1,12 @@
 import { parsePromptArgs } from '../../src/cli/prompt-args.mjs';
 
 test('parses prompt text with supported model and effort options', () => {
-  expect(parsePromptArgs(['review', 'risks', '--effort=low', '--model=gpt-5.6-sol'])).toEqual({ command: 'prompt', promptText: 'review risks', effort: 'low', model: 'gpt-5.6-sol' });
+  expect(parsePromptArgs(['review', 'risks', '--effort=low', '--model=gpt-5.6-sol'])).toEqual({
+    command: 'prompt',
+    promptText: 'review risks',
+    effort: 'low',
+    model: 'gpt-5.6-sol',
+  });
 });
 
 test('rejects missing, duplicate, and invalid prompt options', () => {

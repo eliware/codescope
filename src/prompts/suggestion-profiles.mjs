@@ -18,6 +18,8 @@ export function createSuggestionProfiles({ profilePrompt, suggestionTool }) {
       'Suggest accessibility improvements only for user-facing behavior.',
     ),
     quickWinsPrompt: implementationOnlyPrompt('Suggest only high-value, low-effort improvements.'),
-    prioritizePrompt: implementationOnlyPrompt('Prioritize existing improvement opportunities only.'),
+    prioritizePrompt: implementationOnlyPrompt(
+      'Prioritize existing improvement opportunities only.',
+    ),
   };
 }

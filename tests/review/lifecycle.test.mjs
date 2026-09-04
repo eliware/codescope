@@ -1,4 +1,9 @@
-import { collectTestResults, redactTestOutput, runReview, testEvidenceBlocks } from '../../src/review/lifecycle.mjs';
+import {
+  collectTestResults,
+  redactTestOutput,
+  runReview,
+  testEvidenceBlocks,
+} from '../../src/review/lifecycle.mjs';
 import { createSuggestionTool, defaultDeveloperText, profilePrompt } from '../../src/prompt.mjs';
 import { createReviewTool } from '../../src/prompt.mjs';
 import { defaultEnvFile } from '../../src/review/config.mjs';
@@ -13,8 +18,8 @@ const emptyIssuesJson = JSON.stringify({
       'reliability',
       'performance',
       'architecture',
-    'api_design',
-    'cross_platform',
+      'api_design',
+      'cross_platform',
       'tests',
       'documentation',
     ].map((category) => [
@@ -60,14 +65,23 @@ test('preserves non-text prompt parts', () => {
 test('sends custom prompts for structured JSON and prints the parsed result', async () => {
   let request;
   let output = '';
-  const result = await runReview('/root', base({
-    plainText: 'Summarize this',
-    write: (value) => { output += value; },
-    createClient: () => ({ responses: { create: async (value) => {
-      request = value;
-      return { output_text: '{"summary":"A concise summary."}' };
-    } } }),
-  }));
+  const result = await runReview(
+    '/root',
+    base({
+      plainText: 'Summarize this',
+      write: (value) => {
+        output += value;
+      },
+      createClient: () => ({
+        responses: {
+          create: async (value) => {
+            request = value;
+            return { output_text: '{"summary":"A concise summary."}' };
+          },
+        },
+      }),
+    }),
+  );
   expect(result.summary).toBe('A concise summary.');
   expect(output).toBe('{\n  "summary": "A concise summary."\n}\n');
   expect(request.tools).toEqual([]);
@@ -80,12 +94,49 @@ test('sends custom prompts for structured JSON and prints the parsed result', as
 
 test('rejects invalid plain-text responses and reports write failures', async () => {
   const invalidClient = () => ({ responses: { create: async () => ({}) } });
-  await expect(runReview('/root', base({ plainText: 'x', createClient: invalidClient }))).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+  await expect(
+    runReview('/root', base({ plainText: 'x', createClient: invalidClient })),
+  ).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
   const writeError = new Error('disk full');
-  await expect(runReview('/root', base({ plainText: 'x', write: () => { throw writeError; }, createClient: () => ({ responses: { create: async () => ({ output_text: '{"ok":true}' }) } }) }))).rejects.toThrow('disk full');
+  await expect(
+    runReview(
+      '/root',
+      base({
+        plainText: 'x',
+        write: () => {
+          throw writeError;
+        },
+        createClient: () => ({
+          responses: { create: async () => ({ output_text: '{"ok":true}' }) },
+        }),
+      }),
+    ),
+  ).rejects.toThrow('disk full');
   await expect(runReview('/root', base({ plainText: '' }))).rejects.toThrow('non-empty');
-  await runReview('/root', base({ plainText: 'x', usage: true, createClient: () => ({ responses: { create: async () => ({ output_text: '{"ok":true}', usage: undefined }) } }) }));
-  await expect(runReview('/root', base({ plainText: 'x', write: () => { throw 'disk full'; }, createClient: () => ({ responses: { create: async () => ({ output_text: '{"ok":true}' }) } }) }))).rejects.toThrow('disk full');
+  await runReview(
+    '/root',
+    base({
+      plainText: 'x',
+      usage: true,
+      createClient: () => ({
+        responses: { create: async () => ({ output_text: '{"ok":true}', usage: undefined }) },
+      }),
+    }),
+  );
+  await expect(
+    runReview(
+      '/root',
+      base({
+        plainText: 'x',
+        write: () => {
+          throw 'disk full';
+        },
+        createClient: () => ({
+          responses: { create: async () => ({ output_text: '{"ok":true}' }) },
+        }),
+      }),
+    ),
+  ).rejects.toThrow('disk full');
 });
 
 test('applies a model override to the provider request', async () => {
@@ -470,7 +521,9 @@ test('redacts secrets from successful test output', async () => {
 });
 
 test('redacts authorization and URL query credentials across lines', () => {
-  const output = redactTestOutput('Authorization: Bearer abc\nhttps://example.test/?token=query-secret');
+  const output = redactTestOutput(
+    'Authorization: Bearer abc\nhttps://example.test/?token=query-secret',
+  );
   expect(output).toBe('Authorization: Bearer [redacted]\nhttps://example.test/?token=[redacted]');
 });
 

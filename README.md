@@ -34,8 +34,17 @@
 
 ## Installation
 
+For package consumers, install the published CLI globally or add it to a project:
+
 ```text
-npm install
+npm install -g @eliware/codescope
+npm install @eliware/codescope
+```
+
+For repository development, install the checkout's dependencies first:
+
+```text
+npm ci
 ```
 
 Run the CLI locally from this checkout:

@@ -1,4 +1,8 @@
-import { validateScanMode, validateScanRoot, validateScanRootMetadata } from '../../src/find/root-policy.mjs';
+import {
+  validateScanMode,
+  validateScanRoot,
+  validateScanRootMetadata,
+} from '../../src/find/root-policy.mjs';
 
 test('accepts native roots and rejects foreign Windows roots', () => {
   expect(() => validateScanRoot('repo', 'linux')).not.toThrow();

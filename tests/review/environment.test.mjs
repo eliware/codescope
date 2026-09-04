@@ -14,10 +14,24 @@ test('loads environment values from the configured file', async () => {
 });
 
 test('preserves missing environment files', async () => {
-  await expect(loadReviewEnvironment({ ...base, readEnvFile: async () => { throw { code: 'ENOENT' }; } })).resolves.toBeDefined();
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      readEnvFile: async () => {
+        throw { code: 'ENOENT' };
+      },
+    }),
+  ).resolves.toBeDefined();
 });
 
 test('rejects a symbolic default environment file', async () => {
   const envFile = `${process.env.USERPROFILE}\\.codescope`;
-  await expect(loadReviewEnvironment({ ...base, envFile, readEnvFile: base.readFile, inspectFile: async () => ({ isSymbolicLink: () => true }) })).rejects.toThrow('symbolic link');
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile,
+      readEnvFile: base.readFile,
+      inspectFile: async () => ({ isSymbolicLink: () => true }),
+    }),
+  ).rejects.toThrow('symbolic link');
 });

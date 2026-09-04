@@ -25,6 +25,16 @@ export function validateCategories(categories) {
 
 export function categoryPrompt(categories, field) {
   return {
-    tools: [{ parameters: { properties: { [field]: { properties: Object.fromEntries(categories.map((category) => [category, {}])) } } } }],
+    tools: [
+      {
+        parameters: {
+          properties: {
+            [field]: {
+              properties: Object.fromEntries(categories.map((category) => [category, {}])),
+            },
+          },
+        },
+      },
+    ],
   };
 }

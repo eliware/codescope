@@ -1,4 +1,7 @@
-import { parseCombinedToolResponse, parseReviewToolResponse } from '../../src/response/review-response.mjs';
+import {
+  parseCombinedToolResponse,
+  parseReviewToolResponse,
+} from '../../src/response/review-response.mjs';
 
 test('public response adapter re-exports review parsing', () => {
   expect(() => parseReviewToolResponse({ output: [] })).toThrow(
@@ -227,12 +230,27 @@ test('uses the new-features category for unscoped suggestion responses', () => {
   const suggestions = Object.fromEntries(
     [...Object.keys(emptyIssues), 'new-features'].map((category) => [
       category,
-      [{ location: 'none', suggestion: 'No suggestions found.', rationale: '', ignore_example: '' }],
+      [
+        {
+          location: 'none',
+          suggestion: 'No suggestions found.',
+          rationale: '',
+          ignore_example: '',
+        },
+      ],
     ]),
   );
   expect(
     parseReviewToolResponse(
-      { output: [{ type: 'function_call', name: 'submit_suggestions', arguments: JSON.stringify({ suggestions }) }] },
+      {
+        output: [
+          {
+            type: 'function_call',
+            name: 'submit_suggestions',
+            arguments: JSON.stringify({ suggestions }),
+          },
+        ],
+      },
       'submit_suggestions',
     ).suggestions['new-features'],
   ).toHaveLength(1);
