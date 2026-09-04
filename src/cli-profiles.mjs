@@ -11,7 +11,7 @@ export { PROFILE_NAMES } from './profiles/metadata.mjs';
 export function getProfile(profile, mode = 'review') {
   const profileFiles = getProfileFiles(profile);
   if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
-  const [implementation, tests, docs] = profileFiles;
+  const [, tests] = profileFiles;
   const reviewSources = mode === 'review';
   const combine = createProfileCombiner(profileFiles, mode);
 
