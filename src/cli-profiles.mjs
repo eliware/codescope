@@ -1,4 +1,3 @@
-import { combineSelectedFiles } from './combine-all.mjs';
 import {
   createReviewTool,
   createSuggestionTool,
@@ -6,6 +5,7 @@ import {
 } from './prompt.mjs';
 import { getProfileFiles } from './profiles/metadata.mjs';
 import { getPromptRouting } from './profiles/prompt-routing.mjs';
+import { createProfileCombiner } from './profiles/source-selection.mjs';
 export { PROFILE_NAMES } from './profiles/metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
@@ -13,13 +13,7 @@ export function getProfile(profile, mode = 'review') {
   if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
   const [implementation, tests, docs] = profileFiles;
   const reviewSources = mode === 'review';
-  const combine = (root, options) =>
-    combineSelectedFiles(root, {
-      ...options,
-      implementation: reviewSources || implementation,
-      tests: reviewSources || tests,
-      docs: reviewSources || docs,
-    });
+  const combine = createProfileCombiner(profileFiles, mode);
 
   const { promptSource, suggestionCategories } = getPromptRouting(profile, mode);
   const prompt = structuredClone(promptSource);
