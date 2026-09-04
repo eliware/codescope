@@ -12,7 +12,7 @@ import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test
 import { validateReviewOptions } from './options.mjs';
 import { loadReviewEnvironment } from './environment.mjs';
 import { collectReviewTestEvidence } from './test-evidence.mjs';
-import { preparePlainTextRequest } from './plain-text.mjs';
+import { parsePlainTextJsonResponse, preparePlainTextRequest } from './plain-text.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -193,18 +193,13 @@ export async function runReview(cwd, options) {
       );
       providerResponseReceived = true;
       if (plainText !== undefined) {
-        const outputText = providerResponse?.output_text;
-        if (typeof outputText !== 'string') {
-          const error = new Error('Invalid plain-text response');
-          error.code = 'INVALID_RESPONSE';
-          throw error;
-        }
+        const output = parsePlainTextJsonResponse(providerResponse);
         try {
-          await write(outputText.endsWith('\n') ? outputText : `${outputText}\n`);
+          await write(`${JSON.stringify(output, null, 2)}\n`);
         } catch (cause) {
           throw new Error(`Unable to write prompt output: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
         }
-        return { text: outputText, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
+        return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
       }
       const toolCategories = (tool) => {
         const categories = Object.keys(
