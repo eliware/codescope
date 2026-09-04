@@ -1,6 +1,9 @@
 import { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 import { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
 
+export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
+export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
+
 export const defaultDeveloperText =
   'Review the following JavaScript source files and identify actionable issues. For every reported issue or suggestion, make ignore_example a complete copy-paste-ready comment containing the exact scope that must be ignored on the next pass; do not use generic or partial examples. If an existing ignore is too narrow, provide its complete replacement. If no ignore is appropriate, use an empty string.\n\n';
 // The review prompt treats focused injected-executor tests as the package contract; no subprocess integration test is required here.
