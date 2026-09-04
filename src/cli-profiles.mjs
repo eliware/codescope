@@ -1,28 +1,11 @@
 import { combineSelectedFiles } from './combine-all.mjs';
 import {
-  createAnalysisPrompt,
-  profilePrompt,
-  allPrompt,
-  combinedAllPrompt,
-  refactorPrompt,
-  architecturePrompt,
-  newFeaturesPrompt,
-  securityPrompt,
-  performancePrompt,
-  reliabilityPrompt,
-  apiDesignPrompt,
-  dependenciesPrompt,
-  observabilityPrompt,
-  accessibilityPrompt,
-  quickWinsPrompt,
-  prioritizePrompt,
-  priorityPrompt,
   createReviewTool,
   createSuggestionTool,
-  REVIEW_CATEGORIES,
   SUGGESTION_CATEGORIES,
 } from './prompt.mjs';
 import { getProfileFiles } from './profiles/metadata.mjs';
+import { getPromptRouting } from './profiles/prompt-routing.mjs';
 export { PROFILE_NAMES } from './profiles/metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
@@ -38,60 +21,7 @@ export function getProfile(profile, mode = 'review') {
       docs: reviewSources || docs,
     });
 
-  const subject =
-    'the supplied implementation, test, and documentation files for actionable implementation issues';
-  const prompts = {
-    code: createAnalysisPrompt(subject),
-    all: allPrompt,
-    refactor: refactorPrompt,
-    architecture: architecturePrompt,
-    'new-features': newFeaturesPrompt,
-    security: securityPrompt,
-    performance: performancePrompt,
-    reliability: reliabilityPrompt,
-    'api-design': apiDesignPrompt,
-    'cross-platform': profilePrompt(
-      'suggest actionable cross-platform compatibility improvements only',
-      createSuggestionTool(['cross_platform']),
-    ),
-    dependencies: dependenciesPrompt,
-    observability: observabilityPrompt,
-    accessibility: accessibilityPrompt,
-    'quick-wins': quickWinsPrompt,
-    prioritize: prioritizePrompt,
-    p0: priorityPrompt(0),
-    'p0-1': priorityPrompt(1),
-    'p0-2': priorityPrompt(2),
-    'p0-3': priorityPrompt(3),
-  };
-  const suggestionCategories = {
-    refactor: ['architecture'],
-    architecture: ['architecture'],
-    'new-features': ['new-features'],
-    tests: ['tests'],
-    security: ['security'],
-    performance: ['performance'],
-    reliability: ['reliability'],
-    'api-design': ['api_design'],
-    'cross-platform': ['cross_platform'],
-    dependencies: ['reliability'],
-    observability: ['reliability'],
-    accessibility: ['correctness'],
-    'quick-wins': REVIEW_CATEGORIES,
-    prioritize: REVIEW_CATEGORIES,
-  }[profile];
-  const promptSource =
-    profile === 'all' && mode === 'review'
-      ? combinedAllPrompt
-      : mode === 'suggest' && !suggestionCategories
-        ? profilePrompt(
-            `suggest actionable improvements across all supplied source categories for the ${profile} profile. Do not report existing issues; return suggestions only.`,
-            createSuggestionTool(),
-          )
-        : // codescope ignore: direct profiles intentionally support both review and suggest modes; review mode rewrites suggestion-focused descriptors into issue-focused review prompts.
-          mode === 'review' && suggestionCategories
-          ? createAnalysisPrompt(`the selected code for ${profile} issues only`)
-          : prompts[profile];
+  const { promptSource, suggestionCategories } = getPromptRouting(profile, mode);
   const prompt = structuredClone(promptSource);
   if (mode === 'suggest') {
     const categories = [
