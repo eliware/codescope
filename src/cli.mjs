@@ -1,5 +1,5 @@
 import { runReview } from './review.mjs';
-import { getProfile, PROFILE_NAMES } from './cli-profiles.mjs';
+import { getProfile } from './cli-profiles.mjs';
 import { isValidReviewResult, isValidSuggestionResult } from './review-response.mjs';
 import { EXIT_CODES, errorExitCode } from './cli/errors.mjs';
 import { VERSION } from './cli/version.mjs';
