@@ -4,9 +4,44 @@ Baseline rollback commit: `68b94de6090cef4efc18bebe83b51129882d8486`
 
 Each line below represents one focused commit. No line contains a separate sub-step; tests and relevant documentation belong in the same commit as the implementation they cover. Completed commits are recorded with their short hash.
 
-- [x] `5b85cb2` — Create mirrored responsibility directories under `src/` and `tests/`.
-- [x] `b0276b5` — Move benchmark status behavior and its test into the mirrored benchmark hierarchy.
-- [x] `414b17c` — Add the focused benchmark adapter test and retain only the permitted barrel coverage exception.
+- Completed commits since the baseline:
+  - [x] `aa3a29f` — Record the decomposition rollback baseline.
+  - [x] `5b85cb2` — Create mirrored responsibility directories under `src/` and `tests/`.
+  - [x] `c17a8d0` — Mark the responsibility directories complete.
+  - [x] `b0276b5` — Isolate benchmark status behavior.
+  - [x] `ed5a987` — Mark benchmark decomposition complete.
+  - [x] `f5974f6` — Isolate response key validation.
+  - [x] `414b17c` — Add the focused benchmark status adapter test.
+  - [x] `7b81f09` — Mark the benchmark barrel as non-executable.
+  - [x] `2e66874` — Isolate source section formatting.
+  - [x] `4e5ea56` — Mirror response validation tests.
+  - [x] `deea5be` — Isolate package metadata combination.
+  - [x] `a74b259` — Isolate prompt schemas and categories.
+  - [x] `e765973` — Preserve prompt module exports.
+  - [x] `ebf012b` — Clean prompt adapter imports.
+  - [x] `d3ae8e9` — Mirror the response validation hierarchy.
+  - [x] `54859d8` — Isolate file discovery policies.
+  - [x] `ca26bfa` — Isolate directory entry validation.
+  - [x] `c033f9c` — Remove redundant finder state.
+  - [x] `7e51760` — Isolate profile metadata.
+  - [x] `5aa2324` — Clean profile and finder imports.
+  - [x] `da16f27` — Isolate test result collection.
+  - [x] `0faa9ce` — Cover the isolated test result module.
+  - [x] `93a983c` — Isolate profile prompt routing.
+  - [x] `30a7584` — Isolate profile source selection.
+  - [x] `2bf37b0` — Clean profile source adapter code.
+  - [x] `ba48cfd` — Isolate CLI errors and version handling.
+  - [x] `30271fd` — Remove the stale CLI version export.
+  - [x] `d495b5b` — Replace the decomposition checklist with a commit plan.
+  - [x] `4d5a68f` — Isolate CLI help rendering.
+  - [x] `50c7db1` — Isolate CLI argument parsing.
+  - [x] `3799002` — Cover the isolated CLI argument parser.
+  - [x] `6be283e` — Clean CLI parser adapter imports.
+  - [x] `4e7a2a1` — Isolate CLI command orchestration.
+  - [x] `7703f2a` — Mirror the CLI main orchestrator test.
+  - [x] `ff814ac` — Convert the checklist to a commit-only plan.
+
+Planned commits:
 - [ ] — Establish the complete production-module inventory and commit the matching source/test architecture map.
 - [ ] — Decompose the CLI into focused constants, version, errors, options, arguments, help, output, commands, dispatch, and orchestration modules with mirrored tests.
 - [ ] — Decompose profile metadata, source selection, prompt routing, categories, tools, and profile construction into focused modules with mirrored tests.
