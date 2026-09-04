@@ -3,6 +3,7 @@ import path from 'node:path';
 import { isIgnoredDirectory } from './policies.mjs';
 import { matchesFile } from './extensions.mjs';
 import { validateEntryNames } from './entries.mjs';
+import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './root-policy.mjs';
 
 export async function findFiles(
   root,
@@ -15,11 +16,8 @@ export async function findFiles(
     platform = process.platform,
   } = {},
 ) {
-  if (typeof root !== 'string') throw new Error('Scan root must be a path string');
-  if (noTests && testsOnly) throw new Error('noTests and testsOnly cannot both be enabled');
-
-  if (platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
-    throw new Error('Windows-style scan roots require a Windows host');
+  validateScanRoot(root, platform);
+  validateScanMode(noTests, testsOnly);
 
   const pathApi = path;
   root = pathApi.resolve(root);
@@ -27,7 +25,7 @@ export async function findFiles(
   // codescope ignore: injected directory adapters intentionally own root validation; native scans validate the root with lstat.
   if (readDirectory === readdir || inspectRoot !== lstat) {
     const metadata = await inspectRoot(root);
-    if (metadata.isSymbolicLink()) throw new Error('symlinked scan roots are not supported');
+    validateScanRootMetadata(metadata);
   }
 
   const results = [];
