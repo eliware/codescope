@@ -57,6 +57,36 @@ test('preserves non-text prompt parts', () => {
   expect(prompt.input[1].content.at(-1).type).toBe('input_image');
 });
 
+test('sends custom prompts without tools and prints the final text', async () => {
+  let request;
+  let output = '';
+  const result = await runReview('/root', base({
+    plainText: 'Summarize this',
+    write: (value) => { output += value; },
+    createClient: () => ({ responses: { create: async (value) => {
+      request = value;
+      return { output_text: 'A concise summary.' };
+    } } }),
+  }));
+  expect(result.text).toBe('A concise summary.');
+  expect(output).toBe('A concise summary.\n');
+  expect(request.tools).toEqual([]);
+  expect(request.tool_choice).toBeUndefined();
+  expect(request.input[0].role).toBe('user');
+  expect(request.input[0].content[0].text).toContain('Summarize this');
+  expect(request.input[0].content[0].text).toContain('source');
+});
+
+test('rejects invalid plain-text responses and reports write failures', async () => {
+  const invalidClient = () => ({ responses: { create: async () => ({}) } });
+  await expect(runReview('/root', base({ plainText: 'x', createClient: invalidClient }))).rejects.toMatchObject({ code: 'INVALID_RESPONSE' });
+  const writeError = new Error('disk full');
+  await expect(runReview('/root', base({ plainText: 'x', write: () => { throw writeError; }, createClient: () => ({ responses: { create: async () => ({ output_text: 'x' }) } }) }))).rejects.toThrow('disk full');
+  await expect(runReview('/root', base({ plainText: '' }))).rejects.toThrow('non-empty');
+  await runReview('/root', base({ plainText: 'x', usage: true, createClient: () => ({ responses: { create: async () => ({ output_text: 'x\n', usage: undefined }) } }) }));
+  await expect(runReview('/root', base({ plainText: 'x', write: () => { throw 'disk full'; }, createClient: () => ({ responses: { create: async () => ({ output_text: 'x' }) } }) }))).rejects.toThrow('disk full');
+});
+
 test('applies a model override to the provider request', async () => {
   let request;
   await runReview(

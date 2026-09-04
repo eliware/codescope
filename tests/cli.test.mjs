@@ -93,6 +93,37 @@ test('covers effort and timeout argument validation paths', () => {
   ])
     expect(() => parseArgs(args)).toThrow();
 });
+
+test('parses and dispatches the plain-text prompt command', async () => {
+  expect(parseArgs(['prompt', 'summarize', 'the', 'repository', '--effort=low'])).toEqual({
+    command: 'prompt',
+    promptText: 'summarize the repository',
+    effort: 'low',
+    model: undefined,
+  });
+  let received;
+  const code = await main(['prompt', 'find', 'risks', '--model=gpt-5.6-sol'], {
+    review: async (_cwd, options) => {
+      received = options;
+      return { text: 'done' };
+    },
+  });
+  expect(code).toBe(EXIT_CODES.PASS);
+  expect(received).toMatchObject({ plainText: 'find risks', model: 'gpt-5.6-sol' });
+});
+
+test('rejects invalid custom prompt options and forwards effort', async () => {
+  expect(() => parseArgs(['prompt'])).toThrow(/prompt text/);
+  expect(() => parseArgs(['prompt', 'x', '--bad'])).toThrow(/Usage/);
+  expect(() => parseArgs(['prompt', 'x', '--effort=invalid'])).toThrow(/Effort/);
+  expect(() => parseArgs(['prompt', 'x', '--model=bad'])).toThrow(/Model/);
+  let received;
+  await main(['prompt', 'x', '--effort=medium'], {
+    review: async (_cwd, options) => { received = options; return { text: 'ok' }; },
+  });
+  expect(received.prompt.reasoning.effort).toBe('medium');
+  expect(await main(['prompt', 'x'], { review: async () => ({}) })).toBe(EXIT_CODES.RESPONSE);
+});
 test('preserves non-text user content while extending prompts', () => {
   const prompt = profilePrompt('test focus');
   prompt.input[1].content.push({ type: 'input_image', image_url: 'data:image/png;base64,x' });

@@ -84,6 +84,8 @@ Symlink policy: file discovery includes only real filesystem entries. Any entry 
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions. File discovery is performed internally below the current working directory. Package metadata is included first, followed by the files selected by the profile. Symlinked files and directories are excluded and never followed.
 
+Use `codescope prompt "your question"` for an ad hoc plain-text request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools and prints the model's final text response directly. Optional `--effort=` and `--model=` overrides are supported.
+
 `codescope --help` is the single help page. It explains what Codescope does, how files are selected and reviewed, all analysis profiles, and how to annotate intentional behavior with inline comments so it is not reported as a false positive. To guide the AI away from intentional behavior, place one nearby comment containing `codescope ignore:` followed by the complete scope to ignore, such as `// codescope ignore: x, y, and z are intentional policy constraints.` The marker is supplied as scoped review guidance, not enforced by a local parser. If a finding extends beyond that scope, Codescope reports only the uncovered behavior and suggests either fixing it or expanding the same comment. Unrelated issues remain reportable. A profile may also be followed by `--help` to display that same page.
 
 <!-- codescope ignore: this documentation accurately describes test-result ordering; the selected source combiner places test evidence before documentation. -->
