@@ -1,7 +1,15 @@
+import os from 'node:os';
+import path from 'node:path';
 import { defaultEnvFile, loadEnv } from '../src/review-config.mjs';
 
-test('returns the user config path', () => {
-  expect(defaultEnvFile()).toMatch(/\.codescope$/u);
+test('resolves the default config below the user home directory', () => {
+  expect(defaultEnvFile()).toBe(path.join(os.homedir(), '.codescope'));
+});
+
+test('loads the supported token assignment', () => {
+  const environment = {};
+  loadEnv('OPENAI_API_TOKEN=test-token', environment);
+  expect(environment.OPENAI_API_TOKEN).toBe('test-token');
 });
 
 test('loads supported dotenv syntax and only the API token', () => {
@@ -35,4 +43,10 @@ test('rejects malformed lines and quoted values', () => {
     expect(() => loadEnv(`OPENAI_API_TOKEN=${value}`, {})).toThrow(/Invalid quoted/);
   expect(() => loadEnv('not dotenv', {})).toThrow('Invalid .env line');
   expect(() => loadEnv('OPENAI_API_TOKEN=', {})).not.toThrow();
+});
+
+test('ignores empty values and unrelated variables', () => {
+  const environment = {};
+  loadEnv('OPENAI_API_TOKEN=\nOTHER=value', environment);
+  expect(environment).toEqual({});
 });
