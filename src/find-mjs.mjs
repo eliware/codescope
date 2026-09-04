@@ -31,8 +31,6 @@ export async function findFiles(
 
   const results = [];
   const pending = [root];
-  const codeExtension = isCodeExtension(extension);
-
   while (pending.length > 0) {
     const directory = pending.pop();
     let entries;
