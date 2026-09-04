@@ -29,3 +29,18 @@ test('omits files after the aggregate metadata budget', async () => {
   );
   expect(result.some((entry) => entry.includes('omitted'))).toBe(true);
 });
+
+test('checks known sizes before reading files', async () => {
+  const reads = [];
+  const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
+    statFile: async (file) => ({ size: file.endsWith('first.txt') ? 1_500_000 : 1_500_000 }),
+    readFileContents: async (file) => {
+      reads.push(file);
+      return 'x';
+    },
+  });
+  expect(result).toContain(
+    'second.txt | omitted | 1500000 bytes | aggregate metadata budget exceeded',
+  );
+  expect(reads).toHaveLength(1);
+});

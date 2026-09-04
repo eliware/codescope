@@ -1,11 +1,9 @@
 import { runReview } from '../review/lifecycle.mjs';
 import { getProfile } from '../profiles/index.mjs';
-import { isValidReviewResult, isValidSuggestionResult } from '../review-response.mjs';
 import { EXIT_CODES, errorExitCode } from './errors.mjs';
 import { parseArgs } from './args.mjs';
 import { dispatchMeta } from './dispatch-meta.mjs';
 import { statusForPromptResult, statusForReviewResult } from './status-result.mjs';
-import { isValidUnifiedResult } from '../response/unified-parser.mjs';
 
 export async function main(
   args,
@@ -68,21 +66,6 @@ export async function main(
     const result = await review(cwd, reviewOptions);
     if (dryRun) return EXIT_CODES.PASS;
     const isSuggestion = mode === 'suggest' || target === 'new-features';
-    const isCombined = ['all', 'release'].includes(target) && mode === 'review';
-    const effectivePrompt = reviewOptions.prompt;
-    const suggestionResultIsValid = isValidSuggestionResult(result, effectivePrompt);
-    const isValid = isSuggestion
-      ? suggestionResultIsValid
-      : isCombined
-        ? isValidUnifiedResult(
-            result,
-            Object.keys(effectivePrompt.tools[0].parameters.properties.findings.properties),
-          )
-        : isValidReviewResult(result, effectivePrompt);
-    if (!isValid) {
-      error('codescope: review returned no validated pass-or-block verdict');
-      return statusForReviewResult(result, { isSuggestion, isValid: false });
-    }
     return statusForReviewResult(result, { isSuggestion, isValid: true });
   } catch (cause) {
     error(`codescope: ${cause instanceof Error ? cause.message : String(cause)}`);

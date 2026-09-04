@@ -16,7 +16,7 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
           properties: Object.fromEntries(
             categories.map((category) => [
               category,
-              { type: 'array', items: { $ref: '#/$defs/issue' } },
+              { type: 'array', minItems: 1, items: { $ref: '#/$defs/issue' } },
             ]),
           ),
           required: [...categories],
@@ -29,12 +29,11 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
           type: 'object',
           additionalProperties: false,
           properties: {
-            severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+            severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3', 'none'] },
             location: { type: 'string' },
             issue: { type: 'string' },
             ignore_example: {
               type: 'string',
-              minLength: 1,
               description: 'A complete copy-pasteable // codescope ignore: ... comment.',
             },
           },
@@ -63,7 +62,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
           properties: Object.fromEntries(
             categories.map((category) => [
               category,
-              { type: 'array', items: { $ref: '#/$defs/suggestion' } },
+              { type: 'array', minItems: 1, items: { $ref: '#/$defs/suggestion' } },
             ]),
           ),
           required: [...categories],
@@ -80,7 +79,6 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
             rationale: { type: 'string' },
             ignore_example: {
               type: 'string',
-              minLength: 1,
               description: 'A complete copy-pasteable // codescope ignore: ... comment.',
             },
           },
@@ -112,6 +110,7 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
               category,
               {
                 type: 'array',
+                minItems: 1,
                 items: { $ref: '#/$defs/finding' },
               },
             ]),
@@ -126,14 +125,13 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
           type: 'object',
           additionalProperties: false,
           properties: {
-            severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3'] },
+            severity: { type: 'string', enum: ['P0', 'P1', 'P2', 'P3', 'none'] },
             location: { type: 'string' },
             finding: { type: 'string' },
             recommendation: { type: 'string' },
             rationale: { type: 'string' },
             ignore_example: {
               type: 'string',
-              minLength: 1,
               description: 'A complete copy-pasteable // codescope ignore: ... comment.',
             },
           },

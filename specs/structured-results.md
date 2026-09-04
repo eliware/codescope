@@ -1,16 +1,26 @@
 # Structured results
 
-Review requests use a required structured tool call. The result contains
-category arrays, issue fields, a verdict, and any usage data requested by the
-caller. Empty category arrays mean that no actionable findings were reported.
+Review requests ask the provider for JSON as a transport format only. CodeScope
+pretty-prints valid JSON but does not expose or enforce a stable programmatic
+response schema. JSON output may be malformed or have any shape; downstream AI
+agents can still read and use the raw or best-effort-formatted response. The
+only field used for process status is `verdict`: `pass` exits successfully and
+every other or missing verdict is treated as blocked.
 
-Suggestion requests use a corresponding required structured tool call with
-category arrays and suggestion fields. `new-features` is included for the
-suggestion set where the selected profile supports it.
+Suggestion requests may use a corresponding tool call, but its payload shape
+is provider output rather than a deterministic CodeScope API contract.
+`new-features` is included for the suggestion set where the selected profile
+supports it. A response that is not valid JSON is preserved as raw text and is
+still useful to the downstream AI consumer.
 
-The `all` operation expects exactly one unified review result from the model.
-The CLI validates that result before printing the final JSON output.
+The `all` operation requests one unified review result from the model. The CLI
+prints the returned JSON when parseable, otherwise it prints a best-effort
+representation without validating category, finding, or other fields.
 
-Every reported issue or suggestion includes a location and a copy-paste-ready
-ignore example when an ignore is appropriate. The model is instructed to use
-only supplied evidence and to keep findings concise.
+This output is not guaranteed to be machine-readable for programmatic
+consumers. JSON is used because it is a convenient structured response format
+for the model and the downstream AI coding-agent harness, not because
+CodeScope guarantees a stable API payload.
+
+The model is instructed to use only supplied evidence and to keep findings
+concise. CodeScope does not use ignore comments to suppress findings.

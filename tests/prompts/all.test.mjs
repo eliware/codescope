@@ -4,5 +4,5 @@ test('creates the comprehensive all-profile focus', () => {
   const result = createAllPrompt((focus) => ({ focus }));
   expect(result.focus).toContain('Review all supplied implementation');
   expect(result.focus).toContain('Cross Platform');
-  expect(result.focus).toContain('Use an empty array when a category has no findings.');
+  expect(result.focus).toContain('Every category must contain at least one item.');
 });

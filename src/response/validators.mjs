@@ -51,7 +51,7 @@ export function isValidReviewResult(result, prompt) {
           (issue) =>
             issue &&
             exactKeys(issue, ['severity', 'location', 'issue', 'ignore_example']) &&
-            ['P0', 'P1', 'P2', 'P3'].includes(issue.severity) &&
+            ['P0', 'P1', 'P2', 'P3', 'none'].includes(issue.severity) &&
             ['location', 'issue', 'ignore_example'].every(
               (key) =>
                 typeof issue[key] === 'string' &&

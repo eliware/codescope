@@ -1,4 +1,4 @@
-export const TEST_FILE_PATTERN = /\.test\.(?:js|cjs|mjs)$/iu;
+export const TEST_FILE_PATTERN = /\.test\.(?:js|cjs|mjs|ts)$/iu;
 
 export function isCodeExtension(extension) {
   return (

@@ -17,7 +17,9 @@ repository.
 - The current working directory is the review root.
 - Repository context is selected by profile and ordered deterministically.
 - Symbolic links are excluded and never followed.
-- Review output is structured JSON.
+- Review output is best-effort JSON for AI-to-AI transport, not a guaranteed
+  machine-readable programmatic API. Valid JSON is pretty-printed; malformed
+  output is preserved for downstream AI interpretation.
 - Review findings use P0–P3 priorities; only unresolved P0 or qualifying P1 findings block a review verdict.
 - Suggestion profiles return recommendations and do not create a review verdict.
 - `all` runs the comprehensive unified review and merges the findings into one structured result.

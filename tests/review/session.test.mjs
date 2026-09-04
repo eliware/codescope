@@ -65,23 +65,22 @@ test('executes a normal provider session and writes the parsed result', async ()
 
 test('writes a fallback when provider output cannot be parsed', async () => {
   const output = [];
-  await expect(
-    executeReviewSession({
-      client: {
-        responses: {
-          create: async () => ({
-            output: [{ type: 'function_call', name: 'submit_review', arguments: '{' }],
-          }),
-        },
+  const result = await executeReviewSession({
+    client: {
+      responses: {
+        create: async () => ({
+          output: [{ type: 'function_call', name: 'submit_review', arguments: '{' }],
+        }),
       },
-      request: reviewRequest,
-      signal: new AbortController().signal,
-      write: async (value) => output.push(value),
-      dryRun: false,
-      usage: false,
-      testResults: undefined,
-    }),
-  ).rejects.toThrow('OpenAI request failed');
+    },
+    request: reviewRequest,
+    signal: new AbortController().signal,
+    write: async (value) => output.push(value),
+    dryRun: false,
+    usage: false,
+    testResults: undefined,
+  });
+  expect(result).toEqual({ raw_response: '{', verdict: 'block' });
   expect(output).toHaveLength(1);
 });
 

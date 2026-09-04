@@ -69,13 +69,13 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
   const write = () => {};
   await expect(
     main(['prompt', 'return', 'json', '--effort=low'], {
-      review: async () => ({ text: '{}' }),
+      review: async () => ({ verdict: 'pass' }),
       write,
     }),
   ).resolves.toBe(0);
   await expect(
     main(['prompt', 'return', 'json'], { review: async () => ({}), write }),
-  ).resolves.toBe(6);
+  ).resolves.toBe(1);
   await expect(
     main(['new-features'], { review: async () => validResult('new-features', 'suggest'), write }),
   ).resolves.toBe(0);
@@ -109,7 +109,7 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
   ).resolves.toBe(0);
   await expect(
     main(['all', '--omit-test-results'], { review: async () => ({}), error: () => {}, write }),
-  ).resolves.toBe(6);
+  ).resolves.toBe(1);
   await expect(
     main(['security', '--test-timeout', '3', '--effort=low'], {
       review: async () => validResult('security'),

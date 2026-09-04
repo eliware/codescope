@@ -69,7 +69,7 @@ export function isValidUnifiedResult(result, expected) {
         ])
       )
         return true;
-      if (!['P0', 'P1', 'P2', 'P3'].includes(item.severity)) return true;
+      if (!['P0', 'P1', 'P2', 'P3', 'none'].includes(item.severity)) return true;
       return ['location', 'finding', 'recommendation', 'rationale', 'ignore_example'].some((key) =>
         key === 'ignore_example'
           ? !/^\/\/ codescope ignore: [^\r\n]+$/u.test(item[key])

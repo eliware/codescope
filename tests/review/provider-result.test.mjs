@@ -9,6 +9,29 @@ test('extracts categories from the active tool schema', () => {
   expect(toolCategories({ parameters: { properties: {} } })).toBeUndefined();
 });
 
+test('preserves malformed and text-only provider responses', () => {
+  expect(parseProviderResult({ output_text: '{"verdict":"pass"' }, {})).toEqual({
+    raw_response: '{"verdict":"pass"',
+    verdict: 'pass',
+  });
+  expect(parseProviderResult({ output: [] }, {})).toEqual({ raw_response: '', verdict: 'block' });
+  expect(parseProviderResult({ output_text: 'null' }, {})).toEqual({
+    raw_response: 'null',
+    verdict: 'block',
+  });
+  expect(parseProviderResult({ output_text: '{"verdict":"block"}' }, {})).toEqual({
+    verdict: 'block',
+  });
+  expect(
+    parseProviderResult(
+      {
+        output: [{ type: 'function_call', name: 'submit_review', arguments: '{"verdict":"pass"}' }],
+      },
+      { tool_choice: { name: 'submit_review' } },
+    ),
+  ).toEqual({ verdict: 'pass' });
+});
+
 test('routes a single review tool response through the response parser', () => {
   const response = {
     output: [

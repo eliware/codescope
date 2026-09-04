@@ -58,11 +58,12 @@ if (testResult.code !== 0) {
       return { effort, ...result };
   };
   const results = [];
+  let nextEffort = 0;
   const workers = Array.from({ length: Math.min(2, efforts.length) }, async () => {
-    while (results.length < efforts.length) {
-      const effort = efforts[results.length];
-      if (!effort) return;
-      results.push(await runEffort(effort));
+    while (true) {
+      const index = nextEffort++;
+      if (index >= efforts.length) return;
+      results[index] = await runEffort(efforts[index]);
     }
   });
   await Promise.all(workers);

@@ -6,7 +6,8 @@ export async function writeBenchmarkSummary(
   path,
   { cwd, npmTest, model, pricing, efforts, results, logs },
 ) {
-  const uniqueResults = [...new Map(results.map((result) => [result.effort, result])).values()];
+  const snapshot = results.map((result) => ({ ...result }));
+  const uniqueResults = [...new Map(snapshot.map((result) => [result.effort, result])).values()];
   const summary = {
     cwd,
     npmTest: { exitCode: npmTest.code, elapsedMs: Math.round(npmTest.elapsedMs) },

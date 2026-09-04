@@ -13,16 +13,13 @@ export function preparePlainTextRequest(request, plainText, combined) {
 
 export function parsePlainTextJsonResponse(response) {
   const outputText = response?.output_text;
-  if (typeof outputText !== 'string') {
-    const error = new Error('Invalid structured JSON response');
-    error.code = 'INVALID_RESPONSE';
-    throw error;
-  }
+  if (typeof outputText !== 'string') return { raw_response: '', verdict: 'block' };
   try {
     return JSON.parse(outputText);
-  } catch (cause) {
-    const error = new Error('Invalid structured JSON response', { cause });
-    error.code = 'INVALID_RESPONSE';
-    throw error;
+  } catch {
+    return {
+      raw_response: outputText,
+      verdict: /["']verdict["']\s*:\s*["']pass["']/iu.test(outputText) ? 'pass' : 'block',
+    };
   }
 }

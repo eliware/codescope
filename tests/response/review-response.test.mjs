@@ -178,7 +178,15 @@ test('parses and rejects unified reports', () => {
   ).toThrow(/invalid result/);
   expect(
     parseUnifiedToolResponse(
-      response({ findings: { correctness: [] }, verdict: 'pass' }, 'submit_unified_review'),
+      response(
+        {
+          findings: {
+            correctness: [],
+          },
+          verdict: 'pass',
+        },
+        'submit_unified_review',
+      ),
       ['correctness'],
     ),
   ).toEqual({ findings: { correctness: [] }, verdict: 'pass' });

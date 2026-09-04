@@ -19,8 +19,6 @@ export async function executeReviewSession({
 }) {
   let providerResponse;
   let providerResponseReceived = false;
-  const toolNames = (request.tools ?? []).map((tool) => tool?.name);
-  const combined = toolNames.includes('submit_unified_review');
   try {
     if (dryRun) {
       const output = await runDryRun({ client, request, signal, model: request.model, usage });
@@ -34,7 +32,7 @@ export async function executeReviewSession({
       await writeJsonResult(write, output, 'prompt');
       return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
     }
-    const result = parseProviderResult(providerResponse, request, combined);
+    const result = parseProviderResult(providerResponse, request);
     if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) result.verdict = 'block';
     const output = withReviewUsage(result, providerResponse, request.model, usage);
     await writeJsonResult(write, output);

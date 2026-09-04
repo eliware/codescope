@@ -1,9 +1,17 @@
-import {
-  parseCombinedToolResponse,
-  parseSuggestionToolResponse,
-} from '../response/review-response.mjs';
-import { parseReviewToolResponse } from '../response/review-parser.mjs';
-import { parseUnifiedToolResponse } from '../response/unified-parser.mjs';
+function responseText(response, request) {
+  const name = request.tool_choice?.name;
+  const call = (response?.output ?? []).find(
+    (item) => item?.type === 'function_call' && (!name || item.name === name),
+  );
+  return typeof call?.arguments === 'string'
+    ? call.arguments
+    : typeof response?.output_text === 'string'
+      ? response.output_text
+      : '';
+}
+
+const verdictFrom = (value) =>
+  /["']verdict["']\s*:\s*["']pass["']/iu.test(value) ? 'pass' : 'block';
 
 export function toolCategories(tool) {
   const categories = Object.keys(
@@ -15,22 +23,12 @@ export function toolCategories(tool) {
   return categories.length ? categories : undefined;
 }
 
-export function parseProviderResult(providerResponse, request, combined) {
-  if (request.tool_choice?.name === 'submit_unified_review')
-    return parseUnifiedToolResponse(providerResponse, toolCategories(request.tools?.[0]));
-  const toolName = request.tool_choice?.name ?? 'submit_review';
-  if (
-    combined &&
-    request.tools?.some((tool) => tool.name === 'submit_review') &&
-    request.tools?.some((tool) => tool.name === 'submit_suggestions')
-  )
-    return parseCombinedToolResponse(
-      providerResponse,
-      toolCategories(request.tools?.find((tool) => tool.name === 'submit_review')),
-      toolCategories(request.tools?.find((tool) => tool.name === 'submit_suggestions')),
-    );
-  const categories = toolCategories(request.tools?.[0]);
-  return toolName === 'submit_suggestions'
-    ? parseSuggestionToolResponse(providerResponse, categories)
-    : parseReviewToolResponse(providerResponse, categories);
+export function parseProviderResult(providerResponse, request) {
+  const raw = responseText(providerResponse, request);
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : { raw_response: raw, verdict: 'block' };
+  } catch {
+    return { raw_response: raw, verdict: verdictFrom(raw) };
+  }
 }

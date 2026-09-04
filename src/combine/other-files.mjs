@@ -1,10 +1,14 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 const CODE_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts'];
 const MAX_OTHER_FILE_BYTES = 2_000_000;
 
-export async function describeOtherFiles(root, inventory, { readFileContents = readFile } = {}) {
+export async function describeOtherFiles(
+  root,
+  inventory,
+  { readFileContents = readFile, statFile = readFileContents === readFile ? stat : undefined } = {},
+) {
   const paths = inventory.filter((relativePath) => !isIncludedContent(relativePath));
   const entries = [];
   let totalBytes = 0;
@@ -12,15 +16,28 @@ export async function describeOtherFiles(root, inventory, { readFileContents = r
   const worker = async () => {
     while (next < paths.length) {
       const relativePath = paths[next++];
-      const data = await readFileContents(path.join(root, relativePath));
+      const filePath = path.join(root, relativePath);
+      let reservedBytes = 0;
+      if (statFile) {
+        const size = (await statFile(filePath)).size;
+        if (totalBytes + size > MAX_OTHER_FILE_BYTES) {
+          entries.push(
+            `${relativePath} | omitted | ${size} bytes | aggregate metadata budget exceeded`,
+          );
+          continue;
+        }
+        totalBytes += size;
+        reservedBytes = size;
+      }
+      const data = await readFileContents(filePath);
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
-      if (totalBytes + bytes.byteLength > MAX_OTHER_FILE_BYTES) {
+      if (!reservedBytes && totalBytes + bytes.byteLength > MAX_OTHER_FILE_BYTES) {
         entries.push(
           `${relativePath} | omitted | ${bytes.byteLength} bytes | aggregate metadata budget exceeded`,
         );
         continue;
       }
-      totalBytes += bytes.byteLength;
+      if (!reservedBytes) totalBytes += bytes.byteLength;
       if (bytes.includes(0)) entries.push(`${relativePath} | binary | ${bytes.byteLength} bytes`);
       else {
         const text = bytes.toString('utf8');
