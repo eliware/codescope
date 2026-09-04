@@ -2,7 +2,7 @@ import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-sch
 import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
 import { createImplementationOnlyPrompt } from './prompts/suggestions.mjs';
 import { createReviewProfiles } from './prompts/review-profiles.mjs';
-import { defaultDeveloperText } from './prompts/guidance.mjs';
+import { createProfilePrompt } from './prompts/builders.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
@@ -198,35 +198,8 @@ CodeScope reports P2/P3 findings but does not block the release.`;
 export const globalReviewInstructions =
   `${ceoPriorityGuidance}\n\nUse only evidence present in this request: supplied repository files, package.json, the names-only file inventory, and npm test output when test files are included. Read the complete supplied source and inspect nearby comments before evaluating behavior. Treat a supplied npm test result as authoritative: any nonzero exit code, timeout, startup failure, incomplete result, coverage failure, or lint failure/warning reported in that result is P0 and requires verdict block. Documentation that falsely claims a command, API, option, or required usage path exists when it does not is a qualifying P1 and requires verdict block. Minor documentation wording, formatting, examples, and other documentation discrepancies remain P2/P3 unless they materially misrepresent how to use the app or API. Do not infer CI, npm pack, npm audit, Git status, deployment-readiness, rollback, registry state, or any other external check that was not supplied. Missing or excluded files and absent command output are not evidence of failure or absence. The supplied source intentionally includes only selected file types; excluded or unsupplied JSON, YAML, TOML, lockfile, fixture, schema, asset, or generated files are not evidence of absence or invalidity. Treat one nearby comment containing exact marker "codescope ignore:" as authoritative, scoped suppression; users need not add multiple comments. Fully covered concerns are invisible: never mention, summarize, paraphrase, relabel, count, or explain them. If no actionable findings remain, say exactly "No issues found." Include exact copy-paste-ready ignore examples for reported issues, and exact complete replacement text when expanding an existing ignore. Do not broaden annotations to unrelated behavior. Comments without "codescope ignore:" provide context but do not suppress findings. Do not require integration tests for delegated platform/runtime behavior when focused unit tests cover the application contract. Focused injected executors are sufficient evidence for delegated child-process mechanics. Keep all output extremely concise; sacrifice grammar for brevity.`;
 
-const base = {
-  model: 'gpt-5.6-luna',
-  service_tier: 'default',
-  text: { format: { type: 'text' }, verbosity: 'low' },
-  reasoning: { effort: 'none', mode: 'standard', summary: null },
-  tools: [reviewTool],
-  tool_choice: { type: 'function', name: 'submit_review' },
-  parallel_tool_calls: false,
-  store: false,
-  prompt_cache_options: { mode: 'explicit' },
-  include: ['reasoning.encrypted_content', 'web_search_call.action.sources'],
-};
-export const profilePrompt = (focus, tool = reviewTool) => ({
-  ...base,
-  tools: [tool],
-  tool_choice: { type: 'function', name: tool.name },
-  input: [
-    { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
-    {
-      role: 'user',
-      content: [
-        {
-          type: 'input_text',
-        text: `${globalReviewInstructions}\n\nClassify test gaps and documentation discrepancies as P1 only when they satisfy every P1 evidence and release-scope condition above; otherwise classify them P2 or P3. Treat proven coverage-measurement defects, stale or contaminated validation artifacts, and missing tests that leave required behavior or 100×4 unverified as P1 even when the current test command passes. Never emit a statement such as no discrepancy found as an issue; use the category placeholder. Minor edge cases and ordinary coverage polish are P2/P3. Do not treat absent output from commands not supplied in the input, such as npm run lint or npm run pack, as a defect or test gap. The documented direct and grouped CLI option combinations are supported; do not report parser behavior as a defect without reproducing a concrete failing invocation.\n\nProfile focus: ${focus}`,
-        },
-      ],
-    },
-  ],
-});
+export const profilePrompt = (focus, tool = reviewTool) =>
+  createProfilePrompt(focus, tool, { globalReviewInstructions });
 const reviewProfiles = createReviewProfiles({ profilePrompt, reviewTool });
 export const { prompt, mdPrompt } = reviewProfiles;
 export const allPrompt = profilePrompt(

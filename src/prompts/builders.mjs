@@ -1,0 +1,33 @@
+import { reviewTool } from './tool-schemas.mjs';
+import { defaultDeveloperText } from './guidance.mjs';
+
+const base = {
+  model: 'gpt-5.6-luna',
+  service_tier: 'default',
+  text: { format: { type: 'text' }, verbosity: 'low' },
+  reasoning: { effort: 'none', mode: 'standard', summary: null },
+  tools: [reviewTool],
+  tool_choice: { type: 'function', name: 'submit_review' },
+  parallel_tool_calls: false,
+  store: false,
+  prompt_cache_options: { mode: 'explicit' },
+  include: ['reasoning.encrypted_content', 'web_search_call.action.sources'],
+};
+
+export function createProfilePrompt(focus, tool = reviewTool, { globalReviewInstructions }) {
+  return {
+    ...base,
+    tools: [tool],
+    tool_choice: { type: 'function', name: tool.name },
+    input: [
+      { role: 'developer', content: [{ type: 'input_text', text: defaultDeveloperText }] },
+      {
+        role: 'user',
+        content: [{
+          type: 'input_text',
+          text: `${globalReviewInstructions}\n\nClassify test gaps and documentation discrepancies as P1 only when they satisfy every P1 evidence and release-scope condition above; otherwise classify them P2 or P3. Treat proven coverage-measurement defects, stale or contaminated validation artifacts, and missing tests that leave required behavior or 100×4 unverified as P1 even when the current test command passes. Never emit a statement such as no discrepancy found as an issue; use the category placeholder. Minor edge cases and ordinary coverage polish are P2/P3. Do not treat absent output from commands not supplied in the input, such as npm run lint or npm run pack, as a defect or test gap. The documented direct and grouped CLI option combinations are supported; do not report parser behavior as a defect without reproducing a concrete failing invocation.\n\nProfile focus: ${focus}`,
+        }],
+      },
+    ],
+  };
+}
