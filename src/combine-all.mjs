@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { findAllFiles } from './find-mjs.mjs';
+import { findAllFiles } from './find/files.mjs';
 import { combineCodeFiles, combineMdFiles } from './combine-mjs.mjs';
 import { combinePackageJson } from './combine/package-json.mjs';
 

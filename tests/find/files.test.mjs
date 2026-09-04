@@ -1,4 +1,4 @@
-import { findFiles, findMjsFiles, findMdFiles } from '../src/find-mjs.mjs';
+import { findFiles, findMjsFiles, findMdFiles, findAllFiles } from '../../src/find/files.mjs';
 import path from 'node:path';
 
 const file = (name) => ({ name, isFile: () => true });
@@ -167,4 +167,10 @@ test('classifies JavaScript test extensions separately from implementation', asy
     'app.test.cjs',
     'app.test.js',
   ]);
+});
+test('findAllFiles exposes the unrestricted extension strategy', async () => {
+  await expect(findAllFiles('/root', {
+    readDirectory: async () => [],
+    inspectRoot: async () => ({ isSymbolicLink: () => false }),
+  })).resolves.toEqual([]);
 });

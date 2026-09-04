@@ -1,6 +1,6 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { findFiles } from './find-mjs.mjs';
+import { findFiles } from './find/files.mjs';
 import { formatSourceSection } from './combine/section-format.mjs';
 
 export async function combineFiles(
