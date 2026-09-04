@@ -1,7 +1,12 @@
 import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { combineFiles, combineMdFiles, combineMjsFiles } from '../src/combine-mjs.mjs';
+import {
+  combineFiles,
+  combineMdFiles,
+  combineMjsFiles,
+  combineCodeFiles,
+} from '../../src/combine/files.mjs';
 
 const oneFile = (name = 'a.mjs') => ({
   readDirectory: async () => [{ name, isFile: () => true }],
@@ -121,4 +126,10 @@ test('validates real files and wraps all read failures', async () => {
       readFileContents: async () => 'unreachable',
     }),
   ).rejects.toThrow('symlinked');
+});
+test('combineCodeFiles delegates to the supported implementation extensions', async () => {
+  await expect(combineCodeFiles('/root', {
+    readDirectory: async () => [],
+    readFileContents: async () => '',
+  })).resolves.toBe('');
 });

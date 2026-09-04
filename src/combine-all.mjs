@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { findAllFiles } from './find/files.mjs';
-import { combineCodeFiles, combineMdFiles } from './combine-mjs.mjs';
+import { combineCodeFiles, combineMdFiles } from './combine/files.mjs';
 import { combinePackageJson } from './combine/package-json.mjs';
 
 const CODE_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts'];
