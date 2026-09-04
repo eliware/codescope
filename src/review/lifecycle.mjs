@@ -14,11 +14,11 @@ import { loadReviewEnvironment } from './environment.mjs';
 import { collectReviewTestEvidence } from './test-evidence.mjs';
 import { parsePlainTextJsonResponse, preparePlainTextRequest } from './plain-text.mjs';
 import { runDryRun } from './dry-run.mjs';
-import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { initializeReviewClient } from './client.mjs';
 import { registerReviewSignals } from './signals.mjs';
 import { requestProviderResponse } from './provider-request.mjs';
 import { createIncompleteResult, createProviderFailure } from './failure.mjs';
+import { withReviewUsage } from './usage.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -156,20 +156,7 @@ export async function runReview(cwd, options) {
       if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) {
         result.verdict = 'block';
       }
-      const output = usage
-        ? {
-            ...result,
-            usage: providerResponse.usage
-              ? {
-                  ...providerResponse.usage,
-                  estimated_cost_usd: calculateUsageCost(
-                    request.model ?? 'gpt-5.6-luna',
-                    providerResponse.usage,
-                  ),
-                }
-              : null,
-          }
-        : result;
+      const output = withReviewUsage(result, providerResponse, request.model, usage);
 
       await writeJsonResult(write, output);
       return output;
