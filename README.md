@@ -67,6 +67,7 @@ codescope --help
 
 See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow and profile list.
 See [specs/](specs/) for the detailed behavior specifications.
+See [NEW_FEATURE_SUGGESTIONS.md](NEW_FEATURE_SUGGESTIONS.md) for optional future ideas.
 
 ## Configuration
 
