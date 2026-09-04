@@ -4,6 +4,7 @@ import { isIgnoredDirectory } from './policies.mjs';
 import { matchesFile } from './extensions.mjs';
 import { validateEntryNames } from './entries.mjs';
 import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './root-policy.mjs';
+import { classifyEntry } from './entry-types.mjs';
 
 export async function findFiles(
   root,
@@ -51,25 +52,9 @@ export async function findFiles(
       (left, right) => Number(left.name > right.name) - Number(left.name < right.name),
     );
     for (const entry of entries) {
-      let isDirectory = false;
-      let isFile = false;
-      let isSymlink = false;
-      try {
-        isSymlink = typeof entry.isSymbolicLink === 'function' && entry.isSymbolicLink();
-        if (isSymlink) continue;
-        isDirectory = typeof entry.isDirectory === 'function' && entry.isDirectory();
-        isFile = typeof entry.isFile === 'function' && entry.isFile();
-      } catch (cause) {
-        throw new Error(
-          `Unable to scan ${pathApi.relative(root, directory) || '.'}: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
-      }
-      if (isDirectory && isFile)
-        throw new Error(`Invalid directory entry in ${pathApi.relative(root, directory) || '.'}`);
-
-      if (!isDirectory && !isFile)
-        throw new Error(`Invalid directory entry in ${pathApi.relative(root, directory) || '.'}`);
+      const entryType = classifyEntry(entry, pathApi.relative(root, directory));
+      if (entryType.skip) continue;
+      const { isDirectory, isFile } = entryType;
       const childPath = pathApi.resolve(directory, entry.name);
 
       const normalizedName = entry.name;
