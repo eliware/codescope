@@ -11,6 +11,7 @@ import { calculateUsageCost } from '../pricing/calculator.mjs';
 import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 import { validateReviewOptions } from './options.mjs';
 import { loadReviewEnvironment } from './environment.mjs';
+import { collectReviewTestEvidence } from './test-evidence.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -87,17 +88,14 @@ export async function runReview(cwd, options) {
   });
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
-  let testResults;
-  if (includesTests && !omitTestResults) {
-    // codescope ignore: the undefined executor intentionally selects the default npm-test runner; redaction is the separate fourth argument.
-    try {
-      testResults = await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput);
-    } catch (cause) {
-      testResults = `===== npm test =====\nexit code: unknown\n${redactOutput(String(cause))}`;
-    }
-  }
-  if (testResults !== undefined && typeof testResults !== 'string')
-    throw new Error('Test runner must return a string');
+  const testResults = await collectReviewTestEvidence({
+    cwd,
+    includesTests,
+    omitTestResults,
+    testTimeoutMs,
+    runTestCommand,
+    redactOutput,
+  });
   const combined = await combine(cwd, {
     readDirectory,
     readFileContents: readFile,
