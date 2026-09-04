@@ -15,6 +15,7 @@ import { collectReviewTestEvidence } from './test-evidence.mjs';
 import { parsePlainTextJsonResponse, preparePlainTextRequest } from './plain-text.mjs';
 import { runDryRun } from './dry-run.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
+import { initializeReviewClient } from './client.mjs';
 export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
@@ -116,13 +117,7 @@ export async function runReview(cwd, options) {
   }
 
   const controller = new AbortController();
-  let client;
-
-  try {
-    client = createClient({ apiKey: token });
-  } catch (cause) {
-    throw new Error('Unable to initialize OpenAI client', { cause });
-  }
+  const client = initializeReviewClient(createClient, token);
   let signals;
   let providerResponse;
   let providerResponseReceived = false;
