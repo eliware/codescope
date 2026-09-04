@@ -1,6 +1,7 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { findFiles } from './find-mjs.mjs';
+import { formatSourceSection } from './combine/section-format.mjs';
 
 export async function combineFiles(
   root,
@@ -75,14 +76,7 @@ export async function combineFiles(
         if (Number.isFinite(maxChars) && contents.length > maxChars)
           throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
 
-        const trimmed = contents.replace(/(?:\r\n|\r|\n)$/u, '');
-
-        const lines = trimmed === '' ? ['[empty file]'] : trimmed.split(/\r\n|\r|\n/u);
-        const width = String(lines.length).length;
-        const numbered = lines
-          .map((line, index) => `${String(index + 1).padStart(width, ' ')} ${line}`)
-          .join('\n');
-        return `===== ${relativePath} =====\n${numbered}\n`;
+        return formatSourceSection(relativePath, contents);
       }),
     );
 
