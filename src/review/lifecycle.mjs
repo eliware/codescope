@@ -8,8 +8,8 @@ import { parseCombinedToolResponse, parseReviewToolResponse } from '../response/
 import { prepareRequest } from './request.mjs';
 import { removeSignalHandlers } from './cleanup.mjs';
 import { calculateUsageCost } from '../pricing/calculator.mjs';
-import { collectTestResults, redactTestOutput } from './test-results.mjs';
-export { collectTestResults, redactTestOutput } from './test-results.mjs';
+import { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
+export { collectTestResults, redactTestOutput, testEvidenceBlocks } from './test-results.mjs';
 
 export async function runReview(cwd, options) {
   const defaults = {
@@ -320,12 +320,4 @@ export async function runReview(cwd, options) {
     controller.abort();
     removeSignalHandlers(signals);
   }
-}
-
-export function testEvidenceBlocks(testResults) {
-  if (typeof testResults !== 'string') return false;
-  const match = testResults.match(/(?:^|\r?\n)===== npm test =====\r?\n([^\r\n]*)/u);
-  if (!match) return false;
-  const status = match[1].trim();
-  return /^(?:exit code:\s*(?:[1-9]\d*|unknown)|timed out after\b)/iu.test(status);
 }

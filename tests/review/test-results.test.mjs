@@ -1,4 +1,10 @@
-import { collectTestResults, redactTestOutput } from '../../src/review/test-results.mjs';
+import { collectTestResults, redactTestOutput, testEvidenceBlocks } from '../../src/review/test-results.mjs';
+
+test('identifies failed and timed-out test evidence', () => {
+  expect(testEvidenceBlocks('===== npm test =====\nexit code: 1')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\ntimed out after 30 seconds')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\nexit code: 0')).toBe(false);
+});
 
 test('redacts common credentials', () => {
   expect(redactTestOutput('TOKEN=secret sk-test-value')).not.toContain('secret');
