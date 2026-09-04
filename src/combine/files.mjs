@@ -4,6 +4,7 @@ import { findFiles } from '../find/files.mjs';
 import { formatSourceSection } from './section-format.mjs';
 import { validateCombineOptions } from './policies.mjs';
 import { readSourceFile } from './read-file.mjs';
+import { addBatchLength, assertWithinLimit, getBatchSize } from './limits.mjs';
 
 export async function combineFiles(
   root,
@@ -33,7 +34,7 @@ export async function combineFiles(
   let totalChars = 0;
 
   // codescope ignore: finite-limit scans intentionally serialize reads to keep aggregate character accounting deterministic.
-  const batchSize = Number.isFinite(maxChars) ? 1 : concurrency;
+  const batchSize = getBatchSize(maxChars, concurrency);
   for (let start = 0; start < files.length; start += batchSize) {
     const batch = await Promise.all(
       files.slice(start, start + batchSize).map(async (relativePath) => {
@@ -45,19 +46,14 @@ export async function combineFiles(
           validateSymlinks,
         });
 
-        if (Number.isFinite(maxChars) && contents.length > maxChars)
-          throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
+        if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
 
         return formatSourceSection(relativePath, contents);
       }),
     );
 
-    totalChars +=
-      batch.reduce((total, section) => total + section.length, 0) +
-      (sections.length > 0 ? 1 : 0) +
-      Math.max(0, batch.length - 1);
-    if (totalChars > maxChars)
-      throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
+    totalChars = addBatchLength(totalChars, batch.reduce((total, section) => total + section.length, 0), batch.length);
+    assertWithinLimit(totalChars, maxChars);
     sections.push(...batch);
   }
   return sections.join('\n');
