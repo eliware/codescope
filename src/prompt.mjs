@@ -1,5 +1,5 @@
 import { createReviewTool, reviewTool, suggestionTool } from './prompts/tool-schemas.mjs';
-import { createPriorityPrompt } from './prompts/priority.mjs';
+import { createAnalysisPrompt as buildAnalysisPrompt, createPriorityPrompt } from './prompts/priority.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export { createReviewTool, reviewTool, createSuggestionTool, suggestionTool } from './prompts/tool-schemas.mjs';
@@ -297,7 +297,4 @@ export const prioritizePrompt = implementationOnlyPrompt(
   'Prioritize existing improvement opportunities only.',
 );
 export const priorityPrompt = (maximum) => createPriorityPrompt(maximum, { profilePrompt, createReviewTool });
-export const createAnalysisPrompt = (subject) =>
-  profilePrompt(
-    `${subject} Report each issue as one concise bullet, grouped by priority P0, P1, P2, etc., with the affected path and related line number(s).`,
-  );
+export const createAnalysisPrompt = (subject) => buildAnalysisPrompt(subject, { profilePrompt });

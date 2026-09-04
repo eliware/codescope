@@ -4,3 +4,9 @@ const priorityInstruction = (maximum) =>
 export function createPriorityPrompt(maximum, { profilePrompt, createReviewTool }) {
   return profilePrompt(priorityInstruction(maximum), createReviewTool());
 }
+
+export function createAnalysisPrompt(subject, { profilePrompt }) {
+  return profilePrompt(
+    `${subject} Report each issue as one concise bullet, grouped by priority P0, P1, P2, etc., with the affected path and related line number(s).`,
+  );
+}
