@@ -1,43 +1,30 @@
-# Single-responsibility decomposition checklist
+# Single-responsibility decomposition commit plan
 
 Baseline rollback commit: `68b94de6090cef4efc18bebe83b51129882d8486`
 
-- [x] Create mirrored `src/` and `tests/` responsibility directories. (`5b85cb2`)
-- [ ] Inventory every production module and assign exactly one matching test module.
-- [x] Move benchmark status parsing, aggregation, and formatting into `src/benchmark/` with mirrored tests. (`b0276b5`)
-- [ ] Split `src/cli.mjs` into constants, version, errors, options, argument parsing, help, output, commands, dispatch, and main modules.
-- [ ] Move CLI tests into matching `tests/cli/` modules and remove `tests/cli.test.mjs`.
-- [ ] Split `src/cli-profiles.mjs` into profile metadata, names, source selection, prompt selection, category selection, tool selection, and profile building.
-- [ ] Move profile tests into matching `tests/profiles/` modules.
-- [ ] Split `src/prompt.mjs` into categories, schemas, global guidance, prompt builders, and profile prompts.
-- [ ] Move prompt tests into matching `tests/prompts/` modules.
-- [ ] Split `src/find-mjs.mjs` into root validation, platform paths, entry classification, symlink policy, exclusions, extension matching, test matching, containment, traversal, and finder modules.
-- [ ] Move finder tests into matching `tests/find/` modules.
-- [ ] Split `src/combine-mjs.mjs` into file reads, batching, limits, line numbering, normalization, headers, and combination modules.
-- [ ] Move combine tests into matching `tests/combine/` modules.
-- [ ] Split `src/combine-all.mjs` into package metadata, config discovery, config content, source groups, included-file tracking, inventory, metadata, binary detection, truncation, and section aggregation modules.
-- [ ] Add focused tests for every `combine-all` subordinate module.
-- [ ] Split `src/review-config.mjs` into paths, dotenv parsing, environment merging, and config security modules.
-- [ ] Move configuration tests into matching `tests/config/` modules.
-- [ ] Split `src/review-request.mjs` into input, tools, reasoning, model, options, and request preparation modules.
-- [ ] Move request tests into matching `tests/review/` modules.
-- [ ] Split `src/review-response.mjs` into errors, tool-call extraction, argument parsing, exact-key validation, category validation, issue validation, suggestion validation, review validation, and combined validation modules.
-- [ ] Move response tests into matching `tests/response/` modules and remove `tests/review-response.test.mjs`.
-- [ ] Split `src/review.mjs` into test execution, test formatting, redaction, environment loading, config checks, client creation, signal registration, cleanup, dry-run, plain-text, structured review, usage, failure output, and orchestration modules.
-- [ ] Move review tests into matching `tests/review/` modules and remove `tests/review.test.mjs`.
-- [ ] Keep `src/pricing.mjs` as one module only if it has one pricing responsibility; otherwise split rates, thresholds, calculation, and formatting.
-- [ ] Keep public flat modules only as thin adapters or pure re-export barrels.
-- [ ] Ensure every production module has exactly one mirrored `.test.mjs` file.
-- [ ] Move cross-module tests to the lowest common composition-level test module.
-- [ ] Remove all catch-all test files.
-- [ ] Remove duplicated implementation left behind after extraction.
-- [ ] Remove unreachable or redundant branches exposed by the decomposition.
-- [ ] Add no Istanbul ignores outside pure barrel/re-export files.
-- [ ] Run focused tests after each extraction group.
-- [ ] Run `npm test` and confirm genuine 100×4 coverage.
-- [ ] Run `npm run lint` and confirm zero warnings.
-- [ ] Run `npm run pack` successfully.
-- [ ] Run `git diff --check` successfully.
-- [ ] Run `eliware-test` and resolve all monolith and mirrored-test violations.
-- [ ] Verify no secrets, runtime state, or generated benchmark output is tracked.
-- [ ] Review the final source/test tree against `module-and-test-architecture.md`.
+- [x] `5b85cb2` — Create mirrored responsibility directories under `src/` and `tests/`.
+- [x] `b0276b5` — Move benchmark status behavior and its test into the mirrored benchmark hierarchy.
+- [ ] — Inventory every production module and finalize its one-to-one source/test mapping.
+- [ ] — Decompose CLI constants, version, errors, options, arguments, help, output, commands, dispatch, and main orchestration with mirrored tests.
+- [ ] — Decompose profile metadata, names, source selection, prompt routing, categories, tools, and profile building with mirrored tests.
+- [ ] — Decompose prompt categories, schemas, global guidance, builders, review prompts, suggestion prompts, and priority prompts with mirrored tests.
+- [ ] — Decompose file discovery into root/platform handling, entries, symlink policy, exclusions, extensions, test matching, containment, traversal, and finder orchestration with mirrored tests.
+- [ ] — Decompose source combination into reads, batching, limits, numbering, normalization, headers, and orchestration with mirrored tests.
+- [ ] — Decompose aggregate combination into package metadata, config discovery/content, source groups, inclusion tracking, inventory, metadata, binary detection, truncation, sections, and orchestration with mirrored tests.
+- [ ] — Decompose configuration loading into paths, dotenv parsing, environment merging, and config security with mirrored tests.
+- [ ] — Decompose request construction into input, tools, reasoning, model, options, and orchestration with mirrored tests.
+- [ ] — Decompose response handling into errors, tool calls, arguments, exact keys, categories, issue items, suggestion items, review results, and combined results with mirrored tests.
+- [ ] — Decompose the review lifecycle into test execution/output/redaction, environment/config checks, client creation, signals, dry runs, plain text, structured review, usage, failures, and orchestration with mirrored tests.
+- [ ] — Review pricing and retain one responsibility or split rates, thresholds, calculation, and formatting with mirrored tests.
+- [ ] — Convert remaining flat public modules into thin adapters or pure re-export barrels with adapter tests.
+- [ ] — Complete the exact mirrored source/test hierarchy and move cross-module tests to the lowest common composition level.
+- [ ] — Remove catch-all CLI, review, and response test files after relocating all tests.
+- [ ] — Remove duplicated implementation, unreachable branches, redundant branches, and non-barrel Istanbul ignores.
+- [ ] — Run focused tests after each decomposition commit and repair regressions.
+- [ ] — Run `npm test` and restore genuine 100×4 coverage across the complete tree.
+- [ ] — Run `npm run lint` with zero warnings.
+- [ ] — Run `npm run pack` successfully.
+- [ ] — Run `git diff --check` successfully.
+- [ ] — Run `eliware-test` with zero monolith and source/test mapping violations.
+- [ ] — Verify no secrets, runtime state, or generated benchmark output is tracked.
+- [ ] — Review the final tree against `module-and-test-architecture.md` and record completion evidence.
