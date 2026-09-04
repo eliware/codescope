@@ -318,7 +318,7 @@ test('handles help and version options', async () => {
   expect(await main(['--help'], { output: (v) => output.push(v) })).toBe(0);
   expect(await main(['--version'], { output: (v) => output.push(v) })).toBe(0);
   expect(errors[0]).toMatch(/not valid/);
-  expect(output.join('\n')).toMatch(/quick start/);
+  expect(output.join('\n')).toMatch(/Owner workflow/);
 });
 
 test('grouped help displays help without invoking review', async () => {
@@ -334,7 +334,7 @@ test('grouped help displays help without invoking review', async () => {
     }),
   ).toBe(0);
   expect(called).toBe(false);
-  expect(output.join('\n')).toMatch(/quick start/);
+  expect(output.join('\n')).toMatch(/Owner workflow/);
 });
 test('finds nested files and ignores configured directories', async () => {
   const tree = {
