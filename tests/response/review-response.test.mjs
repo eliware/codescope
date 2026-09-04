@@ -1,5 +1,11 @@
 import { parseCombinedToolResponse, parseReviewToolResponse } from '../../src/response/review-response.mjs';
 
+test('public response adapter re-exports review parsing', () => {
+  expect(() => parseReviewToolResponse({ output: [] })).toThrow(
+    'OpenAI response did not contain exactly one submit_review tool call',
+  );
+});
+
 test('rejects unsupported tool names', () => {
   expect(() => parseReviewToolResponse({ output: [] }, 'other_tool')).toThrow(
     'Unsupported Codescope tool',
