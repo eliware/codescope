@@ -5,7 +5,11 @@ import path from 'node:path';
 import { writeBenchmarkSummary } from '../../src/benchmark/summary.mjs';
 
 test('parses valid and invalid benchmark output', () => {
-  expect(parseBenchmarkOutput('{"verdict":"pass"}')).toEqual({ verdict: 'pass' });
+  expect(parseBenchmarkOutput('{"findings":{},"verdict":"pass"}')).toEqual({
+    findings: {},
+    verdict: 'pass',
+  });
+  expect(parseBenchmarkOutput('{"verdict":"pass"}')).toBeUndefined();
   expect(parseBenchmarkOutput('not json')).toBeUndefined();
 });
 
@@ -51,7 +55,12 @@ test('writes incremental and complete summaries', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'codescope-benchmark-'));
   const file = path.join(directory, 'summary.json');
   const npmTest = { code: 0, elapsedMs: 10 };
-  const result = { effort: 'none', output: '{"verdict":"pass"}', elapsedMs: 20, code: 0 };
+  const result = {
+    effort: 'none',
+    output: '{"findings":{},"verdict":"pass"}',
+    elapsedMs: 20,
+    code: 0,
+  };
   await writeBenchmarkSummary(file, {
     cwd: directory,
     npmTest,
@@ -103,6 +112,7 @@ test('does not fail when usage has malformed nested details', () => {
             output_tokens: 4,
             input_tokens_details: { cached_tokens: 'unknown' },
           },
+          findings: {},
           verdict: 'pass',
         }),
         elapsedMs: 1,

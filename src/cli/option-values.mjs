@@ -40,3 +40,17 @@ export function parseTimeoutOption(
     remaining: tokens.filter((_, itemIndex) => itemIndex !== index && itemIndex !== index + 1),
   };
 }
+
+export function parseCommandOptions(tokens, usage, allowed, rejectVersion = false) {
+  const values = parseOptionValues(tokens);
+  const timeout = parseTimeoutOption(values.remaining, usage);
+  if (rejectVersion && ['--version', '-v'].includes(timeout.remaining[0]))
+    throw new Error(`Option ${timeout.remaining[0]} is not valid for this command`);
+  if (new Set(timeout.remaining).size !== timeout.remaining.length) throw new Error(usage);
+  if (
+    timeout.remaining.length > 1 ||
+    (timeout.remaining.length === 1 && !allowed.has(timeout.remaining[0]))
+  )
+    throw new Error(usage);
+  return { ...values, ...timeout };
+}

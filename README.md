@@ -80,10 +80,8 @@ npm test
 npm run lint
 npm run pack
 npm run format:check
+git diff --check
 ```
-
-Run `git diff --check` separately as a working-tree hygiene check before
-release.
 
 `codescope all` is the main comprehensive review and suggestion command. It reports P0–P3 findings, but only unresolved P0 or qualifying P1 issues block the verdict.
 

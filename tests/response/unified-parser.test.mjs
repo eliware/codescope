@@ -43,13 +43,13 @@ test('rejects malformed unified categories and arguments', () => {
   });
   expect(() =>
     parseUnifiedToolResponse(response({ findings: {}, verdict: 'pass' }), categories),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(
       response({ findings: { correctness: [null] }, verdict: 'pass' }),
       categories,
     ),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(
       response({ findings: { correctness: [item] }, verdict: 'maybe' }),
@@ -68,30 +68,30 @@ test('rejects malformed unified categories and arguments', () => {
       response({ findings: { wrong: [item] }, verdict: 'pass' }),
       categories,
     ),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(
       response({ findings: { correctness: {} }, verdict: 'pass' }),
       categories,
     ),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(
       response({ findings: { correctness: [{ ...item, extra: true }] }, verdict: 'pass' }),
       categories,
     ),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(
       response({ findings: { correctness: [{ ...item, severity: 'P9' }] }, verdict: 'pass' }),
       categories,
     ),
-  ).toThrow(/categories/);
+  ).toThrow(/invalid result/);
   expect(() =>
     parseUnifiedToolResponse(response({ findings: { correctness: [item] }, verdict: 'pass' }), []),
   ).toThrow(/invalid result/);
   expect(isValidUnifiedResult({ findings: { correctness: [] }, verdict: 'pass' }, categories)).toBe(
-    true,
+    false,
   );
   expect(isValidUnifiedResult({ findings: { wrong: [item] }, verdict: 'pass' }, categories)).toBe(
     false,

@@ -20,20 +20,6 @@ export function parseUnifiedToolResponse(response, categories) {
   } catch (cause) {
     throw responseError('OpenAI submit_unified_review returned an invalid result', cause);
   }
-  if (
-    result?.findings &&
-    typeof result.findings === 'object' &&
-    !exactKeys(result.findings, expected)
-  )
-    throw responseError('OpenAI submit_unified_review returned invalid categories');
-  if (
-    result?.findings &&
-    typeof result.findings === 'object' &&
-    exactKeys(result.findings, expected) &&
-    ['pass', 'block'].includes(result.verdict) &&
-    !isValidUnifiedResult(result, expected)
-  )
-    throw responseError('OpenAI submit_unified_review returned invalid categories');
   if (!isValidUnifiedResult(result, expected))
     throw responseError('OpenAI submit_unified_review returned an invalid result');
   return result;
@@ -55,7 +41,7 @@ export function isValidUnifiedResult(result, expected) {
   if (!exactKeys(result.findings, expected)) return false;
   const invalidCategory = expected.some((category) => {
     const items = result.findings[category];
-    if (!Array.isArray(items)) return true;
+    if (!Array.isArray(items) || items.length === 0) return true;
     return items.some((item) => {
       if (!item || typeof item !== 'object') return true;
       if (

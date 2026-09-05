@@ -4,7 +4,11 @@ import {
 } from '../../src/benchmark/summary-report.mjs';
 
 test('parses valid and invalid benchmark output', () => {
-  expect(parseBenchmarkOutput(' {"verdict":"pass"} ')).toEqual({ verdict: 'pass' });
+  expect(parseBenchmarkOutput('{"findings":{},"verdict":"pass"}')).toEqual({
+    findings: {},
+    verdict: 'pass',
+  });
+  expect(parseBenchmarkOutput(' {"verdict":"pass"} ')).toBeUndefined();
   expect(parseBenchmarkOutput('not json')).toBeUndefined();
 });
 
