@@ -10,6 +10,12 @@ test('reads regular source content', async () => {
   ).resolves.toBe('export {}');
 });
 
+test('reads a file with default options', async () => {
+  await expect(readSourceFile('README.md', `${process.cwd()}\\README.md`)).resolves.toContain(
+    'codescope',
+  );
+});
+
 test('rejects symlinks and non-files with contextual errors', async () => {
   const inspect = async () => ({ isSymbolicLink: () => true, isFile: () => false });
   await expect(

@@ -135,3 +135,13 @@ test('combineCodeFiles delegates to the supported implementation extensions', as
     }),
   ).resolves.toBe('');
 });
+
+test('combines files with default options', async () => {
+  await expect(
+    combineFiles('/root', '.mjs', {
+      readDirectory: async () => [],
+      readFileContents: async () => '',
+    }),
+  ).resolves.toBe('');
+  await expect(combineFiles(process.cwd(), '.not-a-real-extension')).resolves.toBe('');
+});

@@ -5,4 +5,5 @@ test('creates the comprehensive all-profile focus', () => {
   expect(result.focus).toContain('Review all supplied implementation');
   expect(result.focus).toContain('Cross Platform');
   expect(result.focus).toContain('Every category must contain at least one item.');
+  expect(result.focus).toContain('package metadata');
 });

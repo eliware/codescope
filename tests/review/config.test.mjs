@@ -6,6 +6,10 @@ test('resolves the default config below the user home directory', () => {
   expect(defaultEnvFile()).toBe(path.join(os.homedir(), '.codescope'));
 });
 
+test('accepts omitted dotenv text', () => {
+  expect(() => loadEnv(undefined, {})).not.toThrow();
+});
+
 test('loads the supported token assignment', () => {
   const environment = {};
   loadEnv('OPENAI_API_TOKEN=test-token', environment);

@@ -146,3 +146,13 @@ test('rejects invalid timeout and treats missing runner status as unknown', asyn
     collectTestResults('repo', 1000, async () => ({ stdout: '', stderr: '' })),
   ).resolves.toContain('exit code: unknown');
 });
+
+test('uses the built-in test executor when none is supplied', async () => {
+  await expect(collectTestResults(path.resolve('missing-test-workspace'), 1000)).resolves.toContain(
+    '===== npm test =====',
+  );
+});
+
+test('resolves npm candidates with default environment values', () => {
+  expect(resolveNpmCommand().at(-1)[1]).toEqual(['test']);
+});

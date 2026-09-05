@@ -1,4 +1,5 @@
 export const PROFILE_FILES = Object.freeze({
+  conventions: [true, true, true],
   refactor: [true, false, false],
   architecture: [true, false, false],
   'new-features': [true, false, false],

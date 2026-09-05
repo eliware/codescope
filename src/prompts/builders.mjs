@@ -14,7 +14,7 @@ const base = {
   include: ['reasoning.encrypted_content', 'web_search_call.action.sources'],
 };
 
-export function createProfilePrompt(focus, tool = reviewTool, { globalReviewInstructions }) {
+export function createProfilePrompt(focus, tool = reviewTool, { globalReviewInstructions } = {}) {
   return {
     ...base,
     tools: [tool],

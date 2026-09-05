@@ -36,6 +36,10 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
   expect(await findMjsFiles(root, { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);
   expect(await findMdFiles(root, { readDirectory })).toEqual(['guide.md']);
 });
+
+test('finds files with default options', async () => {
+  await expect(findFiles(process.cwd(), '.mjs')).resolves.toContain('src/cli.mjs');
+});
 test('rejects a symlinked scan root', async () => {
   await expect(
     findFiles('fixture-root', '.mjs', {

@@ -126,3 +126,7 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
     }),
   ).resolves.toBe(4);
 });
+
+test('main uses default collaborators for help', async () => {
+  await expect(main(['--help'])).resolves.toBe(0);
+});

@@ -4,10 +4,6 @@ import {
   parseReviewToolResponse,
   parseSuggestionToolResponse,
 } from '../../src/response/review-response.mjs';
-import {
-  isValidUnifiedResult,
-  parseUnifiedToolResponse,
-} from '../../src/response/unified-parser.mjs';
 
 const response = (value, name = 'submit_review') => ({
   output: [{ type: 'function_call', name, arguments: JSON.stringify(value) }],
@@ -123,7 +119,7 @@ test('preserves the AI verdict and validates malformed payloads', () => {
     ).toThrow(/invalid suggestions/);
 });
 
-test('accepts the default suggestion category set', () => {
+test('accepts the default suggestion categories', () => {
   const categories = [
     'correctness',
     'security',
@@ -136,114 +132,19 @@ test('accepts the default suggestion category set', () => {
     'documentation',
     'new-features',
   ];
-  const allSuggestions = Object.fromEntries(categories.map((category) => [category, [suggestion]]));
+  const suggestions = Object.fromEntries(categories.map((category) => [category, [suggestion]]));
   expect(
-    parseSuggestionToolResponse(response({ suggestions: allSuggestions }, 'submit_suggestions'))
-      .suggestions['new-features'],
+    parseSuggestionToolResponse(response({ suggestions }, 'submit_suggestions')).suggestions[
+      'new-features'
+    ],
   ).toHaveLength(1);
 });
 
-test('parses and rejects unified reports', () => {
-  const finding = {
-    severity: 'P2',
-    location: 'src/a.mjs:1',
-    finding: 'Issue',
-    recommendation: 'Fix',
-    rationale: 'Reason',
-    ignore_example: '// codescope ignore: Issue is intentional.',
-  };
-  const valid = { findings: { correctness: [finding] }, verdict: 'pass' };
+test('uses the review tool when no tool name is supplied', () => {
   expect(
-    parseUnifiedToolResponse(response(valid, 'submit_unified_review'), ['correctness']),
-  ).toEqual(valid);
-  expect(() => parseUnifiedToolResponse(response(valid, 'submit_unified_review'))).toThrow(
-    /invalid result/,
-  );
-  expect(() => parseUnifiedToolResponse({ output: [] }, ['correctness'])).toThrow(/exactly one/);
-  expect(() =>
-    parseUnifiedToolResponse(response({ findings: {}, verdict: 'pass' }, 'submit_unified_review'), [
-      'correctness',
-    ]),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response({ findings: null, verdict: 'pass' }, 'submit_unified_review'),
-      ['correctness'],
-    ),
-  ).toThrow(/invalid result/);
-  expect(() =>
-    parseUnifiedToolResponse(response({ verdict: 'pass' }, 'submit_unified_review'), [
-      'correctness',
-    ]),
-  ).toThrow(/invalid result/);
-  expect(
-    parseUnifiedToolResponse(
-      response(
-        {
-          findings: {
-            correctness: [],
-          },
-          verdict: 'pass',
-        },
-        'submit_unified_review',
-      ),
-      ['correctness'],
-    ),
-  ).toEqual({ findings: { correctness: [] }, verdict: 'pass' });
-  expect(() =>
-    parseUnifiedToolResponse(
-      response({ findings: { wrong: [finding] }, verdict: 'pass' }, 'submit_unified_review'),
-      ['correctness'],
-    ),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response({ findings: { correctness: [null] }, verdict: 'pass' }, 'submit_unified_review'),
-      ['correctness'],
-    ),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response({ findings: { correctness: {} }, verdict: 'pass' }, 'submit_unified_review'),
-      ['correctness'],
-    ),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response(
-        { findings: { correctness: [{ ...finding, extra: true }] }, verdict: 'pass' },
-        'submit_unified_review',
-      ),
-      ['correctness'],
-    ),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response(
-        { findings: { correctness: [{ ...finding, severity: 'P9' }] }, verdict: 'pass' },
-        'submit_unified_review',
-      ),
-      ['correctness'],
-    ),
-  ).toThrow(/categories/);
-  expect(() =>
-    parseUnifiedToolResponse(
-      response({ findings: { correctness: [finding] }, verdict: 'maybe' }, 'submit_unified_review'),
-      ['correctness'],
-    ),
-  ).toThrow(/invalid result/);
-  expect(
-    isValidUnifiedResult({ findings: { wrong: [finding] }, verdict: 'pass' }, ['correctness']),
-  ).toBe(false);
-  expect(() =>
-    parseUnifiedToolResponse(
-      { output: [{ type: 'function_call', name: 'submit_unified_review', arguments: '{' }] },
-      ['correctness'],
-    ),
-  ).toThrow(/invalid JSON/);
-  expect(() =>
-    parseUnifiedToolResponse(response({ findings: { correctness: [] } }, 'submit_unified_review'), [
-      'correctness',
-    ]),
-  ).toThrow(/invalid result/);
+    parseResponseTool(response({ issues, verdict: 'pass' }), undefined, ['correctness']),
+  ).toEqual({
+    issues,
+    verdict: 'pass',
+  });
 });

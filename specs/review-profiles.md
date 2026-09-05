@@ -12,6 +12,14 @@ The `all` operation combines code, tests, documentation, package metadata,
 test evidence, and the remaining-file inventory. It requests one review result
 and one unified review result covering implementation, tests, and Markdown context.
 
+The `conventions` profile reviews supplied repository documentation, package
+metadata, examples, specifications, environment documentation, and
+cross-artifact consistency for semantic quality. It does not replace
+deterministic file-existence, structural, test, or publication checks owned by
+`@eliware/test` and TagIt. The `all` and `release` profiles include this
+convention contract alongside their broader review. Missing or unsupplied
+artifacts are unknown rather than defects.
+
 ## Priorities
 
 - P0 is an immediate emergency or an executed supplied test that fails.

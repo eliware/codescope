@@ -8,3 +8,7 @@ test('combines package metadata with a numbered section', async () => {
     }),
   ).resolves.toContain('===== package.json =====\n1 {"name":"fixture"}');
 });
+
+test('reads repository package metadata with default options', async () => {
+  await expect(combinePackageJson(process.cwd())).resolves.toContain('package.json');
+});

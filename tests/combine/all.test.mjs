@@ -12,6 +12,10 @@ test('combines package metadata for the all-context contract', async () => {
   expect(result).toContain('===== package.json =====');
 });
 
+test('combines all files with default options', async () => {
+  await expect(combineAllFiles(process.cwd())).resolves.toContain('package.json');
+});
+
 test('uses native readers when adapters are not supplied', async () => {
   await expect(
     combineAllFiles(process.cwd(), { readDirectory: async () => [] }),

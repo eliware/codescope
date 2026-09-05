@@ -10,6 +10,7 @@ import { createCombinedAllPrompt } from './prompts/combined.mjs';
 import { createAllPrompt } from './prompts/all.mjs';
 import { createReviewProfiles } from './prompts/review-profiles.mjs';
 import { createProfilePrompt } from './prompts/builders.mjs';
+import { createConventionPrompt } from './prompts/conventions.mjs';
 
 export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.mjs';
 export {
@@ -37,6 +38,7 @@ export const releasePrompt = createCombinedAllPrompt({
   unifiedTool: createUnifiedTool(),
   releaseGate: true,
 });
+export const conventionsPrompt = createConventionPrompt(profilePrompt);
 export const { codeTestsDocsPrompt, refactorPrompt } = reviewProfiles;
 export const {
   architecturePrompt,

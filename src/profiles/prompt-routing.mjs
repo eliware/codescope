@@ -6,6 +6,7 @@ import {
   refactorPrompt,
   architecturePrompt,
   releasePrompt,
+  conventionsPrompt,
   newFeaturesPrompt,
   securityPrompt,
   performancePrompt,
@@ -22,6 +23,7 @@ import {
 } from '../prompt.mjs';
 
 const prompts = {
+  conventions: conventionsPrompt,
   all: allPrompt,
   release: releasePrompt,
   refactor: refactorPrompt,

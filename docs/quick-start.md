@@ -28,7 +28,7 @@
 
 ## Available profiles
 
-Review: `all`, `release`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
+Review: `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
 
 Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
 

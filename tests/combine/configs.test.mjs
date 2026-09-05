@@ -22,3 +22,7 @@ test('combines text GitHub and Knit configs with numbered, truncated content', a
 test('returns an empty section when no text config is present', async () => {
   await expect(combineConfigFiles('repo', { inventory: ['README.md'] })).resolves.toBe('');
 });
+
+test('rejects missing inventory with default options', async () => {
+  await expect(combineConfigFiles('repo')).rejects.toThrow();
+});

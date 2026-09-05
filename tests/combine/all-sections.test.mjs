@@ -10,3 +10,7 @@ test('collects all ordered section inputs through injected collaborators', async
   expect(result.testResults).toBe('tests');
   expect(result.other).toContain('other files');
 });
+
+test('collects sections with default options', async () => {
+  await expect(collectAllSections(process.cwd())).resolves.toHaveProperty('packageJson');
+});

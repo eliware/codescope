@@ -5,6 +5,8 @@ current CodeScope implementation. It is the detailed reference behind the
 public README.
 
 Start with [overview.md](overview.md), then use the table of contents below.
+This index is the specification overview; see [README.md](README.md) when
+linking to the complete specification set from tooling.
 
 ## Table of contents
 

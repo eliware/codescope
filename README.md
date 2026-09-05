@@ -21,7 +21,7 @@
 
 ## Features
 
-- Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, and release readiness.
+- Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
 - Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
 - Token and cost estimates, model selection, reasoning-effort controls, and configurable test timeouts.
 - Symlink-safe discovery and documented boundaries for intentional behavior.
