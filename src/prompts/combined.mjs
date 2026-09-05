@@ -29,7 +29,7 @@ export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = 
         content: [
           {
             type: 'input_text',
-            text: 'Runtime contract clarification for every profile: provider JSON is opaque transport data, intentionally accepted after JSON parsing and verdict extraction only. Do not report legacy parser or validator strictness, empty-array handling, sentinel enforcement, category or field validation, duplicate-call checks, tool-argument checks, or missing response fields as findings; these are provider guidance only and are not runtime gates. Report provider handling only when CodeScope loses output, fails to preserve raw output, fails to pretty-print valid JSON as documented, or derives status from a non-verdict signal.',
+            text: "Runtime contract clarification for every profile: do not report the provider's returned JSON shape, missing fields, category contents, sentinels, duplicate calls, or tool arguments as CodeScope defects. Those are provider-output guidance, not runtime acceptance gates. Continue reviewing CodeScope's own request construction, response parsing, output preservation, fallback handling, error mapping, tool-call handling, and verdict extraction. Report concrete defects in those implementations, including lost output, failed pretty-printing, or status derived from a non-verdict signal.",
           },
         ],
       },
