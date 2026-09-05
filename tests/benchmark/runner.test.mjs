@@ -47,6 +47,28 @@ test('ignores an error event after close', async () => {
   await expect(resultPromise).resolves.toMatchObject({ code: 0 });
 });
 
+test('settles when stdout emits an error', async () => {
+  const child = new EventEmitter();
+  child.stdout = new EventEmitter();
+  child.stderr = new EventEmitter();
+  const resultPromise = runProcess('x', [], process.cwd(), () => child);
+  child.stdout.emit('error', new Error('stdout failed'));
+  await expect(resultPromise).resolves.toMatchObject({ code: 1, output: 'Error: stdout failed' });
+});
+
+test('settles when stderr emits an error and preserves prior output', async () => {
+  const child = new EventEmitter();
+  child.stdout = new EventEmitter();
+  child.stderr = new EventEmitter();
+  const resultPromise = runProcess('x', [], process.cwd(), () => child);
+  child.stdout.emit('data', Buffer.from('partial'));
+  child.stderr.emit('error', new Error('stderr failed'));
+  await expect(resultPromise).resolves.toMatchObject({
+    code: 1,
+    output: 'partialError: stderr failed',
+  });
+});
+
 test('kills a process that exceeds its timeout', async () => {
   const child = new EventEmitter();
   child.stdout = new EventEmitter();

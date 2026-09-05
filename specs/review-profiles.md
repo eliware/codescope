@@ -26,3 +26,10 @@ Only unresolved P0 or qualifying P1 findings block a review verdict.
 Issues already documented as known in supplied project material are not repeated
 as new findings. A documented unresolved P0 or qualifying P1 may still preserve
 a blocking verdict without being listed again as a new issue.
+
+Explicitly documented intentional behavior, accepted risks, supported
+limitations, and out-of-scope capabilities are omitted when implementation
+matches the documented boundary. They are not reported as informational or
+acknowledged findings. They may be reported only when implementation
+contradicts the documentation or concrete evidence shows impact outside the
+accepted boundary.

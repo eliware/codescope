@@ -52,15 +52,19 @@ export function runProcess(command, args, cwd, spawnProcess = spawn, timeoutMs =
       settled = true;
       child.removeListener('close', onClose);
       child.removeListener('error', onError);
+      child.stdout.removeListener('error', onError);
+      child.stderr.removeListener('error', onError);
       clearTimeout(timer);
       finish({
         code: 1,
         signal: undefined,
-        output: String(error),
+        output: `${Buffer.concat(chunks).toString('utf8')}${String(error)}`,
         elapsedMs: performance.now() - started,
       });
     };
     child.once('error', onError);
+    child.stdout.once('error', onError);
+    child.stderr.once('error', onError);
     child.once('close', onClose);
   });
 }
