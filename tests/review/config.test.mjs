@@ -43,6 +43,8 @@ test('rejects malformed lines and quoted values', () => {
     expect(() => loadEnv(`OPENAI_API_TOKEN=${value}`, {})).toThrow(/Invalid quoted/);
   expect(() => loadEnv('not dotenv', {})).toThrow('Invalid .env line');
   expect(() => loadEnv('OPENAI_API_TOKEN=', {})).not.toThrow();
+  expect(() => loadEnv('OPENAI_API_TOKEN=""', {})).not.toThrow();
+  expect(() => loadEnv("OPENAI_API_TOKEN=''", {})).not.toThrow();
 });
 
 test('ignores empty values and unrelated variables', () => {

@@ -7,7 +7,7 @@ import { createIncompleteResult, createProviderFailure } from './failure.mjs';
 import { withReviewUsage } from './usage.mjs';
 import { testEvidenceBlocks } from './test-status.mjs';
 
-export async function executeReviewSession({
+export async function runReviewSession({
   client,
   request,
   signal,

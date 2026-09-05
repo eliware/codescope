@@ -83,6 +83,25 @@ test('reports when all npm resolution candidates are missing', async () => {
   expect(result).toContain('runner error: npm test command was not found');
 });
 
+test('tries the next executable after a recoverable launch failure', async () => {
+  let calls = 0;
+  const result = await collectTestResults('repo', 100, async () => {
+    calls += 1;
+    if (calls === 1) throw { code: 'EACCES' };
+    return { stdout: 'ok', stderr: '', code: 0 };
+  });
+  expect(calls).toBe(2);
+  expect(result).toContain('exit code: 0');
+});
+
+test('preserves non-launch failures from the test runner', async () => {
+  await expect(
+    collectTestResults('repo', 100, async () => {
+      throw { code: 'EPIPE' };
+    }),
+  ).resolves.toContain('exit code: EPIPE');
+});
+
 test('resolves the Windows npm executable explicitly', () => {
   const previous = process.env.npm_execpath;
   delete process.env.npm_execpath;
