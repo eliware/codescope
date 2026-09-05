@@ -1,5 +1,4 @@
-import { calculateUsageCost } from '../pricing.mjs';
-import { normalizeUsage } from '../pricing.mjs';
+import { calculateUsageCost, normalizeUsage } from '../pricing.mjs';
 
 export function parseBenchmarkOutput(output) {
   try {
@@ -35,9 +34,12 @@ export function reportBenchmarkResult(effort, result, npmTest, model) {
       cost = null;
     }
   }
+  const issueGroups = report?.findings ?? report?.issues;
   return {
     effort,
-    issues: report ? countFindings(report.issues, 'issue', 'No issues found.') : null,
+    issues: report
+      ? countFindings(issueGroups, report.findings ? 'finding' : 'issue', 'No issues found.')
+      : null,
     suggestions: report
       ? countFindings(report.suggestions, 'suggestion', 'No suggestions found.')
       : null,

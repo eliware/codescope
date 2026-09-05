@@ -20,7 +20,7 @@ export async function runReviewPipeline(cwd, options) {
     omitTestResults: options.omitTestResults,
     testTimeoutMs: options.testTimeoutMs,
     runTestCommand: options.runTestCommand,
-    redactOutput: options.redactTestOutput,
+    redactOutput: options.redactOutput,
     combine: options.combine,
     readDirectory: options.readDirectory,
     readFile: options.readFile,

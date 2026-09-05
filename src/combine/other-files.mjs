@@ -31,13 +31,14 @@ export async function describeOtherFiles(
       }
       const data = await readFileContents(filePath);
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
-      if (!reservedBytes && totalBytes + bytes.byteLength > MAX_OTHER_FILE_BYTES) {
+      const actualAdditionalBytes = Math.max(0, bytes.byteLength - reservedBytes);
+      if (totalBytes + actualAdditionalBytes > MAX_OTHER_FILE_BYTES) {
         entries.push(
           `${relativePath} | omitted | ${bytes.byteLength} bytes | aggregate metadata budget exceeded`,
         );
         continue;
       }
-      if (!reservedBytes) totalBytes += bytes.byteLength;
+      totalBytes += actualAdditionalBytes;
       if (bytes.includes(0)) entries.push(`${relativePath} | binary | ${bytes.byteLength} bytes`);
       else {
         const text = bytes.toString('utf8');
@@ -49,7 +50,7 @@ export async function describeOtherFiles(
   };
   // Keep the bounded metadata scan from creating a large wave of reads after
   // the aggregate budget has already been reserved by earlier workers.
-  await Promise.all(Array.from({ length: Math.min(4, paths.length) }, worker));
+  await worker();
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
 }
 

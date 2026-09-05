@@ -12,6 +12,12 @@ contract unless the caller supplies direct evidence for it:
 - Coverage artifacts and root generated coverage output.
 - Provider internals, operating-system behavior, and delegated child-process
   mechanics when the application contract is covered by focused injected tests.
+- Full environment inheritance for the reviewed repository's `npm test`
+  process. This is required for consumer compatibility; CodeScope does not
+  provide a sanitized-environment mode. Running against an untrusted
+  workspace with credentials present is an accepted operational risk, and
+  test output redaction remains best effort rather than a comprehensive
+  secret-removal guarantee.
 - New feature proposals in review profiles.
 - Repository modification, automatic fixes, commits, pushes, releases,
   publication, and deployment.

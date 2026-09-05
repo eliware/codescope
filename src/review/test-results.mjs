@@ -8,6 +8,22 @@ import { redactTestOutput } from './redaction.mjs';
 export { testEvidenceBlocks } from './test-status.mjs';
 
 const runCommand = promisify(execFile);
+export const defaultTestExecutor = runCommand;
+export function resolveResultCode(result) {
+  if (Number.isInteger(result.code)) return result.code;
+  return 'unknown';
+}
+
+export function normalizeExecutionResult(result, isDefaultExecutor) {
+  if (!isDefaultExecutor) return result;
+  return { ...result, code: result.code ?? 0 };
+}
+
+const isNpmExecPath = (value) =>
+  typeof value === 'string' &&
+  path.isAbsolute(value) &&
+  /(?:^|[\\/])npm(?:-cli)?\.js$/iu.test(value);
+
 export const resolveNpmCommand = (
   platform = process.platform,
   npmExecPath = process.env.npm_execpath,
@@ -20,7 +36,7 @@ export const resolveNpmCommand = (
   ),
 ) => {
   const candidates = [];
-  if (npmExecPath) candidates.push([process.execPath, [npmExecPath, 'test'], false]);
+  if (isNpmExecPath(npmExecPath)) candidates.push([process.execPath, [npmExecPath, 'test'], false]);
   if (existsSync(bundledNpm)) candidates.push([process.execPath, [bundledNpm, 'test'], false]);
   candidates.push([platform === 'win32' ? 'npm.cmd' : 'npm', ['test'], false]);
   return candidates;
@@ -29,7 +45,7 @@ export const resolveNpmCommand = (
 export async function collectTestResults(
   cwd,
   timeout,
-  execute = runCommand,
+  execute = defaultTestExecutor,
   redact = redactTestOutput,
   platform = process.platform,
   environment = process.env,
@@ -59,7 +75,8 @@ export async function collectTestResults(
     }
     if (!result) throw lastCause;
     const output = redact(`${String(result.stdout ?? '')}${String(result.stderr ?? '')}`);
-    const code = result.code ?? 0;
+    const normalizedResult = normalizeExecutionResult(result, execute === defaultTestExecutor);
+    const code = resolveResultCode(normalizedResult);
     return `===== npm test =====\n${code === 0 ? 'exit code: 0' : `exit code: ${code}`}\n${output}`;
   } catch (cause) {
     const output = redact(`${String(cause.stdout ?? '')}${String(cause.stderr ?? '')}`);

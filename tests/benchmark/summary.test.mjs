@@ -33,6 +33,20 @@ test('reports findings, usage, cost, and elapsed time', () => {
   });
 });
 
+test('counts unified findings used by the all profile', () => {
+  const result = reportBenchmarkResult(
+    'none',
+    {
+      output: JSON.stringify({ findings: { correctness: [{ finding: 'x' }] }, verdict: 'pass' }),
+      elapsedMs: 1,
+      code: 0,
+    },
+    { elapsedMs: 0 },
+    'gpt-5.6-luna',
+  );
+  expect(result).toMatchObject({ issues: 1, suggestions: 0, verdict: 'pass' });
+});
+
 test('writes incremental and complete summaries', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'codescope-benchmark-'));
   const file = path.join(directory, 'summary.json');
@@ -116,6 +130,38 @@ test('does not mark a signaled zero-code benchmark complete', async () => {
     efforts: ['none'],
     results: [{ effort: 'none', output: '{}', elapsedMs: 1, code: 0, signal: 'SIGTERM' }],
     logs: directory,
+  });
+  expect(JSON.parse(await readFile(file, 'utf8')).status).toBe('incomplete');
+});
+
+test('does not mark duplicate or unexpected efforts complete', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'codescope-benchmark-efforts-'));
+  const file = path.join(directory, 'summary.json');
+  const input = {
+    cwd: directory,
+    npmTest: { code: 0, elapsedMs: 1 },
+    model: 'gpt-5.6-luna',
+    pricing: {},
+    efforts: ['none', 'low'],
+    logs: directory,
+  };
+  await writeBenchmarkSummary(file, {
+    ...input,
+    results: [
+      { effort: 'none', output: '{}', elapsedMs: 1, code: 0 },
+      { effort: 'none', output: '{}', elapsedMs: 1, code: 0 },
+    ],
+  });
+  const duplicate = JSON.parse(await readFile(file, 'utf8'));
+  expect(duplicate.status).toBe('incomplete');
+  expect(duplicate.duplicateEfforts).toEqual(['none']);
+  await writeBenchmarkSummary(file, {
+    ...input,
+    results: [
+      { effort: 'none', output: '{}', elapsedMs: 1, code: 0 },
+      { effort: 'low', output: '{}', elapsedMs: 1, code: 0 },
+      { effort: 'unexpected', output: '{}', elapsedMs: 1, code: 0 },
+    ],
   });
   expect(JSON.parse(await readFile(file, 'utf8')).status).toBe('incomplete');
 });

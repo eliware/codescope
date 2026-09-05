@@ -2,7 +2,7 @@ export const TEST_FILE_PATTERN = /\.test\.(?:js|cjs|mjs|ts)$/iu;
 
 export function isCodeExtension(extension) {
   return (
-    extension === '.mjs' ||
+    ['.js', '.cjs', '.mjs', '.ts'].includes(extension) ||
     (Array.isArray(extension) && extension.some((value) => ['.js', '.cjs', '.mjs'].includes(value)))
   );
 }

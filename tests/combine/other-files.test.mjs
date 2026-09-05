@@ -44,3 +44,13 @@ test('checks known sizes before reading files', async () => {
   );
   expect(reads).toHaveLength(1);
 });
+
+test('omits a file that grows beyond the reserved metadata budget', async () => {
+  const result = await describeOtherFiles('repo', ['growing.txt'], {
+    statFile: async () => ({ size: 1_000_000 }),
+    readFileContents: async () => Buffer.alloc(2_100_000, 'x'),
+  });
+  expect(result).toEqual([
+    'growing.txt | omitted | 2100000 bytes | aggregate metadata budget exceeded',
+  ]);
+});
