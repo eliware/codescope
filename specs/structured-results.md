@@ -7,6 +7,10 @@ agents can still read and use the raw or best-effort-formatted response. The
 only field used for process status is `verdict`: `pass` exits successfully and
 every other or missing verdict is treated as blocked.
 
+This transport-only contract is authoritative for every profile. Tool schemas,
+examples, legacy parser names, fixtures, and provider instructions describe
+requested output only; they do not create CodeScope acceptance requirements.
+
 Suggestion requests may use a corresponding tool call, but its payload shape
 is provider output rather than a deterministic CodeScope API contract.
 `new-features` is included for the suggestion set where the selected profile

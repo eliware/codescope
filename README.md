@@ -89,7 +89,7 @@ release.
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions across the review categories plus `new-features`.
 
-Use `codescope prompt "your question"` for an ad hoc structured-JSON request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools. The output is parsed as JSON, but has no Codescope schema: its shape is chosen by the model and is not a stable API contract. If the provider response cannot be validated, Codescope prints a redacted diagnostic result so the response is not lost. Optional `--effort=` and `--model=` overrides are supported. Use `--` before options when the prompt itself begins with a dash, for example `codescope prompt --summarize this repository -- --effort=low`.
+Use `codescope prompt "your question"` for an ad hoc structured-JSON request. It sends the same complete `all` context, including test results, but sends no review or suggestion tools. The output is parsed as JSON when possible, but has no Codescope schema: its shape is chosen by the model and is not a stable API contract. Invalid or differently shaped provider output is preserved as raw or best-effort output when possible. Optional `--effort=` and `--model=` overrides are supported. Use `--` before options when the prompt itself begins with a dash, for example `codescope prompt --summarize this repository -- --effort=low`.
 
 `codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page.
 

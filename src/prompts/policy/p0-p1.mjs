@@ -8,10 +8,14 @@ release-blocking P0 regardless of whether the test is required or optional.
 - Confirmed or imminent irreversible data loss or corruption.
 - Confirmed critical credential, secret, or private-key exposure.
 - Any supplied source, documentation, configuration, or test output that
-  contains a credential, token, password, private key, or other secret is P0.
-  This applies equally when the value is visible and when CodeScope has
-  replaced it with a redaction marker: treat the redacted evidence as proof
-  that secret material was present, and report the path or output location.
+  contains an actual credential, token, password, private key, or other usable
+  secret is P0. This applies equally when the value is visible and when
+  CodeScope has replaced it with a redaction marker: treat the redacted
+  evidence as proof that secret material was present, and report the path or
+  output location. Do not classify labels, placeholders, examples, or text
+  that merely discusses secrets as exposure unless the supplied evidence shows
+  usable secret material. This rule overrides accepted-risk and intentional-
+  behavior exclusions.
   The recommended action must include immediate credential rotation or
   revocation, followed by removal from the supplied source or output.
 - A security defect that permits immediate unauthorized access or destructive control.

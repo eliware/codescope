@@ -26,7 +26,11 @@ Configuration files with unsafe Unix permissions are rejected.
 
 ## Output and status
 
-Successful operations print one JSON result. Provider response failures and
-invalid structured responses produce a diagnostic result or error according to
-the calling mode. Exit codes distinguish configuration, request, provider,
-response, and review-verdict failures.
+Successful operations print one JSON result. Provider response failures are
+reported as errors. Invalid or differently shaped provider JSON is preserved
+as raw or best-effort output when possible; CodeScope does not validate
+provider categories, fields, sentinels, tool arguments, or other payload
+details. Review status is derived only from the provider `verdict`: exact
+`pass` succeeds and every other or missing value is blocked. Exit codes
+distinguish configuration, request, provider, response, and review-verdict
+failures.

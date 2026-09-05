@@ -19,7 +19,8 @@ export async function writeBenchmarkSummary(
   const declaredEfforts = new Set(efforts);
   const hasExactEfforts =
     resultByEffort.size === declaredEfforts.size &&
-    [...declaredEfforts].every((effort) => resultByEffort.has(effort));
+    [...declaredEfforts].every((effort) => resultByEffort.has(effort)) &&
+    [...resultByEffort.keys()].every((effort) => declaredEfforts.has(effort));
   const summary = {
     cwd,
     npmTest: { exitCode: npmTest.code, elapsedMs: Math.round(npmTest.elapsedMs) },

@@ -20,6 +20,8 @@ repository.
 - Review output is best-effort JSON for AI-to-AI transport, not a guaranteed
   machine-readable programmatic API. Valid JSON is pretty-printed; malformed
   output is preserved for downstream AI interpretation.
+- The transport-only output contract is authoritative over provider-facing
+  schemas, examples, legacy parser names, fixtures, and prompt guidance.
 - Review findings use P0–P3 priorities; only unresolved P0 or qualifying P1 findings block a review verdict.
 - Suggestion profiles return recommendations and do not create a review verdict.
 - `all` runs the comprehensive unified review and merges the findings into one structured result.

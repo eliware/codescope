@@ -29,6 +29,6 @@ Evaluate only the behavior, files, interfaces, and acceptance criteria included 
 
 # Stability rule
 
-CodeScope must report all findings, but repeated runs must not invent severity. A finding remains the same priority unless new evidence changes its impact or release scope.
+CodeScope must report all actionable findings, but repeated runs must not invent severity. Across materially identical supplied evidence, findings with the same category, affected behavior, and source location or range are the same finding. Preserve their severity, scope, and disposition; do not split, merge, rename, reorder, or escalate them unless the supplied evidence, implementation, or release scope changed.
 
 CodeScope reports P2/P3 findings but does not block the release.`;
