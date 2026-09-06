@@ -1,11 +1,9 @@
 import { parseProviderResult } from './provider-result.mjs';
 import { writeFallbackResult, writeJsonResult } from './output.mjs';
-import { parsePlainTextJsonResponse } from './plain-text.mjs';
 import { runDryRun } from './dry-run.mjs';
 import { requestProviderResponse } from './provider-request.mjs';
 import { createIncompleteResult, createProviderFailure } from './failure.mjs';
-import { withReviewUsage } from './usage.mjs';
-import { testEvidenceBlocks } from './test-status.mjs';
+import { plainTextSessionResult, reviewSessionResult } from './session-result.mjs';
 
 export async function runReviewSession({
   client,
@@ -28,13 +26,18 @@ export async function runReviewSession({
     providerResponse = await requestProviderResponse(client, request, signal);
     providerResponseReceived = true;
     if (plainText !== undefined) {
-      const output = parsePlainTextJsonResponse(providerResponse);
+      const { output, result } = plainTextSessionResult(providerResponse, usage);
       await writeJsonResult(write, output, 'prompt');
-      return { ...output, ...(usage ? { usage: providerResponse.usage ?? null } : {}) };
+      return result;
     }
-    const result = parseProviderResult(providerResponse, request);
-    if (result.verdict === 'pass' && testEvidenceBlocks(testResults)) result.verdict = 'block';
-    const output = withReviewUsage(result, providerResponse, request.model, usage);
+    const output = reviewSessionResult(
+      providerResponse,
+      request,
+      request.model,
+      usage,
+      testResults,
+      parseProviderResult,
+    );
     await writeJsonResult(write, output);
     return output;
   } catch (cause) {

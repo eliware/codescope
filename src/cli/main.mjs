@@ -66,7 +66,7 @@ export async function main(
     const result = await review(cwd, reviewOptions);
     if (dryRun) return EXIT_CODES.PASS;
     const isSuggestion = mode === 'suggest' || target === 'new-features';
-    return statusForReviewResult(result, { isSuggestion, isValid: true });
+    return statusForReviewResult(result, { isSuggestion });
   } catch (cause) {
     error(`codescope: ${cause instanceof Error ? cause.message : String(cause)}`);
     if (cause instanceof Error && cause.message.startsWith('Unknown command'))

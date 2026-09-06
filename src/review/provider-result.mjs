@@ -10,16 +10,6 @@ function responseText(response, request) {
       : '';
 }
 
-export function toolCategories(tool) {
-  const categories = Object.keys(
-    tool?.parameters?.properties?.issues?.properties ??
-      tool?.parameters?.properties?.suggestions?.properties ??
-      tool?.parameters?.properties?.findings?.properties ??
-      {},
-  );
-  return categories.length ? categories : undefined;
-}
-
 export function parseProviderResult(providerResponse, request) {
   const raw = responseText(providerResponse, request);
   try {

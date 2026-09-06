@@ -1,13 +1,4 @@
-import { parseProviderResult, toolCategories } from '../../src/review/provider-result.mjs';
-
-test('extracts categories from the active tool schema', () => {
-  expect(
-    toolCategories({
-      parameters: { properties: { issues: { properties: { correctness: {}, security: {} } } } },
-    }),
-  ).toEqual(['correctness', 'security']);
-  expect(toolCategories({ parameters: { properties: {} } })).toBeUndefined();
-});
+import { parseProviderResult } from '../../src/review/provider-result.mjs';
 
 test('preserves malformed and text-only provider responses', () => {
   expect(parseProviderResult({ output_text: '{"verdict":"pass"' }, {})).toEqual({

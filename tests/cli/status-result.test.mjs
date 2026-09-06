@@ -8,14 +8,9 @@ test('maps prompt and review statuses', () => {
   expect(statusForPromptResult({ verdict: 'unknown' })).toBe(EXIT_CODES.PASS);
   expect(statusForPromptResult({ verdict: 1 })).toBe(EXIT_CODES.PASS);
   expect(statusForPromptResult({ verdict: 'block' })).toBe(EXIT_CODES.PASS);
-  expect(statusForReviewResult({}, { isSuggestion: true, isValid: true })).toBe(EXIT_CODES.PASS);
-  expect(statusForReviewResult({ verdict: 'pass' }, { isSuggestion: false, isValid: true })).toBe(
-    EXIT_CODES.PASS,
-  );
-  expect(statusForReviewResult({}, { isSuggestion: false, isValid: false })).toBe(
-    EXIT_CODES.RESPONSE,
-  );
-  expect(statusForReviewResult({ verdict: 'block' }, { isSuggestion: false, isValid: true })).toBe(
+  expect(statusForReviewResult({}, { isSuggestion: true })).toBe(EXIT_CODES.PASS);
+  expect(statusForReviewResult({ verdict: 'pass' }, { isSuggestion: false })).toBe(EXIT_CODES.PASS);
+  expect(statusForReviewResult({ verdict: 'block' }, { isSuggestion: false })).toBe(
     EXIT_CODES.BLOCKED,
   );
 });
