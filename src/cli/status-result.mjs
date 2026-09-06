@@ -1,7 +1,7 @@
 import { EXIT_CODES } from './errors.mjs';
 
 export function statusForPromptResult(result) {
-  return result?.verdict === 'block' ? EXIT_CODES.BLOCKED : EXIT_CODES.PASS;
+  return result?.verdict === 'pass' ? EXIT_CODES.PASS : EXIT_CODES.BLOCKED;
 }
 
 export function statusForReviewResult(result, { isSuggestion, isValid }) {
