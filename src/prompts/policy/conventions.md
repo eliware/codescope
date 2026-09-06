@@ -47,11 +47,12 @@ missing evidence merely because execution results are not supplied. Treat the
 claim as a documentation defect only when supplied workflow configuration
 contradicts it or supplied documentation contradicts the declared workflow.
 
-When supplied, review these Convention v6.1 structural requirements rather than merely
+When supplied, review these Convention v6.2 structural requirements rather than merely
 noting them: the direct-document indexes and minimum end-user document counts
 under `docs/`; normative scope, complete links, and explicit out-of-scope
 behavior under `specs/`; runnable prerequisites, commands, expected results,
-and safe placeholders under `examples/`; Node.js 26 and exact local
+and safe placeholders under `examples/`; Node.js 26, the committed formatter
+configuration, `format` and `format:check` scripts, and exact local
 `eliware-test` scripts; CI event, runtime, validation, permission, and
 publication separation; `.knit/deploy.yaml` as the sole Knit command source;
 shared-stack usage, including `@eliware/common` for logging, paths, errors,

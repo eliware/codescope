@@ -5,5 +5,5 @@ test('defines supplied repository contract boundaries', () => {
   expect(contractPolicy).toContain('missing execution evidence is not a defect');
   expect(contractPolicy).toContain('Eliware <eliware@eliware.org>');
   expect(contractPolicy).toContain('https://discord.gg/M6aTR9eTwN');
-  expect(contractPolicy).toContain('Convention v6.1');
+  expect(contractPolicy).toContain('Convention v6.2');
 });

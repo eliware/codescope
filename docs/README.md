@@ -16,6 +16,8 @@ guides when you need a deeper explanation.
   source and test decomposition work for maintainers evaluating architecture.
 - [Module/test map](module-test-map.md) — the current relationship between
   source modules and their mirrored tests.
+- [Validation ownership boundaries](validation-ownership-boundaries.md) — the
+  responsibilities of `@eliware/test`, CodeScope, and TagIt.
 
 See the [root README](../README.md) for installation, configuration, safety,
 and support information. Runnable usage is also available in

@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "6.0.0",
+  "version": "6.2.0",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "author": "Eliware <eliware@eliware.org>",
   "keywords": [

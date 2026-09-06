@@ -1,9 +1,6 @@
 export const contractPolicy = `## Eliware release-contract rules
 
-These are Convention v6.1 requirements when the repository is an Eliware
-Node.js package and the relevant artifacts are supplied.
-
-These are Convention v6.1 requirements when the repository is an Eliware
+These are Convention v6.2 requirements when the repository is an Eliware
 Node.js package and the relevant artifacts are supplied.
 
 When the supplied repository content establishes a required project standard,
@@ -17,6 +14,8 @@ For maintained Node.js repositories, the normal required contract includes:
   applies;
 - exact local \`eliware-test\` commands for those scripts when the repository
   is a maintained Node.js project;
+- committed formatter configuration plus \`format\` and \`format:check\`
+  scripts;
 - genuine 100×4 coverage for in-scope non-barrel production logic;
 - no Istanbul ignore outside pure barrel/re-export files;
 - focused tests corresponding to new or changed production modules;
@@ -24,10 +23,6 @@ For maintained Node.js repositories, the normal required contract includes:
 - focused modules and thin entrypoints;
 - synchronized package metadata, exports, declarations, README, release notes,
   and lockfile when those files are supplied;
-- exact public package author identity \`Eliware <eliware@eliware.org>\` for
-  Eliware-owned packages, the \`@eliware\` scope, canonical repository links,
-  and the Eliware Discord URL \`https://discord.gg/M6aTR9eTwN\` in public
-  community/support links;
 - exact public package author identity \`Eliware <eliware@eliware.org>\` for
   Eliware-owned packages, the \`@eliware\` scope, canonical repository links,
   and the Eliware Discord URL \`https://discord.gg/M6aTR9eTwN\` in public
@@ -48,7 +43,7 @@ that a workflow or validation command exists may be checked against supplied
 configuration, but missing execution evidence is not a defect unless the
 actual result or failure is supplied in the request.
 
-When the relevant artifacts are supplied, also enforce the complete v6
+When the relevant artifacts are supplied, also enforce the complete v6.2
 repository contract:
 
 - \`docs/README.md\` indexes every direct end-user document in \`docs/\`, and
