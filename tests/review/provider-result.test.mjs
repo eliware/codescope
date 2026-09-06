@@ -12,7 +12,11 @@ test('extracts categories from the active tool schema', () => {
 test('preserves malformed and text-only provider responses', () => {
   expect(parseProviderResult({ output_text: '{"verdict":"pass"' }, {})).toEqual({
     raw_response: '{"verdict":"pass"',
-    verdict: 'pass',
+    verdict: 'block',
+  });
+  expect(parseProviderResult({ output_text: 'The verdict is "verdict":"pass".' }, {})).toEqual({
+    raw_response: 'The verdict is "verdict":"pass".',
+    verdict: 'block',
   });
   expect(parseProviderResult({ output: [] }, {})).toEqual({ raw_response: '', verdict: 'block' });
   expect(parseProviderResult({ output_text: 'null' }, {})).toEqual({

@@ -10,9 +10,6 @@ function responseText(response, request) {
       : '';
 }
 
-const verdictFrom = (value) =>
-  /["']verdict["']\s*:\s*["']pass["']/iu.test(value) ? 'pass' : 'block';
-
 export function toolCategories(tool) {
   const categories = Object.keys(
     tool?.parameters?.properties?.issues?.properties ??
@@ -29,6 +26,6 @@ export function parseProviderResult(providerResponse, request) {
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === 'object' ? parsed : { raw_response: raw, verdict: 'block' };
   } catch {
-    return { raw_response: raw, verdict: verdictFrom(raw) };
+    return { raw_response: raw, verdict: 'block' };
   }
 }
