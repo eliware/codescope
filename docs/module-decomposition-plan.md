@@ -150,7 +150,7 @@ exact-key, call-count, and error-contract suites.
 
 ### Review lifecycle
 
-`src/review/lifecycle.mjs` currently owns setup, environment, test evidence,
+`src/review/lifecycle.mjs` coordinates setup, environment, test evidence,
 combination, request construction, provider execution, parsing, output, usage,
 fallback, signals, and cleanup. It must become a coordinator only.
 
@@ -262,6 +262,7 @@ change, no orchestrator owns leaf policy, and no test suite proxies another.
       the benchmark script now retain orchestration only while traversal, section
       collection, batching, process execution, and summary persistence live in
       dedicated modules.
-- [x] Remove all remaining mapping drift and proxy/orphan suites.
-- [x] Pass strict architecture validation with no exemptions (source/test
-      mapping, monolith limits, tests, coverage, and lint are clean).
+- [ ] Finish decomposing the remaining CLI entrypoint and lifecycle
+      orchestration responsibilities into coordinator-only modules.
+- [ ] Pass strict architecture validation with no exemptions after the
+      remaining decomposition and its mirrored tests are complete.
