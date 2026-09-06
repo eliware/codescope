@@ -1,5 +1,11 @@
 export const contractPolicy = `## Eliware release-contract rules
 
+These are Convention v6.1 requirements when the repository is an Eliware
+Node.js package and the relevant artifacts are supplied.
+
+These are Convention v6.1 requirements when the repository is an Eliware
+Node.js package and the relevant artifacts are supplied.
+
 When the supplied repository content establishes a required project standard,
 treat violations as release findings. Use only standards visible in the
 supplied files and test output.
@@ -18,6 +24,14 @@ For maintained Node.js repositories, the normal required contract includes:
 - focused modules and thin entrypoints;
 - synchronized package metadata, exports, declarations, README, release notes,
   and lockfile when those files are supplied;
+- exact public package author identity \`Eliware <eliware@eliware.org>\` for
+  Eliware-owned packages, the \`@eliware\` scope, canonical repository links,
+  and the Eliware Discord URL \`https://discord.gg/M6aTR9eTwN\` in public
+  community/support links;
+- exact public package author identity \`Eliware <eliware@eliware.org>\` for
+  Eliware-owned packages, the \`@eliware\` scope, canonical repository links,
+  and the Eliware Discord URL \`https://discord.gg/M6aTR9eTwN\` in public
+  community/support links;
 - no plaintext secrets, tokens, private keys, \`.env\` contents, or decrypted
   runtime state;
 - safe argument-array process execution instead of shell quoting or unsafe
@@ -28,7 +42,8 @@ For maintained Node.js repositories, the normal required contract includes:
   CI, and Knit configuration when those files are supplied.
 
 Do not require CI, release, publication, deployment, audit, pack, rollback,
-or historical validation results to be stored in the repository. A README claim
+or historical validation results to be stored in the repository. CodeScope is
+not agentic and cannot run those checks during review. A README claim
 that a workflow or validation command exists may be checked against supplied
 configuration, but missing execution evidence is not a defect unless the
 actual result or failure is supplied in the request.

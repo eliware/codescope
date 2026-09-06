@@ -73,8 +73,12 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
   expect(result.indexOf('===== other files (names and sizes only) =====')).toBeLessThan(
     result.indexOf('===== guide.md ====='),
   );
-  expect(result.indexOf('===== guide.md =====')).toBeLessThan(result.indexOf('===== app.mjs ====='));
-  expect(result.indexOf('===== app.mjs =====')).toBeLessThan(result.indexOf('===== app.test.mjs ====='));
+  expect(result.indexOf('===== guide.md =====')).toBeLessThan(
+    result.indexOf('===== app.mjs ====='),
+  );
+  expect(result.indexOf('===== app.mjs =====')).toBeLessThan(
+    result.indexOf('===== app.test.mjs ====='),
+  );
   expect(result.indexOf('===== app.test.mjs =====')).toBeLessThan(
     result.indexOf('===== npm test ====='),
   );

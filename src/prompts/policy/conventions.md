@@ -17,9 +17,14 @@ examples/ for safe, runnable setup aligned with the public interface. Review
 source and README.
 
 Review supplied package metadata for accurate description, relevant keywords,
-appropriate author, repository/bugs/homepage, license agreement, package and
-README branding, exports/declarations, package contents, scripts, engines,
-dependencies, and publish settings. Review cross-artifact consistency among
+the exact public Eliware author identity `Eliware <eliware@eliware.org>` when
+the package is Eliware-owned, repository/bugs/homepage, license agreement,
+package and README branding, exports/declarations, package contents, scripts,
+engines, dependencies, and publish settings. For public Eliware packages,
+require the `@eliware` package scope, Eliware branding, the canonical GitHub
+repository, the Eliware Discord URL `https://discord.gg/M6aTR9eTwN` in public
+community/support links, and agreement between package metadata and README.
+Review cross-artifact consistency among
 README, examples, specs, implementation, tests, release notes, package
 metadata, CI, and package scripts. Do not infer CI, publication, deployment,
 rollback, registry, or Git state unless supplied as evidence.
@@ -38,7 +43,7 @@ optional unless the repository explicitly requires it. Never report that CI
 passed, failed, or lacks passing evidence unless an actual CI result is
 supplied.
 
-When supplied, enforce these v6 structural requirements rather than merely
+When supplied, review these Convention v6.1 structural requirements rather than merely
 noting them: the direct-document indexes and minimum end-user document counts
 under `docs/`; normative scope, complete links, and explicit out-of-scope
 behavior under `specs/`; runnable prerequisites, commands, expected results,
@@ -49,7 +54,9 @@ shared-stack usage, including `@eliware/common` for logging, paths, errors,
 and lifecycle APIs; and exact mirrored source/test architecture with thin
 entrypoints, focused modules, and no catch-all tests. Review supplied release
 documentation against the canonical release-flow material rather than
-inventing release state.
+inventing release state. CodeScope is a one-shot reviewer: it cannot open
+referenced convention files, run validation, or verify external metadata unless
+that material is included in the request.
 
 Report documentation, example, or convention issues as P1 only when they
 materially mislead users, invalidate required release behavior, create a

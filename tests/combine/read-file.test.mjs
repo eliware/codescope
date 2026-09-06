@@ -12,9 +12,9 @@ test('reads regular source content', async () => {
 });
 
 test('reads a file with default options', async () => {
-  await expect(readSourceFile('README.md', path.join(process.cwd(), 'README.md'))).resolves.toContain(
-    'codescope',
-  );
+  await expect(
+    readSourceFile('README.md', path.join(process.cwd(), 'README.md')),
+  ).resolves.toContain('codescope');
 });
 
 test('rejects symlinks and non-files with contextual errors', async () => {

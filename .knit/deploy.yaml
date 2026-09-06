@@ -9,5 +9,5 @@ on:
           - npm ci
           - npm test
           - npm run lint
-          - npm audit --omit=dev --audit-level=moderate
+          - npm audit
           - npm run pack
