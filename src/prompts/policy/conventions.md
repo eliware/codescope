@@ -28,7 +28,15 @@ Do not report missing stored CI or release-result evidence. Repositories are
 not required to commit historical workflow results. Review supplied workflow
 configuration and documentation claims for consistency, but require an actual
 supplied command result before reporting a failed or unverified validation
-execution.
+execution. When a supplied workflow file exists, it is CI configuration
+evidence: inspect its jobs, runners, triggers, and commands. Do not report
+“no CI workflow evidence” merely because runtime CI results are absent, and do
+not claim a configured runner is missing when the supplied workflow declares
+it. Validate the supplied workflow configuration itself: an Ubuntu runner is
+required where the repository contract requires CI, while a Windows runner is
+optional unless the repository explicitly requires it. Never report that CI
+passed, failed, or lacks passing evidence unless an actual CI result is
+supplied.
 
 When supplied, enforce these v6 structural requirements rather than merely
 noting them: the direct-document indexes and minimum end-user document counts
