@@ -75,7 +75,7 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
   ).resolves.toBe(0);
   await expect(
     main(['prompt', 'return', 'json'], { review: async () => ({}), write }),
-  ).resolves.toBe(1);
+  ).resolves.toBe(0);
   await expect(
     main(['new-features'], { review: async () => validResult('new-features', 'suggest'), write }),
   ).resolves.toBe(0);

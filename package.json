@@ -55,7 +55,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@eliware/test": "^6.0.0",
+    "@eliware/test": "^6.0.1",
     "prettier": "^3.9.6"
   },
   "license": "MIT",

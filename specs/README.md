@@ -13,6 +13,9 @@ Start with [overview.md](overview.md), then use the table of contents below.
 This index is the specification overview; see [README.md](README.md) when
 linking to the complete specification set from tooling.
 
+Return to the [root README](../README.md) for installation, usage, safety, and
+support information.
+
 ## Table of contents
 
 - [Overview](overview.md) — product purpose, workflow, and contracts.
