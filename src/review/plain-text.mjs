@@ -15,13 +15,10 @@ export function preparePlainTextRequest(request, plainText, combined) {
 
 export function parsePlainTextJsonResponse(response) {
   const outputText = response?.output_text;
-  if (typeof outputText !== 'string') return { raw_response: '', verdict: 'block' };
+  if (typeof outputText !== 'string') return { raw_response: '' };
   try {
     return JSON.parse(outputText);
   } catch {
-    return {
-      raw_response: outputText,
-      verdict: /["']verdict["']\s*:\s*["']pass["']/iu.test(outputText) ? 'pass' : 'block',
-    };
+    return { raw_response: outputText };
   }
 }

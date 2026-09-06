@@ -31,11 +31,9 @@ test('parses structured JSON responses', () => {
   expect(parsePlainTextJsonResponse({ output_text: '{"ok":true}' })).toEqual({ ok: true });
   expect(parsePlainTextJsonResponse({ output_text: 'not json' })).toEqual({
     raw_response: 'not json',
-    verdict: 'block',
   });
   expect(parsePlainTextJsonResponse({ output_text: '{"verdict":"pass"' })).toEqual({
     raw_response: '{"verdict":"pass"',
-    verdict: 'pass',
   });
-  expect(parsePlainTextJsonResponse({})).toEqual({ raw_response: '', verdict: 'block' });
+  expect(parsePlainTextJsonResponse({})).toEqual({ raw_response: '' });
 });

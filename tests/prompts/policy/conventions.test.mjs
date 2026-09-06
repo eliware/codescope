@@ -18,6 +18,8 @@ test('covers the supplied convention contract', () => {
   expect(conventionPolicy).toContain('Ubuntu runner');
   expect(conventionPolicy).toContain('Windows runner is');
   expect(conventionPolicy).toContain('optional unless');
+  expect(conventionPolicy).toContain('Ubuntu or Windows CI as');
+  expect(conventionPolicy).toContain('execution results are not supplied');
   expect(conventionPolicy).toContain('Eliware <eliware@eliware.org>');
   expect(conventionPolicy).toContain('https://discord.gg/M6aTR9eTwN');
   expect(conventionPolicy).toContain('Convention v6.1');

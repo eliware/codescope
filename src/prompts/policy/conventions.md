@@ -42,6 +42,10 @@ required where the repository contract requires CI, while a Windows runner is
 optional unless the repository explicitly requires it. Never report that CI
 passed, failed, or lacks passing evidence unless an actual CI result is
 supplied.
+Do not report a release-documentation claim about Ubuntu or Windows CI as
+missing evidence merely because execution results are not supplied. Treat the
+claim as a documentation defect only when supplied workflow configuration
+contradicts it or supplied documentation contradicts the declared workflow.
 
 When supplied, review these Convention v6.1 structural requirements rather than merely
 noting them: the direct-document indexes and minimum end-user document counts
