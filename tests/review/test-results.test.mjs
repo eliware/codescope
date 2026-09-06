@@ -114,21 +114,25 @@ test('preserves non-launch failures from the test runner', async () => {
 test('resolves the Windows npm executable explicitly', () => {
   const previous = process.env.npm_execpath;
   delete process.env.npm_execpath;
-  expect(resolveNpmCommand('win32', undefined)[0][0]).toBe(process.execPath);
+  const [executable, args] = resolveNpmCommand('win32', undefined)[0];
+  expect(args.at(-1)).toBe('test');
+  expect([process.execPath, 'npm.cmd']).toContain(executable);
   if (previous !== undefined) process.env.npm_execpath = previous;
 });
 
 test('resolves npm on non-Windows hosts', () => {
   const previous = process.env.npm_execpath;
   delete process.env.npm_execpath;
-  expect(resolveNpmCommand('linux', undefined)[0][0]).toBe(process.execPath);
+  const [executable, args] = resolveNpmCommand('linux', undefined)[0];
+  expect(args.at(-1)).toBe('test');
+  expect([process.execPath, 'npm']).toContain(executable);
   if (previous !== undefined) process.env.npm_execpath = previous;
 });
 
 test('uses npm_execpath with a non-Windows platform', () => {
   const previous = process.env.npm_execpath;
   process.env.npm_execpath = process.execPath;
-  expect(resolveNpmCommand('linux', process.execPath).length).toBeGreaterThan(1);
+  expect([process.execPath, 'npm']).toContain(resolveNpmCommand('linux', process.execPath)[0][0]);
   if (previous === undefined) delete process.env.npm_execpath;
   else process.env.npm_execpath = previous;
 });

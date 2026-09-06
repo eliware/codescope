@@ -26,7 +26,7 @@ test('preserves missing environment files', async () => {
 });
 
 test('rejects a symbolic default environment file', async () => {
-  const envFile = `${process.env.USERPROFILE}\\.codescope`;
+  const envFile = defaultEnvFile();
   await expect(
     loadReviewEnvironment({
       ...base,

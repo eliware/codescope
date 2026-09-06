@@ -1,4 +1,5 @@
 import { readSourceFile } from '../../src/combine/read-file.mjs';
+import path from 'node:path';
 
 test('reads regular source content', async () => {
   await expect(
@@ -11,7 +12,7 @@ test('reads regular source content', async () => {
 });
 
 test('reads a file with default options', async () => {
-  await expect(readSourceFile('README.md', `${process.cwd()}\\README.md`)).resolves.toContain(
+  await expect(readSourceFile('README.md', path.join(process.cwd(), 'README.md'))).resolves.toContain(
     'codescope',
   );
 });
