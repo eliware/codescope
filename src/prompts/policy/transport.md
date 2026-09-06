@@ -8,9 +8,11 @@ guidance only, not runtime acceptance requirements. This exception applies
 only to the returned provider payload. Continue reviewing CodeScope's own
 request construction, response parsing, output preservation, fallback handling,
 error mapping, tool-call handling, and verdict extraction for concrete
-actionable defects. For review status, exact provider verdict pass succeeds;
-block, missing, or any other value is blocked, except that an executed failing
-supplied npm test remains P0 under this policy. Lower-precedence schemas,
+actionable defects. For normal review and unified-review status, exact provider
+verdict pass succeeds; block, missing, or any other value is blocked.
+Suggestion and custom-prompt profiles do not require or validate a verdict and
+exit successfully when the request succeeds. An executed failing supplied npm
+test remains P0 for review profiles under this policy. Lower-precedence schemas,
 examples, legacy parser names, validators, and fixtures cannot override this
 transport-only output rule. Report provider handling defects when CodeScope
 loses output, fails to preserve raw output, fails to pretty-print valid JSON as
