@@ -41,10 +41,13 @@ export async function runReviewSession({
     await writeJsonResult(write, output);
     return output;
   } catch (cause) {
-    if (providerResponseReceived)
-      await writeFallbackResult(write, createIncompleteResult(cause, providerResponse));
+    const incomplete = providerResponseReceived
+      ? createIncompleteResult(cause, providerResponse)
+      : undefined;
+    if (incomplete) await writeFallbackResult(write, incomplete);
     const failure = createProviderFailure(cause);
     if (cause?.code) failure.code = cause.code;
+    if (incomplete) failure.result = incomplete;
     throw failure;
   }
 }

@@ -1,4 +1,26 @@
 import { createIncompleteResult, createProviderFailure } from '../../src/review/failure.mjs';
+import { runReviewSession } from '../../src/review/run-session.mjs';
+
+test('review-session exposes fallback output on write failure', async () => {
+  await expect(
+    runReviewSession({
+      client: {
+        responses: {
+          create: async () => ({
+            output: [{ type: 'function_call', name: 'submit_review', arguments: '{}' }],
+          }),
+        },
+      },
+      request: { model: 'gpt-5.6-luna' },
+      signal: new AbortController().signal,
+      write: async () => {
+        throw new Error('output failed');
+      },
+      dryRun: false,
+      usage: false,
+    }),
+  ).rejects.toMatchObject({ result: { issues: 'not submitted', suggestions: 'not submitted' } });
+});
 
 test('creates a provider failure with the original cause', () => {
   const cause = new Error('invalid response');

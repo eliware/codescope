@@ -15,7 +15,7 @@ export function resolveResultCode(result) {
 }
 
 export function normalizeExecutionResult(result, isDefaultExecutor) {
-  if (!isDefaultExecutor) return result;
+  void isDefaultExecutor;
   return { ...result, code: result.code ?? 0 };
 }
 

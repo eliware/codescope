@@ -48,9 +48,8 @@ export async function describeOtherFiles(
       }
     }
   };
-  // Keep the bounded metadata scan from creating a large wave of reads after
-  // the aggregate budget has already been reserved by earlier workers.
-  await worker();
+  const workerCount = Math.min(4, paths.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
 }
 

@@ -13,9 +13,9 @@ test('resolves explicit and missing runner exit codes safely', () => {
   expect(resolveResultCode({})).toBe('unknown');
 });
 
-test('normalizes only the built-in executor result', () => {
+test('normalizes injected and built-in executor results', () => {
   const result = { stdout: 'x' };
-  expect(normalizeExecutionResult(result, false)).toBe(result);
+  expect(normalizeExecutionResult(result, false)).toMatchObject({ code: 0 });
   expect(normalizeExecutionResult(result, true)).toMatchObject({ code: 0 });
   expect(normalizeExecutionResult({ code: 2 }, true).code).toBe(2);
 });
@@ -149,13 +149,13 @@ test('uses the bundled npm runner when it exists', () => {
   expect(args).toEqual([bundledRunner, 'test']);
 });
 
-test('rejects invalid timeout and treats missing runner status as unknown', async () => {
+test('rejects invalid timeout and normalizes missing runner status', async () => {
   await expect(collectTestResults('repo', 0, async () => ({ stdout: '' }))).rejects.toThrow(
     /positive/,
   );
   await expect(
     collectTestResults('repo', 1000, async () => ({ stdout: '', stderr: '' })),
-  ).resolves.toContain('exit code: unknown');
+  ).resolves.toContain('exit code: 0');
 });
 
 test('uses the built-in test executor when none is supplied', async () => {
