@@ -6,8 +6,9 @@ response schema. JSON output may be malformed or have any shape; downstream AI
 agents can still read and use the raw or best-effort-formatted response. Review
 profiles use `verdict` for process status: `pass` exits successfully and every
 other or missing verdict is treated as blocked. Suggestion and custom-prompt
-profiles do not require a verdict; they exit successfully unless the provider
-explicitly returns `block`.
+profiles do not require or validate a verdict; their provider output is
+returned to the downstream AI consumer and exits successfully when the request
+itself succeeds.
 
 This transport-only output rule is authoritative for every profile's provider
 payload. Tool schemas, examples, legacy parser names, fixtures, and provider
