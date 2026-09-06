@@ -142,6 +142,13 @@ test('falls back to the platform npm command when bundled npm is absent', () => 
   expect(resolveNpmCommand('win32', null, 'missing/npm-cli.js')[0][0]).toBe('npm.cmd');
 });
 
+test('uses the bundled npm runner when it exists', () => {
+  const bundledRunner = path.resolve('package.json');
+  const [executable, args] = resolveNpmCommand('linux', null, bundledRunner)[0];
+  expect(executable).toBe(process.execPath);
+  expect(args).toEqual([bundledRunner, 'test']);
+});
+
 test('rejects invalid timeout and treats missing runner status as unknown', async () => {
   await expect(collectTestResults('repo', 0, async () => ({ stdout: '' }))).rejects.toThrow(
     /positive/,
