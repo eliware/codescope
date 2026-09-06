@@ -13,4 +13,5 @@ test('covers the supplied convention contract', () => {
   expect(conventionPolicy).toContain('P1 only when');
   expect(conventionPolicy).toContain('P2 or P3');
   expect(conventionPolicy).toContain('Do not duplicate');
+  expect(conventionPolicy).toContain('Do not report missing stored CI');
 });

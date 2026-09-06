@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "2.2.0",
+  "version": "6.0.0",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "author": "Eliware",
   "keywords": [
@@ -44,7 +44,7 @@
     "RELEASE_NOTES.md"
   ],
   "scripts": {
-    "test": "npm exec --global -- eliware-test",
+    "test": "eliware-test",
     "lint": "eliware-test --lint",
     "pack": "npm pack --dry-run",
     "benchmark:efforts": "node scripts/benchmark-efforts.mjs",
@@ -55,7 +55,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@eliware/test": "^4.0.0",
+    "@eliware/test": "^6.0.0",
     "prettier": "^3.9.6"
   },
   "license": "MIT",

@@ -1,5 +1,10 @@
 # Release notes
 
+## 6.0.0
+
+- Updated the project release metadata for the next major release.
+- Updated the development test tool to `@eliware/test` 6.
+
 ## 2.2.0
 
 - Added convention-focused review coverage for repository documentation,

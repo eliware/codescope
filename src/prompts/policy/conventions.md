@@ -24,6 +24,25 @@ README, examples, specs, implementation, tests, release notes, package
 metadata, CI, and package scripts. Do not infer CI, publication, deployment,
 rollback, registry, or Git state unless supplied as evidence.
 
+Do not report missing stored CI or release-result evidence. Repositories are
+not required to commit historical workflow results. Review supplied workflow
+configuration and documentation claims for consistency, but require an actual
+supplied command result before reporting a failed or unverified validation
+execution.
+
+When supplied, enforce these v6 structural requirements rather than merely
+noting them: the direct-document indexes and minimum end-user document counts
+under `docs/`; normative scope, complete links, and explicit out-of-scope
+behavior under `specs/`; runnable prerequisites, commands, expected results,
+and safe placeholders under `examples/`; Node.js 26 and exact local
+`eliware-test` scripts; CI event, runtime, validation, permission, and
+publication separation; `.knit/deploy.yaml` as the sole Knit command source;
+shared-stack usage, including `@eliware/common` for logging, paths, errors,
+and lifecycle APIs; and exact mirrored source/test architecture with thin
+entrypoints, focused modules, and no catch-all tests. Review supplied release
+documentation against the canonical release-flow material rather than
+inventing release state.
+
 Report documentation, example, or convention issues as P1 only when they
 materially mislead users, invalidate required release behavior, create a
 security problem, or make validation untrustworthy. Keep ordinary omissions,

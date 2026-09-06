@@ -6,9 +6,11 @@ supplied files and test output.
 
 For maintained Node.js repositories, the normal required contract includes:
 
-- native ESM and \`type: module\` where applicable;
+- Node.js 26, native ESM, and \`type: module\` where applicable;
 - \`npm test\` and \`npm run lint\` scripts where the repository convention
   applies;
+- exact local \`eliware-test\` commands for those scripts when the repository
+  is a maintained Node.js project;
 - genuine 100×4 coverage for in-scope non-barrel production logic;
 - no Istanbul ignore outside pure barrel/re-export files;
 - focused tests corresponding to new or changed production modules;
@@ -24,6 +26,35 @@ For maintained Node.js repositories, the normal required contract includes:
   workflow file is supplied;
 - required validation commands represented consistently in package scripts,
   CI, and Knit configuration when those files are supplied.
+
+Do not require CI, release, publication, deployment, audit, pack, rollback,
+or historical validation results to be stored in the repository. A README claim
+that a workflow or validation command exists may be checked against supplied
+configuration, but missing execution evidence is not a defect unless the
+actual result or failure is supplied in the request.
+
+When the relevant artifacts are supplied, also enforce the complete v6
+repository contract:
+
+- \`docs/README.md\` indexes every direct end-user document in \`docs/\`, and
+  \`docs/\` contains at least two complete end-user documents beyond its index;
+- \`specs/README.md\` states specification scope and normative status, indexes
+  every direct specification document, and links to explicit out-of-scope
+  behavior;
+- \`examples/README.md\` indexes runnable examples and documents prerequisites,
+  commands, expected results, safe placeholders, and navigation;
+- CI uses Node.js 26, runs on the required branch/PR/tag events, executes the
+  required validation gates, uses least privilege, and separates publication
+  from validation;
+- Knit-managed repositories have \`.knit/deploy.yaml\` as the sole source of
+  truth for target, working directory, and ordered commands;
+- shared-stack capabilities use the applicable Eliware package, especially
+  \`@eliware/common\` for logging, paths, errors, and lifecycle APIs;
+- source and tests mirror one another exactly, every production module has a
+  corresponding test, catch-all tests are avoided, entrypoints stay thin, and
+  orchestrators do not absorb independent responsibilities;
+- release documentation and supplied release-flow artifacts agree with the
+  canonical release process.
 
 A violation is P1 only when it affects required behavior, required validation,
 security, release correctness, or makes a passing result untrustworthy.

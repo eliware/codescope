@@ -1,5 +1,8 @@
 # codescope repository guidance
 
+Applies to: the entire repository unless a more specific AGENTS.md exists in a
+subdirectory.
+
 ## Runtime and source
 
 - Use Node.js 26, `type: module`, native ESM, and `.mjs` files.

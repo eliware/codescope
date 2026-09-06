@@ -35,7 +35,7 @@ test('combines only selected source groups when requested', async () => {
   ).resolves.toContain('test output');
 });
 
-test('orders configs, documentation, code, tests, results, and other-file metadata', async () => {
+test('anchors metadata first, places inventory in the middle, and ends with source evidence', async () => {
   const names = [
     'package.json',
     '.github/ci.yml',
@@ -67,6 +67,17 @@ test('orders configs, documentation, code, tests, results, and other-file metada
   expect(result).toContain('===== .github/ci.yml =====');
   expect(result).toContain('data.json | text');
   expect(result).toContain('image.bin | binary | 2 bytes');
+  expect(result.indexOf('===== package.json =====')).toBeLessThan(
+    result.indexOf('===== other files (names and sizes only) ====='),
+  );
+  expect(result.indexOf('===== other files (names and sizes only) =====')).toBeLessThan(
+    result.indexOf('===== guide.md ====='),
+  );
+  expect(result.indexOf('===== guide.md =====')).toBeLessThan(result.indexOf('===== app.mjs ====='));
+  expect(result.indexOf('===== app.mjs =====')).toBeLessThan(result.indexOf('===== app.test.mjs ====='));
+  expect(result.indexOf('===== app.test.mjs =====')).toBeLessThan(
+    result.indexOf('===== npm test ====='),
+  );
   await expect(
     combineAllFiles('/repo', {
       readDirectory: async () => [],

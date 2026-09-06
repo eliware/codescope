@@ -1,5 +1,10 @@
 # CodeScope specifications
 
+This is the developer-facing specification for CodeScope. It covers the
+externally observable CLI, repository-input, profile, response, and boundary
+contracts. Normative language such as MUST and MUST NOT describes required
+behavior; explanatory text provides context and is not itself a requirement.
+
 This directory describes the intended externally observable behavior of the
 current CodeScope implementation. It is the detailed reference behind the
 public README.

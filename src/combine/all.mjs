@@ -5,11 +5,11 @@ export async function combineAllFiles(root, options = {}) {
   const combined = [
     sections.packageJson,
     sections.configs,
+    sections.other,
     sections.md,
     sections.implementation,
     sections.tests,
     sections.testResults,
-    sections.other,
   ]
     .filter(Boolean)
     .join('\n');
