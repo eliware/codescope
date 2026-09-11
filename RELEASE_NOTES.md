@@ -1,5 +1,19 @@
 # Release notes
 
+## 8.0.0
+
+- Updated package metadata and release versioning for Convention v8.
+- Replaced legacy v6 convention-review requirements with supplied, structured
+  Convention v8 records and declared repository applicability.
+- Added JSON review context for repository-root, `docs/`, `examples/`, and
+  `specs/` JSON files while excluding `package-lock.json` and unrelated JSON.
+- Wired JSON evidence into comprehensive and selected review contexts and added
+  focused coverage for the new file-selection behavior.
+- Clarified one-shot evidence boundaries: CodeScope reviews supplied material
+  but does not run commands or infer unsupplied CI, release, or registry state.
+- Updated the development test dependency to `@eliware/test` 4.0.0 and
+  restored 100×4 validation with the compatible project test configuration.
+
 ## 6.2.0
 
 - Updated project metadata and convention-review guidance for Convention v6.2.

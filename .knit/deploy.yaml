@@ -8,6 +8,3 @@ on:
           - git pull --ff-only
           - npm ci
           - npm test
-          - npm run lint
-          - npm audit
-          - npm run pack

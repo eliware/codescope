@@ -3,12 +3,14 @@ import { combineCodeFiles, combineMdFiles } from './files.mjs';
 import { combinePackageJson } from './package-json.mjs';
 import { combineConfigFiles } from './configs.mjs';
 import { combineJsonFiles } from './json.mjs';
+import { combineConventionFiles } from './conventions.mjs';
 import { describeOtherFiles } from './other-files.mjs';
 
 export async function collectAllSections(root, options = {}) {
   const inventory = await findAllFiles(root, options);
   const packageJson = await combinePackageJson(root, options);
   const json = await combineJsonFiles(root, options);
+  const conventions = await combineConventionFiles(root, options);
   const configs = await combineConfigFiles(root, { ...options, inventory });
   const md = await combineMdFiles(root, options);
   const implementation = await combineCodeFiles(root, { ...options, noTests: true });
@@ -17,6 +19,7 @@ export async function collectAllSections(root, options = {}) {
   return {
     packageJson,
     json,
+    conventions,
     configs,
     md,
     implementation,

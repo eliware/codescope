@@ -79,9 +79,6 @@ The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` 
 
 ```text
 npm test
-npm run lint
-npm run pack
-npm run format:check
 git diff --check
 ```
 

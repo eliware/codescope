@@ -60,13 +60,30 @@
   "license": "MIT",
   "eliware": {
     "conventions": {
+      "version": "8.0",
       "apply": [
         "general",
         "node",
         "application",
         "cli"
+      ],
+      "exemptions": []
+    },
+    "authority": {
+      "authoritativeFor": [
+        "CodeScope CLI behavior, review profiles, and supplied-evidence conventions."
+      ],
+      "notAuthoritativeFor": [
+        "Repository runtime behavior, CI execution results, publication, deployment, or registry state."
       ]
-    }
+    },
+    "crosslinks": [
+      {
+        "path": "specs/conventions.json",
+        "relation": "relatedAuthority",
+        "authoritativeFor": "Convention v8 applicability and directive references."
+      }
+    ]
   },
   "publishConfig": {
     "access": "public",

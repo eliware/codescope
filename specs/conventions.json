@@ -1,0 +1,48 @@
+{
+  "version": "8.0",
+  "description": "Convention v8 review manifest for CodeScope.",
+  "authority": {
+    "authoritativeFor": [
+      "Convention applicability and the directive records supplied to CodeScope."
+    ],
+    "notAuthoritativeFor": [
+      "Repository runtime behavior, execution results, publication, deployment, or registry state."
+    ]
+  },
+  "crosslinks": [
+    {
+      "path": "https://github.com/eliware/conventions/tree/main/specs",
+      "relation": "relatedAuthority",
+      "authoritativeFor": "Canonical Convention v8 directive records."
+    }
+  ],
+  "repositoryTypes": {
+    "general": "specs/general.json",
+    "node": "specs/node.json",
+    "application": "specs/application.json",
+    "cli": "specs/cli.json",
+    "library": "specs/library.json",
+    "documentation": "specs/documentation.json",
+    "infrastructure": "specs/infrastructure.json",
+    "mcp-server": "specs/mcp-server.json",
+    "web": "specs/web.json",
+    "workspace": "specs/workspace.json",
+    "discord": "specs/discord.json",
+    "fork": "specs/fork.json"
+  },
+  "directives": {
+    "general": "E-1 and descendants in canonical general.json",
+    "node": "E-1.20 and descendants in canonical node.json",
+    "application": "E-1.130 and descendants in canonical application.json",
+    "cli": "E-1.60 and descendants in canonical cli.json",
+    "library": "E-1.40 and descendants in canonical library.json",
+    "documentation": "E-1.100 and descendants in canonical documentation.json",
+    "infrastructure": "E-1.90 and descendants in canonical infrastructure.json",
+    "mcp-server": "E-1.80 and descendants in canonical mcp-server.json",
+    "web": "E-1.50 and descendants in canonical web.json",
+    "workspace": "E-1.110 and descendants in canonical workspace.json",
+    "discord": "E-1.70 and descendants in canonical discord.json",
+    "fork": "E-1.120 and descendants in canonical fork.json"
+  },
+  "reviewRule": "Use only repository types listed in package.json eliware.conventions.apply. Read supplied canonical directive records together; do not infer applicability or import legacy requirements."
+}

@@ -24,6 +24,10 @@ Test discovery includes `.test.js`, `.test.cjs`, and `.test.mjs` files.
 Markdown discovery includes `.md` files. JSON context includes only JSON files
 in the repository root, `docs/`, `examples/`, and `specs/`; `package-lock.json`
 and JSON elsewhere remain inventory-only.
+Convention JSON is read from a checkout at ../conventions/specs relative to
+the reviewed repository. The conventions package.json and package-lock.json
+are never included. If that checkout is not supplied, CodeScope reports that
+convention evidence was unavailable rather than pretending to enforce it.
 
 Root generated coverage directories, dependency directories, Git metadata, and
 coverage data are excluded. Legitimate nested source directories such as

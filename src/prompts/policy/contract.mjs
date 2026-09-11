@@ -4,6 +4,11 @@ Use the supplied Convention v8 structured records and repository evidence as
 the contract for this review. Apply only requirements whose declared
 applicability includes the repository. Do not import requirements from older
 convention versions, unrelated projects, or unsupplied external documents.
+When the supplied repository includes \`specs/conventions.json\`, use its
+applicability and directive map to select the repository's convention records.
+The full Convention v8 JSON records must be supplied from the sibling
+conventions/specs checkout for detailed alignment review; absent records are
+unknown evidence, not permission to apply legacy requirements.
 
 Review whether supplied implementation, tests, documentation, configuration,
 metadata, JSON specifications, examples, and validation results are accurate,

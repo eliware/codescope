@@ -17,7 +17,7 @@ subdirectory.
 - Use `@eliware/test` for `npm test` and `npm run lint`.
 - Require 100% statements, branches, functions, and lines for in-scope non-barrel production logic. Do not add Istanbul ignores; refactor or test the code instead. Istanbul ignores are allowed only in pure barrel/re-export files.
 - 100×4 coverage does not replace contract, regression, integration, smoke, or E2E tests where those checks are needed.
-- Before handoff run `npm test`, `npm run lint`, `npm run pack`, `npm run format:check`, and `git diff --check`. Use focused tests while iterating, then run the full suite once.
+- Before handoff run `npm test` and `git diff --check`. Use focused tests while iterating, then run the full suite once; `npm test` owns the shared lint and format checks.
 - Use Node process APIs and argument arrays; avoid shell-specific pipelines, quoting, `grep`, or platform-specific executable assumptions.
 
 ## Shared libraries

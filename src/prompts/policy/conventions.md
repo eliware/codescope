@@ -5,6 +5,13 @@ records as the authority. Inspect each record's `version`, `authority`,
 `crosslinks`, and `directives`, and apply only the directives whose declared
 applicability includes this repository. Do not infer applicability from a
 directory name, package contents, or a legacy convention that was not supplied.
+When \`specs/conventions.json\` is supplied, use its \`repositoryTypes\`,
+\`directives\`, and \`reviewRule\` to select and reconcile the applicable records;
+the canonical records named by that manifest remain authoritative for their
+directive text.
+The complete Convention v8 JSON evidence is expected from the sibling
+conventions/specs checkout. If it is marked unavailable, do not invent
+requirements or claim alignment; identify convention compliance as unverified.
 
 Review the supplied README, AGENTS.md, documentation indexes, specs, examples,
 environment templates, package metadata, workflows, Knit configuration, source,

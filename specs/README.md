@@ -25,3 +25,4 @@ support information.
 - [Structured results](structured-results.md) — provider tools and result shape.
 - [Requirements](requirements.md) — repository-level requirements.
 - [Out of scope](out-of-scope.md) — deliberately unsupported or excluded behavior.
+- [Convention manifest](conventions.json) — Convention v8 applicability and directive authority map.
