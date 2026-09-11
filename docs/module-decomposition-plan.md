@@ -266,3 +266,8 @@ change, no orchestrator owns leaf policy, and no test suite proxies another.
       orchestration responsibilities into coordinator-only modules.
 - [ ] Pass strict architecture validation with no exemptions after the
       remaining decomposition and its mirrored tests are complete.
+
+These two items are explicitly deferred non-blocking maintenance work. They do
+not indicate a missing user-facing CLI capability or a release validation
+failure; the current modules remain covered by the repository's functional and
+coverage checks until that focused refactoring is scheduled.

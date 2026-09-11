@@ -73,7 +73,7 @@ export async function collectTestResults(
         break;
       } catch (cause) {
         lastCause = cause;
-        if (!['ENOENT', 'EACCES', 'EPERM', 'ENOTDIR'].includes(cause?.code)) throw cause;
+        if (cause?.code !== 'ENOENT') throw cause;
       }
     }
     if (!result) throw lastCause;

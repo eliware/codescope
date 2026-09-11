@@ -92,16 +92,21 @@ test('uses the active npm CLI path when provided', async () => {
 });
 
 test('skips an invalid npm_execpath and uses the next candidate', async () => {
+  const calls = [];
   const result = await collectTestResults(
     'repo',
     100,
-    async () => ({ stdout: 'fallback', stderr: '', code: 0 }),
+    async (...args) => {
+      calls.push(args);
+      return { stdout: 'fallback', stderr: '', code: 0 };
+    },
     redactTestOutput,
     'linux',
     { npm_execpath: path.join(process.cwd(), 'missing-npm-cli.js') },
   );
   expect(result).toContain('fallback');
   expect(result).toContain('exit code: 0');
+  expect(calls[0][1][0]).not.toContain('missing-npm-cli.js');
 });
 
 test('reports when all npm resolution candidates are missing', async () => {
@@ -118,7 +123,7 @@ test('tries the next executable after a recoverable launch failure', async () =>
   let calls = 0;
   const result = await collectTestResults('repo', 100, async () => {
     calls += 1;
-    if (calls === 1) throw { code: 'EACCES' };
+    if (calls === 1) throw { code: 'ENOENT' };
     return { stdout: 'ok', stderr: '', code: 0 };
   });
   expect(calls).toBe(2);
