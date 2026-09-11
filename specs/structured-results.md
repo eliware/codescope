@@ -27,7 +27,10 @@ The `all` operation requests one unified review result from the model. The CLI
 prints the returned JSON when parseable, otherwise it prints a best-effort
 representation without validating category, finding, or other fields. Failure
 fallbacks may preserve a redacted, best-effort subset of a provider response
-to avoid echoing secrets or unserializable values.
+to avoid echoing secrets or unserializable values. Output-write failures remain
+fatal: CodeScope attempts the preserved fallback, but if that write also fails,
+the thrown error retains the original failure plus `result` and
+`fallbackError` metadata for callers that can inspect it.
 
 This output is not guaranteed to be machine-readable for programmatic
 consumers. JSON is used because it is a convenient structured response format

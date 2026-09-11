@@ -80,7 +80,7 @@ export async function collectTestResults(
     const output = redact(`${String(result.stdout ?? '')}${String(result.stderr ?? '')}`);
     const normalizedResult = normalizeExecutionResult(result, execute === defaultTestExecutor);
     const code = resolveResultCode(normalizedResult);
-    return `===== npm test =====\n${code === 0 ? 'exit code: 0' : `exit code: ${code}`}\n${output}`;
+    return `===== npm test =====\nstatus: ${code === 0 ? 'pass' : 'fail'}\n${code === 0 ? 'exit code: 0' : `exit code: ${code}`}\n${output}`;
   } catch (cause) {
     const output = redact(`${String(cause.stdout ?? '')}${String(cause.stderr ?? '')}`);
     const status = cause.killed
@@ -88,6 +88,6 @@ export async function collectTestResults(
       : cause.code === 'ENOENT'
         ? 'runner error: npm test command was not found'
         : `runner failure: npm test could not complete (${cause.code ?? 'unknown'})`;
-    return `===== npm test =====\n${status}\n${output}`;
+    return `===== npm test =====\nstatus: fail\n${status}\n${output}`;
   }
 }

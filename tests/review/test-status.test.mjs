@@ -16,4 +16,10 @@ test('ignores absent or unrelated evidence', () => {
   expect(testEvidenceBlocks('npm test output without marker')).toBe(false);
   expect(testEvidenceBlocks('===== npm test =====\nexit code: unknown')).toBe(true);
   expect(testEvidenceBlocks('===== npm test =====\nTests failed with a non-zero code')).toBe(true);
+  expect(testEvidenceBlocks('===== npm test =====\nstatus: fail\ncustom runner wording')).toBe(
+    true,
+  );
+  expect(
+    testEvidenceBlocks('===== npm test =====\nrunner failure: npm test could not complete'),
+  ).toBe(true);
 });

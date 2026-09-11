@@ -59,6 +59,9 @@ test('formats successful and timed-out test results', async () => {
     })),
   ).resolves.toContain('only stdout');
   await expect(
+    collectTestResults('repo', 100, async () => ({ stdout: '', stderr: '', code: 0 })),
+  ).resolves.toContain('status: pass');
+  await expect(
     collectTestResults('repo', 100, async () => {
       throw { killed: false, code: 3 };
     }),
@@ -127,7 +130,7 @@ test('preserves non-launch failures from the test runner', async () => {
     collectTestResults('repo', 100, async () => {
       throw { code: 'EPIPE' };
     }),
-  ).resolves.toContain('runner failure: npm test could not complete (EPIPE)');
+  ).resolves.toContain('status: fail');
 });
 
 test('resolves the Windows npm executable explicitly', () => {

@@ -7,7 +7,8 @@ export function testEvidenceBlocks(testResults) {
     const end = matches[index + 1]?.index ?? testResults.length;
     const section = testResults.slice(match.index, end);
     return (
-      /^(?:exit code:\s*(?:[1-9]\d*|unknown)|timed out after\b|runner error:|fail\b|failed\b)/iu.test(
+      /^status:\s*fail$/iu.test(status) ||
+      /^(?:exit code:\s*(?:[1-9]\d*|unknown)|timed out after\b|runner error:|runner failure:|fail\b|failed\b)/iu.test(
         status,
       ) ||
       /\b(?:tests?\s+failed|test suites?\s+failed|failed\s+\(|npm\s+err!|error:\s+|exit(?:ed|s)?\s+with\s+(?:a\s+)?non[- ]zero\s+code)/iu.test(
