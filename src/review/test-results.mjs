@@ -38,7 +38,8 @@ export const resolveNpmCommand = (
   ),
 ) => {
   const candidates = [];
-  if (isNpmExecPath(npmExecPath)) candidates.push([process.execPath, [npmExecPath, 'test'], false]);
+  if (isNpmExecPath(npmExecPath) && existsSync(npmExecPath))
+    candidates.push([process.execPath, [npmExecPath, 'test'], false]);
   if (existsSync(bundledNpm)) candidates.push([process.execPath, [bundledNpm, 'test'], false]);
   candidates.push([platform === 'win32' ? 'npm.cmd' : 'npm', ['test'], false]);
   return candidates;
@@ -86,7 +87,7 @@ export async function collectTestResults(
       ? `timed out after ${timeout / 1000} seconds`
       : cause.code === 'ENOENT'
         ? 'runner error: npm test command was not found'
-        : `exit code: ${cause.code ?? 'unknown'}`;
+        : `runner failure: npm test could not complete (${cause.code ?? 'unknown'})`;
     return `===== npm test =====\n${status}\n${output}`;
   }
 }

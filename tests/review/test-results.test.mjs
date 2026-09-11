@@ -62,12 +62,12 @@ test('formats successful and timed-out test results', async () => {
     collectTestResults('repo', 100, async () => {
       throw { killed: false, code: 3 };
     }),
-  ).resolves.toContain('exit code: 3');
+  ).resolves.toContain('runner failure: npm test could not complete (3)');
   await expect(
     collectTestResults('repo', 100, async () => {
       throw { killed: false };
     }),
-  ).resolves.toContain('exit code: unknown');
+  ).resolves.toContain('runner failure: npm test could not complete (unknown)');
 });
 
 test('uses the active npm CLI path when provided', async () => {
@@ -80,11 +80,24 @@ test('uses the active npm CLI path when provided', async () => {
       return { stdout: '', stderr: '', code: 0 };
     });
     expect(calls[0][0]).toBe(process.execPath);
-    expect(calls[0][1][0]).toContain('npm-cli.js');
+    expect(calls[0][1].at(-1)).toBe('test');
   } finally {
     if (previous === undefined) delete process.env.npm_execpath;
     else process.env.npm_execpath = previous;
   }
+});
+
+test('skips an invalid npm_execpath and uses the next candidate', async () => {
+  const result = await collectTestResults(
+    'repo',
+    100,
+    async () => ({ stdout: 'fallback', stderr: '', code: 0 }),
+    redactTestOutput,
+    'linux',
+    { npm_execpath: path.join(process.cwd(), 'missing-npm-cli.js') },
+  );
+  expect(result).toContain('fallback');
+  expect(result).toContain('exit code: 0');
 });
 
 test('reports when all npm resolution candidates are missing', async () => {
@@ -113,7 +126,7 @@ test('preserves non-launch failures from the test runner', async () => {
     collectTestResults('repo', 100, async () => {
       throw { code: 'EPIPE' };
     }),
-  ).resolves.toContain('exit code: EPIPE');
+  ).resolves.toContain('runner failure: npm test could not complete (EPIPE)');
 });
 
 test('resolves the Windows npm executable explicitly', () => {
