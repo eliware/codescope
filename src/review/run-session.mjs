@@ -1,9 +1,9 @@
 import { parseProviderResult } from './provider-result.mjs';
-import { writeFallbackResult, writeJsonResult } from './output.mjs';
+import { writeJsonResult } from './output.mjs';
 import { runDryRun } from './dry-run.mjs';
 import { requestProviderResponse } from './provider-request.mjs';
-import { createIncompleteResult, createProviderFailure } from './failure.mjs';
 import { plainTextSessionResult, reviewSessionResult } from './session-result.mjs';
+import { throwSessionFailure } from './session-failure.mjs';
 
 export async function runReviewSession({
   client,
@@ -41,14 +41,6 @@ export async function runReviewSession({
     await writeJsonResult(write, output);
     return output;
   } catch (cause) {
-    const incomplete = providerResponseReceived
-      ? createIncompleteResult(cause, providerResponse)
-      : undefined;
-    const fallbackError = incomplete ? await writeFallbackResult(write, incomplete) : undefined;
-    const failure = createProviderFailure(cause);
-    if (cause?.code) failure.code = cause.code;
-    if (incomplete) failure.result = incomplete;
-    if (fallbackError) failure.fallbackError = fallbackError;
-    throw failure;
+    return throwSessionFailure({ cause, providerResponse, providerResponseReceived, write });
   }
 }
