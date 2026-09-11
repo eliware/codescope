@@ -3,9 +3,9 @@ export function resolveResultCode(result) {
   return 'unknown';
 }
 
-export function normalizeExecutionResult(result, isDefaultExecutor) {
+export function normalizeExecutionResult(result, _isDefaultExecutor) {
   return {
     ...result,
-    code: result.code === undefined ? (isDefaultExecutor ? 0 : 'unknown') : result.code,
+    code: result.code === undefined ? 'unknown' : result.code,
   };
 }

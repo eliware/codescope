@@ -16,7 +16,7 @@ test('resolves explicit and missing runner exit codes safely', () => {
 test('normalizes injected and built-in executor results', () => {
   const result = { stdout: 'x' };
   expect(normalizeExecutionResult(result, false)).toMatchObject({ code: 'unknown' });
-  expect(normalizeExecutionResult(result, true)).toMatchObject({ code: 0 });
+  expect(normalizeExecutionResult(result, true)).toMatchObject({ code: 'unknown' });
   expect(normalizeExecutionResult({ code: 2 }, true).code).toBe(2);
 });
 

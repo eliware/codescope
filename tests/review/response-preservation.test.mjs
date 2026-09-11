@@ -28,3 +28,33 @@ test('preserves a safe summary when non-enumerable getters throw', () => {
     response_error: 'Provider response was not accepted by the response contract',
   });
 });
+
+test('preserves redacted function-call arguments', () => {
+  expect(
+    preserveProviderResponse({
+      output: [{ type: 'function_call', name: 'review', arguments: 'TOKEN=secret' }],
+    }),
+  ).toMatchObject({ function_call_arguments: expect.stringContaining('TOKEN=[REDACTED]') });
+});
+
+test('survives an invalid output collection while preserving the response summary', () => {
+  const response = { output: { invalid: true } };
+  response.self = response;
+  expect(preserveProviderResponse(response)).toEqual({
+    response_error: 'Provider response could not be serialized',
+  });
+});
+
+test('preserves a serializable response with no function calls', () => {
+  expect(preserveProviderResponse({ output: [] })).toEqual({
+    response_error: 'Provider response was not accepted by the response contract',
+  });
+});
+
+test('preserves function-call arguments from an unserializable response', () => {
+  const response = {
+    output: [{ type: 'function_call', name: 'review', arguments: '{"ok":true}' }],
+  };
+  response.self = response;
+  expect(preserveProviderResponse(response).function_call_arguments).toContain('review');
+});

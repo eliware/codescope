@@ -12,3 +12,16 @@ test('collects and formats a passing npm test result', async () => {
     ),
   ).resolves.toContain('status: pass');
 });
+
+test('does not treat an injected executor without a status as passing', async () => {
+  await expect(
+    collectTestResults(
+      'C:/repo',
+      1000,
+      async () => ({ stdout: 'incomplete', stderr: '' }),
+      (value) => value,
+      'linux',
+      {},
+    ),
+  ).resolves.toMatch(/status: unknown[\s\S]*exit code: unknown/);
+});
