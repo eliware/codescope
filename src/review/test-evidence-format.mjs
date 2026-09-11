@@ -6,7 +6,11 @@ export function formatTestEvidence(result, executeWasDefault, redact, normalize,
 }
 
 export function formatTestFailure(cause, timeout, redact) {
-  const output = redact(`${String(cause.stdout ?? '')}${String(cause.stderr ?? '')}`);
+  const output = redact(
+    `${String(cause.stdout ?? '')}${String(cause.stderr ?? '')}${
+      cause.message ? String(cause.message) : ''
+    }`,
+  );
   const status = cause.killed
     ? `timed out after ${timeout / 1000} seconds`
     : cause.code === 'ENOENT'

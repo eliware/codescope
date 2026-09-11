@@ -4,7 +4,8 @@ import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
 import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
-import { collectTestResults, redactTestOutput } from './test-results.mjs';
+import { collectTestResults } from './collect-test-results.mjs';
+import { redactTestOutput } from './redaction.mjs';
 
 export function createReviewDefaults() {
   return {

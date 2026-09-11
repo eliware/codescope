@@ -1,3 +1,5 @@
+import { formatTestFailure } from './test-evidence-format.mjs';
+
 export async function collectReviewTestEvidence({
   cwd,
   includesTests,
@@ -12,7 +14,7 @@ export async function collectReviewTestEvidence({
   try {
     testResults = await runTestCommand(cwd, testTimeoutMs, undefined, redactOutput, platform);
   } catch (cause) {
-    testResults = `===== npm test =====\nexit code: unknown\n${redactOutput(String(cause))}`;
+    testResults = formatTestFailure(cause, testTimeoutMs, redactOutput);
   }
   if (typeof testResults !== 'string') throw new Error('Test runner must return a string');
   return testResults;

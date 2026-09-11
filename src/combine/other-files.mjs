@@ -41,7 +41,7 @@ export async function describeOtherFiles(
       entries.push(formatOtherFile(relativePath, bytes));
     }
   };
-  const workerCount = Math.min(4, paths.length);
+  const workerCount = Math.min(1, paths.length);
   await Promise.all(Array.from({ length: workerCount }, () => worker()));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
 }

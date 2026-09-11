@@ -14,6 +14,7 @@ export function isValidReviewResult(result, prompt) {
     categories.every(
       (category) =>
         Array.isArray(result.issues[category]) &&
+        result.issues[category].length > 0 &&
         result.issues[category].every(
           (issue) =>
             issue &&

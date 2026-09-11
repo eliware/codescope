@@ -99,7 +99,7 @@ Review profiles that include tests use package metadata, implementation files, t
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
 
-The effort benchmark runs `npm test` first, then runs `none`, `low`, `medium`, and `high` with bounded parallelism. If the prerequisite test fails, provider runs are skipped. Results and logs are written under `benchmark-results/` in the current working directory. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and its current rates are recorded in `summary.json`.
+The effort benchmark runs `npm test` first, then runs `none`, `low`, `medium`, and `high` with bounded parallelism. If the prerequisite test fails, provider runs are skipped. Results and logs are written under `benchmark-results/` in the current working directory. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and repository-configured pricing rates are recorded in `summary.json`.
 
 ## Security and operations
 
