@@ -1,5 +1,5 @@
 import { defaultEnvFile, loadEnv } from './config.mjs';
-import { stat } from 'node:fs/promises';
+import { validateEnvironmentPermissions } from './environment-permissions.mjs';
 
 export async function loadReviewEnvironment({
   envFile,
@@ -32,41 +32,8 @@ export async function loadReviewEnvironment({
         { cause },
       );
   }
-  if (readEnvFile === readFile && envFile === defaultEnvFile() && platform !== 'win32') {
-    try {
-      const metadata = await inspectPermissions(envFile);
-      if ((metadata.mode & 0o077) !== 0)
-        throw new Error('~/.codescope must not be readable by group or other users');
-    } catch (cause) {
-      if (cause?.code === 'ENOENT') {
-      } else if (cause?.message?.includes('must not be readable')) throw cause;
-      else
-        throw new Error(
-          `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
-    }
-  }
-  if (readEnvFile === readFile && envFile === defaultEnvFile() && platform === 'win32') {
-    let permissionsMissing = false;
-    const metadata = await inspectPermissions(envFile).catch((cause) => {
-      if (cause?.code === 'ENOENT') {
-        permissionsMissing = true;
-        return undefined;
-      }
-      throw new Error(
-        `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
-    });
-    const aclWasReported = metadata && Object.hasOwn(metadata, 'aclRestricted');
-    if (
-      !permissionsMissing &&
-      inspectPermissions !== stat &&
-      (!aclWasReported || metadata.aclRestricted !== true)
-    )
-      throw new Error('~/.codescope must not be readable by other users');
-  }
+  if (readEnvFile === readFile && envFile === defaultEnvFile())
+    await validateEnvironmentPermissions({ envFile, inspectPermissions, platform });
   loadEnv(envText, environment);
   return environment;
 }
