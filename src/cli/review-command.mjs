@@ -1,5 +1,5 @@
-import { getProfile } from '../profiles/index.mjs';
-import { statusForPromptResult, statusForReviewResult } from './status-result.mjs';
+import { runPromptCommand } from './prompt-command.mjs';
+import { runProfileCommand } from './profile-command.mjs';
 
 export async function runReviewCommand(
   command,
@@ -17,37 +17,18 @@ export async function runReviewCommand(
     review,
   },
 ) {
-  if (command === 'prompt') {
-    const { combine, prompt: profilePrompt } = getProfile('all', 'review');
-    const prompt = structuredClone(profilePrompt);
-    applyEffort(prompt, effort);
-    const result = await review(cwd, { combine, prompt, plainText: promptText, model, write });
-    return statusForPromptResult(result);
-  }
-  const target = command.slice('analyze-'.length);
-  const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
-  const { combine, prompt: profilePrompt, includesTests } = getProfile(target, effectiveMode);
-  const prompt = structuredClone(profilePrompt);
-  applyEffort(prompt, effort);
-  const result = await review(cwd, {
-    write,
-    combine,
-    usage: option === '--usage' || options.includes('--usage'),
-    prompt,
-    includesTests,
-    omitTestResults: option === '--omit-test-results' || options.includes('--omit-test-results'),
+  if (command === 'prompt')
+    return runPromptCommand({ cwd, write, review, promptText, model, effort });
+  return runProfileCommand(command, {
+    mode,
+    option,
+    options,
+    testTimeout,
+    effort,
     model,
     dryRun,
-    ...(testTimeout ? { testTimeoutMs: Number(testTimeout) * 1000 } : {}),
+    cwd,
+    write,
+    review,
   });
-  if (dryRun) return 0;
-  return statusForReviewResult(result, {
-    isSuggestion: mode === 'suggest' || target === 'new-features',
-  });
-}
-
-function applyEffort(prompt, effort) {
-  if (!effort) return;
-  prompt.reasoning ??= {};
-  prompt.reasoning.effort = effort;
 }
