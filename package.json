@@ -47,8 +47,10 @@
     "test": "eliware-test",
     "lint": "eliware-test --lint",
     "benchmark:efforts": "node scripts/benchmark-efforts.mjs",
-    "format": "prettier --write bin src tests examples README.md AGENTS.md RELEASE_NOTES.md docs specs *.md",
-    "format:check": "prettier --check bin src tests examples README.md AGENTS.md RELEASE_NOTES.md docs specs *.md"
+    "format": "eliware-test",
+    "format:check": "eliware-test",
+    "pack": "npm pack --dry-run",
+    "audit": "node scripts/run-audit.mjs"
   },
   "engines": {
     "node": ">=26"
@@ -63,9 +65,9 @@
       "version": "8.0",
       "apply": [
         "general",
-        "node",
         "application",
-        "cli"
+        "cli",
+        "npm-published"
       ],
       "exemptions": []
     },

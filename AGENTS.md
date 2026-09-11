@@ -27,6 +27,10 @@ subdirectory.
 
 ## Documentation and safety
 
+- Public npm publication requirements apply to this package: maintain the
+  package allowlist, provenance metadata, pack and audit checks, and exact-tag
+  publication workflow.
+
 - README must document purpose, setup, configuration, validation, security, and operations. Keep examples runnable, safe, and free of credentials or local machine paths.
 - Record user-visible changes in `RELEASE_NOTES.md`. Keep commands, profiles, examples, exports, and metadata synchronized.
 - Never commit secrets, tokens, keys, `.env` files, decrypted data, coverage artifacts, or runtime state. Use secure defaults and least privilege.
