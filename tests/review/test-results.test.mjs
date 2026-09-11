@@ -81,6 +81,7 @@ test('uses the active npm CLI path when provided', async () => {
     });
     expect(calls[0][0]).toBe(process.execPath);
     expect(calls[0][1].at(-1)).toBe('test');
+    expect(calls[0][2].env.npm_execpath).toBe(calls[0][1][0]);
   } finally {
     if (previous === undefined) delete process.env.npm_execpath;
     else process.env.npm_execpath = previous;
