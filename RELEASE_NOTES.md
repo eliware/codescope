@@ -2,6 +2,9 @@
 
 ## 8.0.0
 
+- Clarified one-shot review prompts so finding prose remains concise without
+  reducing exhaustive issue enumeration; if 100 issues are supported, all 100
+  must be reported.
 - Updated package metadata and release versioning for Convention v8.
 - Replaced legacy v6 convention-review requirements with supplied, structured
   Convention v8 records and declared repository applicability.

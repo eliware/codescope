@@ -41,12 +41,12 @@ Partial output is retained when the process times out. A custom timeout can be
 provided, or test execution can be omitted explicitly.
 
 Test output is redacted deterministically before it is added to the provider
-context. The redactor applies layered best-effort patterns covering named
-credential assignments, authorization headers, query-string credentials,
-common provider token formats, private keys, JWTs, public keys, long
-hexadecimal values, and other long opaque values that resemble secrets. The
-output is then length-limited. This pre-AI step is a data-minimization measure,
-not proof that the context is secret-free.
+context through the shared `@eliware/redact` library. CodeScope passes an
+explicit generic `maxString` limit of 500,000 characters and uses the fixed
+`[REDACTED]` sensitive-value marker. Redact owns the generic pattern catalog,
+structured behavior, and redaction tests; CodeScope owns only this invocation
+boundary and the review evidence policy. This pre-AI step is a
+data-minimization measure, not proof that the context is secret-free.
 
 Test-inclusive profiles execute the reviewed repository's `npm test` with its
 inherited environment, and the captured output is sent to the configured

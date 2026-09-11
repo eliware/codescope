@@ -4,7 +4,7 @@ test('preserves safe provider response fields and redacts output', () => {
   expect(
     preserveProviderResponse({ output_text: 'TOKEN=secret', usage: { input_tokens: 2 } }),
   ).toEqual({
-    output_text: 'TOKEN=[redacted]',
+    output_text: 'TOKEN=[REDACTED]',
     usage: { input_tokens: 2 },
     response_error: 'Provider response was not accepted by the response contract',
   });

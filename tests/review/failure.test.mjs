@@ -70,7 +70,7 @@ test('redacts serializable provider response summaries', () => {
     usage: { input_tokens: 1 },
   });
   expect(result.response).toEqual({
-    output_text: 'TOKEN=[redacted]',
+    output_text: 'TOKEN=[REDACTED]',
     usage: { input_tokens: 1 },
     response_error: 'Provider response was not accepted by the response contract',
   });

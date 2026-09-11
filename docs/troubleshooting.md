@@ -13,8 +13,9 @@ input.
 Review profiles that include tests run the target repository's `npm test` with
 a bounded timeout. Fix the target repository's test failure, or choose a
 longer `--test-timeout` when the test suite is expected to take longer. The
-captured output is evidence for the review and is redacted on a best-effort,
-pattern-based basis.
+captured output is evidence for the review and is redacted through the shared
+`@eliware/redact` library on a best-effort basis, using CodeScope's explicit
+500,000-character evidence limit and fixed `[REDACTED]` marker.
 
 ## Unexpected provider output
 
