@@ -6,6 +6,7 @@ never replace the placeholder with a committed credential.
 
 ## Contents
 
+- [Basic CLI example](basic.mjs) — invoke a review from a Node.js script.
 - [Review](review/) ([instructions](review/README.md)) — run a comprehensive review from another
   repository root and receive one structured result.
 

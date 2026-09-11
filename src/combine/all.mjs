@@ -4,6 +4,7 @@ export async function combineAllFiles(root, options = {}) {
   const sections = await collectAllSections(root, options);
   const combined = [
     sections.packageJson,
+    sections.json,
     sections.configs,
     sections.other,
     sections.md,

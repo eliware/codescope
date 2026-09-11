@@ -1,74 +1,38 @@
-## Repository convention contract
+## Convention v8 structured-convention review
 
-When the relevant repository artifacts are supplied, review them together for
-meaningful, accurate, coherent, and complete conventions. Do not turn missing
-or unsupplied files into findings; file existence and basic structural checks
-belong to deterministic tooling.
+When repository convention records are supplied, treat their structured JSON
+records as the authority. Inspect each record's `version`, `authority`,
+`crosslinks`, and `directives`, and apply only the directives whose declared
+applicability includes this repository. Do not infer applicability from a
+directory name, package contents, or a legacy convention that was not supplied.
 
-Review README.md for purpose, scope, requirements, setup, usage, configuration,
-validation, security, support, license, and links. Review AGENTS.md for project
-boundaries, validation instructions, documentation rules, security rules, and
-intentional exceptions. Review RELEASE_NOTES.md for accuracy, current-version
-coverage, breaking-change clarity, migration guidance, and known limitations.
-Review docs/ as useful end-user documentation, specs/ for completeness,
-navigability, normative requirements, and explicit out-of-scope behavior, and
-examples/ for safe, runnable setup aligned with the public interface. Review
-.env.example for safe placeholders, documented defaults, and consistency with
-source and README.
+Review the supplied README, AGENTS.md, documentation indexes, specs, examples,
+environment templates, package metadata, workflows, Knit configuration, source,
+tests, and JSON records together for semantic accuracy and consistency. The
+README and indexes are navigation surfaces; supplied JSON authority records
+carry normative requirements when they are present. Review explicit
+out-of-scope and intentional-boundary statements as part of the contract.
 
-Review supplied package metadata for accurate description, relevant keywords,
-the exact public Eliware author identity `Eliware <eliware@eliware.org>` when
-the package is Eliware-owned, repository/bugs/homepage, license agreement,
-package and README branding, exports/declarations, package contents, scripts,
-engines, dependencies, and publish settings. For public Eliware packages,
-require the `@eliware` package scope, Eliware branding, the canonical GitHub
-repository, the Eliware Discord URL `https://discord.gg/M6aTR9eTwN` in public
-community/support links, and agreement between package metadata and README.
-Review cross-artifact consistency among
-README, examples, specs, implementation, tests, release notes, package
-metadata, CI, and package scripts. Do not infer CI, publication, deployment,
-rollback, registry, or Git state unless supplied as evidence.
+Treat missing or unsupplied artifacts as unknown, not defective. Do not claim
+that a file, workflow, package field, validation result, or external record is
+absent unless the supplied inventory or evidence proves it. This is a one-shot
+review: do not ask the repository to run commands, open files you were not
+given, or verify external state. Deterministic tooling owns file existence,
+format checks, coverage gates, and command execution; review their supplied
+results when present and assess whether documentation and configuration make
+meaningful claims.
 
-Do not report missing stored CI or release-result evidence. Repositories are
-not required to commit historical workflow results. Review supplied workflow
-configuration and documentation claims for consistency, but require an actual
-supplied command result before reporting a failed or unverified validation
-execution. When a supplied workflow file exists, it is CI configuration
-evidence: inspect its jobs, runners, triggers, and commands. Do not report
-“no CI workflow evidence” merely because runtime CI results are absent, and do
-not claim a configured runner is missing when the supplied workflow declares
-it. Validate the supplied workflow configuration itself: an Ubuntu runner is
-required where the repository contract requires CI, while a Windows runner is
-optional unless the repository explicitly requires it. Never report that CI
-passed, failed, or lacks passing evidence unless an actual CI result is
-supplied.
-Do not report a release-documentation claim about Ubuntu or Windows CI as
-missing evidence merely because execution results are not supplied. Treat the
-claim as a documentation defect only when supplied workflow configuration
-contradicts it or supplied documentation contradicts the declared workflow.
+Review formatter configuration and the semantic correctness of format-related
+documentation, but do not replace the deterministic formatter checks owned by
+@eliware/test. Review package metadata, public API documentation, examples,
+specifications, release notes, and crosslinks only against supplied evidence.
+Respect precise attached CodeScope ignores and documented accepted or
+out-of-scope behavior when the implementation matches that boundary.
 
-When supplied, review these Convention v6.2 structural requirements rather than merely
-noting them: the direct-document indexes and minimum end-user document counts
-under `docs/`; normative scope, complete links, and explicit out-of-scope
-behavior under `specs/`; runnable prerequisites, commands, expected results,
-and safe placeholders under `examples/`; Node.js 26, the committed formatter
-configuration, `format` and `format:check` scripts, and exact local
-`eliware-test` scripts; CI event, runtime, validation, permission, and
-publication separation; `.knit/deploy.yaml` as the sole Knit command source;
-shared-stack usage, including `@eliware/common` for logging, paths, errors,
-and lifecycle APIs; and exact mirrored source/test architecture with thin
-entrypoints, focused modules, and no catch-all tests. Review supplied release
-documentation against the canonical release-flow material rather than
-inventing release state. CodeScope is a one-shot reviewer: it cannot open
-referenced convention files, run validation, or verify external metadata unless
-that material is included in the request.
-
-Report documentation, example, or convention issues as P1 only when they
-materially mislead users, invalidate required release behavior, create a
-security problem, or make validation untrustworthy. Keep ordinary omissions,
-polish, and non-blocking quality improvements at P2 or P3. Every finding must
-have a concrete supplied location, evidence, current impact, and practical
-correction. Respect precise attached codescope ignore comments and documented
-intentional or out-of-scope behavior. Do not duplicate the same underlying
-finding between documentation and release categories; report it once in the
-best-fit category.
+Report only actionable, evidence-backed findings with a concrete supplied
+location, current impact, and practical correction. Do not duplicate one issue
+under multiple categories. Classify ordinary quality improvements as P2 or P3;
+reserve P1 for a proven defect that materially misleads users, invalidates a
+required release behavior, creates a security problem, or makes supplied
+validation untrustworthy. Never infer CI, publication, deployment, rollback,
+registry, or historical execution state that was not supplied.

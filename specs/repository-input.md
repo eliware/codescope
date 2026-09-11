@@ -5,12 +5,14 @@
 The comprehensive context is assembled in this order:
 
 1. `package.json`
-2. `.github` and `.knit` text configuration files, with each file limited to 200 lines
-3. Markdown files
-4. Implementation files
-5. Test files
-6. Test execution results when the selected profile includes tests
-7. A names-only inventory of remaining files, including text line/byte counts and binary byte counts
+2. Root, `docs/`, `examples/`, and `specs/` JSON files, excluding
+   `package-lock.json`
+3. `.github` and `.knit` text configuration files, with each file limited to 200 lines
+4. Markdown files
+5. Implementation files
+6. Test files
+7. Test execution results when the selected profile includes tests
+8. A names-only inventory of remaining files, including text line/byte counts and binary byte counts
 
 Files already included in an earlier section are omitted from the final
 inventory.
@@ -19,7 +21,9 @@ inventory.
 
 Implementation discovery includes `.js`, `.mjs`, `.cjs`, and `.ts` files.
 Test discovery includes `.test.js`, `.test.cjs`, and `.test.mjs` files.
-Markdown discovery includes `.md` files.
+Markdown discovery includes `.md` files. JSON context includes only JSON files
+in the repository root, `docs/`, `examples/`, and `specs/`; `package-lock.json`
+and JSON elsewhere remain inventory-only.
 
 Root generated coverage directories, dependency directories, Git metadata, and
 coverage data are excluded. Legitimate nested source directories such as

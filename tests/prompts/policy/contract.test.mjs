@@ -1,9 +1,7 @@
 import { contractPolicy } from '../../../src/prompts/policy/contract.mjs';
 test('defines supplied repository contract boundaries', () => {
-  expect(contractPolicy).toContain('100×4');
-  expect(contractPolicy).toContain('Istanbul ignore');
-  expect(contractPolicy).toContain('missing execution evidence is not a defect');
-  expect(contractPolicy).toContain('Eliware <eliware@eliware.org>');
-  expect(contractPolicy).toContain('https://discord.gg/M6aTR9eTwN');
-  expect(contractPolicy).toContain('Convention v6.2');
+  expect(contractPolicy).toContain('Convention v8');
+  expect(contractPolicy).toContain('applicability includes');
+  expect(contractPolicy).toContain('one-shot');
+  expect(contractPolicy).toContain('missing or unsupplied evidence as unknown');
 });

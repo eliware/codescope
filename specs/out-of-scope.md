@@ -7,7 +7,8 @@ contract unless the caller supplies direct evidence for it:
   `npm pack`, `npm audit`, or other commands whose output was not supplied.
 - Files excluded by the selected profile or absent from the supplied context.
 - JSON, YAML, TOML, lockfiles, fixtures, schemas, assets, and generated files
-  when their contents were not included.
+  when their contents were not included. JSON files in the repository root,
+  `docs/`, `examples/`, and `specs/` are included except `package-lock.json`.
 - Symbolic links and their targets.
 - Coverage artifacts and root generated coverage output.
 - Provider internals, operating-system behavior, and delegated child-process
