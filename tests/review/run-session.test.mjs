@@ -12,6 +12,7 @@ test('runs a plain-text provider session and writes the result', async () => {
     plainText: 'review',
   });
   expect(result.verdict).toBe('pass');
+  expect(JSON.parse(writes[0])).toEqual({ verdict: 'pass' });
   expect(writes).toHaveLength(1);
 });
 
@@ -34,7 +35,9 @@ test('parses a normal review tool response', async () => {
     },
     request: reviewRequest,
     signal: new AbortController().signal,
-    write: async () => {},
+    write: async (value) => {
+      expect(JSON.parse(value)).toEqual({ verdict: 'pass', issues: {} });
+    },
     dryRun: false,
     usage: false,
   });

@@ -95,7 +95,7 @@ Append `--usage` to either grouped (`codescope review all`) or direct (`codescop
 Append `--dry-run` to prepare a request derived from the review context and ask OpenAI for its estimated input-token count without running a model review. The option reports the selected model and estimated input tokens; combine it with `--usage` when you want the count under `usage` as well.
 
 When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated.
-Review profiles that include tests use package metadata, implementation files, test files, test results, and Markdown files. They run `npm test` in the target repository with a 30-second timeout by default. Use `--omit-test-results` to skip that command or `--test-timeout 120` to override the timeout. Suggestion profiles do not run tests.
+Review profiles that include tests use package metadata, implementation files, test files, test results, and Markdown files. They run `npm test` in the target repository with a 30-second timeout by default, unless `--omit-test-results` is supplied. Omitting the command also omits execution evidence, so the review cannot assess test results. Use `--test-timeout 120` to override the timeout. Suggestion profiles do not run tests.
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
 
