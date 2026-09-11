@@ -1,11 +1,8 @@
 import { lstat, readFile } from 'node:fs/promises';
-import path from 'node:path';
 import { findFiles } from '../find/files.mjs';
-import { formatSourceSection } from './section-format.mjs';
 import { validateCombineOptions } from './policies.mjs';
-import { readSourceFile } from './read-file.mjs';
-import { assertWithinLimit, getBatchSize } from './limits.mjs';
-import { readBatches } from './batches.mjs';
+import { getBatchSize } from './limits.mjs';
+import { combineFileSections } from './file-sections.mjs';
 
 export async function combineFiles(
   root,
@@ -28,25 +25,15 @@ export async function combineFiles(
 
   // Windows-style roots are rejected above on non-Windows hosts; on supported
   // hosts the native path implementation is the only valid one.
-  const pathApi = path;
-  const rootPath = pathApi.resolve(root);
-
   const batchSize = getBatchSize(maxChars, concurrency);
-  const sections = await readBatches(files, {
-    batchSize,
+  return combineFileSections(root, files, {
     maxChars,
-    read: async (relativePath) => {
-      const resolvedPath = pathApi.resolve(rootPath, relativePath);
-      const contents = await readSourceFile(relativePath, resolvedPath, {
-        readFileContents,
-        inspectFile,
-        validateSymlinks,
-      });
-      if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
-      return formatSourceSection(relativePath, contents);
-    },
+    concurrency,
+    batchSize,
+    readFileContents,
+    inspectFile,
+    validateSymlinks,
   });
-  return sections.join('\n');
 }
 
 export const combineMjsFiles = (root, options) => combineFiles(root, '.mjs', options);

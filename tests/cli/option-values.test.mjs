@@ -1,4 +1,8 @@
-import { parseOptionValues, parseTimeoutOption } from '../../src/cli/option-values.mjs';
+import {
+  parseCommandOptions,
+  parseOptionValues,
+  parseTimeoutOption,
+} from '../../src/cli/option-values.mjs';
 
 test('parses supported scalar options and removes them from the command tokens', () => {
   expect(parseOptionValues(['all', '--effort=low', '--model=gpt-5.6-sol', '--dry-run'])).toEqual({
@@ -31,5 +35,16 @@ test('parses and validates a timeout option', () => {
   expect(() => parseTimeoutOption(['--test-timeout', 'x'])).toThrow(/Usage/);
   expect(() => parseTimeoutOption(['--test-timeout', '1', '--test-timeout', '2'])).toThrow(
     /Only one/,
+  );
+});
+
+test('parses command options and rejects unsupported command tokens', () => {
+  expect(parseCommandOptions(['--usage'], 'usage', new Set(['--usage']))).toMatchObject({
+    remaining: ['--usage'],
+  });
+  expect(() => parseCommandOptions(['--bad'], 'usage', new Set(['--usage']))).toThrow('usage');
+  expect(() => parseCommandOptions(['--version'], 'usage', new Set(), true)).toThrow('not valid');
+  expect(() => parseCommandOptions(['--usage', '--usage'], 'usage', new Set(['--usage']))).toThrow(
+    'usage',
   );
 });

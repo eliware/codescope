@@ -1,81 +1,48 @@
-import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { API_PRICING } from '../src/pricing.mjs';
+import process from 'node:process';
 import { benchmarkExitCode } from '../src/benchmark-status.mjs';
-import { runProcess } from '../src/benchmark/runner.mjs';
+import { runBenchmarkPreflight } from '../src/benchmark/preflight.mjs';
+import { runEffortBenchmarks } from '../src/benchmark/effort-runs.mjs';
+import { resolveBenchmarkOptions } from '../src/benchmark/options.mjs';
 import { writeBenchmarkSummary } from '../src/benchmark/summary.mjs';
 
-const efforts = ['none', 'low', 'medium', 'high'];
-const model =
-  process.argv.find((value) => value.startsWith('--model='))?.slice('--model='.length) ??
-  'gpt-5.6-luna';
-if (!Object.hasOwn(API_PRICING, model))
-  throw new Error(`Model must be one of: ${Object.keys(API_PRICING).join(', ')}`);
-const pricing = API_PRICING[model];
-const cwd = process.cwd();
-const scriptDirectory = dirname(fileURLToPath(import.meta.url));
-const executable = resolve(scriptDirectory, '..', 'bin', 'codescope.mjs');
-const stamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
-const logDirectory = resolve(cwd, 'benchmark-results', `effort-${stamp}`);
-const summaryPath = resolve(logDirectory, 'summary.json');
+const options = resolveBenchmarkOptions(process.argv.slice(2), process.cwd());
+const completedResults = [];
 let summaryWrite = Promise.resolve();
-
-const updateSummary = (npmTest, results) => {
-  summaryWrite = summaryWrite.then(() => writeBenchmarkSummary(summaryPath, {
-    cwd, npmTest, model, pricing, efforts, results, logs: logDirectory,
-  }));
+const updateSummary = (npmTest) => {
+  summaryWrite = summaryWrite.then(() =>
+    writeBenchmarkSummary(options.summaryPath, {
+      ...options,
+      npmTest,
+      results: completedResults,
+      logs: options.logDirectory,
+    }),
+  );
   return summaryWrite;
 };
 
-await mkdir(logDirectory, { recursive: true });
-console.log(`Running npm test in ${cwd}`);
-const testCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const testArgs = ['test'];
-const testResult = await runProcess(testCommand, testArgs, cwd);
-await writeFile(resolve(logDirectory, 'npm-test.log'), testResult.output, 'utf8');
-const completedResults = [];
-await updateSummary(testResult, completedResults);
+console.log(`Running npm test in ${options.cwd}`);
+const testResult = await runBenchmarkPreflight(options);
+await updateSummary(testResult);
 console.log(`npm test: ${testResult.elapsedMs.toFixed(0)} ms (exit ${testResult.code})`);
-
 if (testResult.code !== 0) {
   console.error('npm test failed; skipping provider benchmark runs');
   process.exitCode = testResult.code ?? 1;
 } else {
-  console.log(`Running codescope all for ${efforts.join(', ')} in parallel`);
-  const started = performance.now();
-  const runEffort = async (effort) => {
-      const result = await runProcess(process.execPath, [
-        executable,
-        'all',
-        `--model=${model}`,
-        `--effort=${effort}`,
-        '--usage',
-      ], cwd);
-      await writeFile(resolve(logDirectory, `codescope-all-${effort}.log`), result.output, 'utf8');
-      completedResults.push({ effort, ...result });
-      await updateSummary(testResult, completedResults);
-      return { effort, ...result };
-  };
-  const results = [];
-  let nextEffort = 0;
-  const workers = Array.from({ length: Math.min(2, efforts.length) }, async () => {
-    while (true) {
-      const index = nextEffort++;
-      if (index >= efforts.length) return;
-      results[index] = await runEffort(efforts[index]);
-    }
+  console.log(`Running codescope all for ${options.efforts.join(', ')} in parallel`);
+  const benchmark = await runEffortBenchmarks({
+    options,
+    onResult: async (result) => {
+      completedResults.push(result);
+      await updateSummary(testResult);
+    },
   });
-  await Promise.all(workers);
-
-  if (benchmarkExitCode(results, efforts.length) !== 0) {
+  if (benchmarkExitCode(benchmark.results, options.efforts.length) !== 0) {
     console.error('One or more provider benchmark runs failed; benchmark is incomplete');
     process.exitCode = 1;
   }
   await summaryWrite;
-
-  console.log(`\nLogs: ${logDirectory}`);
-  console.log(`Parallel batch elapsed: ${(performance.now() - started).toFixed(0)} ms`);
-  for (const result of results)
+  console.log(`\nLogs: ${options.logDirectory}`);
+  console.log(`Parallel batch elapsed: ${benchmark.elapsedMs.toFixed(0)} ms`);
+  for (const result of benchmark.results)
     console.log(`${result.effort}: ${result.elapsedMs.toFixed(0)} ms (exit ${result.code})`);
 }

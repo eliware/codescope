@@ -1,7 +1,7 @@
-import { createReviewTool, createSuggestionTool, SUGGESTION_CATEGORIES } from '../prompt.mjs';
 import { getProfileFiles } from './metadata.mjs';
 import { getPromptRouting } from './prompt-routing.mjs';
 import { createProfileCombiner } from './source-selection.mjs';
+import { decorateProfilePrompt } from './tool-decoration.mjs';
 export { PROFILE_NAMES } from './metadata.mjs';
 
 export function getProfile(profile, mode = 'review') {
@@ -10,20 +10,7 @@ export function getProfile(profile, mode = 'review') {
   const [, tests] = profileFiles;
   const reviewSources = mode === 'review';
   const combine = createProfileCombiner(profileFiles, mode);
-
   const { promptSource, suggestionCategories } = getPromptRouting(profile, mode);
-  const prompt = structuredClone(promptSource);
-  if (mode === 'suggest') {
-    const categories = [
-      ...new Set([...(suggestionCategories ?? SUGGESTION_CATEGORIES), 'new-features']),
-    ];
-    const tool = createSuggestionTool(categories);
-    prompt.tools = [tool];
-    prompt.tool_choice = { type: 'function', name: tool.name };
-  } else if (suggestionCategories) {
-    const tool = createReviewTool(suggestionCategories);
-    prompt.tools = [tool];
-    prompt.tool_choice = { type: 'function', name: tool.name };
-  }
+  const prompt = decorateProfilePrompt(promptSource, mode, suggestionCategories);
   return { combine, prompt, includesTests: reviewSources || tests };
 }

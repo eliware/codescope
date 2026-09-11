@@ -1,8 +1,5 @@
-import { parseProviderResult } from './provider-result.mjs';
 import { writeJsonResult } from './output.mjs';
-import { runDryRun } from './dry-run.mjs';
-import { requestProviderResponse } from './provider-request.mjs';
-import { plainTextSessionResult, reviewSessionResult } from './session-result.mjs';
+import { runDrySession, runProviderSession } from './session-modes.mjs';
 import { throwSessionFailure } from './session-failure.mjs';
 
 export async function runReviewSession({
@@ -19,27 +16,20 @@ export async function runReviewSession({
   let providerResponseReceived = false;
   try {
     if (dryRun) {
-      const output = await runDryRun({ client, request, signal, model: request.model, usage });
-      await writeJsonResult(write, output);
-      return output;
+      return await runDrySession({ client, request, signal, write, usage });
     }
-    providerResponse = await requestProviderResponse(client, request, signal);
-    providerResponseReceived = true;
-    if (plainText !== undefined) {
-      const { output, result } = plainTextSessionResult(providerResponse, usage);
-      await writeJsonResult(write, output, 'prompt');
-      return result;
-    }
-    const output = reviewSessionResult(
-      providerResponse,
+    const session = await runProviderSession({
+      client,
       request,
-      request.model,
+      signal,
       usage,
+      plainText,
       testResults,
-      parseProviderResult,
-    );
-    await writeJsonResult(write, output);
-    return output;
+    });
+    providerResponse = session.providerResponse;
+    providerResponseReceived = true;
+    await writeJsonResult(write, session.output, session.outputKind);
+    return session.result;
   } catch (cause) {
     return throwSessionFailure({ cause, providerResponse, providerResponseReceived, write });
   }

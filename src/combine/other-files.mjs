@@ -1,8 +1,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-
-const CODE_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts'];
-const MAX_OTHER_FILE_BYTES = 2_000_000;
+import { isIncludedContent, MAX_OTHER_FILE_BYTES } from './other-policy.mjs';
+import { formatOtherFile } from './other-metadata.mjs';
 
 export async function describeOtherFiles(
   root,
@@ -39,23 +38,10 @@ export async function describeOtherFiles(
         continue;
       }
       totalBytes += actualAdditionalBytes;
-      if (bytes.includes(0)) entries.push(`${relativePath} | binary | ${bytes.byteLength} bytes`);
-      else {
-        const text = bytes.toString('utf8');
-        entries.push(
-          `${relativePath} | text | ${text.split(/\r\n|\r|\n/u).length} lines | ${bytes.byteLength} bytes`,
-        );
-      }
+      entries.push(formatOtherFile(relativePath, bytes));
     }
   };
   const workerCount = Math.min(4, paths.length);
   await Promise.all(Array.from({ length: workerCount }, () => worker()));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
-}
-
-function isIncludedContent(relativePath) {
-  const lower = relativePath.toLowerCase();
-  if (lower === 'package.json' || lower.endsWith('.md')) return true;
-  if (lower.startsWith('.github/') || lower.startsWith('.knit/')) return true;
-  return CODE_EXTENSIONS.some((extension) => lower.endsWith(extension));
 }

@@ -262,12 +262,16 @@ change, no orchestrator owns leaf policy, and no test suite proxies another.
       the benchmark script now retain orchestration only while traversal, section
       collection, batching, process execution, and summary persistence live in
       dedicated modules.
-- [ ] Finish decomposing the remaining CLI entrypoint and lifecycle
-      orchestration responsibilities into coordinator-only modules.
-- [ ] Pass strict architecture validation with no exemptions after the
+- [x] Finish decomposing the remaining CLI argument metadata parsing and review
+      session mode boundaries into coordinator-only modules.
+- [x] Pass strict architecture validation with no exemptions after the
       remaining decomposition and its mirrored tests are complete.
-
-These two items are explicitly deferred non-blocking maintenance work. They do
-not indicate a missing user-facing CLI capability or a release validation
-failure; the current modules remain covered by the repository's functional and
-coverage checks until that focused refactoring is scheduled.
+- [x] Decompose benchmark option, preflight, effort-run, metric, and report
+      responsibilities into focused benchmark modules.
+- [x] Decompose review environment loading, test execution/evidence, provider
+      response handling, failure handling, and session-result modes.
+- [x] Decompose context collection, other-file policy/metadata, profile tool
+      decoration, prompt envelope/policy evidence, and response validation.
+- [x] Leave only thin orchestration modules and compatibility barrels at the
+      composition boundaries; each extracted production module has a mirrored
+      focused test.

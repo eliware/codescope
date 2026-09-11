@@ -1,5 +1,8 @@
-const EFFORTS = ['none', 'low', 'medium', 'high', 'xhigh', 'max'];
-const MODELS = ['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol'];
+import { validateEffort, validateModel } from './option-validation.mjs';
+import { parseTimeoutOption } from './timeout-options.mjs';
+
+export { parseTimeoutOption } from './timeout-options.mjs';
+export { validateEffort, validateModel } from './option-validation.mjs';
 
 export function parseOptionValues(tokens) {
   const effortTokens = tokens.filter((value) => value.startsWith('--effort='));
@@ -20,32 +23,6 @@ export function parseOptionValues(tokens) {
       (value) =>
         !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',
     ),
-  };
-}
-
-export function validateEffort(effort) {
-  if (effort && !EFFORTS.includes(effort))
-    throw new Error(`Effort must be one of: ${EFFORTS.join(', ')}`);
-}
-
-export function validateModel(model) {
-  if (model && !MODELS.includes(model))
-    throw new Error(`Model must be one of: ${MODELS.join(', ')}`);
-}
-
-export function parseTimeoutOption(
-  tokens,
-  usage = 'Usage: codescope review|suggest <profile> [options]',
-) {
-  const indexes = tokens.flatMap((value, index) => (value === '--test-timeout' ? [index] : []));
-  if (indexes.length > 1) throw new Error('Only one --test-timeout option is allowed');
-  if (!indexes.length) return { remaining: tokens, testTimeout: undefined };
-  const index = indexes[0];
-  const testTimeout = tokens[index + 1];
-  if (!/^\d+$/u.test(testTimeout ?? '') || Number(testTimeout) < 1) throw new Error(usage);
-  return {
-    testTimeout,
-    remaining: tokens.filter((_, itemIndex) => itemIndex !== index && itemIndex !== index + 1),
   };
 }
 
