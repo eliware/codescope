@@ -10,10 +10,15 @@ test('accepts omitted dotenv text', () => {
   expect(() => loadEnv(undefined, {})).not.toThrow();
 });
 
+test('rejects invalid environment containers', () => {
+  expect(() => loadEnv('OPENAI_API_TOKEN=token-placeholder', null)).toThrow(/mutable object/);
+  expect(() => loadEnv('OPENAI_API_TOKEN=token-placeholder', [])).toThrow(/mutable object/);
+});
+
 test('loads the supported token assignment', () => {
   const environment = {};
-  loadEnv('OPENAI_API_TOKEN=test-token', environment);
-  expect(environment.OPENAI_API_TOKEN).toBe('test-token');
+  loadEnv('OPENAI_API_TOKEN=token-placeholder', environment);
+  expect(environment.OPENAI_API_TOKEN).toBe('token-placeholder');
 });
 
 test('loads supported dotenv syntax and only the API token', () => {

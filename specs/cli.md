@@ -9,6 +9,11 @@
 - A direct profile name is accepted as shorthand where supported.
 - `codescope prompt "..."` sends a custom plain-text request using the normal repository context without review or suggestion tools.
 
+Custom prompts reuse the shared request envelope for model, effort, usage, and
+context settings, but intentionally disable review and suggestion tools. Their
+provider response is returned to the downstream AI consumer without a verdict
+requirement.
+
 ## Options
 
 - `--usage` includes provider token and calculated cost data.
@@ -35,3 +40,7 @@ is derived only from the provider `verdict`: exact `pass` succeeds and every
 other or missing value is blocked. Exit codes
 distinguish configuration, request, provider, response, and review-verdict
 failures.
+
+If writing a successful or fallback result fails, the operation remains fatal;
+programmatic callers may inspect the thrown error's preserved `result` and
+`fallbackError` metadata.

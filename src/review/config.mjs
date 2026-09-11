@@ -6,6 +6,8 @@ export function defaultEnvFile() {
 }
 
 export function loadEnv(text = '', environment) {
+  if (!environment || typeof environment !== 'object' || Array.isArray(environment))
+    throw new Error('Environment must be a mutable object');
   const seen = new Set();
   for (const line of text.split(/\r?\n/u)) {
     const match = line.match(/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/u);
