@@ -8,16 +8,12 @@ export function defaultEnvFile() {
 export function loadEnv(text = '', environment) {
   if (!environment || typeof environment !== 'object' || Array.isArray(environment))
     throw new Error('Environment must be a mutable object');
-  const seen = new Set();
   for (const line of text.split(/\r?\n/u)) {
     const match = line.match(/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/u);
     if (!match) {
       if (line.trim() && !line.trim().startsWith('#')) throw new Error('Invalid .env line');
       continue;
     }
-
-    if (seen.has(match[1])) continue;
-    seen.add(match[1]);
 
     if (environment[match[1]]?.trim()) continue;
     const raw = match[2].trim();

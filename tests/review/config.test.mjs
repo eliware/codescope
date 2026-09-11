@@ -38,6 +38,12 @@ test('loads supported dotenv syntax and only the API token', () => {
   expect(environment.IGNORED).toBeUndefined();
 });
 
+test('allows a later usable token after a blank duplicate assignment', () => {
+  const environment = {};
+  loadEnv('OPENAI_API_TOKEN=\nOPENAI_API_TOKEN=token-placeholder', environment);
+  expect(environment.OPENAI_API_TOKEN).toBe('token-placeholder');
+});
+
 test('handles duplicates and pre-existing environment values', () => {
   const environment = { OPENAI_API_TOKEN: 'already' };
   loadEnv('OPENAI_API_TOKEN=ignored\nOPENAI_API_TOKEN=also-ignored', environment);
