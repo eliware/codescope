@@ -2,6 +2,9 @@
 
 ## 8.0.0
 
+- Strengthened one-shot review completeness instructions and unified-tool
+  descriptions to require exhaustive issue enumeration without expanding
+  individual finding prose.
 - Clarified one-shot review prompts so finding prose remains concise without
   reducing exhaustive issue enumeration; if 100 issues are supported, all 100
   must be reported.

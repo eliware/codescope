@@ -5,7 +5,7 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
     type: 'function',
     name: 'submit_unified_review',
     description:
-      'Return one consolidated Codescope review with each finding and its recommendation together.',
+      'Return one exhaustive consolidated CodeScope review. Enumerate every distinct actionable finding supported by the supplied evidence; never return a representative sample, shortlist, or only the highest-priority findings. Keep each item concise without reducing the total number of findings.',
     strict: true,
     parameters: {
       type: 'object',
@@ -17,7 +17,13 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
           properties: Object.fromEntries(
             categories.map((category) => [
               category,
-              { type: 'array', minItems: 1, items: { $ref: '#/$defs/finding' } },
+              {
+                type: 'array',
+                minItems: 1,
+                description:
+                  'Complete exhaustive list of all distinct actionable findings supported by the supplied evidence. Do not return a sample or only the highest-priority items. Use exactly one none sentinel only when no actionable finding exists.',
+                items: { $ref: '#/$defs/finding' },
+              },
             ]),
           ),
           required: [...categories],
