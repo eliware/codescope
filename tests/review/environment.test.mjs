@@ -141,6 +141,18 @@ test('rejects an explicitly unrestricted Windows default environment file', asyn
   ).rejects.toThrow(/other users/);
 });
 
+test('rejects Windows default environment files without trusted ACL metadata', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      envFile: defaultEnvFile(),
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => ({}),
+      platform: 'win32',
+    }),
+  ).rejects.toThrow(/other users/);
+});
+
 test('allows a missing Windows default environment file', async () => {
   await expect(
     loadReviewEnvironment({

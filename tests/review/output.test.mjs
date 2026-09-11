@@ -11,6 +11,10 @@ test('writes indented JSON with a trailing newline', async () => {
   expect(output).toBe('{\n  "ok": true\n}\n');
 });
 
+test('returns no fallback error when writing succeeds', async () => {
+  await expect(writeFallbackResult(() => undefined, { ok: true })).resolves.toBeUndefined();
+});
+
 test('adds output context to writer failures', async () => {
   await expect(
     writeJsonResult(
@@ -23,7 +27,7 @@ test('adds output context to writer failures', async () => {
   ).rejects.toThrow('Unable to write custom output: disk full');
 });
 
-test('does not replace a provider failure when fallback writing fails', async () => {
+test('returns fallback writer failures without replacing the original failure', async () => {
   await expect(
     writeFallbackResult(
       () => {
@@ -31,7 +35,7 @@ test('does not replace a provider failure when fallback writing fails', async ()
       },
       { error: 'provider' },
     ),
-  ).resolves.toBeUndefined();
+  ).resolves.toMatchObject({ message: 'disk full' });
 });
 
 test('formats non-error writer failures', async () => {

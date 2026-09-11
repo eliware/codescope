@@ -10,10 +10,8 @@ export function parseOptionValues(tokens) {
   if (dryRunTokens.length > 1) throw new Error('Only one --dry-run option is allowed');
   const effort = effortTokens[0]?.slice('--effort='.length);
   const model = modelTokens[0]?.slice('--model='.length);
-  if (effort && !EFFORTS.includes(effort))
-    throw new Error(`Effort must be one of: ${EFFORTS.join(', ')}`);
-  if (model && !MODELS.includes(model))
-    throw new Error(`Model must be one of: ${MODELS.join(', ')}`);
+  validateEffort(effort);
+  validateModel(model);
   return {
     effort,
     model,
@@ -23,6 +21,16 @@ export function parseOptionValues(tokens) {
         !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',
     ),
   };
+}
+
+export function validateEffort(effort) {
+  if (effort && !EFFORTS.includes(effort))
+    throw new Error(`Effort must be one of: ${EFFORTS.join(', ')}`);
+}
+
+export function validateModel(model) {
+  if (model && !MODELS.includes(model))
+    throw new Error(`Model must be one of: ${MODELS.join(', ')}`);
 }
 
 export function parseTimeoutOption(

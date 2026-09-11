@@ -22,6 +22,24 @@ test('review-session exposes fallback output on write failure', async () => {
   ).rejects.toMatchObject({ result: { issues: 'not submitted', suggestions: 'not submitted' } });
 });
 
+test('preserves fallback write failure alongside incomplete result', async () => {
+  await expect(
+    runReviewSession({
+      client: { responses: { create: async () => ({ output: [] }) } },
+      request: { model: 'gpt-5.6-luna' },
+      signal: new AbortController().signal,
+      write: async () => {
+        throw new Error('disk full');
+      },
+      dryRun: false,
+      usage: false,
+    }),
+  ).rejects.toMatchObject({
+    result: { issues: 'not submitted' },
+    fallbackError: { message: 'disk full' },
+  });
+});
+
 test('creates a provider failure with the original cause', () => {
   const cause = new Error('invalid response');
   const failure = createProviderFailure(cause);

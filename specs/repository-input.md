@@ -48,6 +48,13 @@ hexadecimal values, and other long opaque values that resemble secrets. The
 output is then length-limited. This pre-AI step is a data-minimization measure,
 not proof that the context is secret-free.
 
+Test-inclusive profiles execute the reviewed repository's `npm test` with its
+inherited environment, and the captured output is sent to the configured
+provider after this best-effort redaction. Do not review workspaces containing
+credentials or other sensitive values; sanitize source, fixtures, and logs
+before running CodeScope. Redaction is not a guarantee that arbitrary secrets
+are removed.
+
 The AI must perform a second, independent secret-exposure review over all
 supplied context. It must report any visible or redacted credential, token,
 password, private key, or other secret as P0. A redaction marker is evidence

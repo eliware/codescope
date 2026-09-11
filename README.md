@@ -104,7 +104,7 @@ The effort benchmark runs `npm test` first, then runs `none`, `low`, `medium`, a
 ## Security and operations
 
 Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.
-Test-output redaction is best-effort and pattern-based; do not treat it as a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
+Test-inclusive profiles execute the reviewed repository's `npm test` with its inherited environment, and the captured output is sent to the configured provider after best-effort pattern-based redaction. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
 Use `codescope review all` for release-readiness review.
 
 ## Support

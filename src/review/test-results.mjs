@@ -15,8 +15,10 @@ export function resolveResultCode(result) {
 }
 
 export function normalizeExecutionResult(result, isDefaultExecutor) {
-  void isDefaultExecutor;
-  return { ...result, code: result.code ?? 0 };
+  return {
+    ...result,
+    code: result.code === undefined ? (isDefaultExecutor ? 0 : 'unknown') : result.code,
+  };
 }
 
 const isNpmExecPath = (value) =>

@@ -44,10 +44,11 @@ export async function runReviewSession({
     const incomplete = providerResponseReceived
       ? createIncompleteResult(cause, providerResponse)
       : undefined;
-    if (incomplete) await writeFallbackResult(write, incomplete);
+    const fallbackError = incomplete ? await writeFallbackResult(write, incomplete) : undefined;
     const failure = createProviderFailure(cause);
     if (cause?.code) failure.code = cause.code;
     if (incomplete) failure.result = incomplete;
+    if (fallbackError) failure.fallbackError = fallbackError;
     throw failure;
   }
 }

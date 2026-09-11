@@ -1,5 +1,4 @@
-const EFFORTS = ['none', 'low', 'medium', 'high', 'xhigh', 'max'];
-const MODELS = ['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol'];
+import { validateEffort, validateModel } from './option-values.mjs';
 
 export function parsePromptArgs(args) {
   const delimiter = args.indexOf('--');
@@ -24,9 +23,7 @@ export function parsePromptArgs(args) {
     throw new Error('Usage: codescope prompt <prompt text> [--effort=...] [--model=...]');
   const effort = effortToken?.slice('--effort='.length);
   const model = modelToken?.slice('--model='.length);
-  if (effort && !EFFORTS.includes(effort))
-    throw new Error('Effort must be one of: none, low, medium, high, xhigh, max');
-  if (model && !MODELS.includes(model))
-    throw new Error('Model must be one of: gpt-5.6-luna, gpt-5.6-terra, gpt-5.6-sol');
+  validateEffort(effort);
+  validateModel(model);
   return { command: 'prompt', promptText, effort, model };
 }

@@ -148,3 +148,26 @@ test('uses the review tool when no tool name is supplied', () => {
     verdict: 'pass',
   });
 });
+
+test('routes the unified review tool through the shared response entry point', () => {
+  const unified = {
+    findings: {
+      correctness: [
+        {
+          severity: 'none',
+          location: 'none',
+          finding: 'No issues found.',
+          recommendation: '',
+          rationale: '',
+          ignore_example: '// codescope ignore: no actionable finding',
+        },
+      ],
+    },
+    verdict: 'pass',
+  };
+  expect(
+    parseResponseTool(response(unified, 'submit_unified_review'), 'submit_unified_review', [
+      'correctness',
+    ]),
+  ).toEqual(unified);
+});

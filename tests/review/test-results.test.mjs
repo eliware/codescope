@@ -15,9 +15,14 @@ test('resolves explicit and missing runner exit codes safely', () => {
 
 test('normalizes injected and built-in executor results', () => {
   const result = { stdout: 'x' };
-  expect(normalizeExecutionResult(result, false)).toMatchObject({ code: 0 });
+  expect(normalizeExecutionResult(result, false)).toMatchObject({ code: 'unknown' });
   expect(normalizeExecutionResult(result, true)).toMatchObject({ code: 0 });
   expect(normalizeExecutionResult({ code: 2 }, true).code).toBe(2);
+});
+
+test('preserves an explicit null execution code as unknown', () => {
+  expect(normalizeExecutionResult({ code: null }, true).code).toBeNull();
+  expect(resolveResultCode(normalizeExecutionResult({ code: null }, true))).toBe('unknown');
 });
 
 test('identifies failed and timed-out test evidence', () => {
@@ -155,7 +160,7 @@ test('rejects invalid timeout and normalizes missing runner status', async () =>
   );
   await expect(
     collectTestResults('repo', 1000, async () => ({ stdout: '', stderr: '' })),
-  ).resolves.toContain('exit code: 0');
+  ).resolves.toContain('exit code: unknown');
 });
 
 test('uses the built-in test executor when none is supplied', async () => {

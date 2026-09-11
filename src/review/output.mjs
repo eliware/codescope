@@ -14,7 +14,8 @@ export async function writeJsonResult(write, output, label = 'review') {
 export async function writeFallbackResult(write, output) {
   try {
     await write(`${bestEffortPrettyPrint(output)}\n`);
-  } catch {
-    // Preserve the original provider or validation failure when fallback output cannot be written.
+    return undefined;
+  } catch (cause) {
+    return cause;
   }
 }
