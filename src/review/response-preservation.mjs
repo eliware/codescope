@@ -14,7 +14,10 @@ export function preserveProviderResponse(response) {
     };
   } catch {
     return {
-      output_text: readStringProperty(response, 'output_text'),
+      ...(readStringProperty(response, 'output_text') !== undefined
+        ? { output_text: redactTestOutput(readStringProperty(response, 'output_text')) }
+        : {}),
+      ...(readNumericUsage(response) ? { usage: readNumericUsage(response) } : {}),
       response_error: 'Provider response could not be serialized',
     };
   }

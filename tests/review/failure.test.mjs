@@ -87,7 +87,7 @@ test('preserves a safe summary for an unserializable provider response', () => {
 
   const result = createIncompleteResult(new Error('invalid response'), response);
 
-  expect(result.response).toHaveProperty('output_text', undefined);
+  expect(result.response).not.toHaveProperty('output_text');
   expect(result.response.response_error).toBe('Provider response could not be serialized');
 });
 
@@ -98,6 +98,22 @@ test('preserves string output text from an unserializable response', () => {
   const result = createIncompleteResult(new Error('invalid response'), response);
 
   expect(result.response.output_text).toBe('partial output');
+});
+
+test('redacts output and preserves numeric usage from an unserializable response', () => {
+  const response = {
+    output_text: 'TOKEN=secret',
+    usage: { input_tokens: 3, output_tokens: 2, ignored: 'value' },
+  };
+  response.self = response;
+
+  const result = createIncompleteResult(new Error('invalid response'), response);
+
+  expect(result.response).toEqual({
+    output_text: 'TOKEN=[REDACTED]',
+    usage: { input_tokens: 3, output_tokens: 2 },
+    response_error: 'Provider response could not be serialized',
+  });
 });
 
 test('handles a provider response whose output text cannot be read', () => {
