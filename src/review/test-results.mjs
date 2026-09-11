@@ -1,49 +1,16 @@
 import { execFile } from 'node:child_process';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import path from 'node:path';
-import { existsSync } from 'node:fs';
+import { resolveNpmCommand } from './npm-command.mjs';
+import { normalizeExecutionResult, resolveResultCode } from './execution-result.mjs';
 export { redactTestOutput } from './redaction.mjs';
 import { redactTestOutput } from './redaction.mjs';
 export { testEvidenceBlocks } from './test-status.mjs';
 
 const runCommand = promisify(execFile);
 export const defaultTestExecutor = runCommand;
-export function resolveResultCode(result) {
-  if (Number.isInteger(result.code)) return result.code;
-  return 'unknown';
-}
-
-export function normalizeExecutionResult(result, isDefaultExecutor) {
-  return {
-    ...result,
-    code: result.code === undefined ? (isDefaultExecutor ? 0 : 'unknown') : result.code,
-  };
-}
-
-const isNpmExecPath = (value) =>
-  typeof value === 'string' &&
-  path.isAbsolute(value) &&
-  /(?:^|[\\/])npm(?:-cli)?\.js$/iu.test(value);
-
-export const resolveNpmCommand = (
-  platform = process.platform,
-  npmExecPath = process.env.npm_execpath,
-  bundledNpm = path.join(
-    path.dirname(process.execPath),
-    'node_modules',
-    'npm',
-    'bin',
-    'npm-cli.js',
-  ),
-) => {
-  const candidates = [];
-  if (isNpmExecPath(npmExecPath) && existsSync(npmExecPath))
-    candidates.push([process.execPath, [npmExecPath, 'test'], false]);
-  if (existsSync(bundledNpm)) candidates.push([process.execPath, [bundledNpm, 'test'], false]);
-  candidates.push([platform === 'win32' ? 'npm.cmd' : 'npm', ['test'], false]);
-  return candidates;
-};
+export { normalizeExecutionResult, resolveResultCode } from './execution-result.mjs';
+export { resolveNpmCommand } from './npm-command.mjs';
 
 export async function collectTestResults(
   cwd,
