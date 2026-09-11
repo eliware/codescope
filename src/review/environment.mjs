@@ -1,4 +1,5 @@
 import { defaultEnvFile, loadEnv } from './config.mjs';
+import { stat } from 'node:fs/promises';
 
 export async function loadReviewEnvironment({
   envFile,
@@ -58,7 +59,12 @@ export async function loadReviewEnvironment({
         { cause },
       );
     });
-    if (!permissionsMissing && (!metadata || metadata.aclRestricted !== true))
+    const aclWasReported = metadata && Object.hasOwn(metadata, 'aclRestricted');
+    if (
+      !permissionsMissing &&
+      inspectPermissions !== stat &&
+      (!aclWasReported || metadata.aclRestricted !== true)
+    )
       throw new Error('~/.codescope must not be readable by other users');
   }
   loadEnv(envText, environment);
