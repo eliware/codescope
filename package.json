@@ -46,18 +46,17 @@
   "scripts": {
     "test": "eliware-test",
     "lint": "eliware-test --lint",
-    "benchmark:efforts": "node scripts/benchmark-efforts.mjs",
-    "format": "eliware-test",
-    "format:check": "eliware-test",
-    "pack": "npm pack --dry-run",
-    "audit": "node scripts/run-audit.mjs"
+    "audit": "eliware-test --audit",
+    "pack": "eliware-test --pack",
+    "format": "eliware-test --format",
+    "format:check": "eliware-test --format-check",
+    "benchmark:efforts": "node scripts/benchmark-efforts.mjs"
   },
   "engines": {
     "node": ">=26"
   },
   "devDependencies": {
-    "@eliware/test": "^4.0.0",
-    "prettier": "^3.9.6"
+    "@eliware/test": "^6.0.1"
   },
   "license": "MIT",
   "eliware": {
