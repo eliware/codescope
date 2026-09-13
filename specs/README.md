@@ -6,6 +6,9 @@ specification format for this repository.
 
 - [directives.json](directives.json) defines CodeScope's authority over CLI
   behavior, review profiles, and supplied-evidence conventions.
+- [contracts.json](contracts.json) is the normative contract reference for
+  implementing and verifying those directives; source and tests are evidence,
+  not contract authority.
 - [authority.json](authority.json) records the ownership distribution.
 - [conventions.json](conventions.json) defines how canonical Eliware
   Convention v8 records are selected as review evidence.

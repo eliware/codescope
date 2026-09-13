@@ -1,0 +1,525 @@
+{
+  "schemaVersion": "1.0",
+  "contractVersion": "8.0",
+  "kind": "contract-reference",
+  "description": "Normative CodeScope contract reference. These contracts make the behavior required by the directives explicit without making implementation or tests authoritative.",
+  "authority": {
+    "normativeSources": [
+      "./directives.json",
+      "./contracts.json"
+    ],
+    "implementationRole": "Implementation files realize these contracts but cannot redefine them.",
+    "testRole": "Tests are verification evidence and regression protection only; a test cannot create, weaken, or replace a contract.",
+    "externalBoundaries": [
+      "../../docs/authority-map.json",
+      "../../conventions/specs/general.json",
+      "../../conventions/specs/application.json",
+      "../../conventions/specs/cli.json",
+      "../../conventions/specs/npm-published.json"
+    ]
+  },
+  "terminology": {
+    "contract": "One cohesive externally observable behavior owned by CodeScope.",
+    "directiveId": "A local E- or A-prefixed directive identifier that gives authority context.",
+    "implementationEvidence": "Source ownership references used to locate realization of a contract; not normative.",
+    "verificationEvidence": "Tests and commands used to verify a contract; not normative."
+  },
+  "format": {
+    "requiredFields": [
+      "id",
+      "title",
+      "scope",
+      "directiveIds",
+      "dos",
+      "donts",
+      "contract",
+      "implementation",
+      "verification"
+    ],
+    "dos": "Positive obligations that the product must fulfill.",
+    "donts": "Prohibited behavior and scope boundaries.",
+    "implementation": "Non-authoritative source ownership references.",
+      "verification": "Non-authoritative tests and checks used to verify the contract."
+  },
+  "contracts": [
+    {
+      "id": "C-19.1",
+      "title": "CLI entry and command dispatch",
+      "scope": "Process entry, command dispatch, and CodeScope-owned CLI boundaries.",
+      "directiveIds": ["E-19", "A-19.0", "A-19.1"],
+      "contract": {
+        "inputs": "The current working directory and command-line arguments.",
+        "outputs": "Help, version, review, suggestion, prompt, usage, or dry-run behavior selected by the command.",
+        "errors": ["Invalid command usage and CodeScope-owned execution failures are nonzero process failures."],
+        "ordering": ["Parse command metadata before dispatching profile work."],
+        "invariants": ["The reviewed repository remains read-only."],
+        "boundaries": { "owns": ["CodeScope CLI dispatch"], "doesNotOwn": ["Reviewed repository changes"] }
+      },
+      "dos": [
+        "Treat the current working directory as the review root.",
+        "Default a bare invocation to the single help page.",
+        "Support help, version, prompt, grouped review and suggestion commands, direct profile shorthand, usage, dry-run, model, effort, and repeatable add options.",
+        "Keep bin/codescope.mjs limited to process wiring and route behavior through the CLI modules."
+      ],
+      "donts": [
+        "Do not modify the reviewed repository or run its commands.",
+        "Do not make command dispatch depend on provider response content.",
+        "Do not add deployment, publication, synchronization, commit, push, or release behavior."
+      ],
+      "implementation": { "source": [
+        "../bin/codescope.mjs",
+        "../src/cli.mjs",
+        "../src/cli/main.mjs",
+        "../src/cli/dispatch-meta.mjs",
+        "../src/cli/profile-command.mjs",
+        "../src/cli/prompt-command.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/cli.test.mjs",
+        "../tests/cli/main.test.mjs",
+        "../tests/cli/dispatch-meta.test.mjs",
+        "../tests/cli/profile-command.test.mjs",
+        "../tests/cli/prompt-command.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.2",
+      "title": "Argument and option semantics",
+      "scope": "Command-line option parsing and repeatable custom additions.",
+      "directiveIds": ["E-19", "A-19.1"],
+      "contract": {
+        "inputs": "Command-line tokens including repeatable -a/--add, --effort, and --model options.",
+        "outputs": "A normalized command representation preserving applicable additions in order.",
+        "errors": ["Missing option values and unsupported values produce usage failures."],
+        "ordering": ["Added strings retain command-line order and are appended at the final user-message boundary."],
+        "invariants": ["Bare, help, and version commands do not apply additions."],
+        "boundaries": { "owns": ["CodeScope command options"], "doesNotOwn": ["Provider behavior"] }
+      },
+      "dos": [
+        "Accept -a and --add with a required string value, preserve each value verbatim, and preserve command-line order.",
+        "Allow add options on profile commands including all, release, review profiles, suggestion profiles, and prompt.",
+        "Accept add options on bare, help, and version commands without changing their output.",
+        "Reject malformed option values with a usage error and keep supported effort and model values explicit."
+      ],
+      "donts": [
+        "Do not apply added text to bare, help, or version output.",
+        "Do not normalize, merge, reorder, summarize, or silently discard added text.",
+        "Do not treat an added prompt as a replacement for the profile prompt."
+      ],
+      "implementation": { "source": [
+        "../src/cli/args.mjs",
+        "../src/cli/add-option.mjs",
+        "../src/cli/profile-args.mjs",
+        "../src/cli/prompt-args.mjs",
+        "../src/cli/option-values.mjs",
+        "../src/prompts/append-user-message.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/cli/args.test.mjs",
+        "../tests/cli/add-option.test.mjs",
+        "../tests/cli/profile-args.test.mjs",
+        "../tests/cli/prompt-args.test.mjs",
+        "../tests/prompts/append-user-message.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.3",
+      "title": "Profiles and source selection",
+      "scope": "Review and suggestion profile identity, routing, and selected evidence.",
+      "directiveIds": ["E-19", "A-19.1", "A-19.5"],
+      "contract": {
+        "inputs": "A declared profile name and review or suggestion mode.",
+        "outputs": "A profile prompt and source-selection function for the requested mode.",
+        "errors": ["Unknown profiles and unsupported modes fail explicitly."],
+        "ordering": ["Resolve profile mode before selecting evidence and decorating prompts."],
+        "invariants": ["Suggestion profiles do not become blocking review profiles."],
+        "boundaries": { "owns": ["CodeScope suggestion profiles"], "doesNotOwn": ["Review policy"] }
+      },
+      "dos": [
+        "Keep review and suggestion modes distinct while allowing the declared profile set: conventions, refactor, architecture, new-features, all, release, security, performance, reliability, api-design, cross-platform, dependencies, observability, accessibility, quick-wins, prioritize, p0, p0-1, p0-2, and p0-3.",
+        "Use the all operation for comprehensive implementation, test, documentation, metadata, and remaining-file evidence.",
+        "Use prompt with the all context and no review or suggestion tool requirement.",
+        "Keep new-features in suggestion mode when invoked through the review command."
+      ],
+      "donts": [
+        "Do not silently map an unknown profile to a valid profile.",
+        "Do not use suggestion profiles as blocking review profiles.",
+        "Do not make profile selection alter the read-only repository boundary."
+      ],
+      "implementation": { "source": [
+        "../src/profiles/metadata.mjs",
+        "../src/profiles/index.mjs",
+        "../src/profiles/prompt-routing.mjs",
+        "../src/profiles/source-selection.mjs",
+        "../src/profiles/tool-decoration.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/profiles/metadata.test.mjs",
+        "../tests/profiles/index.test.mjs",
+        "../tests/profiles/prompt-routing.test.mjs",
+        "../tests/profiles/source-selection.test.mjs",
+        "../tests/profiles/tool-decoration.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.4",
+      "title": "Evidence discovery and repository safety",
+      "scope": "Read-only file discovery, path safety, symlink handling, and evidence exclusions.",
+      "directiveIds": ["E-19", "A-19.0", "A-19.3", "A-19.4"],
+      "contract": {
+        "inputs": "A review root and filesystem entries.",
+        "outputs": "Safe, deterministic supplied-file candidates and unknown markers for unavailable evidence.",
+        "errors": ["Invalid roots, unsafe paths, and unsupported filesystem conditions fail without repository mutation."],
+        "ordering": ["Validate boundaries before reading file contents."],
+        "invariants": ["Symbolic-link targets, dependencies, Git metadata, and generated coverage data are not followed or supplied."],
+        "boundaries": { "owns": ["Review input discovery"], "doesNotOwn": ["Repository dependency resolution"] }
+      },
+      "dos": [
+        "Read supplied files without executing repository code or commands.",
+        "Skip dependency directories, Git metadata, generated coverage data, and symbolic-link targets.",
+        "Retain legitimate source directories named coverage when they are not generated artifacts.",
+        "Treat absent, excluded, symbolic-link, or unsupplied evidence as unknown rather than inventing facts.",
+        "Preserve path-boundary and concurrency validation before file side effects."
+      ],
+      "donts": [
+        "Do not follow symbolic links into targets.",
+        "Do not include credentials, runtime state, or test execution results as if they were supplied evidence.",
+        "Do not write fixes, commits, or other changes to the reviewed repository."
+      ],
+      "implementation": { "source": [
+        "../src/find",
+        "../src/combine/files.mjs",
+        "../src/combine/read-file.mjs",
+        "../src/combine/policies.mjs",
+        "../src/combine/limits.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/find",
+        "../tests/combine/files.test.mjs",
+        "../tests/combine/read-file.test.mjs",
+        "../tests/combine/policies.test.mjs",
+        "../tests/combine/limits.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.5",
+      "title": "Evidence composition and budgets",
+      "scope": "Composition order, content selection, aggregate limits, and metadata accounting.",
+      "directiveIds": ["E-19", "A-19.3"],
+      "contract": {
+        "inputs": "Selected repository evidence and configured character or byte limits.",
+        "outputs": "One ordered combined evidence string or an explicit budget failure.",
+        "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
+        "ordering": ["Package, Convention, JSON, configuration, other-file metadata, Markdown, implementation, and tests follow the declared order."],
+        "invariants": ["Actual bytes replace stale stat reservations after each read."],
+        "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
+      },
+      "dos": [
+        "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests.",
+        "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
+        "Limit configuration text to 200 lines and enforce aggregate character and metadata-byte budgets.",
+        "Account for actual bytes after each read and release stale reservations when a file shrinks.",
+        "Use one shared aggregate section-joining limit for all and selected composition paths."
+      ],
+      "donts": [
+        "Do not let stale stat reservations omit later files after an earlier file shrinks.",
+        "Do not apply different final aggregate limits to all and selected composition.",
+        "Do not treat metadata summaries as full file contents."
+      ],
+      "implementation": { "source": [
+        "../src/combine/all.mjs",
+        "../src/combine/all-sections.mjs",
+        "../src/combine/selected.mjs",
+        "../src/combine/combined-source.mjs",
+        "../src/combine/other-files.mjs",
+        "../src/combine/configs.mjs",
+        "../src/combine/inventory-section.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/combine/all.test.mjs",
+        "../tests/combine/all-sections.test.mjs",
+        "../tests/combine/selected.test.mjs",
+        "../tests/combine/combined-source.test.mjs",
+        "../tests/combine/other-files.test.mjs",
+        "../tests/combine/configs.test.mjs",
+        "../tests/combine/inventory-section.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.6",
+      "title": "Convention evidence boundary",
+      "scope": "Selection and supply of canonical Convention records as review evidence.",
+      "directiveIds": ["E-19", "A-19.3", "A-19.7"],
+      "contract": {
+        "inputs": "package.json Convention applicability and the adjacent conventions checkout.",
+        "outputs": "Only applicable canonical Convention JSON records or an explicit unavailable/incomplete-evidence marker.",
+        "errors": ["Missing or malformed applicability is reported as unavailable rather than inferred."],
+        "ordering": ["Read applicability before selecting canonical records."],
+        "invariants": ["CodeScope does not redefine Convention requirements."],
+        "boundaries": { "owns": ["CodeScope profile selection"], "doesNotOwn": ["Convention requirements"] }
+      },
+      "dos": [
+        "Read only the repository types declared by package.json eliware.conventions.apply.",
+        "Load canonical Convention JSON from the adjacent conventions checkout.",
+        "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",
+        "Treat canonical Conventions records as the authority for repository requirements."
+      ],
+      "donts": [
+        "Do not redefine, duplicate, or extend Convention requirements in CodeScope contracts.",
+        "Do not infer Convention requirements when canonical evidence is unavailable.",
+        "Do not treat CodeScope's convention-evidence behavior as authority over repository structure."
+      ],
+      "implementation": { "source": [
+        "../src/combine/conventions.mjs",
+        "../src/prompts/conventions.mjs",
+        "../specs/conventions.json"
+      ] },
+      "verification": { "tests": [
+        "../tests/combine/conventions.test.mjs",
+        "../tests/prompts/conventions.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.7",
+      "title": "Prompt and tool contracts",
+      "scope": "Prompt composition, profile guidance, tool schemas, priorities, and supplied-evidence instructions.",
+      "directiveIds": ["E-19", "A-19.4", "A-19.5", "A-19.6"],
+      "contract": {
+        "inputs": "Selected profile, supplied evidence, optional custom additions, and prompt options.",
+        "outputs": "Provider request instructions and optional tool definitions.",
+        "errors": ["Prompt construction failures remain CodeScope-owned failures."],
+        "ordering": ["System and profile guidance precede evidence; additions are appended to the final user message."],
+        "invariants": ["Provider output is not locally accepted or rejected by these prompt contracts."],
+        "boundaries": { "owns": ["Prompt construction"], "doesNotOwn": ["Provider decisions"] }
+      },
+      "dos": [
+        "Keep system guidance, identity, evidence, priorities, scope, transport, and profile guidance as separate cohesive prompt responsibilities.",
+        "Request independent secret review and P0/P1 blocking recommendations from the provider where the profile requires it.",
+        "Keep tool schemas and provider instructions as requested-output guidance, not local acceptance requirements.",
+        "Append custom additions to the final user message after the normal profile content."
+      ],
+      "donts": [
+        "Do not parse or validate successful provider output against a local response schema.",
+        "Do not turn prompt guidance into repository enforcement or automatic remediation.",
+        "Do not claim redaction or AI inspection is a complete secret-removal boundary."
+      ],
+      "implementation": { "source": [
+        "../src/prompts",
+        "../src/prompt.mjs",
+        "../src/review/create-session.mjs",
+        "../src/review/request.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/prompts",
+        "../tests/prompt.test.mjs",
+        "../tests/review/create-session.test.mjs",
+        "../tests/review/request.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.8",
+      "title": "Provider transport and raw output",
+      "scope": "Provider request execution, output preservation, write completion, and safe failure summaries.",
+      "directiveIds": ["E-19", "A-19.6"],
+      "contract": {
+        "inputs": "A prepared provider request, cancellation signal, and output writer.",
+        "outputs": "The exact successful provider response text or a provider failure with preserved diagnostics.",
+        "errors": ["Transport failures and incomplete output writes are nonzero CodeScope-owned failures."],
+        "ordering": ["Complete provider execution before writing the result; cleanup follows success or failure."],
+        "invariants": ["Successful provider output is not parsed, formatted, or transformed."],
+        "boundaries": { "owns": ["Provider output handling"], "doesNotOwn": ["Provider output semantics"] }
+      },
+      "dos": [
+        "Send the prepared request to the provider and preserve the exact successful response text unchanged.",
+        "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
+        "Preserve safe diagnostic summaries when a provider response cannot be serialized.",
+        "Report provider transport failures and output-write failures with their original error context.",
+        "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
+      ],
+      "donts": [
+        "Do not parse, validate, redact, pretty-print, format, or transform successful provider output.",
+        "Do not derive process status or exit code from provider content.",
+        "Do not discard all safe function-call summaries because one provider call is malformed.",
+        "Do not treat a short explicit writer count as a successful complete write."
+      ],
+      "implementation": { "source": [
+        "../src/review/provider-request.mjs",
+        "../src/review/session-modes.mjs",
+        "../src/review/session-result.mjs",
+        "../src/review/run-session.mjs",
+        "../src/review/run-review-pipeline.mjs",
+        "../src/review/output.mjs",
+        "../src/review/response-preservation.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/review/provider-request.test.mjs",
+        "../tests/review/session-modes.test.mjs",
+        "../tests/review/session-result.test.mjs",
+        "../tests/review/run-session.test.mjs",
+        "../tests/review/run-review-pipeline.test.mjs",
+        "../tests/review/output.test.mjs",
+        "../tests/review/response-preservation.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.9",
+      "title": "Configuration and credential safety",
+      "scope": "Credential loading, environment-file safety, Unix modes, and Windows ACL restrictions.",
+      "directiveIds": ["E-19", "A-19.2"],
+      "contract": {
+        "inputs": "Process environment, ~/.codescope, platform permission evidence, and injected filesystem seams.",
+        "outputs": "A validated environment for provider setup or an explicit safety failure.",
+        "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
+        "ordering": ["Inspect configuration safety before accepting its contents."],
+        "invariants": ["The process environment takes precedence over a nonblank file value."],
+        "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
+      },
+      "dos": [
+        "Prefer a nonblank OPENAI_API_TOKEN from the process environment, otherwise read ~/.codescope.",
+        "Reject symbolic-link configuration files.",
+        "On Unix, reject group/world-readable configuration files.",
+        "On Windows, require ACL evidence showing only the current identity has access.",
+        "Treat a missing optional configuration file as empty only when its absence is stable; reject inspection/read races and newly appearing symbolic links.",
+        "Preserve provider credentials outside the reviewed repository."
+      ],
+      "donts": [
+        "Do not accept an unverified Windows ACL as restricted.",
+        "Do not silently accept a file that disappears or changes safety state during inspection.",
+        "Do not place credentials, tokens, environment files, or runtime state in the repository."
+      ],
+      "implementation": { "source": [
+        "../src/review/environment.mjs",
+        "../src/review/environment-file.mjs",
+        "../src/review/environment-permissions.mjs",
+        "../src/review/windows-acl.mjs",
+        "../src/review/dotenv-parser.mjs",
+        "../src/review/config.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/review/environment.test.mjs",
+        "../tests/review/environment-file.test.mjs",
+        "../tests/review/environment-permissions.test.mjs",
+        "../tests/review/windows-acl.test.mjs",
+        "../tests/review/dotenv-parser.test.mjs",
+        "../tests/review/config.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.10",
+      "title": "Usage, pricing, and dry-run behavior",
+      "scope": "Model and effort options, token estimation, usage metadata, and pricing calculations.",
+      "directiveIds": ["E-19", "A-19.1"],
+      "contract": {
+        "inputs": "A selected model, request, usage flag, and dry-run flag.",
+        "outputs": "Estimated input tokens or requested usage and cost metadata.",
+        "errors": ["Unsupported model, effort, or usage inputs fail explicitly."],
+        "ordering": ["Dry-run estimates input tokens without executing a model review."],
+        "invariants": ["No output-token usage is fabricated for dry-run requests."],
+        "boundaries": { "owns": ["Dry-run accounting"], "doesNotOwn": ["Provider billing"] }
+      },
+      "dos": [
+        "Support model selection and effort selection through the documented values.",
+        "Use dry-run to estimate input tokens without running a model review.",
+        "Include usage metadata and calculated cost only when requested.",
+        "Normalize provider usage and use the selected model's pricing thresholds."
+      ],
+      "donts": [
+        "Do not run a model review during dry-run.",
+        "Do not fabricate output-token usage when no output was generated.",
+        "Do not let usage or pricing metadata alter provider response text."
+      ],
+      "implementation": { "source": [
+        "../src/pricing",
+        "../src/review/dry-run.mjs",
+        "../src/review/request-phase.mjs",
+        "../src/cli/prompt-options.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/pricing.test.mjs",
+        "../tests/pricing",
+        "../tests/review/dry-run.test.mjs",
+        "../tests/review/request-phase.test.mjs",
+        "../tests/cli/prompt-options.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.11",
+      "title": "Errors, exit codes, and lifecycle",
+      "scope": "CodeScope-owned failures, public exit behavior, cancellation, and cleanup.",
+      "directiveIds": ["E-19", "A-19.0", "A-19.5", "A-19.6"],
+      "contract": {
+        "inputs": "Command execution results, provider results, failures, signals, and cleanup callbacks.",
+        "outputs": "A stable success or CodeScope-owned nonzero exit result with preserved error context.",
+        "errors": ["Provider verdicts and finding priorities never become process failures."],
+        "ordering": ["Abort active work and remove signal handlers after success or failure."],
+        "invariants": ["The original provider or writer failure remains observable."],
+        "boundaries": { "owns": ["CodeScope failure propagation"], "doesNotOwn": ["External provider recovery"] }
+      },
+      "dos": [
+        "Use nonzero exit codes for CodeScope-owned failures such as invalid CLI usage, missing credentials, provider transport failures, unsafe configuration, and output-write failures.",
+        "Return success after a provider response regardless of its verdict, finding priorities, schema, or formatting.",
+        "Abort provider work and remove signal handlers during normal completion and failure cleanup.",
+        "Preserve error causes and safe fallback metadata."
+      ],
+      "donts": [
+        "Do not make an AI verdict, P0/P1 finding, or provider JSON content change the process exit code.",
+        "Do not leave signal handlers or provider work active after completion.",
+        "Do not hide the original provider or writer failure behind an unrelated cleanup error."
+      ],
+      "implementation": { "source": [
+        "../src/cli/error-handler.mjs",
+        "../src/cli/errors.mjs",
+        "../src/review/failure.mjs",
+        "../src/review/session-failure.mjs",
+        "../src/review/finalize-session.mjs",
+        "../src/review/cleanup.mjs",
+        "../src/review/signals.mjs"
+      ] },
+      "verification": { "tests": [
+        "../tests/cli/error-handler.test.mjs",
+        "../tests/cli/errors.test.mjs",
+        "../tests/review/failure.test.mjs",
+        "../tests/review/session-failure.test.mjs",
+        "../tests/review/finalize-session.test.mjs",
+        "../tests/review/cleanup.test.mjs",
+        "../tests/review/signals.test.mjs"
+      ], "commands": [] }
+    },
+    {
+      "id": "C-19.12",
+      "title": "Module, dependency, and verification boundaries",
+      "scope": "Cohesive module responsibilities, shared dependencies, mirrored tests, and verification boundaries.",
+      "directiveIds": ["E-19", "A-19.7"],
+      "contract": {
+        "inputs": "Production modules, package metadata, and verification tooling.",
+        "outputs": "Maintainable native ESM modules with traceable, comprehensive verification.",
+        "errors": ["Coverage, lint, formatting, and diff failures remain verification failures rather than contract redefinitions."],
+        "ordering": ["Implement contract behavior before relying on verification evidence."],
+        "invariants": ["Implementation and tests are evidence only; normative contract changes occur in specs."],
+        "boundaries": { "owns": ["CodeScope contract references"], "doesNotOwn": ["Conventions or operations contracts"] }
+      },
+      "dos": [
+        "Keep production modules cohesive with one meaningful responsibility and explicit orchestration at composition boundaries.",
+        "Use native ESM and Node process APIs with argument arrays rather than shell-specific command construction.",
+        "Use the maintained shared Eliware packages for their owned capabilities and keep public exports and package metadata synchronized.",
+        "Mirror source modules with tests under tests/ and use tests as evidence that the normative contracts are fulfilled.",
+        "Maintain full in-scope statement, branch, function, and line coverage without Istanbul ignores outside pure barrels."
+      ],
+      "donts": [
+        "Do not make tests the source of contract truth.",
+        "Do not hide independent responsibilities in monolithic modules or comments.",
+        "Do not add shell-specific pipelines, platform-specific executable assumptions, or duplicate maintained-library functionality without a documented exception."
+      ],
+      "implementation": { "source": [
+        "../src",
+        "../package.json",
+        "../package-lock.json"
+      ] },
+      "verification": { "tests": [
+        "../tests",
+        "npm test",
+        "git diff --check"
+      ], "commands": [] }
+    }
+  ]
+}
