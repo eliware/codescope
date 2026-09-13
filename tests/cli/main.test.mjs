@@ -42,6 +42,17 @@ test('main preserves accepted meta-command additions without applying them', asy
   expect(reviewed).toBe(false);
 });
 
+test('main forwards additions to profile execution', async () => {
+  let received;
+  await expect(
+    main(['all', '--add', 'first', '-a', 'second'], {
+      review: async (_cwd, options) => { received = options; },
+      write: () => {},
+    }),
+  ).resolves.toBe(0);
+  expect(received.add).toEqual(['first', 'second']);
+});
+
 test('main dispatches version and reports unknown commands', async () => {
   const output = [];
   expect(await main(['version'], { output: (value) => output.push(value) })).toBe(0);

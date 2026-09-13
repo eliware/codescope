@@ -35,6 +35,7 @@ export async function main(
       effort,
       model,
       dryRun,
+      add,
       promptText,
       cwd,
       write,
