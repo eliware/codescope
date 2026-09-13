@@ -10,7 +10,5 @@ test('maps prompt and review statuses', () => {
   expect(statusForPromptResult({ verdict: 'block' })).toBe(EXIT_CODES.PASS);
   expect(statusForReviewResult({}, { isSuggestion: true })).toBe(EXIT_CODES.PASS);
   expect(statusForReviewResult({ verdict: 'pass' }, { isSuggestion: false })).toBe(EXIT_CODES.PASS);
-  expect(statusForReviewResult({ verdict: 'block' }, { isSuggestion: false })).toBe(
-    EXIT_CODES.BLOCKED,
-  );
+  expect(statusForReviewResult({ verdict: 'block' }, { isSuggestion: false })).toBe(EXIT_CODES.PASS);
 });

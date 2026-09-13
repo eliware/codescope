@@ -25,6 +25,6 @@ test('returns provider plain-text output for the prompt path', async () => {
   });
   writes.push(session.output);
   expect(session.providerResponse).toBe(providerResponse);
-  expect(session.result).toEqual({ answer: 'ok' });
-  expect(writes).toEqual([{ answer: 'ok' }]);
+  expect(session.result).toBe('{"answer":"ok"}');
+  expect(writes).toEqual(['{"answer":"ok"}']);
 });

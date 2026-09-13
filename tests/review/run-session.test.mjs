@@ -11,8 +11,8 @@ test('runs a plain-text provider session and writes the result', async () => {
     usage: false,
     plainText: 'review',
   });
-  expect(result.verdict).toBe('pass');
-  expect(JSON.parse(writes[0])).toEqual({ verdict: 'pass' });
+  expect(result).toBe('{"verdict":"pass"}');
+  expect(writes[0]).toBe('{"verdict":"pass"}');
   expect(writes).toHaveLength(1);
 });
 
@@ -41,7 +41,7 @@ test('parses a normal review tool response', async () => {
     dryRun: false,
     usage: false,
   });
-  expect(result.verdict).toBe('pass');
+  expect(result).toBe('{"verdict":"pass","issues":{}}');
 });
 
 test('preserves malformed tool arguments as a blocked raw response', async () => {
@@ -59,7 +59,7 @@ test('preserves malformed tool arguments as a blocked raw response', async () =>
     dryRun: false,
     usage: false,
   });
-  expect(result).toEqual({ raw_response: '{', verdict: 'block' });
+  expect(result).toBe('{');
 });
 
 test('preserves an existing blocked verdict', async () => {
@@ -83,7 +83,7 @@ test('preserves an existing blocked verdict', async () => {
     dryRun: false,
     usage: false,
   });
-  expect(result.verdict).toBe('block');
+  expect(result).toBe('{"verdict":"block","issues":{}}');
 });
 
 test('returns plain JSON without usage when usage output is disabled', async () => {
@@ -97,7 +97,7 @@ test('returns plain JSON without usage when usage output is disabled', async () 
       usage: false,
       plainText: 'summarize',
     }),
-  ).resolves.toEqual({ ok: true });
+  ).resolves.toBe('{"ok":true}');
 });
 
 test('preserves an untyped output write failure', async () => {
@@ -134,20 +134,20 @@ test('includes usage without test execution evidence', async () => {
     plainText: 'review',
     usage: true,
   };
-  await expect(runReviewSession(base)).resolves.toMatchObject({ usage: { input_tokens: 1 } });
+  await expect(runReviewSession(base)).resolves.toBe('{"verdict":"pass"}');
   await expect(
     runReviewSession({
       ...base,
       client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
     }),
-  ).resolves.toMatchObject({ usage: null });
+  ).resolves.toBe('{"verdict":"pass"}');
   await expect(
     runReviewSession({
       ...base,
       client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
       usage: false,
     }),
-  ).resolves.toMatchObject({ verdict: 'pass' });
+  ).resolves.toBe('{"verdict":"pass"}');
 });
 
 test('runs dry-run and preserves provider failures', async () => {

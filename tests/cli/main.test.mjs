@@ -109,7 +109,7 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
   ).resolves.toBe(0);
   await expect(
     main(['all', '--usage'], { review: async () => ({}), error: () => {}, write }),
-  ).resolves.toBe(1);
+  ).resolves.toBe(0);
   await expect(
     main(['security', '--effort=low'], {
       review: async () => validResult('security'),

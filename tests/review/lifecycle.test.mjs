@@ -43,7 +43,7 @@ const base = (overrides = {}) => ({
 test('runs a normal review and writes the validated result', async () => {
   const writes = [];
   const result = await runReview('C:/repo', base({ write: async (value) => writes.push(value) }));
-  expect(result.verdict).toBe('pass');
+  expect(result).toContain('"verdict":"pass"');
   expect(writes).toHaveLength(1);
 });
 

@@ -1,8 +1,6 @@
-import { bestEffortPrettyPrint } from './pretty-print.mjs';
-
 export async function writeJsonResult(write, output, label = 'review') {
   try {
-    await write(`${bestEffortPrettyPrint(output)}\n`);
+    await write(typeof output === 'string' ? output : String(output));
   } catch (cause) {
     throw new Error(
       `Unable to write ${label} output: ${cause instanceof Error ? cause.message : String(cause)}`,
@@ -13,7 +11,7 @@ export async function writeJsonResult(write, output, label = 'review') {
 
 export async function writeFallbackResult(write, output) {
   try {
-    await write(`${bestEffortPrettyPrint(output)}\n`);
+    await write(typeof output === 'string' ? output : String(output));
     return undefined;
   } catch (cause) {
     return cause;

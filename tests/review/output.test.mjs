@@ -1,18 +1,19 @@
 import { writeFallbackResult, writeJsonResult } from '../../src/review/output.mjs';
 
-test('writes indented JSON with a trailing newline', async () => {
+test('writes raw string output unchanged', async () => {
   let output = '';
   await writeJsonResult(
     (value) => {
       output = value;
     },
-    { ok: true },
+    '{"ok":true}',
   );
-  expect(output).toBe('{\n  "ok": true\n}\n');
+  expect(output).toBe('{"ok":true}');
 });
 
 test('returns no fallback error when writing succeeds', async () => {
   await expect(writeFallbackResult(() => undefined, { ok: true })).resolves.toBeUndefined();
+  await expect(writeFallbackResult(() => undefined, '{"ok":true}')).resolves.toBeUndefined();
 });
 
 test('adds output context to writer failures', async () => {

@@ -28,6 +28,6 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     plainText: 'review',
     register: () => ({ removeHandlers() {} }),
   });
-  expect(result.verdict).toBe('pass');
+  expect(result).toBe('{"verdict":"pass"}');
   expect(writes).toHaveLength(1);
 });
