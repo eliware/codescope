@@ -1,6 +1,6 @@
 {
   "version": "8.0",
-  "description": "Specification for the CodeScope review CLI and supplied-evidence contract.",
+  "description": "Normative v8 directives for the CodeScope review CLI, review profiles, and supplied-evidence boundaries.",
   "authority": {
     "authoritativeFor": [
       "CodeScope CLI behavior, review and suggestion profiles, and supplied-evidence conventions."
@@ -31,7 +31,7 @@
       "id": "E-19",
       "dos": [
         "Provide a structured, read-only CLI for focused codebase reviews, suggestions, and token estimates.",
-        "Keep CLI behavior, review profiles, and supplied-evidence conventions explicit in CodeScope specifications."
+        "Keep CLI behavior, review profiles, and supplied-evidence conventions explicit in these directives."
       ],
       "donts": [
         "Do not define or enforce Eliware repository requirements owned by Conventions.",
@@ -41,24 +41,107 @@
         {
           "id": "A-19.0",
           "dos": [
-            "Document externally observable commands, options, output, exit behavior, review profiles, and evidence boundaries.",
-            "Treat supplied canonical convention records as review evidence and preserve their authority in Conventions.",
-            "Treat missing or unsupplied evidence as unknown rather than inventing requirements or claiming alignment."
+            "Treat the current working directory as the review root.",
+            "Keep the reviewed repository read-only and write only CodeScope's own completed output.",
+            "Use a deterministic workflow: review supplied context, report findings, and leave fixes and validation to repository owners."
           ],
           "donts": [
-            "Do not present CodeScope-local review guidance as the authority for repository requirements, operations, publication, deployment, or harness behavior."
+            "Do not modify repositories, apply fixes, create commits, push, release, publish, deploy, or run repository commands."
           ]
         },
         {
           "id": "A-19.1",
           "dos": [
-            "Select convention evidence only from the repository's declared applicability and the canonical records supplied for review.",
-            "Keep review and suggestion profile behavior distinct and document the evidence each profile receives.",
-            "Keep reviewed repositories read-only and preserve safe output and documented controls."
+            "Support codescope, codescope --help, codescope all, codescope review <profile>, codescope suggest <profile>, supported direct profile shorthand, and codescope prompt <text>.",
+            "Support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, and --model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol.",
+            "Use the normal repository context for custom prompts while disabling review and suggestion tools.",
+            "Use --usage to include provider token and calculated cost data, and use --dry-run to estimate input-token cost without running a model review."
           ],
           "donts": [
-            "Do not infer convention applicability from repository shape, dependencies, or legacy records.",
-            "Do not mutate the reviewed repository as part of a review."
+            "Do not require custom prompts to produce a verdict or a stable response schema."
+          ]
+        },
+        {
+          "id": "A-19.2",
+          "dos": [
+            "Read OPENAI_API_TOKEN from a nonblank process environment value first, otherwise from ~/.codescope.",
+            "Reject unsafe configuration-file permissions where the platform provides that evidence.",
+            "Treat missing credentials and provider transport failures as errors."
+          ],
+          "donts": [
+            "Do not place credentials, tokens, environment files, or runtime state in the reviewed repository.",
+            "Do not claim that redaction or review context handling is a complete secret-removal boundary."
+          ]
+        },
+        {
+          "id": "A-19.3",
+          "dos": [
+            "Assemble comprehensive context in this order: package.json; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts.",
+            "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
+            "Read Convention JSON only from the adjacent conventions checkout and report it unavailable when it is not supplied.",
+            "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
+            "Skip symbolic links and never follow their targets.",
+            "Treat excluded or unsupplied evidence as unknown rather than inventing facts."
+          ],
+          "donts": [
+            "Do not include package-lock.json as JSON context or include conventions package metadata and lockfiles.",
+            "Do not treat files excluded by a profile, absent files, symbolic-link targets, or unsupplied systems as reviewed evidence."
+          ]
+        },
+        {
+          "id": "A-19.4",
+          "dos": [
+            "Never run tests in the reviewed repository and never include test execution output in provider context.",
+            "Require the AI to perform an independent secret-exposure review over supplied context and report visible or redacted credentials, tokens, passwords, private keys, or other secrets as P0 with location and rotation or revocation guidance.",
+            "Treat deterministic redaction and AI detection as incomplete safeguards and keep repository owners responsible for sanitizing supplied material."
+          ],
+          "donts": [
+            "Do not claim that CodeScope is a sanitized-environment mode or a complete secret scanner.",
+            "Do not rely on CodeScope to make secret-bearing repository or test output safe."
+          ]
+        },
+        {
+          "id": "A-19.5",
+          "dos": [
+            "Keep review profiles focused on actionable issues in their declared areas.",
+            "Keep suggestion profiles focused on recommendations and exclude them from blocking-verdict policy.",
+            "Use the all operation for a comprehensive review of implementation, tests, documentation, package metadata, and the remaining-file inventory, producing one unified review result.",
+            "Keep the conventions profile focused on supplied repository documentation, package metadata, specifications, environment documentation, and cross-artifact consistency.",
+            "Treat missing or unsupplied artifacts as unknown rather than defects.",
+            "Use P0 for immediate emergencies or supplied failing-test evidence, P1 for concrete high-priority defects, P2 for actionable non-blocking issues, and P3 for polish or low-risk follow-up.",
+            "Request a provider block verdict for unresolved P0/P1 findings while treating that verdict as provider output only."
+          ],
+          "donts": [
+            "Do not make the provider verdict or any finding priority change the CLI exit code.",
+            "Do not replace deterministic repository, structural, test, or publication checks owned by other tooling.",
+            "Do not repeat issues already documented as known unless implementation contradicts the documented boundary or concrete evidence shows impact outside it."
+          ]
+        },
+        {
+          "id": "A-19.6",
+          "dos": [
+            "Write the exact successful provider response unchanged.",
+            "Keep provider tool schemas and prompt instructions as requested-output guidance rather than CodeScope acceptance requirements.",
+            "Allow review, suggestion, and custom-prompt responses to be provider-defined and not machine-readable.",
+            "Report provider transport failures and output-write failures as errors, preserving fallback error metadata where available."
+          ],
+          "donts": [
+            "Do not parse, validate, redact, pretty-print, reformat, or otherwise transform successful provider output.",
+            "Do not expose or promise a stable CodeScope response schema.",
+            "Do not interpret JSON requested from the model or derive process status from provider content."
+          ]
+        },
+        {
+          "id": "A-19.7",
+          "dos": [
+            "Keep CI, deployment, registry, Git, rollback, npm pack, npm audit, and other external command state outside CodeScope conclusions unless direct evidence is supplied.",
+            "Keep provider internals, operating-system behavior, and delegated child-process mechanics outside the review contract when covered by internal tests.",
+            "Keep new feature proposals, repository changes, automatic fixes, commits, pushes, releases, publication, and deployment outside the review operation.",
+            "Keep the public README, package metadata, source, tests, and release notes synchronized when changing documented CodeScope behavior."
+          ],
+          "donts": [
+            "Do not infer health or alignment for excluded systems from missing evidence.",
+            "Do not present CodeScope-local guidance as authority for repository requirements, Operations procedures, publication, deployment, or Test8 behavior."
           ]
         }
       ]
