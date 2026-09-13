@@ -2,6 +2,7 @@ import { runReviewPipeline } from '../../src/review/run-review-pipeline.mjs';
 
 test('coordinates preparation, context, request, execution, and cleanup', async () => {
   const writes = [];
+  let combineOptions;
   const result = await runReviewPipeline('repo', {
     envFile: 'ignored',
     readFile: async () => 'OPENAI_API_TOKEN=token',
@@ -14,7 +15,10 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     }),
     omitTestResults: false,
     redactOutput: (value) => value,
-    combine: async () => 'source',
+    combine: async (_cwd, options) => {
+      combineOptions = options;
+      return 'source';
+    },
     readDirectory: async () => [],
     maxSourceChars: 10,
     prompt: {
@@ -30,4 +34,5 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
   });
   expect(result).toBe('{"verdict":"pass"}');
   expect(writes).toHaveLength(1);
+  expect(combineOptions.platform).toBe('win32');
 });

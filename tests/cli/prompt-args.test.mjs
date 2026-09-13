@@ -6,6 +6,7 @@ test('parses prompt text with supported model and effort options', () => {
     promptText: 'review risks',
     effort: 'low',
     model: 'gpt-5.6-sol',
+    add: [],
   });
 });
 
@@ -15,6 +16,7 @@ test('supports a delimiter for dash-leading prompt text', () => {
     promptText: '--summarize this',
     effort: 'low',
     model: undefined,
+    add: [],
   });
 });
 

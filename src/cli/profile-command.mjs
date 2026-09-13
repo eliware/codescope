@@ -13,6 +13,7 @@ export async function runProfileCommand(command, options) {
     cwd,
     write,
     review,
+    add = [],
   } = options;
   const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
   const { combine, prompt: profilePrompt } = getProfile(target, effectiveMode);
@@ -24,6 +25,7 @@ export async function runProfileCommand(command, options) {
     prompt,
     model,
     dryRun,
+    add,
   });
   if (dryRun) return 0;
   return 0;

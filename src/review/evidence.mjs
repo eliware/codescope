@@ -6,12 +6,14 @@ export async function collectReviewEvidence({
   readDirectory,
   readFile,
   maxSourceChars,
+  platform,
 }) {
   const combined = await combine(cwd, {
     readDirectory,
     readFileContents: readFile,
     validateSymlinks: readFile === fs.promises.readFile,
     maxChars: maxSourceChars,
+    platform,
   });
   return { combined };
 }

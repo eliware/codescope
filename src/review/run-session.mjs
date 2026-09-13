@@ -1,4 +1,4 @@
-import { writeJsonResult } from './output.mjs';
+import { writeProviderResult } from './output.mjs';
 import { runDrySession, runProviderSession } from './session-modes.mjs';
 import { throwSessionFailure } from './session-failure.mjs';
 
@@ -26,7 +26,7 @@ export async function runReviewSession({
     });
     providerResponse = session.providerResponse;
     providerResponseReceived = true;
-    await writeJsonResult(write, session.output, session.outputKind);
+    await writeProviderResult(write, session.output, session.outputKind);
     return session.result;
   } catch (cause) {
     return throwSessionFailure({ cause, providerResponse, providerResponseReceived, write });

@@ -1,6 +1,9 @@
 import { validateEffort, validateModel } from './option-values.mjs';
+import { parseAddOptions } from './add-option.mjs';
 
 export function parsePromptArgs(args) {
+  const additions = parseAddOptions(args);
+  args = additions.remaining;
   const delimiter = args.indexOf('--');
   const promptArgs = delimiter < 0 ? args : args.slice(0, delimiter);
   const optionArgs = delimiter < 0 ? [] : args.slice(delimiter + 1);
@@ -25,5 +28,5 @@ export function parsePromptArgs(args) {
   const model = modelToken?.slice('--model='.length);
   validateEffort(effort);
   validateModel(model);
-  return { command: 'prompt', promptText, effort, model };
+  return { command: 'prompt', promptText, effort, model, add: additions.add };
 }

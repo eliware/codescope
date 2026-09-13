@@ -1,8 +1,8 @@
-import { writeFallbackResult, writeJsonResult } from '../../src/review/output.mjs';
+import { writeFallbackResult, writeProviderResult } from '../../src/review/output.mjs';
 
 test('writes raw string output unchanged', async () => {
   let output = '';
-  await writeJsonResult(
+  await writeProviderResult(
     (value) => {
       output = value;
     },
@@ -18,7 +18,7 @@ test('returns no fallback error when writing succeeds', async () => {
 
 test('adds output context to writer failures', async () => {
   await expect(
-    writeJsonResult(
+    writeProviderResult(
       () => {
         throw new Error('disk full');
       },
@@ -41,7 +41,7 @@ test('returns fallback writer failures without replacing the original failure', 
 
 test('formats non-error writer failures', async () => {
   await expect(
-    writeJsonResult(
+    writeProviderResult(
       () => {
         throw 'disk full';
       },

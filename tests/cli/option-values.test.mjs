@@ -8,6 +8,16 @@ test('parses supported scalar options and removes them from the command tokens',
     effort: 'low',
     model: 'gpt-5.6-sol',
     dryRun: true,
+    add: [],
+    remaining: ['all'],
+  });
+});
+
+test('collects repeated short and long add options in order', () => {
+  expect(
+    parseOptionValues(['all', '-a', 'first', '--add', 'second', '-a', 'third']),
+  ).toMatchObject({
+    add: ['first', 'second', 'third'],
     remaining: ['all'],
   });
 });
@@ -18,6 +28,8 @@ test('rejects duplicate and unsupported scalar options', () => {
   expect(() => parseOptionValues(['all', '--effort=bad'])).toThrow(/Effort must/);
   expect(() => parseOptionValues(['all', '--model=bad'])).toThrow(/Model must/);
   expect(() => parseOptionValues(['all', '--dry-run', '--dry-run'])).toThrow(/Only one/);
+  expect(() => parseOptionValues(['all', '--add'])).toThrow(/requires a value/);
+  expect(() => parseOptionValues(['all', '-a', '--usage'])).toThrow(/requires a value/);
 });
 
 test('parses command options and rejects unsupported command tokens', () => {

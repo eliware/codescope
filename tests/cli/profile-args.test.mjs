@@ -6,6 +6,7 @@ test('parses direct profile options', () => {
     option: '--usage',
     effort: undefined,
     model: undefined,
+    add: [],
   });
   expect(parseProfileArgs('architecture', [])).toMatchObject({ command: 'analyze-architecture' });
 });

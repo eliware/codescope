@@ -7,9 +7,6 @@ test('merges defaults and derives the environment reader', () => {
   expect(resolved.readEnvFile).toBe(readFile);
 });
 
-test('resolves defaults when options are omitted', () => {
-});
-
 test('preserves an explicitly supplied environment reader', () => {
   const readFile = () => {};
   const readEnvFile = () => {};

@@ -27,6 +27,7 @@ export async function runReviewPipeline(cwd, options) {
     combined,
     model: options.model,
     plainText: options.plainText,
+    add: options.add,
   });
   return finalizeReviewSession({
     register: options.register,

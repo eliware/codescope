@@ -8,6 +8,17 @@ test('parses grouped review options', () => {
   });
 });
 
+test('passes repeated additions through profile commands', () => {
+  expect(parseArgs(['all', '-a', 'first', '--add', 'second'])).toMatchObject({
+    command: 'analyze-all',
+    add: ['first', 'second'],
+  });
+  expect(parseArgs(['prompt', 'summarize', '-a', 'first', '--add', 'second'])).toMatchObject({
+    command: 'prompt',
+    add: ['first', 'second'],
+  });
+});
+
 test('parses direct profiles and shared options', () => {
   expect(parseArgs(['all', '--usage'])).toMatchObject({
     command: 'analyze-all',
@@ -42,6 +53,8 @@ test('parses metadata command variants', () => {
     option: '--version',
   });
   expect(parseArgs(['--version'])).toMatchObject({ command: 'version' });
+  expect(parseArgs(['help', '-a', 'ignored'])).toMatchObject({ command: 'help' });
+  expect(parseArgs(['--help', '--add', 'ignored'])).toMatchObject({ command: 'help' });
   expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
   expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);
   expect(() => parseArgs(['version', '--bad'])).toThrow(/not valid/);

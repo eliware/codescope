@@ -1,8 +1,8 @@
 import { defaultEnvFile } from './env-file-path.mjs';
 
-export async function readReviewEnvironmentFile({ envFile, readFile, readEnvFile, inspectFile }) {
+export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile }) {
   let envText = '';
-  if (readEnvFile === readFile && envFile === defaultEnvFile()) {
+  if (envFile === defaultEnvFile()) {
     try {
       const metadata = await inspectFile(envFile);
       if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');

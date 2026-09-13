@@ -1,7 +1,10 @@
 import { validateEffort, validateModel } from './option-validation.mjs';
+import { parseAddOptions } from './add-option.mjs';
 export { validateEffort, validateModel } from './option-validation.mjs';
 
 export function parseOptionValues(tokens) {
+  const additions = parseAddOptions(tokens);
+  tokens = additions.remaining;
   const effortTokens = tokens.filter((value) => value.startsWith('--effort='));
   const modelTokens = tokens.filter((value) => value.startsWith('--model='));
   const dryRunTokens = tokens.filter((value) => value === '--dry-run');
@@ -16,6 +19,7 @@ export function parseOptionValues(tokens) {
     effort,
     model,
     dryRun: dryRunTokens.length > 0,
+    add: additions.add,
     remaining: tokens.filter(
       (value) =>
         !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',

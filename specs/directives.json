@@ -53,12 +53,17 @@
           "id": "A-19.1",
           "dos": [
             "Support codescope, codescope --help, codescope all, codescope review <profile>, codescope suggest <profile>, supported direct profile shorthand, and codescope prompt <text>.",
-            "Support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, and --model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol.",
+            "Support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, --model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and -a|--add <string>.",
             "Use the normal repository context for custom prompts while disabling review and suggestion tools.",
-            "Use --usage to include provider token and calculated cost data, and use --dry-run to estimate input-token cost without running a model review."
+            "Use --usage to include provider token and calculated cost data, and use --dry-run to estimate input-token cost without running a model review.",
+            "When -a or --add is supplied one or more times to any codescope profile command, including all, release, review profiles, suggestion profiles, and prompt, append each string verbatim to the end of the final user message in command-line order.",
+            "Accept -a or --add on the bare codescope command and on codescope help or codescope --help without applying it to output or help text."
           ],
           "donts": [
-            "Do not require custom prompts to produce a verdict or a stable response schema."
+            "Do not require custom prompts to produce a verdict or a stable response schema.",
+            "Do not insert an added string before system instructions, profile instructions, repository evidence, or the final user message.",
+            "Do not interpret, normalize, summarize, reorder, merge, or silently discard any supplied added string when it applies to a profile command.",
+            "Do not apply added prompts to the bare CLI, help, or version output."
           ]
         },
         {

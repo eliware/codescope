@@ -34,5 +34,5 @@ test('rejects insecure permission metadata', async () => {
       defaultInspector: async () => ({}),
       platform: 'win32',
     }),
-  ).rejects.toThrow(/other users/);
+  ).rejects.toThrow(/ACL restrictions/);
 });

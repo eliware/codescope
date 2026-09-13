@@ -1,10 +1,7 @@
-import { stat } from 'node:fs/promises';
-
 export async function validateEnvironmentPermissions({
   envFile,
   inspectPermissions,
   platform,
-  defaultInspector = stat,
 }) {
   if (platform !== 'win32') {
     try {
@@ -34,10 +31,6 @@ export async function validateEnvironmentPermissions({
     );
   });
   const aclWasReported = metadata && Object.hasOwn(metadata, 'aclRestricted');
-  if (
-    !permissionsMissing &&
-    inspectPermissions !== defaultInspector &&
-    (!aclWasReported || metadata.aclRestricted !== true)
-  )
-    throw new Error('~/.codescope must not be readable by other users');
+  if (!permissionsMissing && (!aclWasReported || metadata.aclRestricted !== true))
+    throw new Error('Unable to verify Windows ACL restrictions for ~/.codescope');
 }

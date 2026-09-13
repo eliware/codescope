@@ -15,23 +15,22 @@ function readFunctionCallArguments(response) {
 export function preserveProviderResponse(response) {
   if (response === undefined) return undefined;
   const functionCallArguments = readFunctionCallArguments(response);
+  const outputText = readStringProperty(response, 'output_text');
+  const usage = readNumericUsage(response);
+  const summary = {
+    ...(outputText !== undefined ? { output_text: redactTestOutput(outputText) } : {}),
+    ...(usage ? { usage } : {}),
+    ...(functionCallArguments ? { function_call_arguments: functionCallArguments } : {}),
+  };
   try {
     JSON.stringify(response);
     return {
-      ...(readStringProperty(response, 'output_text') !== undefined
-        ? { output_text: redactTestOutput(readStringProperty(response, 'output_text')) }
-        : {}),
-      ...(readNumericUsage(response) ? { usage: readNumericUsage(response) } : {}),
-      ...(functionCallArguments ? { function_call_arguments: functionCallArguments } : {}),
+      ...summary,
       response_error: 'Provider response was not accepted by the response contract',
     };
   } catch {
     return {
-      ...(readStringProperty(response, 'output_text') !== undefined
-        ? { output_text: redactTestOutput(readStringProperty(response, 'output_text')) }
-        : {}),
-      ...(readNumericUsage(response) ? { usage: readNumericUsage(response) } : {}),
-      ...(functionCallArguments ? { function_call_arguments: functionCallArguments } : {}),
+      ...summary,
       response_error: 'Provider response could not be serialized',
     };
   }

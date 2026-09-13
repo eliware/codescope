@@ -1,11 +1,11 @@
-import { writeJsonResult } from './output.mjs';
+import { writeProviderResult } from './output.mjs';
 import { runDryRun } from './dry-run.mjs';
 import { requestProviderResponse } from './provider-request.mjs';
 import { responseText } from '../response/provider-text.mjs';
 
 export async function runDrySession({ client, request, signal, write, usage }) {
   const output = await runDryRun({ client, request, signal, model: request.model, usage });
-  await writeJsonResult(write, output);
+  await writeProviderResult(write, output);
   return output;
 }
 

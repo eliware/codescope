@@ -1,4 +1,4 @@
-export async function writeJsonResult(write, output, label = 'review') {
+export async function writeProviderResult(write, output, label = 'review') {
   try {
     await write(typeof output === 'string' ? output : String(output));
   } catch (cause) {

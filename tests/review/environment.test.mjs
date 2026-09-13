@@ -138,7 +138,7 @@ test('rejects an explicitly unrestricted Windows default environment file', asyn
       inspectPermissions: async () => ({ aclRestricted: false }),
       platform: 'win32',
     }),
-  ).rejects.toThrow(/other users/);
+  ).rejects.toThrow(/ACL restrictions/);
 });
 
 test('rejects Windows default environment files without trusted ACL metadata', async () => {
@@ -150,7 +150,7 @@ test('rejects Windows default environment files without trusted ACL metadata', a
       inspectPermissions: async () => ({}),
       platform: 'win32',
     }),
-  ).rejects.toThrow(/other users/);
+  ).rejects.toThrow(/ACL restrictions/);
 });
 
 test('allows a missing Windows default environment file', async () => {
