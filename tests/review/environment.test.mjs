@@ -184,17 +184,37 @@ test('rejects Windows default environment files without trusted ACL metadata', a
 });
 
 test('allows a missing Windows default environment file', async () => {
+  const missingReader = async () => {
+    throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+  };
   await expect(
     loadReviewEnvironment({
       ...base,
       envFile: defaultEnvFile(),
-      readEnvFile: base.readFile,
+      readFile: missingReader,
+      readEnvFile: missingReader,
+      inspectFile: async () => {
+        throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+      },
       inspectPermissions: async () => {
         throw { code: 'ENOENT' };
       },
       platform: 'win32',
     }),
   ).resolves.toBeDefined();
+});
+
+test('rejects a Windows environment file that disappears before permission inspection', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      readEnvFile: base.readFile,
+      inspectPermissions: async () => {
+        throw Object.assign(new Error('gone'), { code: 'ENOENT' });
+      },
+      platform: 'win32',
+    }),
+  ).rejects.toThrow(/disappeared/);
 });
 
 test('wraps Windows permission inspection failures', async () => {

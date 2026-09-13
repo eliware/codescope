@@ -2,6 +2,7 @@ export async function validateEnvironmentPermissions({
   envFile,
   inspectPermissions,
   platform,
+  filePresent = true,
 }) {
   if (platform !== 'win32') {
     try {
@@ -24,6 +25,7 @@ export async function validateEnvironmentPermissions({
   let permissionsMissing = false;
   const metadata = await inspectPermissions(envFile).catch((cause) => {
     if (cause?.code === 'ENOENT') {
+      if (filePresent) throw new Error(`${envFile} disappeared before permissions could be verified`);
       permissionsMissing = true;
       return undefined;
     }

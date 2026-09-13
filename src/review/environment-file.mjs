@@ -10,7 +10,7 @@ function assertNotSymbolicLink(envFile, metadata) {
   if (metadata.isSymbolicLink()) throw new Error(`${envFile} must not be a symbolic link`);
 }
 
-export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile }) {
+export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile, onFileRead }) {
   let initiallyMissing = false;
   try {
     assertNotSymbolicLink(envFile, await inspectFile(envFile));
@@ -34,5 +34,6 @@ export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectF
       throw inspectionError(envFile, 'Unable to verify after it appeared', cause);
     }
   }
+  onFileRead?.();
   return envText;
 }
