@@ -13,14 +13,13 @@ export function parseGroupedArgs(mode, tokens) {
   const profileValues = parseCommandOptions(
     profileTokens,
     usage,
-    new Set(['--usage', '--help', '-h', '--omit-test-results']),
+    new Set(['--usage', '--help', '-h']),
   );
   return {
     command: `analyze-${profile}`,
     mode,
     option: profileValues.remaining[0],
     options: profileValues.remaining,
-    testTimeout: profileValues.testTimeout,
     effort: values.effort,
     model: values.model,
     ...(values.dryRun ? { dryRun: true } : {}),

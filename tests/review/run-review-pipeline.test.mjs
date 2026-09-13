@@ -12,10 +12,7 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     createClient: () => ({
       responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) },
     }),
-    includesTests: true,
     omitTestResults: false,
-    testTimeoutMs: 1,
-    runTestCommand: async () => 'test output',
     redactOutput: (value) => value,
     combine: async () => 'source',
     readDirectory: async () => [],

@@ -108,10 +108,10 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
     }),
   ).resolves.toBe(0);
   await expect(
-    main(['all', '--omit-test-results'], { review: async () => ({}), error: () => {}, write }),
+    main(['all', '--usage'], { review: async () => ({}), error: () => {}, write }),
   ).resolves.toBe(1);
   await expect(
-    main(['security', '--test-timeout', '3', '--effort=low'], {
+    main(['security', '--effort=low'], {
       review: async () => validResult('security'),
       write,
     }),

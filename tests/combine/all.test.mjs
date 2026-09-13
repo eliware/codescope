@@ -30,9 +30,8 @@ test('combines only selected source groups when requested', async () => {
       ...options,
       tests: true,
       docs: true,
-      testResults: 'test output',
     }),
-  ).resolves.toContain('test output');
+  ).resolves.not.toContain('test output');
 });
 
 test('anchors metadata first, places inventory in the middle, and ends with source evidence', async () => {
@@ -61,7 +60,6 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
       if (name === 'image.bin') return Buffer.from([0, 1]);
       return name.endsWith('.yml') ? 'name: check' : name.endsWith('.md') ? '# docs' : 'code';
     },
-    testResults: '===== npm test =====\nexit code: 0',
   });
   expect(result).toContain('===== repository configuration =====');
   expect(result).toContain('===== .github/ci.yml =====');
@@ -79,9 +77,6 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
   expect(result.indexOf('===== app.mjs =====')).toBeLessThan(
     result.indexOf('===== app.test.mjs ====='),
   );
-  expect(result.indexOf('===== app.test.mjs =====')).toBeLessThan(
-    result.indexOf('===== npm test ====='),
-  );
   await expect(
     combineAllFiles('/repo', {
       readDirectory: async () => [],
@@ -89,9 +84,6 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
       maxChars: 1,
     }),
   ).rejects.toThrow(/character limit/);
-  await expect(
-    combineSelectedFiles('/repo', { ...options, testResults: 'result' }),
-  ).resolves.toContain('result');
 });
 
 test('reports package and configuration read failures clearly', async () => {

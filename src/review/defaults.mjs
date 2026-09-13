@@ -4,8 +4,6 @@ import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
 import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
-import { collectTestResults } from './collect-test-results.mjs';
-import { redactTestOutput } from './redaction.mjs';
 
 export function createReviewDefaults() {
   return {
@@ -17,11 +15,6 @@ export function createReviewDefaults() {
     maxSourceChars: 2_000_000,
     usage: false,
     dryRun: false,
-    includesTests: false,
-    omitTestResults: false,
-    testTimeoutMs: 30_000,
-    runTestCommand: collectTestResults,
-    redactTestOutput,
     model: undefined,
     createClient: createOpenAI,
     register: registerSignals,

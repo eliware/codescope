@@ -1,6 +1,6 @@
 import { combineSelectedFiles } from '../../src/combine/selected.mjs';
 
-test('combines selected implementation, tests, results, and docs in order', async () => {
+test('combines selected implementation, tests, and docs in order', async () => {
   const options = {
     readDirectory: async () => [],
     readFileContents: async () => '',
@@ -11,9 +11,8 @@ test('combines selected implementation, tests, results, and docs in order', asyn
     implementation: true,
     tests: true,
     docs: true,
-    testResults: 'RESULTS',
   });
-  expect(result).toContain('RESULTS');
+  expect(result).toContain('package.json');
 });
 
 test('returns package metadata when no optional sections are selected', async () => {

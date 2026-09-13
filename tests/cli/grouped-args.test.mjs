@@ -1,11 +1,10 @@
 import { parseGroupedArgs } from '../../src/cli/grouped-args.mjs';
 
 test('parses grouped review and suggestion commands', () => {
-  expect(parseGroupedArgs('review', ['all', '--usage', '--test-timeout', '20'])).toMatchObject({
+  expect(parseGroupedArgs('review', ['all', '--usage'])).toMatchObject({
     command: 'analyze-all',
     mode: 'review',
     option: '--usage',
-    testTimeout: '20',
   });
   expect(parseGroupedArgs('suggest', ['new-features', '--effort=low'])).toMatchObject({
     command: 'analyze-new-features',

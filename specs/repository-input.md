@@ -11,8 +11,7 @@ The comprehensive context is assembled in this order:
 4. Markdown files
 5. Implementation files
 6. Test files
-7. Test execution results when the selected profile includes tests
-8. A names-only inventory of remaining files, including text line/byte counts and binary byte counts
+7. A names-only inventory of remaining files, including text line/byte counts and binary byte counts
 
 Files already included in an earlier section are omitted from the final
 inventory.
@@ -34,26 +33,11 @@ coverage data are excluded. Legitimate nested source directories such as
 `src/coverage/` remain eligible. Symbolic links, whether files or directories,
 are skipped and never followed.
 
-## Test evidence
+## Test execution
 
-Test-inclusive review profiles run `npm test` with a 30-second default timeout.
-Partial output is retained when the process times out. A custom timeout can be
-provided, or test execution can be omitted explicitly.
-
-Test output is redacted deterministically before it is added to the provider
-context through the shared `@eliware/redact` library. CodeScope passes an
-explicit generic `maxString` limit of 500,000 characters and uses the fixed
-`[REDACTED]` sensitive-value marker. Redact owns the generic pattern catalog,
-structured behavior, and redaction tests; CodeScope owns only this invocation
-boundary and the review evidence policy. This pre-AI step is a
-data-minimization measure, not proof that the context is secret-free.
-
-Test-inclusive profiles execute the reviewed repository's `npm test` with its
-inherited environment, and the captured output is sent to the configured
-provider after this best-effort redaction. Do not review workspaces containing
-credentials or other sensitive values; sanitize source, fixtures, and logs
-before running CodeScope. Redaction is not a guarantee that arbitrary secrets
-are removed.
+CodeScope never runs tests in the reviewed repository and never includes test
+execution output in provider context. Repository owners and deterministic
+validation tooling own test execution separately.
 
 The AI must perform a second, independent secret-exposure review over all
 supplied context. It must report any visible or redacted credential, token,

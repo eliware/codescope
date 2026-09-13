@@ -9,7 +9,7 @@ observability, accessibility, refactoring, prioritization, release readiness,
 and priority filters.
 
 The `all` operation combines code, tests, documentation, package metadata,
-test evidence, and the remaining-file inventory. It requests one review result
+the remaining-file inventory. It requests one review result
 and one unified review result covering implementation, tests, and Markdown context.
 
 The `conventions` profile reviews supplied repository documentation, package

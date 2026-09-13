@@ -20,8 +20,6 @@ requirement.
 - `--dry-run` estimates input tokens without running a model review.
 - `--effort=none|low|medium|high|xhigh|max` selects reasoning effort.
 - `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` selects the model.
-- `--omit-test-results` excludes execution evidence for test-inclusive review profiles.
-- `--test-timeout <seconds>` changes the test execution timeout.
 
 ## Configuration
 

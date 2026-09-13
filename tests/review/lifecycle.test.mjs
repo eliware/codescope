@@ -60,28 +60,6 @@ test('runs dry-run evidence without initializing the provider', async () => {
   expect(result).toHaveProperty('estimated_input_tokens');
 });
 
-test('collects successful test evidence before review', async () => {
-  const result = await runReview(
-    'C:/repo',
-    base({
-      includesTests: true,
-      runTestCommand: async () => '===== npm test =====\nexit code: 0\nTests passed',
-    }),
-  );
-  expect(result.verdict).toBe('pass');
-});
-
-test('preserves failing test evidence as a blocking result', async () => {
-  const result = await runReview(
-    'C:/repo',
-    base({
-      includesTests: true,
-      runTestCommand: async () => '===== npm test =====\nexit code: 1\nTests failed',
-    }),
-  );
-  expect(result.verdict).toBe('block');
-});
-
 test('rejects invalid collaborators before provider work', async () => {
   await expect(runReview('C:/repo', base({ write: null }))).rejects.toThrow(/write/);
   await expect(runReview('C:/repo', base({ combine: null }))).rejects.toThrow(/combine/);

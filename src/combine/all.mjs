@@ -11,7 +11,6 @@ export async function combineAllFiles(root, options = {}) {
     sections.md,
     sections.implementation,
     sections.tests,
-    sections.testResults,
   ]
     .filter(Boolean)
     .join('\n');

@@ -9,9 +9,8 @@ test('parses grouped review options', () => {
 });
 
 test('parses direct profiles and shared options', () => {
-  expect(parseArgs(['all', '--test-timeout', '15', '--usage'])).toMatchObject({
+  expect(parseArgs(['all', '--usage'])).toMatchObject({
     command: 'analyze-all',
-    testTimeout: '15',
     option: '--usage',
   });
   expect(parseArgs(['architecture', '--model=gpt-5.6-terra', '--dry-run'])).toMatchObject({

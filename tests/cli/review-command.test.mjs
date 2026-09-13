@@ -22,9 +22,8 @@ test('routes review options and status through one command boundary', async () =
         return { verdict: 'pass' };
       },
       effort: 'low',
-      testTimeout: '30',
       option: '--usage',
     }),
   ).resolves.toBe(0);
-  expect(calls[0]).toMatchObject({ usage: true, testTimeoutMs: 30000 });
+  expect(calls[0]).toMatchObject({ usage: true });
 });

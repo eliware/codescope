@@ -1,7 +1,7 @@
 import { PROFILE_NAMES } from '../profiles/index.mjs';
 import { parseCommandOptions } from './option-values.mjs';
 
-const validOptions = new Set(['--help', '-h', '--version', '-v', '--usage', '--omit-test-results']);
+const validOptions = new Set(['--help', '-h', '--version', '-v', '--usage']);
 
 export function parseProfileArgs(profile, tokens) {
   const usage = `Unexpected arguments: ${tokens.join(' ')}`;
@@ -10,7 +10,6 @@ export function parseProfileArgs(profile, tokens) {
   return {
     command: `analyze-${profile}`,
     option: values.remaining[0],
-    testTimeout: values.testTimeout,
     effort: values.effort,
     model: values.model,
     ...(values.dryRun ? { dryRun: true } : {}),

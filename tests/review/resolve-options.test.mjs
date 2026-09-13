@@ -5,11 +5,9 @@ test('merges defaults and derives the environment reader', () => {
   const resolved = resolveReviewOptions('repo', { readFile });
   expect(resolved.readFile).toBe(readFile);
   expect(resolved.readEnvFile).toBe(readFile);
-  expect(resolved.testTimeoutMs).toBe(30_000);
 });
 
 test('resolves defaults when options are omitted', () => {
-  expect(resolveReviewOptions('repo').testTimeoutMs).toBe(30_000);
 });
 
 test('preserves an explicitly supplied environment reader', () => {

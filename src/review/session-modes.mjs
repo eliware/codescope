@@ -16,7 +16,6 @@ export async function runProviderSession({
   signal,
   usage,
   plainText,
-  testResults,
 }) {
   const providerResponse = await requestProviderResponse(client, request, signal);
   if (plainText !== undefined) {
@@ -28,7 +27,6 @@ export async function runProviderSession({
     request,
     request.model,
     usage,
-    testResults,
     parseProviderResult,
   );
   return { providerResponse, result: output, output };

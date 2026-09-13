@@ -19,7 +19,6 @@ test('maps normal review status from the parsed top-level verdict', () => {
     {},
     'gpt-5.6-luna',
     false,
-    undefined,
     () => ({ verdict: 'pass' }),
   );
   expect(result).toEqual({ verdict: 'pass' });

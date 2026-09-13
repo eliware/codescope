@@ -1,7 +1,4 @@
 import { validateEffort, validateModel } from './option-validation.mjs';
-import { parseTimeoutOption } from './timeout-options.mjs';
-
-export { parseTimeoutOption } from './timeout-options.mjs';
 export { validateEffort, validateModel } from './option-validation.mjs';
 
 export function parseOptionValues(tokens) {
@@ -28,14 +25,13 @@ export function parseOptionValues(tokens) {
 
 export function parseCommandOptions(tokens, usage, allowed, rejectVersion = false) {
   const values = parseOptionValues(tokens);
-  const timeout = parseTimeoutOption(values.remaining, usage);
-  if (rejectVersion && ['--version', '-v'].includes(timeout.remaining[0]))
-    throw new Error(`Option ${timeout.remaining[0]} is not valid for this command`);
-  if (new Set(timeout.remaining).size !== timeout.remaining.length) throw new Error(usage);
+  if (rejectVersion && ['--version', '-v'].includes(values.remaining[0]))
+    throw new Error(`Option ${values.remaining[0]} is not valid for this command`);
+  if (new Set(values.remaining).size !== values.remaining.length) throw new Error(usage);
   if (
-    timeout.remaining.length > 1 ||
-    (timeout.remaining.length === 1 && !allowed.has(timeout.remaining[0]))
+    values.remaining.length > 1 ||
+    (values.remaining.length === 1 && !allowed.has(values.remaining[0]))
   )
     throw new Error(usage);
-  return { ...values, ...timeout };
+  return values;
 }

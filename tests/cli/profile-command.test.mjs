@@ -12,8 +12,7 @@ test('runs a profile and translates its options', async () => {
       },
       options: ['--usage'],
       effort: 'low',
-      testTimeout: '30',
     }),
   ).resolves.toBe(0);
-  expect(calls[0]).toMatchObject({ usage: true, testTimeoutMs: 30000 });
+  expect(calls[0]).toMatchObject({ usage: true });
 });

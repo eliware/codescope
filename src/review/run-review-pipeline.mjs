@@ -14,13 +14,8 @@ export async function runReviewPipeline(cwd, options) {
     platform: options.platform,
     createClient: options.createClient,
   });
-  const { testResults, combined } = await collectReviewContext({
+  const { combined } = await collectReviewContext({
     cwd,
-    includesTests: options.includesTests,
-    omitTestResults: options.omitTestResults,
-    testTimeoutMs: options.testTimeoutMs,
-    runTestCommand: options.runTestCommand,
-    redactOutput: options.redactOutput,
     combine: options.combine,
     readDirectory: options.readDirectory,
     readFile: options.readFile,
@@ -45,7 +40,6 @@ export async function runReviewPipeline(cwd, options) {
         dryRun: options.dryRun,
         usage: options.usage,
         plainText: options.plainText,
-        testResults,
       }),
   });
 }

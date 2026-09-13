@@ -1,7 +1,6 @@
 import {
   parseCommandOptions,
   parseOptionValues,
-  parseTimeoutOption,
 } from '../../src/cli/option-values.mjs';
 
 test('parses supported scalar options and removes them from the command tokens', () => {
@@ -19,23 +18,6 @@ test('rejects duplicate and unsupported scalar options', () => {
   expect(() => parseOptionValues(['all', '--effort=bad'])).toThrow(/Effort must/);
   expect(() => parseOptionValues(['all', '--model=bad'])).toThrow(/Model must/);
   expect(() => parseOptionValues(['all', '--dry-run', '--dry-run'])).toThrow(/Only one/);
-});
-
-test('parses and validates a timeout option', () => {
-  expect(parseTimeoutOption(['--usage', '--test-timeout', '30'])).toEqual({
-    remaining: ['--usage'],
-    testTimeout: '30',
-  });
-  expect(parseTimeoutOption(['--usage'])).toEqual({
-    remaining: ['--usage'],
-    testTimeout: undefined,
-  });
-  expect(() => parseTimeoutOption(['--test-timeout'])).toThrow(/Usage/);
-  expect(() => parseTimeoutOption(['--test-timeout', '0'])).toThrow(/Usage/);
-  expect(() => parseTimeoutOption(['--test-timeout', 'x'])).toThrow(/Usage/);
-  expect(() => parseTimeoutOption(['--test-timeout', '1', '--test-timeout', '2'])).toThrow(
-    /Only one/,
-  );
 });
 
 test('parses command options and rejects unsupported command tokens', () => {

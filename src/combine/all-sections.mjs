@@ -11,7 +11,6 @@ export async function collectAllSections(root, options = {}) {
   return {
     ...metadata,
     ...source,
-    testResults: options.testResults,
     other,
   };
 }

@@ -62,7 +62,7 @@ test('preserves malformed tool arguments as a blocked raw response', async () =>
   expect(result).toEqual({ raw_response: '{', verdict: 'block' });
 });
 
-test('does not override an existing blocked verdict for failed test evidence', async () => {
+test('preserves an existing blocked verdict', async () => {
   const result = await runReviewSession({
     client: {
       responses: {
@@ -82,7 +82,6 @@ test('does not override an existing blocked verdict for failed test evidence', a
     write: async () => {},
     dryRun: false,
     usage: false,
-    testResults: '===== npm test =====\nexit code: 1',
   });
   expect(result.verdict).toBe('block');
 });
@@ -121,7 +120,7 @@ test('preserves an untyped output write failure', async () => {
   ).rejects.toThrow(/output failed/);
 });
 
-test('includes usage and blocks failed test evidence', async () => {
+test('includes usage without test execution evidence', async () => {
   const base = {
     client: {
       responses: {
@@ -142,13 +141,6 @@ test('includes usage and blocks failed test evidence', async () => {
       client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
     }),
   ).resolves.toMatchObject({ usage: null });
-  const { plainText: _plainText, ...reviewBase } = base;
-  const result = await runReviewSession({
-    ...reviewBase,
-    client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
-    testResults: '===== npm test =====\nexit code: 1',
-  });
-  expect(result.verdict).toBe('block');
   await expect(
     runReviewSession({
       ...base,

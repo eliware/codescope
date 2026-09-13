@@ -20,7 +20,7 @@ support information.
 
 - [Overview](overview.md) — product purpose, workflow, and contracts.
 - [CLI](cli.md) — commands, options, output, and exit behavior.
-- [Repository input](repository-input.md) — file discovery, ordering, and test evidence.
+- [Repository input](repository-input.md) — file discovery, ordering, and supplied repository evidence.
 - [Review profiles](review-profiles.md) — review and suggestion profile behavior.
 - [Structured results](structured-results.md) — provider tools and result shape.
 - [Requirements](requirements.md) — repository-level requirements.

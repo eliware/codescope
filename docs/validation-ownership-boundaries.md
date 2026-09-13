@@ -23,17 +23,18 @@ documentation quality and coherence, meaningful test coverage, architecture,
 APIs, security, reliability, performance, portability, conventions, waivers,
 known drift, and release-readiness risks that require judgment.
 
-CodeScope may consume `npm test` output as evidence, but must not replace or
-reimplement deterministic checks. Its output distinguishes confirmed findings,
-AI judgments, unverified areas, supplied test evidence, and release advice.
+CodeScope does not run or consume repository test output. It reviews supplied
+repository evidence only; repository owners and CI own test execution. Its
+output distinguishes confirmed findings, AI judgments, unverified areas, and
+release advice.
 
 CodeScope is read-only and advisory. It does not modify files, commit, push,
 publish, or release.
 
 ## `@eliware/tagit` — release orchestration
 
-TagIt owns release workflow state and publication verification. It invokes the
-target repository’s `npm test`, verifies the approved harness, checks version,
+TagIt owns release workflow state and publication verification. It verifies the
+approved harness, checks version,
 tag, branch, worktree, CI, publication, release-artifact, and permission state,
 and performs explicitly authorized push, tag, and publication operations.
 
