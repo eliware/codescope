@@ -9,6 +9,7 @@ test('resolves a trimmed token from injected environment input', async () => {
       inspectFile: async () => ({ isSymbolicLink: () => false }),
       inspectPermissions: async () => ({}),
       platform: 'win32',
+      validatePermissions: false,
     }),
   ).resolves.toMatchObject({ token: 'token' });
 });

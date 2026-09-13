@@ -409,7 +409,7 @@
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Permission validation is enabled by default and is disabled only by an explicit false option."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [

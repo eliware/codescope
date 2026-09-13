@@ -18,6 +18,11 @@ export function parseArgs(args) {
       ...(values.add.length ? { ignoredAdditions: values.add } : {}),
     };
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
-  const parsed = parseProfileArgs(first, rest);
-  return values.add.length ? { ...parsed, add: values.add } : parsed;
+  return {
+    ...parseProfileArgs(first, values.remaining),
+    effort: values.effort,
+    model: values.model,
+    ...(values.dryRun ? { dryRun: true } : {}),
+    add: values.add,
+  };
 }

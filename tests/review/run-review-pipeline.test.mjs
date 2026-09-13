@@ -10,6 +10,7 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     inspectFile: async () => ({ isSymbolicLink: () => false }),
     inspectPermissions: async () => ({}),
     platform: 'win32',
+    validatePermissions: false,
     createClient: () => ({
       responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) },
     }),

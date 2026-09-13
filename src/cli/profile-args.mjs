@@ -13,6 +13,5 @@ export function parseProfileArgs(profile, tokens) {
     effort: values.effort,
     model: values.model,
     add: values.add,
-    ...(values.dryRun ? { dryRun: true } : {}),
   };
 }

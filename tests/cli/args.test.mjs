@@ -88,3 +88,28 @@ test('parses grouped dry-run options', () => {
     dryRun: true,
   });
 });
+
+test('normalizes direct profile scalar options exactly once', () => {
+  expect(
+    parseArgs([
+      'all',
+      '--add',
+      'first',
+      '--effort=medium',
+      '--dry-run',
+      '--model=gpt-5.6-terra',
+      '-a',
+      'second',
+    ]),
+  ).toMatchObject({
+    command: 'analyze-all',
+    effort: 'medium',
+    model: 'gpt-5.6-terra',
+    dryRun: true,
+    add: ['first', 'second'],
+  });
+  expect(() => parseArgs(['all', '--effort=low', '--effort=high'])).toThrow(/Only one --effort/);
+  expect(() => parseArgs(['all', '--model=one', '--model=two'])).toThrow(/Only one --model/);
+  expect(() => parseArgs(['all', '--dry-run', '--dry-run'])).toThrow(/Only one --dry-run/);
+  expect(() => parseArgs(['all', '--effort=low', 'unexpected'])).toThrow(/Unexpected/);
+});

@@ -7,7 +7,7 @@ export async function resolveReviewSetup({
   inspectFile,
   inspectPermissions,
   platform,
-  validatePermissions = false,
+  validatePermissions = true,
 }) {
   const environment = await loadReviewEnvironment({
     envFile,

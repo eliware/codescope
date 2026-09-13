@@ -7,7 +7,7 @@ const base = {
   readFile: async () => 'OPENAI_API_TOKEN=token',
   readEnvFile: async () => 'OPENAI_API_TOKEN=token',
   inspectFile: async () => ({ isSymbolicLink: () => false }),
-  inspectPermissions: async () => ({ mode: 0o600 }),
+  inspectPermissions: async () => ({ aclRestricted: true }),
   platform: 'win32',
 };
 
@@ -159,6 +159,7 @@ test('checks custom files for symbolic links without requiring default permissio
       throw new Error('not called');
     },
     platform: 'win32',
+    validatePermissions: false,
     environment: {},
   });
   expect(environment.OPENAI_API_TOKEN).toBe('custom');

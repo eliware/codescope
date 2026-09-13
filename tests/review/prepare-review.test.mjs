@@ -7,6 +7,7 @@ const setup = {
   inspectFile: async () => ({ isSymbolicLink: () => false }),
   inspectPermissions: async () => ({}),
   platform: 'win32',
+  validatePermissions: false,
 };
 
 test('prepares the provider client from the resolved token', async () => {
