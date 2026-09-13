@@ -1,19 +1,9 @@
+import { assertNotSymbolicLink, fileIdentity } from './environment-file-safety.mjs';
+
 function inspectionError(envFile, message, cause) {
   return new Error(`${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`, {
     cause,
   });
-}
-
-function assertNotSymbolicLink(envFile, metadata) {
-  if (typeof metadata?.isSymbolicLink !== 'function')
-    throw new Error(`${envFile} inspection did not provide symbolic-link metadata`);
-  if (metadata.isSymbolicLink()) throw new Error(`${envFile} must not be a symbolic link`);
-}
-
-function fileIdentity(metadata) {
-  const { dev, ino } = metadata;
-  const valid = (value) => typeof value === 'number' || typeof value === 'bigint';
-  return valid(dev) && valid(ino) ? `${dev}:${ino}` : undefined;
 }
 
 export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile, onFileRead }) {
@@ -39,9 +29,9 @@ export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectF
     try {
       const finalMetadata = await inspectFile(envFile);
       assertNotSymbolicLink(envFile, finalMetadata);
-      const initialIdentity = fileIdentity(initialMetadata);
-      const finalIdentity = fileIdentity(finalMetadata);
-      if (initialIdentity && finalIdentity && initialIdentity !== finalIdentity)
+      const initialIdentity = fileIdentity(envFile, initialMetadata);
+      const finalIdentity = fileIdentity(envFile, finalMetadata);
+      if (initialIdentity !== finalIdentity)
         throw new Error(`${envFile} was replaced while it was being read`);
     } catch (cause) {
       throw inspectionError(envFile, 'Unable to verify', cause);

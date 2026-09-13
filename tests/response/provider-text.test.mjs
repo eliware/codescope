@@ -9,11 +9,11 @@ test('prefers the selected function-call arguments', () => {
   ).toBe('{}');
 });
 
-test('preserves malformed selected function-call arguments instead of falling back', () => {
+test('rejects non-text selected function-call arguments', () => {
   expect(
-    responseText(
+    () => responseText(
       { output: [{ type: 'function_call', name: 'review', arguments: { invalid: true } }], output_text: 'fallback' },
       { tool_choice: { name: 'review' } },
     ),
-  ).toBe('{"invalid":true}');
+  ).toThrow(/raw text/);
 });

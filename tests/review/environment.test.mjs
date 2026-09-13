@@ -6,7 +6,7 @@ const base = {
   envFile: 'custom.env',
   readFile: async () => 'OPENAI_API_TOKEN=token',
   readEnvFile: async () => 'OPENAI_API_TOKEN=token',
-  inspectFile: async () => ({ isSymbolicLink: () => false }),
+  inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   inspectPermissions: async () => ({ aclRestricted: true }),
   platform: 'win32',
 };
@@ -59,7 +59,7 @@ test('handles permission and inspection failures with context', async () => {
     envFile: defaultEnvFile(),
     readFile: reader,
     readEnvFile: reader,
-    inspectFile: async () => ({ isSymbolicLink: () => false }),
+    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
     inspectPermissions: async () => ({ mode: 0o644 }),
     platform: 'linux',
     environment: {},
@@ -133,7 +133,7 @@ test('rejects a Unix environment file that disappears before permission inspecti
       envFile: defaultEnvFile(),
       readFile: async () => 'OPENAI_API_TOKEN=token',
       readEnvFile: async () => 'OPENAI_API_TOKEN=token',
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
+    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       inspectPermissions: async () => {
         throw Object.assign(new Error('gone'), { code: 'ENOENT' });
       },
@@ -165,7 +165,7 @@ test('checks custom files for symbolic links without requiring default permissio
     readEnvFile: async () => 'OPENAI_API_TOKEN=custom',
     inspectFile: async () => {
       inspected = true;
-      return { isSymbolicLink: () => false };
+      return { dev: 1, ino: 2, isSymbolicLink: () => false };
     },
     inspectPermissions: async () => {
       throw new Error('not called');
@@ -194,7 +194,7 @@ test('checks permissions for a custom file when using the native reader', async 
       envFile: 'custom.env',
       readFile,
       readEnvFile: readFile,
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       inspectPermissions: async () => ({ aclRestricted: false }),
       platform: 'win32',
       environment: {},

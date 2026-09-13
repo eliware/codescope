@@ -41,3 +41,32 @@ test('rejects insecure permission metadata', async () => {
     }),
   ).rejects.toThrow(/ACL restrictions/);
 });
+
+test('applies the same private-mode rule to supported POSIX platforms', async () => {
+  for (const platform of ['darwin', 'freebsd']) {
+    await expect(
+      validateEnvironmentPermissions({
+        envFile: 'config',
+        inspectPermissions: async () => ({ mode: 0o600 }),
+        platform,
+      }),
+    ).resolves.toBeUndefined();
+    await expect(
+      validateEnvironmentPermissions({
+        envFile: 'config',
+        inspectPermissions: async () => ({ mode: 0o644 }),
+        platform,
+      }),
+    ).rejects.toThrow(/group or other/);
+  }
+});
+
+test('rejects an unsupported permission platform', async () => {
+  await expect(
+    validateEnvironmentPermissions({
+      envFile: 'config',
+      inspectPermissions: async () => ({ mode: 0o600 }),
+      platform: 'plan9',
+    }),
+  ).rejects.toThrow(/Unsupported permission platform/);
+});

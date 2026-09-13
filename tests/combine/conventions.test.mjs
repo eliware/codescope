@@ -102,6 +102,28 @@ test('reports unavailable applicability when a repository type is not in the man
   }
 });
 
+test('uses the injected convention manifest reader for virtual roots', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  const specs = path.join(root, 'specs');
+  await mkdir(specs, { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(specs, 'virtual.json'), '{"virtual":true}');
+  await writeFile(
+    path.join(root, 'project', 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['virtual'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+      readConventionManifest: async () =>
+        JSON.stringify({ repositoryTypes: { virtual: 'specs/virtual.json' } }),
+    });
+    expect(result).toContain('conventions/specs/virtual.json');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }

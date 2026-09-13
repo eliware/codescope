@@ -4,7 +4,7 @@ const setup = {
   envFile: 'ignored',
   readFile: async () => 'OPENAI_API_TOKEN=ignored',
   readEnvFile: async () => 'OPENAI_API_TOKEN= token ',
-  inspectFile: async () => ({ isSymbolicLink: () => false }),
+  inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   inspectPermissions: async () => ({}),
   platform: 'win32',
   validatePermissions: false,

@@ -51,6 +51,13 @@ test('preserves a serializable response with no function calls', () => {
   });
 });
 
+test('marks capped fallback diagnostics explicitly', () => {
+  const response = { output_text: 'x'.repeat(500_001) };
+  const result = preserveProviderResponse(response);
+  expect(result.response_truncated).toBe(true);
+  expect(result.response.length).toBeLessThanOrEqual(500_000);
+});
+
 test('ignores malformed function-call collections without losing the response', () => {
   const call = { type: 'function_call', name: 'review' };
   Object.defineProperty(call, 'arguments', { get: () => { throw new Error('bad'); } });

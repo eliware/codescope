@@ -10,6 +10,7 @@ export async function combineConventionFiles(
     conventionsRoot = path.resolve(root, '..', 'conventions'),
     readDirectory,
     readFileContents = readFile,
+    readConventionManifest = readFile,
     inspectFile = lstat,
   } = {},
 ) {
@@ -20,7 +21,10 @@ export async function combineConventionFiles(
     return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
   }
 
-  const applicability = await readConventionApplicability(root, { readFileContents });
+  const applicability = await readConventionApplicability(root, {
+    readFileContents,
+    readConventionManifest,
+  });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
   const { profiles, canonicalPaths } = applicability;
   const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) => {
@@ -48,13 +52,16 @@ export async function combineConventionFiles(
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
 
-async function readConventionApplicability(root, { readFileContents = readFile } = {}) {
+async function readConventionApplicability(
+  root,
+  { readFileContents = readFile, readConventionManifest = readFile } = {},
+) {
   try {
     const packageJson = JSON.parse(
       await readFileContents(path.resolve(root, 'package.json'), 'utf8'),
     );
     const manifest = JSON.parse(
-      await readFile(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
+      await readConventionManifest(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
     );
     const apply = packageJson.eliware?.conventions?.apply;
     const repositoryTypes = manifest.repositoryTypes;

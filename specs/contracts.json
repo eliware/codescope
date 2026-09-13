@@ -294,14 +294,15 @@
       },
       "dos": [
         "Read only the repository types declared by package.json eliware.conventions.apply.",
-        "Load canonical Convention JSON from the adjacent conventions checkout.",
+        "Load canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader.",
         "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",
         "Treat canonical Conventions records as the authority for repository requirements."
       ],
       "donts": [
         "Do not redefine, duplicate, or extend Convention requirements in CodeScope contracts.",
         "Do not infer Convention requirements when canonical evidence is unavailable.",
-        "Do not treat CodeScope's convention-evidence behavior as authority over repository structure."
+        "Do not treat CodeScope's convention-evidence behavior as authority over repository structure.",
+        "Do not bind virtual or injected repository roots to an unrelated native manifest read."
       ],
       "implementation": { "source": [
         "../src/combine/conventions.mjs",
@@ -362,13 +363,14 @@
         "outputs": "The exact successful provider response text or a provider failure with preserved diagnostics.",
         "errors": ["Transport failures and incomplete output writes are nonzero CodeScope-owned failures."],
         "ordering": ["Collect and validate local repository evidence before provider setup; complete provider execution before writing the result; cleanup follows success or failure."],
-        "invariants": ["Successful provider output is not parsed, formatted, or transformed."],
+        "invariants": ["Successful provider output is not parsed, formatted, or transformed.", "Fallback diagnostic serialization is redacted, capped at 500000 characters, and explicitly marked when capped."],
         "boundaries": { "owns": ["Provider output handling"], "doesNotOwn": ["Provider output semantics"] }
       },
       "dos": [
         "Send the prepared request to the provider and preserve the exact successful response text unchanged.",
         "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
-        "Preserve safe diagnostic summaries when a provider response cannot be serialized.",
+        "Accept only raw string function-call arguments as successful provider response text; preserve non-text arguments only in redacted diagnostic summaries.",
+        "Preserve safe diagnostic summaries when a provider response cannot be serialized, and mark capped serialized diagnostics with response_truncated.",
         "Report provider transport failures and output-write failures with their original error context.",
         "Accept writer results of undefined, true, or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
@@ -377,11 +379,13 @@
         "Do not parse, validate, redact, pretty-print, format, or transform successful provider output.",
         "Do not derive process status or exit code from provider content.",
         "Do not discard all safe function-call summaries because one provider call is malformed.",
+        "Do not describe capped fallback diagnostics as unchanged successful provider output.",
         "Do not accept false, numbers, strings, null, or unrelated objects as writer results.",
         "Do not treat a short explicit writer count as a successful complete write."
       ],
       "implementation": { "source": [
         "../src/review/provider-request.mjs",
+        "../src/response/provider-text.mjs",
         "../src/review/session-modes.mjs",
         "../src/review/session-result.mjs",
         "../src/review/run-session.mjs",
@@ -416,7 +420,7 @@
       "dos": [
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
-        "On Unix, reject group/world-readable configuration files.",
+        "On Linux, macOS, and FreeBSD, require stat mode evidence and reject group/world-readable configuration files.",
         "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs, pass only the required process variables and target path to the child rather than the full credential-bearing environment, and require every parsed DACL ACE to be an allow ACE for only the current user SID.",
         "Default the environment reader to the configured file reader, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
@@ -424,12 +428,13 @@
       "donts": [
         "Do not treat a missing or whitespace-only process token as authoritative over a nonblank file token.",
         "Do not parse localized human-readable ACL output or accept an unverified, malformed, or unknown-SID Windows ACL as restricted.",
-        "Do not silently accept a file that disappears, is replaced, or changes safety state during the permission check.",
+        "Do not silently accept a file that disappears, is replaced, lacks stable identity evidence, or changes safety state during the permission check.",
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [
         "../src/review/environment.mjs",
         "../src/review/environment-file.mjs",
+        "../src/review/environment-file-safety.mjs",
         "../src/review/environment-permissions.mjs",
         "../src/review/windows-acl.mjs",
         "../src/review/dotenv-parser.mjs",

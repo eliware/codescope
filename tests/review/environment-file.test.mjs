@@ -1,4 +1,5 @@
 import { readReviewEnvironmentFile } from '../../src/review/environment-file.mjs';
+import { fileIdentity } from '../../src/review/environment-file-safety.mjs';
 import { defaultEnvFile } from '../../src/review/env-file-path.mjs';
 
 test('reads a supplied environment file', async () => {
@@ -7,7 +8,7 @@ test('reads a supplied environment file', async () => {
       envFile: 'file',
       readFile: () => {},
       readEnvFile: async () => 'x',
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
     }),
   ).resolves.toBe('x');
 });
@@ -17,7 +18,7 @@ test('wraps errors reading a supplied environment file', async () => {
     readReviewEnvironmentFile({
       envFile: 'file',
       readEnvFile: async () => { throw new Error('read failed'); },
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
     }),
   ).rejects.toThrow('Unable to read file: read failed');
 });
@@ -97,4 +98,18 @@ test('accepts a stable existing file with bigint identity metadata', async () =>
       readEnvFile: async () => 'OPENAI_API_TOKEN=value',
     }),
   ).resolves.toBe('OPENAI_API_TOKEN=value');
+});
+
+test('rejects an existing file without stable identity metadata', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+    }),
+  ).rejects.toThrow(/stable file identity/);
+});
+
+test('rejects absent identity metadata directly', () => {
+  expect(() => fileIdentity('file', undefined)).toThrow(/stable file identity/);
 });

@@ -4,7 +4,7 @@ export async function validateEnvironmentPermissions({
   platform,
   filePresent = true,
 }) {
-  if (platform !== 'win32') {
+  if (['linux', 'darwin', 'freebsd'].includes(platform)) {
     try {
       const metadata = await inspectPermissions(envFile);
       if (!Number.isInteger(metadata?.mode))
@@ -23,6 +23,8 @@ export async function validateEnvironmentPermissions({
     }
     return;
   }
+
+  if (platform !== 'win32') throw new Error(`Unsupported permission platform: ${platform}`);
 
   let permissionsMissing = false;
   const metadata = await inspectPermissions(envFile).catch((cause) => {
