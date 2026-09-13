@@ -53,8 +53,13 @@ async function readConventionApplicability(root, { readFileContents = readFile }
     const packageJson = JSON.parse(
       await readFileContents(path.resolve(root, 'package.json'), 'utf8'),
     );
+    const manifest = JSON.parse(
+      await readFile(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
+    );
     const apply = packageJson.eliware?.conventions?.apply;
-    return Array.isArray(apply) && apply.every((name) => typeof name === 'string')
+    const repositoryTypes = manifest.repositoryTypes;
+    return Array.isArray(apply) &&
+      apply.every((name) => typeof name === 'string' && Object.hasOwn(repositoryTypes, name))
       ? new Set(apply)
       : null;
   } catch {

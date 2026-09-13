@@ -8,6 +8,8 @@ test('accepts native roots and rejects foreign Windows roots', () => {
   expect(() => validateScanRoot('repo', 'linux')).not.toThrow();
   expect(() => validateScanRoot('C:\\repo', 'win32')).not.toThrow();
   expect(() => validateScanRoot('C:\\repo', 'linux')).toThrow(/Windows-style/);
+  expect(() => validateScanRoot('\\\\server\\share', 'linux')).toThrow(/Windows-style/);
+  expect(() => validateScanRoot('//server/share', 'linux')).toThrow(/Windows-style/);
   expect(() => validateScanRoot(null, 'linux')).toThrow(/path string/);
 });
 

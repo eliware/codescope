@@ -46,6 +46,11 @@ test('rejects invalid scalar and collaborator options', () => {
   expect(() => validateReviewOptions('repo', { ...valid, inspectFile: null })).toThrow(/inspectFile/);
   expect(() => validateReviewOptions('repo', { ...valid, inspectPermissions: null })).toThrow(/inspectPermissions/);
   expect(() => validateReviewOptions('repo', { ...valid, prompt: 'prompt' })).toThrow(/Prompt/);
+  expect(() => validateReviewOptions('repo', { ...valid, prompt: [] })).toThrow(/Prompt/);
+  expect(() => validateReviewOptions('repo', { ...valid, prompt: { input: [] } })).toThrow(/developer/);
+  expect(() => validateReviewOptions('repo', { ...valid, inspectPermissions: undefined })).toThrow(
+    /inspectPermissions/,
+  );
   expect(() => validateReviewOptions('repo', { ...valid, envFile: '' })).toThrow(/envFile/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(
     /finite/,

@@ -167,6 +167,7 @@
       "dos": [
         "Keep review and suggestion modes distinct while allowing the declared profile set: conventions, refactor, architecture, new-features, all, release, security, performance, reliability, api-design, cross-platform, dependencies, observability, accessibility, quick-wins, prioritize, p0, p0-1, p0-2, and p0-3.",
         "Use the all operation for comprehensive implementation, test, documentation, metadata, and remaining-file evidence.",
+        "Route suggest all through one generic non-blocking suggestion prompt covering every review category plus new-features.",
         "Use prompt with the all context and no review or suggestion tool requirement.",
         "Keep new-features in suggestion mode when invoked through the review command."
       ],

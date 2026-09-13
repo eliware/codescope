@@ -29,7 +29,7 @@ test('rejects invalid prompt structures', () => {
     null,
     [],
     { input: 'bad' },
-    { extra: true, input: [] },
+    { extra: true, input: [message()] },
     { model: 1, input: [message()] },
     { tools: 'bad', input: [message()] },
     { store: 'bad', input: [message()] },

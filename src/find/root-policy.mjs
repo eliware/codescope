@@ -1,6 +1,6 @@
 export function validateScanRoot(root, platform) {
   if (typeof root !== 'string') throw new Error('Scan root must be a path string');
-  if (platform !== 'win32' && /^[A-Za-z]:[\\/]/u.test(root))
+  if (platform !== 'win32' && /^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/u.test(root))
     throw new Error('Windows-style scan roots require a Windows host');
 }
 

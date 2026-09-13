@@ -1,3 +1,5 @@
+import { validatePromptShape } from './prompt-shape.mjs';
+
 export function validateReviewOptions(
   cwd,
   {
@@ -38,8 +40,9 @@ export function validateReviewOptions(
   for (const [name, value] of Object.entries({ inspectFile, inspectPermissions }))
     if (value !== undefined && typeof value !== 'function')
       throw new Error(`runReview option ${name} must be a function`);
-  if (prompt !== undefined && (prompt === null || typeof prompt !== 'object'))
-    throw new Error('Prompt option must be an object');
+  if (prompt !== undefined) validatePromptShape(prompt);
+  if (validatePermissions !== false && typeof inspectPermissions !== 'function')
+    throw new Error('runReview option inspectPermissions must be a function when permission validation is enabled');
   if (envFile !== undefined && (typeof envFile !== 'string' || !envFile))
     throw new Error('runReview option envFile must be a non-empty string');
   if (platform !== undefined && !['linux', 'darwin', 'freebsd', 'win32'].includes(platform))

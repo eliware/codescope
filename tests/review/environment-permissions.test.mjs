@@ -13,7 +13,6 @@ test('accepts secure Unix permissions and trusted Windows ACL metadata', async (
     validateEnvironmentPermissions({
       envFile: 'config',
       inspectPermissions: inspect,
-      defaultInspector: async () => ({}),
       platform: 'win32',
     }),
   ).resolves.toBeUndefined();
@@ -38,7 +37,6 @@ test('rejects insecure permission metadata', async () => {
     validateEnvironmentPermissions({
       envFile: 'config',
       inspectPermissions: async () => ({}),
-      defaultInspector: async () => ({}),
       platform: 'win32',
     }),
   ).rejects.toThrow(/ACL restrictions/);

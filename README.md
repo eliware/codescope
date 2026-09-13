@@ -84,7 +84,7 @@ git diff --check
 
 `codescope all` is the main comprehensive review and suggestion command. It reports P0–P3 findings; unresolved P0/P1 findings should produce an AI `block` verdict in the raw response. Provider findings never change the CLI exit code.
 
-Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions across the review categories plus `new-features`.
+Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for one non-blocking suggestion pass over every review category plus `new-features`; it uses the generic suggestion tool and never interprets findings as review status.
 
 Use `codescope prompt "your question"` for an ad hoc request. It sends the same complete `all` context, without test execution results, and sends no review or suggestion tools. The provider response is written unchanged and has no CodeScope schema. Optional `--effort=` and `--model=` overrides are supported. Use `--` before options when the prompt itself begins with a dash, for example `codescope prompt --summarize this repository -- --effort=low`.
 

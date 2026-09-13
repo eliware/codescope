@@ -30,7 +30,7 @@
 
 Review: `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
 
-Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
+Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`. `suggest all` is one non-blocking generic suggestion pass across every review category plus `new-features`.
 
 Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. Use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `--usage` when needed.
 
