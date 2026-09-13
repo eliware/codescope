@@ -68,3 +68,9 @@ test('accepts a numeric complete write', async () => {
     writeProviderResult(async (value) => ({ written: value.length }), 'hello'),
   ).resolves.toBeUndefined();
 });
+
+test('rejects an invalid explicit write count', async () => {
+  await expect(writeProviderResult(async () => ({ written: '5' }), 'hello')).rejects.toThrow(
+    'invalid written character count',
+  );
+});

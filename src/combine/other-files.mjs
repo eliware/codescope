@@ -32,6 +32,7 @@ export async function describeOtherFiles(
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
       const actualTotalBytes = totalBytes - reservedBytes + bytes.byteLength;
       if (actualTotalBytes > MAX_OTHER_FILE_BYTES) {
+        totalBytes -= reservedBytes;
         entries.push(
           `${relativePath} | omitted | ${bytes.byteLength} bytes | aggregate metadata budget exceeded`,
         );

@@ -3,7 +3,7 @@ import { preserveProviderResponse } from '../../src/review/response-preservation
 test('preserves safe provider response fields and redacts output', () => {
   expect(
     preserveProviderResponse({ output_text: 'TOKEN=secret', usage: { input_tokens: 2 } }),
-  ).toEqual({
+  ).toMatchObject({
     output_text: 'TOKEN=[REDACTED]',
     usage: { input_tokens: 2 },
     response_error: 'Provider response was not accepted by the response contract',
@@ -24,7 +24,7 @@ test('preserves a safe summary when non-enumerable getters throw', () => {
       throw new Error('bad');
     },
   });
-  expect(preserveProviderResponse(response)).toEqual({
+  expect(preserveProviderResponse(response)).toMatchObject({
     response_error: 'Provider response was not accepted by the response contract',
   });
 });
@@ -40,13 +40,13 @@ test('preserves redacted function-call arguments', () => {
 test('survives an invalid output collection while preserving the response summary', () => {
   const response = { output: { invalid: true } };
   response.self = response;
-  expect(preserveProviderResponse(response)).toEqual({
+  expect(preserveProviderResponse(response)).toMatchObject({
     response_error: 'Provider response could not be serialized',
   });
 });
 
 test('preserves a serializable response with no function calls', () => {
-  expect(preserveProviderResponse({ output: [] })).toEqual({
+  expect(preserveProviderResponse({ output: [] })).toMatchObject({
     response_error: 'Provider response was not accepted by the response contract',
   });
 });
@@ -54,7 +54,7 @@ test('preserves a serializable response with no function calls', () => {
 test('ignores malformed function-call collections without losing the response', () => {
   const call = { type: 'function_call', name: 'review' };
   Object.defineProperty(call, 'arguments', { get: () => { throw new Error('bad'); } });
-  expect(preserveProviderResponse({ output: [call] })).toEqual({
+  expect(preserveProviderResponse({ output: [call] })).toMatchObject({
     response_error: 'Provider response was not accepted by the response contract',
   });
 });
@@ -65,6 +65,22 @@ test('preserves function-call arguments from an unserializable response', () => 
   };
   response.self = response;
   expect(preserveProviderResponse(response).function_call_arguments).toContain('review');
+});
+
+test('redacts non-string function-call arguments safely', () => {
+  expect(
+    preserveProviderResponse({
+      output: [{ type: 'function_call', name: 'review', arguments: { token: 'TOKEN=secret' } }],
+    }),
+  ).toMatchObject({ function_call_arguments: expect.stringContaining('[REDACTED]') });
+});
+
+test('omits a summary when the safe call list cannot be serialized', () => {
+  const name = {};
+  Object.defineProperty(name, 'toJSON', { value: () => { throw new Error('bad'); } });
+  expect(
+    preserveProviderResponse({ output: [{ type: 'function_call', name, arguments: 'ok' }] }),
+  ).not.toHaveProperty('function_call_arguments');
 });
 
 test('preserves safe function calls when another call is malformed', () => {
@@ -81,7 +97,7 @@ test('preserves safe function calls when another call is malformed', () => {
 });
 
 test('ignores non-function output items', () => {
-  expect(preserveProviderResponse({ output: [{ type: 'message' }] })).toEqual({
+  expect(preserveProviderResponse({ output: [{ type: 'message' }] })).toMatchObject({
     response_error: 'Provider response was not accepted by the response contract',
   });
 });

@@ -1,8 +1,12 @@
 // Writers may return undefined, true, or { written } when they report a
 // character count. Explicit counts must account for the complete output.
 function assertCompleteWrite(result, output) {
-  if (result && typeof result === 'object' && 'written' in result && result.written !== output.length)
-    throw new Error(`Writer reported a short write: ${result.written} of ${output.length} characters`);
+  if (result && typeof result === 'object' && 'written' in result) {
+    if (!Number.isInteger(result.written) || result.written < 0)
+      throw new Error('Writer reported an invalid written character count');
+    if (result.written !== output.length)
+      throw new Error(`Writer reported a short write: ${result.written} of ${output.length} characters`);
+  }
 }
 
 export async function writeProviderResult(write, output, label = 'review') {

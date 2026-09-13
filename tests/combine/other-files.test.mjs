@@ -46,13 +46,13 @@ test('checks known sizes before reading files', async () => {
 });
 
 test('omits a file that grows beyond the reserved metadata budget', async () => {
-  const result = await describeOtherFiles('repo', ['growing.txt'], {
+  const result = await describeOtherFiles('repo', ['growing.txt', 'later.txt'], {
     statFile: async () => ({ size: 1_000_000 }),
-    readFileContents: async () => Buffer.alloc(2_100_000, 'x'),
+    readFileContents: async (file) =>
+      file.endsWith('growing.txt') ? Buffer.alloc(2_100_000, 'x') : 'later',
   });
-  expect(result).toEqual([
-    'growing.txt | omitted | 2100000 bytes | aggregate metadata budget exceeded',
-  ]);
+  expect(result).toContain('growing.txt | omitted | 2100000 bytes | aggregate metadata budget exceeded');
+  expect(result).toContain('later.txt | text | 1 lines | 5 bytes');
 });
 
 test('releases reserved bytes when a file shrinks after stat', async () => {

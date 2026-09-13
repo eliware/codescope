@@ -7,13 +7,19 @@ function readFunctionCallArguments(response) {
   for (const item of response.output) {
     try {
       if (item?.type !== 'function_call') continue;
-      calls.push({ name: item.name, arguments: item.arguments });
+      const name = typeof item.name === 'string' ? redactTestOutput(item.name) : item.name;
+      const argumentsValue = item.arguments;
+      const safeArguments =
+        typeof argumentsValue === 'string'
+          ? redactTestOutput(argumentsValue)
+          : redactTestOutput(JSON.stringify(argumentsValue));
+      calls.push({ name, arguments: safeArguments });
     } catch {
       // Preserve unaffected calls when one provider item is malformed.
     }
   }
   try {
-    return calls.length ? redactTestOutput(JSON.stringify(calls)) : undefined;
+    return calls.length ? JSON.stringify(calls) : undefined;
   } catch {
     return undefined;
   }

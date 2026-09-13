@@ -10,6 +10,7 @@ export async function loadReviewEnvironment({
   inspectFile,
   inspectPermissions,
   platform,
+  validatePermissions = readEnvFile === readFile,
   environment = { ...process.env },
 }) {
   let filePresent = false;
@@ -22,7 +23,7 @@ export async function loadReviewEnvironment({
       filePresent = true;
     },
   });
-  if (readEnvFile === readFile)
+  if (validatePermissions)
     await validateEnvironmentPermissions({ envFile, inspectPermissions, platform, filePresent });
   loadEnv(envText, environment);
   return environment;

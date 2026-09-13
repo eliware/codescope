@@ -21,6 +21,7 @@ export function createReviewDefaults({ platform = process.platform } = {}) {
     register: registerSignals,
     inspectFile: lstat,
     inspectPermissions: platform === 'win32' ? createWindowsAclInspector() : stat,
+    validatePermissions: true,
     platform,
   };
 }

@@ -22,9 +22,10 @@ export async function combineConventionFiles(
 
   const apply = await readConventionApplicability(root, { readFileContents });
   if (!apply) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
-  const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) =>
-    apply.has(path.basename(relativePath, '.json')),
-  );
+  const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) => {
+    const profile = path.basename(relativePath, '.json');
+    return apply.has(profile) && relativePath === `${profile}.json`;
+  });
   const supplied = new Set(files.map((relativePath) => path.basename(relativePath, '.json')));
   const missing = [...apply].filter((profile) => !supplied.has(profile));
   if (missing.length > 0) {

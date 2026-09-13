@@ -22,7 +22,7 @@ test('review-session exposes fallback output on write failure', async () => {
   ).rejects.toMatchObject({ result: { issues: 'not submitted', suggestions: 'not submitted' } });
 });
 
-test('preserves fallback write failure alongside incomplete result', async () => {
+test('rejects an empty provider response before writing fallback output', async () => {
   await expect(
     runReviewSession({
       client: { responses: { create: async () => ({ output: [] }) } },
@@ -34,10 +34,7 @@ test('preserves fallback write failure alongside incomplete result', async () =>
       dryRun: false,
       usage: false,
     }),
-  ).rejects.toMatchObject({
-    result: { issues: 'not submitted' },
-    fallbackError: { message: 'disk full' },
-  });
+  ).rejects.toThrow('OpenAI request failed: Provider response did not contain usable output');
 });
 
 test('creates a provider failure with the original cause', () => {
@@ -52,7 +49,10 @@ test('creates an explicit incomplete result for partial provider output', () => 
     issues: 'not submitted',
     suggestions: 'not submitted',
     error: 'invalid response',
-    response: { response_error: 'Provider response was not accepted by the response contract' },
+    response: {
+      response: '{"output":[]}',
+      response_error: 'Provider response was not accepted by the response contract',
+    },
   });
 });
 
@@ -72,6 +72,7 @@ test('redacts serializable provider response summaries', () => {
   expect(result.response).toEqual({
     output_text: 'TOKEN=[REDACTED]',
     usage: { input_tokens: 1 },
+    response: '{"output_text":"TOKEN=[REDACTED],"usage":{"input_tokens":1}}',
     response_error: 'Provider response was not accepted by the response contract',
   });
 });

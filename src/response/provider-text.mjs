@@ -4,5 +4,7 @@ export function responseText(response, request) {
     (item) => item?.type === 'function_call' && (!name || item.name === name),
   );
   if (call) return typeof call.arguments === 'string' ? call.arguments : JSON.stringify(call.arguments);
-  return typeof response?.output_text === 'string' ? response.output_text : '';
+  if (typeof response?.output_text === 'string' && response.output_text.length > 0)
+    return response.output_text;
+  throw new Error('Provider response did not contain usable output');
 }

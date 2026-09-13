@@ -21,7 +21,7 @@ export function createWindowsAclInspector({ run = execFile, environment = proces
     let hasUnrecognizedAclLine = false;
     for (const [index, line] of stdout.split(/\r?\n/u).entries()) {
       if (!line.trim()) continue;
-      const matches = [...line.matchAll(/(?:^|\s)([^:\r\n]+):((?:\([^)]*\))+)/gu)];
+      const matches = [...line.matchAll(/(?:^|\s)([^:\r\n]+):\s*((?:\([^)]*\)\s*)+)/gu)];
       if (matches.length > 0) {
         identities.push(...matches.map((match) => match[1].trim().toLowerCase()));
       } else if (index !== 0 && !isAclSummary(line.trim())) {
