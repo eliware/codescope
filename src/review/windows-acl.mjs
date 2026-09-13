@@ -15,7 +15,13 @@ function isAclSummary(line) {
 
 export function createWindowsAclInspector({ run = execFile, environment = process.env } = {}) {
   return async (file) => {
-    const { stdout } = await run('icacls', [file, '/Q'], { windowsHide: true });
+    let stdout;
+    try {
+      ({ stdout } = await run('icacls', [file, '/Q'], { windowsHide: true }));
+    } catch (cause) {
+      throw new Error(`Unable to inspect Windows ACL for ${file}: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+    }
+    if (typeof stdout !== 'string') throw new Error(`Unable to inspect Windows ACL for ${file}: invalid command output`);
     const owner = currentIdentity(environment);
     const identities = [];
     let hasUnrecognizedAclLine = false;

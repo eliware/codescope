@@ -12,7 +12,9 @@ export async function validateEnvironmentPermissions({
       if ((metadata.mode & 0o077) !== 0)
         throw new Error(`${envFile} must not be readable by group or other users`);
     } catch (cause) {
-      if (cause?.code === 'ENOENT') return;
+      if (cause?.code === 'ENOENT' && !filePresent) return;
+      if (cause?.code === 'ENOENT')
+        throw new Error(`${envFile} disappeared before permissions could be verified`);
       if (cause?.message?.includes('must not be readable')) throw cause;
       throw new Error(
         `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,

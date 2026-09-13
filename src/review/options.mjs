@@ -11,6 +11,11 @@ export function validateReviewOptions(
     createClient,
     register,
     validatePermissions,
+    inspectFile,
+    inspectPermissions,
+    platform,
+    envFile,
+    prompt,
   },
 ) {
   if (typeof cwd !== 'string' || !cwd)
@@ -30,4 +35,13 @@ export function validateReviewOptions(
     register,
   }))
     if (typeof value !== 'function') throw new Error(`runReview option ${name} must be a function`);
+  for (const [name, value] of Object.entries({ inspectFile, inspectPermissions }))
+    if (value !== undefined && typeof value !== 'function')
+      throw new Error(`runReview option ${name} must be a function`);
+  if (prompt !== undefined && (prompt === null || typeof prompt !== 'object'))
+    throw new Error('Prompt option must be an object');
+  if (envFile !== undefined && (typeof envFile !== 'string' || !envFile))
+    throw new Error('runReview option envFile must be a non-empty string');
+  if (platform !== undefined && !['linux', 'darwin', 'freebsd', 'win32'].includes(platform))
+    throw new Error(`runReview option platform is unsupported: ${platform}`);
 }

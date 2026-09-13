@@ -25,6 +25,7 @@ test('rejects invalid review options', () => {
   );
   expect(() => validateReviewOptions('/repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('/repo', { ...valid, write: null })).toThrow(/write/);
+  expect(() => validateReviewOptions('/repo', { ...valid, platform: 'plan9' })).toThrow(/unsupported/);
 });
 
 test('rejects invalid scalar and collaborator options', () => {
@@ -42,6 +43,10 @@ test('rejects invalid scalar and collaborator options', () => {
   expect(() => validateReviewOptions('repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: 0 })).toThrow(/positive/);
   expect(() => validateReviewOptions('repo', { ...valid, write: null })).toThrow(/write/);
+  expect(() => validateReviewOptions('repo', { ...valid, inspectFile: null })).toThrow(/inspectFile/);
+  expect(() => validateReviewOptions('repo', { ...valid, inspectPermissions: null })).toThrow(/inspectPermissions/);
+  expect(() => validateReviewOptions('repo', { ...valid, prompt: 'prompt' })).toThrow(/Prompt/);
+  expect(() => validateReviewOptions('repo', { ...valid, envFile: '' })).toThrow(/envFile/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(
     /finite/,
   );

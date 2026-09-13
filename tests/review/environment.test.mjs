@@ -1,4 +1,5 @@
 import { loadReviewEnvironment } from '../../src/review/environment.mjs';
+import { validateEnvironmentPermissions } from '../../src/review/environment-permissions.mjs';
 import { defaultEnvFile } from '../../src/review/config.mjs';
 
 const base = {
@@ -91,7 +92,7 @@ test('handles permission and inspection failures with context', async () => {
         throw Object.assign(new Error('missing'), { code: 'ENOENT' });
       },
     }),
-  ).resolves.toBeDefined();
+  ).rejects.toThrow(/disappeared/);
   await expect(
     loadReviewEnvironment({
       ...defaults,
@@ -112,6 +113,35 @@ test('handles permission and inspection failures with context', async () => {
   await expect(
     loadReviewEnvironment({ ...defaults, inspectPermissions: async () => ({ mode: 0 }) }),
   ).resolves.toBeDefined();
+});
+
+test('rejects a Unix environment file that disappears before permission inspection', async () => {
+  await expect(
+    loadReviewEnvironment({
+      envFile: defaultEnvFile(),
+      readFile: async () => 'OPENAI_API_TOKEN=token',
+      readEnvFile: async () => 'OPENAI_API_TOKEN=token',
+      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectPermissions: async () => {
+        throw Object.assign(new Error('gone'), { code: 'ENOENT' });
+      },
+      platform: 'linux',
+      validatePermissions: true,
+    }),
+  ).rejects.toThrow(/disappeared/);
+});
+
+test('allows a Unix file that is already absent during permission inspection', async () => {
+  await expect(
+    validateEnvironmentPermissions({
+      envFile: defaultEnvFile(),
+      inspectPermissions: async () => {
+        throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+      },
+      platform: 'linux',
+      filePresent: false,
+    }),
+  ).resolves.toBeUndefined();
 });
 
 test('checks custom files for symbolic links without requiring default permissions', async () => {

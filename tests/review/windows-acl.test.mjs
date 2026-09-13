@@ -76,3 +76,21 @@ test('fails closed for an unindented unknown ACL line', async () => {
     aclRestricted: false,
   });
 });
+
+test('wraps ACL command failures and invalid output', async () => {
+  const inspectFailure = createWindowsAclInspector({
+    environment,
+    run: async () => { throw new Error('access denied'); },
+  });
+  await expect(inspectFailure('file')).rejects.toThrow(/Unable to inspect Windows ACL.*access denied/);
+  const inspectOutput = createWindowsAclInspector({
+    environment,
+    run: async () => ({ stdout: undefined }),
+  });
+  await expect(inspectOutput('file')).rejects.toThrow(/invalid command output/);
+  const inspectStringFailure = createWindowsAclInspector({
+    environment,
+    run: async () => { throw 'access denied'; },
+  });
+  await expect(inspectStringFailure('file')).rejects.toThrow(/Unable to inspect Windows ACL.*access denied/);
+});

@@ -14,7 +14,8 @@ the user-level file must not be group- or world-readable. A missing or blank
 token stops the request before any provider call. On Windows, CodeScope requires
 the parsed ACL identity list to contain only the current user. CodeScope uses
 `icacls` in quiet mode and fails closed if
-the ACL cannot be verified.
+the ACL cannot be verified. On Unix, the file must remain present through the
+permission check; disappearance after reading is rejected.
 
 ## Optional command settings
 

@@ -123,6 +123,8 @@
       },
       "dos": [
         "Accept -a and --add with a required string value, preserve each value verbatim, and preserve command-line order.",
+        "Treat non-option tokens as free-form prompt text for codescope prompt; use -- when prompt text itself begins with a dash.",
+        "Use the shared scalar option parser for effort, model, dry-run, and additions; prompt-specific delimiter partitioning is intentional grammar, not a second scalar option contract.",
         "Allow add options on profile commands including all, release, review profiles, suggestion profiles, and prompt.",
         "Accept add options on bare, help, and version commands without changing their output.",
         "Reject malformed option values with a usage error and keep supported effort and model values explicit."
