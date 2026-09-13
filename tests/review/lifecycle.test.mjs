@@ -43,7 +43,7 @@ const base = (overrides = {}) => ({
   ...overrides,
 });
 
-test('runs a normal review and writes the validated result', async () => {
+test('runs a normal review and writes the raw provider result unchanged', async () => {
   const writes = [];
   const result = await runReview(
     'C:/repo',
@@ -55,6 +55,7 @@ test('runs a normal review and writes the validated result', async () => {
   );
   expect(result).toContain('"verdict":"pass"');
   expect(writes).toHaveLength(1);
+  expect(writes[0]).toBe(result);
 });
 
 test('runs dry-run evidence without initializing the provider', async () => {

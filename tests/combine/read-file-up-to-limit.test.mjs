@@ -46,14 +46,14 @@ test('returns an overflow byte for a file larger than the metadata limit', async
   }
 });
 
-test('treats an exact-limit read as conservatively bounded', async () => {
+test('returns an exact-limit file as complete after checking one extra byte', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'codescope-limit-'));
   const file = path.join(directory, 'boundary.txt');
   try {
     await writeFile(file, Buffer.alloc(4, 'x'));
     await expect(readFileUpToLimit(file, 4)).resolves.toMatchObject({
       data: Buffer.alloc(4, 'x'),
-      truncated: true,
+      truncated: false,
     });
   } finally {
     await rm(directory, { recursive: true, force: true });
