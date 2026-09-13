@@ -21,7 +21,8 @@ repository.
   guaranteed machine-readable programmatic API.
 - Provider-output shape is transport guidance rather than a CodeScope API
   acceptance gate; CodeScope's own response handling remains reviewable.
-- Review findings use P0–P3 priorities in the provider's requested output.
+- Review findings use P0–P3 priorities in the provider's requested output; they
+  never affect the CLI exit code.
 - Suggestion profiles return recommendations in the provider's requested output.
 - `all` requests a comprehensive review and writes the provider response unchanged.
 - The tool is read-only apart from its own output.

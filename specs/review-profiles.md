@@ -23,11 +23,11 @@ artifacts are unknown rather than defects.
 ## Priorities
 
 - P0 is an immediate emergency or an executed supplied test that fails.
-- P1 is a concrete, release-blocking defect supported by supplied evidence.
+- P1 is a concrete, high-priority defect supported by supplied evidence.
 - P2 is an actionable issue that does not block the current release.
 - P3 is polish, convenience, or low-risk follow-up.
 
-Only unresolved P0 or qualifying P1 findings block a review verdict.
+Finding severity is provider output only and never changes the CLI exit code.
 
 ## Known issues
 
