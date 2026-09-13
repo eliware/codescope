@@ -36,7 +36,6 @@
     "README.md",
     "docs/",
     "scripts/",
-    "examples/",
     "specs/",
     "KNOWN_ISSUES.md",
     "NEW_FEATURE_SUGGESTIONS.md",
@@ -49,8 +48,7 @@
     "audit": "npm audit",
     "pack": "eliware-test --pack",
     "format": "eliware-test --format",
-    "format:check": "eliware-test --format-check",
-    "benchmark:efforts": "node scripts/benchmark-efforts.mjs"
+    "format:check": "eliware-test --format-check"
   },
   "engines": {
     "node": ">=26"

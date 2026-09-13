@@ -4,7 +4,6 @@ This map records the current decomposition boundary. Executable modules under a 
 
 | Responsibility   | Production modules         | Focused tests                     |
 | ---------------- | -------------------------- | --------------------------------- |
-| Benchmark        | `src/benchmark/status.mjs` | `tests/benchmark/status.test.mjs` |
 | CLI              | `src/cli/*.mjs`            | `tests/cli/*.test.mjs`            |
 | Combination      | `src/combine/*.mjs`        | `tests/combine/*.test.mjs`        |
 | Discovery        | `src/find/*.mjs`           | `tests/find/*.test.mjs`           |

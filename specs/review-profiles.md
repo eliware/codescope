@@ -13,7 +13,7 @@ the remaining-file inventory. It requests one review result
 and one unified review result covering implementation, tests, and Markdown context.
 
 The `conventions` profile reviews supplied repository documentation, package
-metadata, examples, specifications, environment documentation, and
+metadata, specifications, environment documentation, and
 cross-artifact consistency for semantic quality. It does not replace
 deterministic file-existence, structural, test, or publication checks owned by
 `@eliware/test` and TagIt. The `all` and `release` profiles include this

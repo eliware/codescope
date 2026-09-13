@@ -1,6 +1,6 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md) · [convention manifest](specs/conventions.json)
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [convention manifest](specs/conventions.json)
 
 ## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/npm/l/@eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/nodejs.yml)
 
@@ -25,7 +25,7 @@ A structured OpenAI CLI for focused codebase reviews, suggestions, and token est
 
 - Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
 - Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
-- Token and cost estimates, model selection, reasoning-effort controls, and configurable test timeouts.
+- Token and cost estimates, model selection, and reasoning-effort controls.
 - Symlink-safe discovery and documented boundaries for intentional behavior.
 - Read-only analysis that does not modify the reviewed repository.
 
@@ -100,7 +100,6 @@ Missing or unknown test exit status is incomplete evidence, not a passing result
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
 
-The effort benchmark runs provider reviews with bounded parallelism. Results and logs are written under `benchmark-results/` in the current working directory. OpenAI and Codescope also support `xhigh` and `max`, but repository benchmark runs were slow and inconclusive, so both are excluded from the benchmark matrix. Use `npm run benchmark:efforts -- --model=gpt-5.6-terra` or `--model=gpt-5.6-sol` to benchmark another supported model; the selected model and repository-configured pricing rates are recorded in `summary.json`.
 
 ## Security and operations
 

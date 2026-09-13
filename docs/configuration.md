@@ -15,6 +15,6 @@ token stops the request before any provider call.
 
 ## Optional command settings
 
-Use the documented command options for model, reasoning effort, test timeout,
-usage reporting, and dry-run token estimates. Run `codescope --help` for the
+Use the documented command options for model, reasoning effort, usage reporting,
+and dry-run token estimates. Run `codescope --help` for the
 current workflow and complete option list.

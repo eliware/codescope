@@ -5,7 +5,7 @@
 The comprehensive context is assembled in this order:
 
 1. `package.json`
-2. Root, `docs/`, `examples/`, and `specs/` JSON files, excluding
+2. Root, `docs/`, and `specs/` JSON files, excluding
    `package-lock.json`
 3. `.github` and `.knit` text configuration files, with each file limited to 200 lines
 4. Markdown files
@@ -21,7 +21,7 @@ inventory.
 Implementation discovery includes `.js`, `.mjs`, `.cjs`, and `.ts` files.
 Test discovery includes `.test.js`, `.test.cjs`, and `.test.mjs` files.
 Markdown discovery includes `.md` files. JSON context includes only JSON files
-in the repository root, `docs/`, `examples/`, and `specs/`; `package-lock.json`
+in the repository root, `docs/`, and `specs/`; `package-lock.json`
 and JSON elsewhere remain inventory-only.
 Convention JSON is read from a checkout at ../conventions/specs relative to
 the reviewed repository. The conventions package.json and package-lock.json

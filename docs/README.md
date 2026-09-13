@@ -21,4 +21,3 @@ guides when you need a deeper explanation.
 
 See the [root README](../README.md) for installation, configuration, safety,
 and support information. Runnable usage is also available in
-[examples](../examples/README.md).

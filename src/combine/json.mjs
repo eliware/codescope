@@ -40,5 +40,5 @@ function isIncludedJson(relativePath) {
   const lower = normalized.toLowerCase();
   if (!lower.endsWith('.json') || lower.endsWith('package-lock.json')) return false;
   if (!normalized.includes('/')) return lower !== 'package.json';
-  return ['docs/', 'examples/', 'specs/'].some((directory) => lower.startsWith(directory));
+  return ['docs/', 'specs/'].some((directory) => lower.startsWith(directory));
 }
