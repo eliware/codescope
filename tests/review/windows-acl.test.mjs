@@ -1,96 +1,80 @@
 import { createWindowsAclInspector } from '../../src/review/windows-acl.mjs';
 
-const environment = { USERDOMAIN: 'ROG-DESKTOP', USERNAME: 'russell' };
+const userSid = 'S-1-5-21-100-200-300-1003';
+const otherSid = 'S-1-5-32-545';
+const descriptor = (aces) =>
+  JSON.stringify({
+    Sddl: `O:${userSid}G:${userSid}D:PAI${aces.map((sid) => `(A;;FA;;;${sid})`).join('')}S:`,
+    UserSid: userSid,
+  });
 
-test('accepts an ACL containing only the current user', async () => {
+test('accepts an SDDL ACL containing only the current user SID', async () => {
   let command;
   const inspect = createWindowsAclInspector({
-    environment,
     run: async (...args) => {
       command = args;
-      return {
-      stdout:
-        'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n' +
-        '1 Dateien verarbeitet; 0 Fehler\n',
-      };
+      return { stdout: descriptor([userSid]) };
     },
   });
   await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
     aclRestricted: true,
+    aclIdentities: [userSid.toLowerCase()],
   });
-  expect(command).toEqual([
-    'icacls',
-    ['C:\\Users\\russell\\.codescope', '/Q'],
-    { windowsHide: true },
-  ]);
+  expect(command).toMatchObject({
+    0: 'powershell.exe',
+    1: [
+      '-NoProfile',
+      '-NonInteractive',
+      '-Command',
+      expect.stringContaining('GetSecurityDescriptorSddlForm'),
+      'C:\\Users\\russell\\.codescope',
+    ],
+    2: { windowsHide: true },
+  });
 });
 
-test('rejects an ACL containing another identity', async () => {
+test('rejects an SDDL ACL containing another SID', async () => {
+  const inspect = createWindowsAclInspector({ run: async () => ({ stdout: descriptor([userSid, otherSid]) }) });
+  await expect(inspect('file')).resolves.toMatchObject({
+    aclRestricted: false,
+    aclIdentities: [userSid.toLowerCase(), otherSid.toLowerCase()],
+  });
+});
+
+test('fails closed when the current SID or DACL is unavailable', async () => {
+  const missingUser = createWindowsAclInspector({
+    run: async () => ({ stdout: JSON.stringify({ Sddl: `D:PAI(A;;FA;;;${userSid})` }) }),
+  });
+  await expect(missingUser('file')).rejects.toThrow(/invalid security descriptor shape/);
+  const missingDacl = createWindowsAclInspector({
+    run: async () => ({ stdout: JSON.stringify({ Sddl: `O:${userSid}`, UserSid: userSid }) }),
+  });
+  await expect(missingDacl('file')).resolves.toMatchObject({ aclRestricted: false });
+});
+
+test('fails closed for malformed SDDL ACEs', async () => {
   const inspect = createWindowsAclInspector({
-    environment,
     run: async () => ({
-      stdout:
-        'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n    Users:(R)\n',
+      stdout: JSON.stringify({
+        Sddl: `O:${userSid}G:${userSid}D:PAI(A;;FA;;;not-a-sid)`,
+        UserSid: userSid,
+      }),
     }),
   });
-  await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
-    aclRestricted: false,
-  });
+  await expect(inspect('file')).resolves.toMatchObject({ aclRestricted: false, aclIdentities: [] });
 });
 
-test('reports unrestricted ACLs when the current identity is unavailable', async () => {
-  const inspect = createWindowsAclInspector({
-    environment: {},
-    run: async () => ({ stdout: 'C:\\Users\\russell\\.codescope ROG-DESKTOP\\russell:(F)\n' }),
-  });
-  await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
-    aclRestricted: false,
-  });
-});
-
-test('fails closed when an ACL line cannot be parsed', async () => {
-  const inspect = createWindowsAclInspector({
-    environment,
-    run: async () => ({
-      stdout:
-        'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n    localized permission entry\n',
-    }),
-  });
-  await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
-    aclRestricted: false,
-    aclIdentities: ['rog-desktop\\russell'],
-  });
-});
-
-test('fails closed for an unindented unknown ACL line', async () => {
-  const inspect = createWindowsAclInspector({
-    environment,
-    run: async () => ({
-      stdout:
-        'C:\\Users\\russell\\.codescope\n' +
-        'ROG-DESKTOP\\russell:(F)\n' +
-        'Unexpected ACL output\n',
-    }),
-  });
-  await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
-    aclRestricted: false,
-  });
-});
-
-test('wraps ACL command failures and invalid output', async () => {
+test('wraps command and machine-readable output failures', async () => {
   const inspectFailure = createWindowsAclInspector({
-    environment,
-    run: async () => { throw new Error('access denied'); },
+    run: async () => {
+      throw new Error('access denied');
+    },
   });
   await expect(inspectFailure('file')).rejects.toThrow(/Unable to inspect Windows ACL.*access denied/);
-  const inspectOutput = createWindowsAclInspector({
-    environment,
-    run: async () => ({ stdout: undefined }),
-  });
+  const inspectOutput = createWindowsAclInspector({ run: async () => ({ stdout: undefined }) });
   await expect(inspectOutput('file')).rejects.toThrow(/invalid command output/);
-  const inspectStringFailure = createWindowsAclInspector({
-    environment,
-    run: async () => { throw 'access denied'; },
-  });
+  const inspectJson = createWindowsAclInspector({ run: async () => ({ stdout: 'not json' }) });
+  await expect(inspectJson('file')).rejects.toThrow(/invalid security descriptor JSON/);
+  const inspectStringFailure = createWindowsAclInspector({ run: async () => { throw 'access denied'; } });
   await expect(inspectStringFailure('file')).rejects.toThrow(/Unable to inspect Windows ACL.*access denied/);
 });

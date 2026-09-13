@@ -6,7 +6,9 @@ test('runs a plain-text provider session and writes the result', async () => {
     client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
     request: { model: 'gpt-5.6-luna' },
     signal: new AbortController().signal,
-    write: async (value) => writes.push(value),
+    write: async (value) => {
+      writes.push(value);
+    },
     dryRun: false,
     usage: false,
     plainText: 'review',

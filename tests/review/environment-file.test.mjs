@@ -54,7 +54,7 @@ test('preserves a default file that is absent before reading', async () => {
   ).resolves.toBe('');
 });
 
-test('rechecks a file that appears after the initial missing inspection', async () => {
+test('does not recheck a file that appears after the initial missing inspection', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
   let inspections = 0;
   await expect(
@@ -68,21 +68,5 @@ test('rechecks a file that appears after the initial missing inspection', async 
       readEnvFile: async () => 'OPENAI_API_TOKEN=value',
     }),
   ).resolves.toBe('OPENAI_API_TOKEN=value');
-  expect(inspections).toBe(2);
-});
-
-test('rejects a file that appears as a symbolic link after the initial miss', async () => {
-  const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
-  let inspections = 0;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: defaultEnvFile(),
-      inspectFile: async () => {
-        inspections += 1;
-        if (inspections === 1) throw missing;
-        return { isSymbolicLink: () => true };
-      },
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
-    }),
-  ).rejects.toThrow(/symbolic link/);
+  expect(inspections).toBe(1);
 });

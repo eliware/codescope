@@ -6,7 +6,9 @@ test('writes and returns dry-run results', async () => {
     client: { responses: { inputTokens: { count: async () => ({ input_tokens: 3 }) } } },
     request: { model: 'gpt-5.6-luna' },
     signal: new AbortController().signal,
-    write: async (value) => writes.push(value),
+    write: async (value) => {
+      writes.push(value);
+    },
     usage: false,
   });
   expect(result.kind).toBe('dry-run');

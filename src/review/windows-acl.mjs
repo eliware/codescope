@@ -2,43 +2,69 @@ import { execFile as nativeExecFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const execFile = promisify(nativeExecFile);
+const securityDescriptorCommand =
+  '& { param($Path) $security = [System.IO.File]::GetAccessControl($Path); $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value; [pscustomobject]@{ Sddl = $security.GetSecurityDescriptorSddlForm([System.Security.AccessControl.AccessControlSections]::Access); UserSid = $sid } | ConvertTo-Json -Compress }';
 
-function currentIdentity(environment = process.env) {
-  const domain = environment.USERDOMAIN;
-  const user = environment.USERNAME;
-  return domain && user ? `${domain}\\${user}`.toLowerCase() : undefined;
+function parseSecurityDescriptor(stdout) {
+  let descriptor;
+  try {
+    descriptor = JSON.parse(stdout);
+  } catch (cause) {
+    throw new Error('invalid security descriptor JSON', { cause });
+  }
+  if (typeof descriptor?.Sddl !== 'string' || typeof descriptor?.UserSid !== 'string')
+    throw new Error('invalid security descriptor shape');
+
+  const daclStart = descriptor.Sddl.indexOf('D:');
+  if (daclStart < 0) return { userSid: descriptor.UserSid, identities: [], malformed: true };
+  const systemAclStart = descriptor.Sddl.indexOf('S:', daclStart + 2);
+  const dacl = descriptor.Sddl.slice(daclStart + 2, systemAclStart < 0 ? undefined : systemAclStart);
+  const aceMatches = [...dacl.matchAll(/\(([^()]*)\)/gu)];
+  const controls = dacl.replace(/\([^()]*\)/gu, '').replace(/^[A-Z]*/u, '');
+  const identities = [];
+  let malformed = Boolean(controls.trim()) || aceMatches.length === 0;
+  for (const match of aceMatches) {
+    const fields = match[1].split(';');
+    const identity = fields[5];
+    if (fields.length !== 6 || !/^S-\d(?:-\d+)+$/u.test(identity)) {
+      malformed = true;
+      continue;
+    }
+    identities.push(identity.toUpperCase());
+  }
+  return { userSid: descriptor.UserSid.toUpperCase(), identities, malformed };
 }
 
-function isAclSummary(line) {
-  return !line.includes(':') && (line.match(/\d+/gu) || []).length >= 2;
-}
-
-export function createWindowsAclInspector({ run = execFile, environment = process.env } = {}) {
+export function createWindowsAclInspector({ run = execFile } = {}) {
   return async (file) => {
     let stdout;
     try {
-      ({ stdout } = await run('icacls', [file, '/Q'], { windowsHide: true }));
+      ({ stdout } = await run(
+        'powershell.exe',
+        ['-NoProfile', '-NonInteractive', '-Command', securityDescriptorCommand, file],
+        { windowsHide: true },
+      ));
     } catch (cause) {
-      throw new Error(`Unable to inspect Windows ACL for ${file}: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+      throw new Error(
+        `Unable to inspect Windows ACL for ${file}: ${cause instanceof Error ? cause.message : String(cause)}`,
+        { cause },
+      );
     }
-    if (typeof stdout !== 'string') throw new Error(`Unable to inspect Windows ACL for ${file}: invalid command output`);
-    const owner = currentIdentity(environment);
-    const identities = [];
-    let hasUnrecognizedAclLine = false;
-    for (const [index, line] of stdout.split(/\r?\n/u).entries()) {
-      if (!line.trim()) continue;
-      const matches = [...line.matchAll(/(?:^|\s)([^:\r\n]+):\s*((?:\([^)]*\)\s*)+)/gu)];
-      if (matches.length > 0) {
-        identities.push(...matches.map((match) => match[1].trim().toLowerCase()));
-      } else if (index !== 0 && !isAclSummary(line.trim())) {
-        hasUnrecognizedAclLine = true;
-      }
+    if (typeof stdout !== 'string')
+      throw new Error(`Unable to inspect Windows ACL for ${file}: invalid command output`);
+    let parsed;
+    try {
+      parsed = parseSecurityDescriptor(stdout.trim());
+    } catch (cause) {
+      throw new Error(`Unable to inspect Windows ACL for ${file}: ${cause.message}`, { cause });
     }
     return {
       aclRestricted: Boolean(
-        owner && identities.length > 0 && !hasUnrecognizedAclLine && identities.every((value) => value === owner),
+        !parsed.malformed &&
+          parsed.identities.length > 0 &&
+          parsed.identities.every((identity) => identity === parsed.userSid),
       ),
-      aclIdentities: identities,
+      aclIdentities: parsed.identities.map((identity) => identity.toLowerCase()),
     };
   };
 }

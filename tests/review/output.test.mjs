@@ -69,6 +69,18 @@ test('accepts a numeric complete write', async () => {
   ).resolves.toBeUndefined();
 });
 
+test('accepts boolean stream status results', async () => {
+  await expect(writeProviderResult(async () => true, 'hello')).resolves.toBeUndefined();
+  await expect(writeProviderResult(async () => false, 'hello')).resolves.toBeUndefined();
+});
+
+test('rejects unsupported writer results', async () => {
+  for (const result of [0, 'written', null, {}])
+    await expect(writeProviderResult(async () => result, 'hello')).rejects.toThrow(
+      'unsupported result',
+    );
+});
+
 test('rejects an invalid explicit write count', async () => {
   await expect(writeProviderResult(async () => ({ written: '5' }), 'hello')).rejects.toThrow(
     'invalid written character count',

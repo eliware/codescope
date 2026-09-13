@@ -26,7 +26,9 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
       tools: [],
     },
     model: 'gpt-5.6-luna',
-    write: async (value) => writes.push(value),
+    write: async (value) => {
+      writes.push(value);
+    },
     dryRun: false,
     usage: false,
     plainText: 'review',

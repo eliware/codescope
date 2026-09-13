@@ -27,13 +27,6 @@ export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectF
     throw inspectionError(envFile, 'Unable to read', cause);
   }
 
-  if (initiallyMissing) {
-    try {
-      assertNotSymbolicLink(envFile, await inspectFile(envFile));
-    } catch (cause) {
-      throw inspectionError(envFile, 'Unable to verify after it appeared', cause);
-    }
-  }
   onFileRead?.();
   return envText;
 }

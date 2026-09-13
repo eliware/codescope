@@ -368,12 +368,14 @@
         "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
         "Preserve safe diagnostic summaries when a provider response cannot be serialized.",
         "Report provider transport failures and output-write failures with their original error context.",
+        "Accept writer results of undefined, boolean stream status, or an object with an exact written character count.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [
         "Do not parse, validate, redact, pretty-print, format, or transform successful provider output.",
         "Do not derive process status or exit code from provider content.",
         "Do not discard all safe function-call summaries because one provider call is malformed.",
+        "Do not accept numbers, strings, null, or unrelated objects as writer results.",
         "Do not treat a short explicit writer count as a successful complete write."
       ],
       "implementation": { "source": [
@@ -413,14 +415,14 @@
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
         "On Unix, reject group/world-readable configuration files.",
-        "On Windows, require ACL evidence showing only the current identity has access.",
-        "Treat a missing optional configuration file as empty only when its absence is stable; reject inspection/read races and newly appearing symbolic links.",
+        "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs and require DACL evidence showing only the current user SID has access.",
+        "Treat a missing optional configuration file as empty when the initial read also reports absence; if it appears during startup, use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [
         "Do not treat a missing or whitespace-only process token as authoritative over a nonblank file token.",
-        "Do not accept an unverified Windows ACL as restricted.",
-        "Do not silently accept a file that disappears or changes safety state during inspection.",
+        "Do not parse localized human-readable ACL output or accept an unverified, malformed, or unknown-SID Windows ACL as restricted.",
+        "Do not silently accept a file that disappears or changes safety state during the permission check.",
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [
