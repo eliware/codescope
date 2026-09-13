@@ -29,7 +29,7 @@ export async function describeOtherFiles(
       const bytes = Buffer.isBuffer(result.data) ? result.data : Buffer.from(String(result.data));
       if (result.truncated === true || bytes.byteLength > MAX_OTHER_FILE_BYTES) {
         entries.push(
-          `${relativePath} | omitted | ${bytes.byteLength} bytes | per-file metadata limit exceeded`,
+          `${relativePath} | omitted | at least ${bytes.byteLength} sampled bytes | per-file metadata limit reached`,
         );
         continue;
       }

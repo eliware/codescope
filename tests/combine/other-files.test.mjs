@@ -28,8 +28,8 @@ test('applies the metadata limit independently to each file', async () => {
     },
   );
   expect(result).toEqual([
-    'large-one.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
-    'large-two.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
+    'large-one.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached',
+    'large-two.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached',
   ]);
 });
 
@@ -42,7 +42,7 @@ test('checks actual bytes after reading files', async () => {
     },
   });
   expect(result).toContain(
-    'first.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
+    'first.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached',
   );
   expect(result).toContain('second.txt | text | 1 lines | 1 bytes');
   expect(reads).toHaveLength(2);
@@ -55,7 +55,7 @@ test('omits a file that grows beyond the per-file metadata limit', async () => {
       truncated: file.endsWith('growing.txt'),
     }),
   });
-  expect(result).toContain('growing.txt | omitted | 100001 bytes | per-file metadata limit exceeded');
+  expect(result).toContain('growing.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached');
   expect(result).toContain('later.txt | text | 1 lines | 5 bytes');
 });
 
