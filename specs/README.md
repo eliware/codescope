@@ -25,4 +25,6 @@ support information.
 - [Structured results](structured-results.md) — provider tools and result shape.
 - [Requirements](requirements.md) — repository-level requirements.
 - [Out of scope](out-of-scope.md) — deliberately unsupported or excluded behavior.
-- [Convention manifest](conventions.json) — Convention v8 applicability and directive authority map.
+- [Directives](directives.json) — CodeScope's CLI, review-profile, and supplied-evidence contract.
+- [Authority](authority.json) — CodeScope-local authority distribution.
+- [Convention specification](conventions.json) — local convention-evidence selection; canonical requirements remain authoritative in Eliware Conventions.

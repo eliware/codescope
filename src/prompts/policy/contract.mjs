@@ -5,7 +5,8 @@ the contract for this review. Apply only requirements whose declared
 applicability includes the repository. Do not import requirements from older
 convention versions, unrelated projects, or unsupplied external documents.
 When the supplied repository includes \`specs/conventions.json\`, use its
-applicability and directive map to select the repository's convention records.
+applicability and \`reviewContract\` to select the repository's convention
+records; canonical requirements remain owned by Conventions.
 The full Convention v8 JSON records must be supplied from the sibling
 conventions/specs checkout for detailed alignment review; absent records are
 unknown evidence, not permission to apply legacy requirements.

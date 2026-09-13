@@ -1,0 +1,37 @@
+{
+  "version": "8.0",
+  "repositoryId": "eliware/codescope",
+  "globalAuthorityMap": "../../docs/authority-map.json",
+  "description": "CodeScope-local authority distribution for CLI, review profiles, and supplied-evidence conventions.",
+  "subjects": [
+    {
+      "id": "codescope.cli",
+      "kind": "specification",
+      "authority": { "path": "./directives.json" },
+      "directives": [{ "path": "./directives.json", "ids": ["E-19"] }],
+      "implementation": [{ "path": "../src", "role": "CLI implementation" }],
+      "consumers": ["CodeScope users and reviewers"],
+      "reviewers": ["eliware/docs", "eliware/conventions"],
+      "evidence": [],
+      "notAuthoritativeFor": [
+        "repository requirements",
+        "Operations procedures",
+        "publication or deployment",
+        "Test8 harness behavior"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "codescope.supplied-evidence",
+      "kind": "boundary",
+      "authority": { "path": "./directives.json" },
+      "directives": [{ "path": "./directives.json", "ids": ["E-19"] }],
+      "implementation": [{ "path": "../src/combine", "role": "evidence assembly" }],
+      "consumers": ["CodeScope review profiles"],
+      "reviewers": ["eliware/docs", "eliware/conventions"],
+      "evidence": [],
+      "notAuthoritativeFor": ["canonical Convention v8 requirements"],
+      "status": "active"
+    }
+  ]
+}

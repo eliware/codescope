@@ -14,4 +14,6 @@ test('covers the supplied v8 convention contract', () => {
   expect(conventionPolicy).toContain('Convention v8');
   expect(conventionPolicy).toContain('structured JSON');
   expect(conventionPolicy).toContain('Do not infer applicability');
+  expect(conventionPolicy).toContain('reviewContract');
+  expect(conventionPolicy).toContain('remain authoritative in Eliware Conventions');
 });

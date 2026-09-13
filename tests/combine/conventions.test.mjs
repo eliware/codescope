@@ -39,6 +39,7 @@ test('reports unavailable sibling checkout', async () => {
 test('reports unavailable applicability metadata', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
+  await mkdir(path.join(root, 'project'));
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
   await writeFile(path.join(root, 'package.json'), '{"eliware":{"conventions":{}}}');
   try {
@@ -57,6 +58,26 @@ test('reports unavailable applicability for invalid package metadata', async () 
   try {
     const result = await combineConventionFiles(root, { conventionsRoot: root });
     expect(result).toContain('Convention applicability unavailable');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('reports unverified convention evidence when an applied profile is missing', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(
+    path.join(root, 'project', 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general', 'cli'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+    });
+    expect(result).toContain('Convention evidence incomplete');
+    expect(result).toContain('cli');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

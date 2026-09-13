@@ -19,6 +19,16 @@ export async function combineConventionFiles(
   const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) =>
     apply.has(path.basename(relativePath, '.json')),
   );
+  const supplied = new Set(files.map((relativePath) => path.basename(relativePath, '.json')));
+  const missing = [...apply].filter((profile) => !supplied.has(profile));
+  if (missing.length > 0) {
+    return (
+      '===== Convention v8 JSON =====\n' +
+      'Convention evidence incomplete; missing applied profiles: ' +
+      missing.join(', ') +
+      '.\n'
+    );
+  }
   const sections = await Promise.all(
     files.map(async (relativePath) => {
       const contents = await readFile(path.resolve(specsRoot, relativePath), 'utf8');

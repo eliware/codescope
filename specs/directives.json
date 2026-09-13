@@ -1,0 +1,67 @@
+{
+  "version": "8.0",
+  "description": "Specification for the CodeScope review CLI and supplied-evidence contract.",
+  "authority": {
+    "authoritativeFor": [
+      "CodeScope CLI behavior, review and suggestion profiles, and supplied-evidence conventions."
+    ],
+    "notAuthoritativeFor": [
+      "Eliware repository requirements, operational procedures, publication, deployment, or Test8 harness behavior."
+    ]
+  },
+  "crosslinks": [
+    {
+      "path": "../../docs/authority-map.json",
+      "relation": "relatedAuthority",
+      "authoritativeFor": "Cross-repository authority and ownership boundaries."
+    },
+    {
+      "path": "../../conventions/specs/general.json",
+      "relation": "relatedAuthority",
+      "authoritativeFor": "Repository requirements consumed as supplied evidence."
+    },
+    {
+      "path": "../../conventions/specs/cli.json",
+      "relation": "relatedAuthority",
+      "authoritativeFor": "CLI repository requirements consumed as supplied evidence."
+    }
+  ],
+  "directives": [
+    {
+      "id": "E-19",
+      "dos": [
+        "Provide a structured, read-only CLI for focused codebase reviews, suggestions, and token estimates.",
+        "Keep CLI behavior, review profiles, and supplied-evidence conventions explicit in CodeScope specifications."
+      ],
+      "donts": [
+        "Do not define or enforce Eliware repository requirements owned by Conventions.",
+        "Do not define Operations procedures, publication or deployment behavior, or Test8 harness behavior."
+      ],
+      "directives": [
+        {
+          "id": "A-19.0",
+          "dos": [
+            "Document externally observable commands, options, output, exit behavior, review profiles, and evidence boundaries.",
+            "Treat supplied canonical convention records as review evidence and preserve their authority in Conventions.",
+            "Treat missing or unsupplied evidence as unknown rather than inventing requirements or claiming alignment."
+          ],
+          "donts": [
+            "Do not present CodeScope-local review guidance as the authority for repository requirements, operations, publication, deployment, or harness behavior."
+          ]
+        },
+        {
+          "id": "A-19.1",
+          "dos": [
+            "Select convention evidence only from the repository's declared applicability and the canonical records supplied for review.",
+            "Keep review and suggestion profile behavior distinct and document the evidence each profile receives.",
+            "Keep reviewed repositories read-only and preserve safe output and documented controls."
+          ],
+          "donts": [
+            "Do not infer convention applicability from repository shape, dependencies, or legacy records.",
+            "Do not mutate the reviewed repository as part of a review."
+          ]
+        }
+      ]
+    }
+  ]
+}

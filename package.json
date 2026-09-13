@@ -56,7 +56,7 @@
     "node": ">=26"
   },
   "devDependencies": {
-    "@eliware/test": "^6.0.1"
+    "@eliware/test": "^4.0.0"
   },
   "license": "MIT",
   "eliware": {
@@ -93,6 +93,6 @@
   "dependencies": {
     "@eliware/common": "^2.0.0",
     "@eliware/openai": "^1.1.11",
-    "@eliware/redact": "file:../../Users/russe/src/redact"
+    "@eliware/redact": "file:../redact"
   }
 }
