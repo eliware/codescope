@@ -39,3 +39,22 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
   expect(writes).toHaveLength(1);
   expect(combineOptions.platform).toBe('win32');
 });
+
+test('collects evidence before initializing the provider', async () => {
+  let initialized = false;
+  await expect(
+    runReviewPipeline('repo', {
+      combine: async () => {
+        throw new Error('evidence failed');
+      },
+      readFile: async () => '',
+      maxSourceChars: 10,
+      platform: 'linux',
+      createClient: () => {
+        initialized = true;
+        return {};
+      },
+    }),
+  ).rejects.toThrow('evidence failed');
+  expect(initialized).toBe(false);
+});

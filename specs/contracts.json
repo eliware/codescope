@@ -125,6 +125,7 @@
         "Accept -a and --add with a required string value, preserve each value verbatim, and preserve command-line order.",
         "Treat non-option tokens as free-form prompt text for codescope prompt; use -- when prompt text itself begins with a dash.",
         "Use the shared scalar option parser for effort, model, dry-run, and additions; prompt-specific delimiter partitioning is intentional grammar, not a second scalar option contract.",
+        "Normalize direct and grouped scalar options through one scanner before profile-specific validation.",
         "Allow add options on profile commands including all, release, review profiles, suggestion profiles, and prompt.",
         "Accept add options on bare, help, and version commands without changing their output; retain accepted additions in normalized metadata so acceptance is not silent loss.",
         "Reject malformed option values with a usage error and keep supported effort and model values explicit."
@@ -243,7 +244,7 @@
         "outputs": "One ordered combined evidence string or an explicit budget failure.",
         "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
         "ordering": ["Package, Convention, JSON, configuration, other-file metadata, Markdown, implementation, and tests follow the declared order."],
-        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag."],
+        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag; metadata reads use bounded concurrency and preserve sorted output."],
         "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
       },
       "dos": [
@@ -254,7 +255,7 @@
         "Use one shared aggregate section-joining limit for all and selected composition paths."
       ],
       "donts": [
-        "Do not stat files before reading them, infer overflow from a short injected prefix, or use a shared metadata budget that lets one file omit unrelated later files.",
+        "Do not stat files before reading them, infer overflow from a short injected prefix, serialize all metadata reads unnecessarily, or use a shared metadata budget that lets one file omit unrelated later files.",
         "Do not apply different per-file limits to all and selected composition.",
         "Do not treat metadata summaries as full file contents."
       ],
@@ -360,7 +361,7 @@
         "inputs": "A prepared provider request, cancellation signal, and output writer.",
         "outputs": "The exact successful provider response text or a provider failure with preserved diagnostics.",
         "errors": ["Transport failures and incomplete output writes are nonzero CodeScope-owned failures."],
-        "ordering": ["Complete provider execution before writing the result; cleanup follows success or failure."],
+        "ordering": ["Collect and validate local repository evidence before provider setup; complete provider execution before writing the result; cleanup follows success or failure."],
         "invariants": ["Successful provider output is not parsed, formatted, or transformed."],
         "boundaries": { "owns": ["Provider output handling"], "doesNotOwn": ["Provider output semantics"] }
       },
@@ -369,7 +370,7 @@
         "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
         "Preserve safe diagnostic summaries when a provider response cannot be serialized.",
         "Report provider transport failures and output-write failures with their original error context.",
-        "Accept writer results of undefined, true, or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans.",
+        "Accept writer results of undefined, true, or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [
@@ -416,8 +417,8 @@
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
         "On Unix, reject group/world-readable configuration files.",
-        "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs, pass the target path through the child environment rather than PowerShell positional parsing, and require every parsed DACL ACE to be an allow ACE for only the current user SID.",
-        "Treat a missing optional configuration file as empty when the initial read also reports absence; if it appears during startup, use the read contents without a second appearance check.",
+        "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs, pass only the required process variables and target path to the child rather than the full credential-bearing environment, and require every parsed DACL ACE to be an allow ACE for only the current user SID.",
+        "Default the environment reader to the configured file reader, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [

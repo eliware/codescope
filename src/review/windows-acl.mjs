@@ -5,6 +5,17 @@ const execFile = promisify(nativeExecFile);
 const securityDescriptorCommand =
   '& { $Path = [Environment]::GetEnvironmentVariable(\'CODESCOPE_ACL_TARGET\'); $security = [System.IO.File]::GetAccessControl($Path); $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value; [pscustomobject]@{ Sddl = $security.GetSecurityDescriptorSddlForm([System.Security.AccessControl.AccessControlSections]::Access); UserSid = $sid } | ConvertTo-Json -Compress }';
 
+function powershellEnvironment(file) {
+  return {
+    SystemRoot: process.env.SystemRoot,
+    PATH: process.env.PATH,
+    Path: process.env.Path,
+    PATHEXT: process.env.PATHEXT,
+    COMSPEC: process.env.COMSPEC,
+    CODESCOPE_ACL_TARGET: file,
+  };
+}
+
 function parseSecurityDescriptor(stdout) {
   let descriptor;
   try {
@@ -42,7 +53,7 @@ export function createWindowsAclInspector({ run = execFile } = {}) {
       ({ stdout } = await run(
         'powershell.exe',
         ['-NoProfile', '-NonInteractive', '-Command', securityDescriptorCommand],
-        { windowsHide: true, env: { ...process.env, CODESCOPE_ACL_TARGET: file } },
+        { windowsHide: true, env: powershellEnvironment(file) },
       ));
     } catch (cause) {
       throw new Error(

@@ -7,6 +7,13 @@ test('collects repeated add options in order', () => {
   });
 });
 
+test('preserves scalar options for the prompt grammar', () => {
+  expect(parseAddOptions(['--effort=low', '-a', 'first', '--dry-run'])).toEqual({
+    add: ['first'],
+    remaining: ['--effort=low', '--dry-run'],
+  });
+});
+
 test('rejects add options without values', () => {
   expect(() => parseAddOptions(['--add'])).toThrow(/requires a value/);
 });

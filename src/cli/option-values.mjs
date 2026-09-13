@@ -1,16 +1,13 @@
 import { validateEffort, validateModel } from './option-validation.mjs';
-import { parseAddOptions } from './add-option.mjs';
+import { scanOptionTokens } from './scan-options.mjs';
 export { validateEffort, validateModel } from './option-validation.mjs';
 
 export function parseOptionValues(tokens) {
-  const additions = parseAddOptions(tokens);
-  tokens = additions.remaining;
-  const effortTokens = tokens.filter((value) => value.startsWith('--effort='));
-  const modelTokens = tokens.filter((value) => value.startsWith('--model='));
-  const dryRunTokens = tokens.filter((value) => value === '--dry-run');
+  const values = scanOptionTokens(tokens);
+  const { effort: effortTokens, model: modelTokens, dryRun: dryRunCount } = values;
   if (effortTokens.length > 1) throw new Error('Only one --effort option is allowed');
   if (modelTokens.length > 1) throw new Error('Only one --model option is allowed');
-  if (dryRunTokens.length > 1) throw new Error('Only one --dry-run option is allowed');
+  if (dryRunCount > 1) throw new Error('Only one --dry-run option is allowed');
   const effort = effortTokens[0]?.slice('--effort='.length);
   const model = modelTokens[0]?.slice('--model='.length);
   validateEffort(effort);
@@ -18,12 +15,9 @@ export function parseOptionValues(tokens) {
   return {
     effort,
     model,
-    dryRun: dryRunTokens.length > 0,
-    add: additions.add,
-    remaining: tokens.filter(
-      (value) =>
-        !value.startsWith('--effort=') && !value.startsWith('--model=') && value !== '--dry-run',
-    ),
+    dryRun: dryRunCount > 0,
+    add: values.add,
+    remaining: values.remaining,
   };
 }
 

@@ -103,6 +103,6 @@
   "dependencies": {
     "@eliware/common": "^2.0.0",
     "@eliware/openai": "^1.1.11",
-    "@eliware/redact": "file:../redact"
+    "@eliware/redact": "6.0.0"
   }
 }

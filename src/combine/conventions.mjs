@@ -20,14 +20,14 @@ export async function combineConventionFiles(
     return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
   }
 
-  const apply = await readConventionApplicability(root, { readFileContents });
-  if (!apply) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
+  const applicability = await readConventionApplicability(root, { readFileContents });
+  if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
+  const { profiles, canonicalPaths } = applicability;
   const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) => {
-    const profile = path.basename(relativePath, '.json');
-    return apply.has(profile) && relativePath === `${profile}.json`;
+    return [...canonicalPaths.values()].includes(relativePath);
   });
-  const supplied = new Set(files.map((relativePath) => path.basename(relativePath, '.json')));
-  const missing = [...apply].filter((profile) => !supplied.has(profile));
+  const supplied = new Set(files);
+  const missing = [...profiles].filter((profile) => !supplied.has(canonicalPaths.get(profile)));
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
@@ -58,10 +58,14 @@ async function readConventionApplicability(root, { readFileContents = readFile }
     );
     const apply = packageJson.eliware?.conventions?.apply;
     const repositoryTypes = manifest.repositoryTypes;
-    return Array.isArray(apply) &&
-      apply.every((name) => typeof name === 'string' && Object.hasOwn(repositoryTypes, name))
-      ? new Set(apply)
-      : null;
+    if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string')) return null;
+    const canonicalPaths = new Map();
+    for (const name of apply) {
+      if (!Object.hasOwn(repositoryTypes, name)) return null;
+      const relativePath = path.posix.basename(String(repositoryTypes[name]).replaceAll('\\', '/'));
+      canonicalPaths.set(name, relativePath);
+    }
+    return { profiles: new Set(apply), canonicalPaths };
   } catch {
     return null;
   }

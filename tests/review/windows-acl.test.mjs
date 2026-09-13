@@ -30,6 +30,36 @@ test('accepts an SDDL ACL containing only the current user SID', async () => {
     ],
     2: { windowsHide: true, env: expect.objectContaining({ CODESCOPE_ACL_TARGET: 'C:\\Users\\russell\\.codescope' }) },
   });
+  expect(command[2].env.OPENAI_API_TOKEN).toBeUndefined();
+});
+
+test('preserves only the PowerShell runtime variables needed by the child', async () => {
+  const names = ['SystemRoot', 'PATH', 'Path', 'PATHEXT', 'COMSPEC'];
+  const previous = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  for (const name of names) process.env[name] = `value-${name}`;
+  let command;
+  try {
+    const inspect = createWindowsAclInspector({
+      run: async (...args) => {
+        command = args;
+        return { stdout: descriptor([userSid]) };
+      },
+    });
+    await inspect('file');
+  } finally {
+    for (const name of names) {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    }
+  }
+  expect(command[2].env).toMatchObject({
+    SystemRoot: 'value-SystemRoot',
+    PATH: expect.any(String),
+    Path: 'value-Path',
+    PATHEXT: 'value-PATHEXT',
+    COMSPEC: 'value-COMSPEC',
+  });
+  expect(command[2].env.OPENAI_API_TOKEN).toBeUndefined();
 });
 
 test('rejects an SDDL ACL containing another SID', async () => {

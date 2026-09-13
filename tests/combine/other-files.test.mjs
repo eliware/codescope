@@ -72,6 +72,23 @@ test('allows multiple files when each is within the per-file limit', async () =>
   ]);
 });
 
+test('uses bounded metadata concurrency while preserving sorted output', async () => {
+  let active = 0;
+  let maximum = 0;
+  const result = await describeOtherFiles('repo', ['b.txt', 'a.txt', 'c.txt'], {
+    concurrency: 2,
+    readOtherFileContents: async () => {
+      active += 1;
+      maximum = Math.max(maximum, active);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      active -= 1;
+      return { data: 'text', truncated: false };
+    },
+  });
+  expect(maximum).toBe(2);
+  expect(result.map((entry) => entry.split(' | ')[0])).toEqual(['a.txt', 'b.txt', 'c.txt']);
+});
+
 test('rejects an invalid bounded-reader result', async () => {
   await expect(
     describeOtherFiles('repo', ['notes.txt'], { readOtherFileContents: async () => 'notes' }),

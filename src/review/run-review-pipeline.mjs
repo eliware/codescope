@@ -5,6 +5,14 @@ import { prepareReview } from './prepare-review.mjs';
 import { runReviewSession } from './run-session.mjs';
 
 export async function runReviewPipeline(cwd, options) {
+  const { combined } = await collectReviewContext({
+    cwd,
+    combine: options.combine,
+    readDirectory: options.readDirectory,
+    readFile: options.readFile,
+    maxSourceChars: options.maxSourceChars,
+    platform: options.platform,
+  });
   const { client } = await prepareReview({
     envFile: options.envFile,
     readFile: options.readFile,
@@ -14,14 +22,6 @@ export async function runReviewPipeline(cwd, options) {
     platform: options.platform,
     validatePermissions: options.validatePermissions,
     createClient: options.createClient,
-  });
-  const { combined } = await collectReviewContext({
-    cwd,
-    combine: options.combine,
-    readDirectory: options.readDirectory,
-    readFile: options.readFile,
-    maxSourceChars: options.maxSourceChars,
-    platform: options.platform,
   });
   const { request, controller } = createReviewSession({
     prompt: options.prompt,

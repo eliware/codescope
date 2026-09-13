@@ -36,7 +36,7 @@ A structured OpenAI CLI for focused codebase reviews, suggestions, and token est
 
 ## Installation
 
-For package consumers, install the published CLI globally or add it to a project:
+For package consumers, install the published CLI globally or add it to a project. The published package uses registry dependencies and does not require a sibling checkout:
 
 ```text
 npm install -g @eliware/codescope
@@ -96,7 +96,7 @@ Append `--usage` to either grouped (`codescope review all`) or direct (`codescop
 
 Append `--dry-run` to prepare a request derived from the review context and ask OpenAI for its estimated input-token count without running a model review. The option reports the selected model and estimated input tokens; combine it with `--usage` when you want the count under `usage` as well.
 
-When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated. Internal output-writer counts are JavaScript character counts, not UTF-8 byte counts.
+When `--usage` is enabled, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. `--dry-run` reports input-token cost only because no output is generated. Internal output writers accept `undefined` or `true` for complete output, or `{ written }` with an exact JavaScript character count; `false`, short counts, and unrelated values fail. Counts are JavaScript characters, not UTF-8 bytes.
 Review profiles use package metadata, implementation files, test files, and Markdown files. CodeScope never runs tests in the target repository and never includes test execution results in provider context. Repository owners and separate validation tooling own test execution.
 Use `--effort=none|low|medium|high|xhigh|max` to override the default reasoning effort (`none`).
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.

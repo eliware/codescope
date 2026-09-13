@@ -6,7 +6,10 @@ import { readFileUpToLimit } from './read-file-up-to-limit.mjs';
 export async function describeOtherFiles(
   root,
   inventory,
-  { readOtherFileContents = (filePath) => readFileUpToLimit(filePath, MAX_OTHER_FILE_BYTES) } = {},
+  {
+    readOtherFileContents = (filePath) => readFileUpToLimit(filePath, MAX_OTHER_FILE_BYTES),
+    concurrency = 8,
+  } = {},
 ) {
   const paths = inventory.filter((relativePath) => !isIncludedContent(relativePath));
   const entries = [];
@@ -33,7 +36,7 @@ export async function describeOtherFiles(
       entries.push(formatOtherFile(relativePath, bytes));
     }
   };
-  const workerCount = paths.length ? 1 : 0;
+  const workerCount = Math.min(paths.length, Math.max(1, concurrency));
   await Promise.all(Array.from({ length: workerCount }, () => worker()));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
 }

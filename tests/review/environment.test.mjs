@@ -15,6 +15,18 @@ test('loads environment values from the configured file', async () => {
   await expect(loadReviewEnvironment(base)).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
 });
 
+test('uses readFile when readEnvFile is omitted', async () => {
+  const readFile = async () => 'OPENAI_API_TOKEN=token';
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      readFile,
+      readEnvFile: undefined,
+      inspectPermissions: async () => ({ aclRestricted: true }),
+    }),
+  ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
+});
+
 test('preserves missing environment files', async () => {
   await expect(
     loadReviewEnvironment({

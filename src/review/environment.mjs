@@ -6,7 +6,7 @@ import { readReviewEnvironmentFile } from './environment-file.mjs';
 export async function loadReviewEnvironment({
   envFile,
   readFile,
-  readEnvFile,
+  readEnvFile = readFile,
   inspectFile,
   inspectPermissions,
   platform,
