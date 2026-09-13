@@ -9,9 +9,13 @@ function currentIdentity(environment = process.env) {
   return domain && user ? `${domain}\\${user}`.toLowerCase() : undefined;
 }
 
+function isAclSummary(line) {
+  return !line.includes(':') && (line.match(/\d+/gu) || []).length >= 2;
+}
+
 export function createWindowsAclInspector({ run = execFile, environment = process.env } = {}) {
   return async (file) => {
-    const { stdout } = await run('icacls', [file], { windowsHide: true });
+    const { stdout } = await run('icacls', [file, '/Q'], { windowsHide: true });
     const owner = currentIdentity(environment);
     const identities = [];
     let hasUnrecognizedAclLine = false;
@@ -20,10 +24,7 @@ export function createWindowsAclInspector({ run = execFile, environment = proces
       const matches = [...line.matchAll(/(?:^|\s)([^:\r\n]+):((?:\([^)]*\))+)/gu)];
       if (matches.length > 0) {
         identities.push(...matches.map((match) => match[1].trim().toLowerCase()));
-      } else if (
-        index !== 0 &&
-        !/^(?:Successfully processed|Failed processing)\b/iu.test(line.trim())
-      ) {
+      } else if (index !== 0 && !isAclSummary(line.trim())) {
         hasUnrecognizedAclLine = true;
       }
     }

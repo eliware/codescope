@@ -11,7 +11,10 @@ Set `OPENAI_API_TOKEN` in the process environment or in the user-level
 
 The process environment takes precedence over the user-level file. On Unix,
 the user-level file must not be group- or world-readable. A missing or blank
-token stops the request before any provider call.
+token stops the request before any provider call. On Windows, CodeScope requires
+the file ACL to contain only the current user; inherited, group, and broad user
+entries are rejected. CodeScope uses `icacls` in quiet mode and fails closed if
+the ACL cannot be verified.
 
 ## Optional command settings
 

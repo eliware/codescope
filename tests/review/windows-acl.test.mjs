@@ -3,17 +3,26 @@ import { createWindowsAclInspector } from '../../src/review/windows-acl.mjs';
 const environment = { USERDOMAIN: 'ROG-DESKTOP', USERNAME: 'russell' };
 
 test('accepts an ACL containing only the current user', async () => {
+  let command;
   const inspect = createWindowsAclInspector({
     environment,
-    run: async () => ({
+    run: async (...args) => {
+      command = args;
+      return {
       stdout:
         'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n' +
-        'Successfully processed 1 files; Failed processing 0 files\n',
-    }),
+        '1 Dateien verarbeitet; 0 Fehler\n',
+      };
+    },
   });
   await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
     aclRestricted: true,
   });
+  expect(command).toEqual([
+    'icacls',
+    ['C:\\Users\\russell\\.codescope', '/Q'],
+    { windowsHide: true },
+  ]);
 });
 
 test('rejects an ACL containing another identity', async () => {

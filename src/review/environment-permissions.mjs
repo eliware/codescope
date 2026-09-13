@@ -6,6 +6,8 @@ export async function validateEnvironmentPermissions({
   if (platform !== 'win32') {
     try {
       const metadata = await inspectPermissions(envFile);
+      if (!Number.isInteger(metadata?.mode))
+        throw new Error(`${envFile} permissions could not be verified`);
       if ((metadata.mode & 0o077) !== 0)
         throw new Error(`${envFile} must not be readable by group or other users`);
     } catch (cause) {

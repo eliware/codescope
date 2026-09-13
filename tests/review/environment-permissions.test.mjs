@@ -31,6 +31,13 @@ test('rejects insecure permission metadata', async () => {
     validateEnvironmentPermissions({
       envFile: 'config',
       inspectPermissions: async () => ({}),
+      platform: 'linux',
+    }),
+  ).rejects.toThrow(/could not be verified/);
+  await expect(
+    validateEnvironmentPermissions({
+      envFile: 'config',
+      inspectPermissions: async () => ({}),
       defaultInspector: async () => ({}),
       platform: 'win32',
     }),
