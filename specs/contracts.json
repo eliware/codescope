@@ -48,6 +48,7 @@
       "scope": "Process entry, command dispatch, and CodeScope-owned CLI boundaries.",
       "directiveIds": ["E-19", "A-19.0", "A-19.1"],
       "contract": {
+        "purpose": "Define CodeScope's public command boundary and review dispatch.",
         "inputs": "The current working directory and command-line arguments.",
         "outputs": "Help, version, review, suggestion, prompt, usage, or dry-run behavior selected by the command.",
         "errors": ["Invalid command usage and CodeScope-owned execution failures are nonzero process failures."],
@@ -88,6 +89,7 @@
       "scope": "Command-line option parsing and repeatable custom additions.",
       "directiveIds": ["E-19", "A-19.1"],
       "contract": {
+        "purpose": "Define supported CodeScope options and their interactions.",
         "inputs": "Command-line tokens including repeatable -a/--add, --effort, and --model options.",
         "outputs": "A normalized command representation preserving applicable additions in order.",
         "errors": ["Missing option values and unsupported values produce usage failures."],
@@ -128,6 +130,7 @@
       "scope": "Review and suggestion profile identity, routing, and selected evidence.",
       "directiveIds": ["E-19", "A-19.1", "A-19.5"],
       "contract": {
+        "purpose": "Define profile selection and source scope for a review.",
         "inputs": "A declared profile name and review or suggestion mode.",
         "outputs": "A profile prompt and source-selection function for the requested mode.",
         "errors": ["Unknown profiles and unsupported modes fail explicitly."],
@@ -167,6 +170,7 @@
       "scope": "Read-only file discovery, path safety, symlink handling, and evidence exclusions.",
       "directiveIds": ["E-19", "A-19.0", "A-19.3", "A-19.4"],
       "contract": {
+        "purpose": "Define safe discovery of review evidence without mutating the reviewed repository.",
         "inputs": "A review root and filesystem entries.",
         "outputs": "Safe, deterministic supplied-file candidates and unknown markers for unavailable evidence.",
         "errors": ["Invalid roots, unsafe paths, and unsupported filesystem conditions fail without repository mutation."],
@@ -207,6 +211,7 @@
       "scope": "Composition order, content selection, aggregate limits, and metadata accounting.",
       "directiveIds": ["E-19", "A-19.3"],
       "contract": {
+        "purpose": "Define deterministic composition and size limits for supplied review evidence.",
         "inputs": "Selected repository evidence and configured character or byte limits.",
         "outputs": "One ordered combined evidence string or an explicit budget failure.",
         "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
@@ -251,6 +256,7 @@
       "scope": "Selection and supply of canonical Convention records as review evidence.",
       "directiveIds": ["E-19", "A-19.3", "A-19.7"],
       "contract": {
+        "purpose": "Define how CodeScope consumes convention evidence without redefining convention policy.",
         "inputs": "package.json Convention applicability and the adjacent conventions checkout.",
         "outputs": "Only applicable canonical Convention JSON records or an explicit unavailable/incomplete-evidence marker.",
         "errors": ["Missing or malformed applicability is reported as unavailable rather than inferred."],
@@ -285,6 +291,7 @@
       "scope": "Prompt composition, profile guidance, tool schemas, priorities, and supplied-evidence instructions.",
       "directiveIds": ["E-19", "A-19.4", "A-19.5", "A-19.6"],
       "contract": {
+        "purpose": "Define prompt construction and tool-request boundaries for review providers.",
         "inputs": "Selected profile, supplied evidence, optional custom additions, and prompt options.",
         "outputs": "Provider request instructions and optional tool definitions.",
         "errors": ["Prompt construction failures remain CodeScope-owned failures."],
@@ -322,6 +329,7 @@
       "scope": "Provider request execution, output preservation, write completion, and safe failure summaries.",
       "directiveIds": ["E-19", "A-19.6"],
       "contract": {
+        "purpose": "Define provider invocation and preservation of raw provider output.",
         "inputs": "A prepared provider request, cancellation signal, and output writer.",
         "outputs": "The exact successful provider response text or a provider failure with preserved diagnostics.",
         "errors": ["Transport failures and incomplete output writes are nonzero CodeScope-owned failures."],
@@ -367,6 +375,7 @@
       "scope": "Credential loading, environment-file safety, Unix modes, and Windows ACL restrictions.",
       "directiveIds": ["E-19", "A-19.2"],
       "contract": {
+        "purpose": "Define configuration precedence and credential-handling safety.",
         "inputs": "Process environment, ~/.codescope, platform permission evidence, and injected filesystem seams.",
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
@@ -410,6 +419,7 @@
       "scope": "Model and effort options, token estimation, usage metadata, and pricing calculations.",
       "directiveIds": ["E-19", "A-19.1"],
       "contract": {
+        "purpose": "Define usage accounting, pricing display, and dry-run semantics.",
         "inputs": "A selected model, request, usage flag, and dry-run flag.",
         "outputs": "Estimated input tokens or requested usage and cost metadata.",
         "errors": ["Unsupported model, effort, or usage inputs fail explicitly."],
@@ -448,6 +458,7 @@
       "scope": "CodeScope-owned failures, public exit behavior, cancellation, and cleanup.",
       "directiveIds": ["E-19", "A-19.0", "A-19.5", "A-19.6"],
       "contract": {
+        "purpose": "Define failure propagation, exit status, and lifecycle cleanup.",
         "inputs": "Command execution results, provider results, failures, signals, and cleanup callbacks.",
         "outputs": "A stable success or CodeScope-owned nonzero exit result with preserved error context.",
         "errors": ["Provider verdicts and finding priorities never become process failures."],
@@ -491,6 +502,7 @@
       "scope": "Cohesive module responsibilities, shared dependencies, mirrored tests, and verification boundaries.",
       "directiveIds": ["E-19", "A-19.7"],
       "contract": {
+        "purpose": "Define CodeScope module boundaries and the evidence used to verify them.",
         "inputs": "Production modules, package metadata, and verification tooling.",
         "outputs": "Maintainable native ESM modules with traceable, comprehensive verification.",
         "errors": ["Coverage, lint, formatting, and diff failures remain verification failures rather than contract redefinitions."],
