@@ -4,14 +4,14 @@ const valid = {
   maxSourceChars: 100,
   usage: false,
   dryRun: false,
-  omitTestResults: false,
   write: () => {},
   readFile: () => {},
   readEnvFile: () => {},
   combine: () => {},
-  redactOutput: () => {},
   createClient: () => {},
   register: () => {},
+  inspectPermissions: () => ({}),
+  platform: 'linux',
 };
 
 test('accepts valid review options', () => {
@@ -34,9 +34,10 @@ test('rejects invalid scalar and collaborator options', () => {
     readFile: () => {},
     readEnvFile: () => {},
     combine: () => {},
-    redactOutput: () => {},
     createClient: () => {},
     register: () => {},
+    inspectPermissions: () => ({}),
+    platform: 'linux',
   };
   expect(() => validateReviewOptions('repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: 0 })).toThrow(/positive/);

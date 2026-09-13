@@ -30,6 +30,7 @@ export function isValidUnifiedResult(result, expected) {
     !expected.length ||
     !result ||
     typeof result !== 'object' ||
+    Object.getPrototypeOf(result) !== Object.prototype ||
     !result.findings ||
     typeof result.findings !== 'object' ||
     Array.isArray(result.findings) ||

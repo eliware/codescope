@@ -140,13 +140,9 @@ test('accepts the default suggestion categories', () => {
   ).toHaveLength(1);
 });
 
-test('uses the review tool when no tool name is supplied', () => {
-  expect(
-    parseResponseTool(response({ issues, verdict: 'pass' }), undefined, ['correctness']),
-  ).toEqual({
-    issues,
-    verdict: 'pass',
-  });
+test('requires an explicit response tool name', () => {
+  expect(() => parseResponseTool(response({ issues, verdict: 'pass' }), undefined, ['correctness']))
+    .toThrow(/tool name is required/);
 });
 
 test('routes the unified review tool through the shared response entry point', () => {
