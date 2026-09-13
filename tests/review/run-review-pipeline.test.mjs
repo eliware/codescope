@@ -7,7 +7,7 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     envFile: 'ignored',
     readFile: async () => 'OPENAI_API_TOKEN=token',
     readEnvFile: async () => 'OPENAI_API_TOKEN=token',
-    inspectFile: async () => ({}),
+    inspectFile: async () => ({ isSymbolicLink: () => false }),
     inspectPermissions: async () => ({}),
     platform: 'win32',
     createClient: () => ({

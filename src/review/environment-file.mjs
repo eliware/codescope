@@ -1,5 +1,3 @@
-import { defaultEnvFile } from './env-file-path.mjs';
-
 function inspectionError(envFile, message, cause) {
   return new Error(`${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`, {
     cause,
@@ -7,19 +5,12 @@ function inspectionError(envFile, message, cause) {
 }
 
 function assertNotSymbolicLink(envFile, metadata) {
-  if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');
+  if (typeof metadata?.isSymbolicLink !== 'function')
+    throw new Error(`${envFile} inspection did not provide symbolic-link metadata`);
+  if (metadata.isSymbolicLink()) throw new Error(`${envFile} must not be a symbolic link`);
 }
 
 export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile }) {
-  if (envFile !== defaultEnvFile()) {
-    try {
-      return await readEnvFile(envFile, 'utf8');
-    } catch (cause) {
-      if (cause?.code === 'ENOENT') return '';
-      throw inspectionError(envFile, 'Unable to read', cause);
-    }
-  }
-
   let initiallyMissing = false;
   try {
     assertNotSymbolicLink(envFile, await inspectFile(envFile));

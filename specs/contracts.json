@@ -9,7 +9,7 @@
       "./contracts.json"
     ],
     "implementationRole": "Implementation files realize these contracts but cannot redefine them.",
-    "testRole": "Tests are verification evidence and regression protection only; a test cannot create, weaken, or replace a contract.",
+    "verificationRole": "Tests and commands verify these contracts but are not authoritative.",
     "externalBoundaries": [
       "../../docs/authority-map.json",
       "../../conventions/specs/general.json",
@@ -25,7 +25,16 @@
     "verificationEvidence": "Tests and commands used to verify a contract; not normative."
   },
   "format": {
-    "requiredFields": [
+    "requiredTopLevelFields": [
+      "schemaVersion",
+      "contractVersion",
+      "kind",
+      "description",
+      "authority",
+      "format",
+      "contracts"
+    ],
+    "requiredContractFields": [
       "id",
       "title",
       "scope",
@@ -36,10 +45,25 @@
       "implementation",
       "verification"
     ],
-    "dos": "Positive obligations that the product must fulfill.",
-    "donts": "Prohibited behavior and scope boundaries.",
-    "implementation": "Non-authoritative source ownership references.",
-      "verification": "Non-authoritative tests and checks used to verify the contract."
+    "optionalContractFields": ["parent", "dependencies", "status"],
+    "contractIdPattern": "^C-\\d+(?:\\.\\d+)*$",
+    "directiveIdPattern": "^[EA]-\\d+(?:\\.\\d+)*$",
+    "contractSections": [
+      "purpose",
+      "inputs",
+      "outputs",
+      "errors",
+      "ordering",
+      "invariants",
+      "boundaries"
+    ],
+    "rules": [
+      "Contract IDs are unique within this repository.",
+      "directiveIds reference authoritative local directives or explicitly linked external directives.",
+      "Parent and dependency references must resolve and must not form cycles.",
+      "Implementation and verification references are evidence only.",
+      "This repository adopts the shared format by linking specs/contracts.json from specs/README.md."
+    ]
   },
   "contracts": [
     {

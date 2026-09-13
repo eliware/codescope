@@ -7,7 +7,7 @@ test('reads a supplied environment file', async () => {
       envFile: 'file',
       readFile: () => {},
       readEnvFile: async () => 'x',
-      inspectFile: async () => ({}),
+      inspectFile: async () => ({ isSymbolicLink: () => false }),
     }),
   ).resolves.toBe('x');
 });
@@ -17,9 +17,19 @@ test('wraps errors reading a supplied environment file', async () => {
     readReviewEnvironmentFile({
       envFile: 'file',
       readEnvFile: async () => { throw new Error('read failed'); },
-      inspectFile: async () => ({}),
+      inspectFile: async () => ({ isSymbolicLink: () => false }),
     }),
   ).rejects.toThrow('Unable to read file: read failed');
+});
+
+test('rejects incomplete file inspection metadata', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({}),
+      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+    }),
+  ).rejects.toThrow(/symbolic-link metadata/);
 });
 
 test('rejects a file that disappears after it was inspected', async () => {

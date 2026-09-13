@@ -39,6 +39,12 @@ test('returns fallback writer failures without replacing the original failure', 
   ).resolves.toMatchObject({ message: 'disk full' });
 });
 
+test('returns fallback short-write failures', async () => {
+  await expect(
+    writeFallbackResult(async (value) => ({ written: value.length - 1 }), 'hello'),
+  ).resolves.toMatchObject({ message: 'Writer reported a short write: 4 of 5 characters' });
+});
+
 test('formats non-error writer failures', async () => {
   await expect(
     writeProviderResult(

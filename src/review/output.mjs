@@ -20,7 +20,9 @@ export async function writeProviderResult(write, output, label = 'review') {
 
 export async function writeFallbackResult(write, output) {
   try {
-    await write(typeof output === 'string' ? output : String(output));
+    const text = typeof output === 'string' ? output : String(output);
+    const result = await write(text);
+    assertCompleteWrite(result, text);
     return undefined;
   } catch (cause) {
     return cause;

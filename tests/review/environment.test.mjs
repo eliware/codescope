@@ -21,6 +21,9 @@ test('preserves missing environment files', async () => {
       readEnvFile: async () => {
         throw { code: 'ENOENT' };
       },
+      inspectFile: async () => {
+        throw { code: 'ENOENT' };
+      },
     }),
   ).resolves.toBeDefined();
 });
@@ -111,14 +114,16 @@ test('handles permission and inspection failures with context', async () => {
   ).resolves.toBeDefined();
 });
 
-test('skips default-file protections for custom files and Windows', async () => {
+test('checks custom files for symbolic links without requiring default permissions', async () => {
   const readFile = async () => 'OPENAI_API_TOKEN=token';
+  let inspected = false;
   const environment = await loadReviewEnvironment({
     envFile: 'custom.env',
     readFile,
     readEnvFile: async () => 'OPENAI_API_TOKEN=custom',
     inspectFile: async () => {
-      throw new Error('not called');
+      inspected = true;
+      return { isSymbolicLink: () => false };
     },
     inspectPermissions: async () => {
       throw new Error('not called');
@@ -127,6 +132,31 @@ test('skips default-file protections for custom files and Windows', async () => 
     environment: {},
   });
   expect(environment.OPENAI_API_TOKEN).toBe('custom');
+  expect(inspected).toBe(true);
+});
+
+test('rejects a symbolic custom environment file', async () => {
+  await expect(
+    loadReviewEnvironment({
+      ...base,
+      inspectFile: async () => ({ isSymbolicLink: () => true }),
+    }),
+  ).rejects.toThrow(/symbolic link/);
+});
+
+test('checks permissions for a custom file when using the native reader', async () => {
+  const readFile = async () => 'OPENAI_API_TOKEN=token';
+  await expect(
+    loadReviewEnvironment({
+      envFile: 'custom.env',
+      readFile,
+      readEnvFile: readFile,
+      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectPermissions: async () => ({ aclRestricted: false }),
+      platform: 'win32',
+      environment: {},
+    }),
+  ).rejects.toThrow(/ACL restrictions/);
 });
 
 test('rejects an explicitly unrestricted Windows default environment file', async () => {

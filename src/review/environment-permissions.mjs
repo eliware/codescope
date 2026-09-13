@@ -7,7 +7,7 @@ export async function validateEnvironmentPermissions({
     try {
       const metadata = await inspectPermissions(envFile);
       if ((metadata.mode & 0o077) !== 0)
-        throw new Error('~/.codescope must not be readable by group or other users');
+        throw new Error(`${envFile} must not be readable by group or other users`);
     } catch (cause) {
       if (cause?.code === 'ENOENT') return;
       if (cause?.message?.includes('must not be readable')) throw cause;
@@ -32,5 +32,5 @@ export async function validateEnvironmentPermissions({
   });
   const aclWasReported = metadata && Object.hasOwn(metadata, 'aclRestricted');
   if (!permissionsMissing && (!aclWasReported || metadata.aclRestricted !== true))
-    throw new Error('Unable to verify Windows ACL restrictions for ~/.codescope');
+    throw new Error(`Unable to verify Windows ACL restrictions for ${envFile}`);
 }

@@ -20,7 +20,10 @@ export function createWindowsAclInspector({ run = execFile, environment = proces
       const matches = [...line.matchAll(/(?:^|\s)([^:\r\n]+):((?:\([^)]*\))+)/gu)];
       if (matches.length > 0) {
         identities.push(...matches.map((match) => match[1].trim().toLowerCase()));
-      } else if (index !== 0) {
+      } else if (
+        index !== 0 &&
+        !/^(?:Successfully processed|Failed processing)\b/iu.test(line.trim())
+      ) {
         hasUnrecognizedAclLine = true;
       }
     }

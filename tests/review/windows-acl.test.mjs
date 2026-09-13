@@ -5,7 +5,11 @@ const environment = { USERDOMAIN: 'ROG-DESKTOP', USERNAME: 'russell' };
 test('accepts an ACL containing only the current user', async () => {
   const inspect = createWindowsAclInspector({
     environment,
-    run: async () => ({ stdout: 'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n' }),
+    run: async () => ({
+      stdout:
+        'C:\\Users\\russell\\.codescope\n    ROG-DESKTOP\\russell:(F)\n' +
+        'Successfully processed 1 files; Failed processing 0 files\n',
+    }),
   });
   await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
     aclRestricted: true,
@@ -46,5 +50,20 @@ test('fails closed when an ACL line cannot be parsed', async () => {
   await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
     aclRestricted: false,
     aclIdentities: ['rog-desktop\\russell'],
+  });
+});
+
+test('fails closed for an unindented unknown ACL line', async () => {
+  const inspect = createWindowsAclInspector({
+    environment,
+    run: async () => ({
+      stdout:
+        'C:\\Users\\russell\\.codescope\n' +
+        'ROG-DESKTOP\\russell:(F)\n' +
+        'Unexpected ACL output\n',
+    }),
+  });
+  await expect(inspect('C:\\Users\\russell\\.codescope')).resolves.toMatchObject({
+    aclRestricted: false,
   });
 });

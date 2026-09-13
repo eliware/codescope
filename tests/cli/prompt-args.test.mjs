@@ -29,4 +29,5 @@ test('rejects missing, duplicate, and invalid prompt options', () => {
   expect(() => parsePromptArgs(['x', '--effort=bad'])).toThrow(/Effort/);
   expect(() => parsePromptArgs(['x', '--model=bad'])).toThrow(/Model/);
   expect(() => parsePromptArgs(['x', '--usage'])).toThrow(/Usage/);
+  expect(() => parsePromptArgs(['x', '--dry-run'])).toThrow(/Usage/);
 });

@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { defaultEnvFile, loadEnv } from './config.mjs';
+import { loadEnv } from './config.mjs';
 import { validateEnvironmentPermissions } from './environment-permissions.mjs';
 import { readReviewEnvironmentFile } from './environment-file.mjs';
 
@@ -13,7 +13,7 @@ export async function loadReviewEnvironment({
   environment = { ...process.env },
 }) {
   const envText = await readReviewEnvironmentFile({ envFile, readFile, readEnvFile, inspectFile });
-  if (readEnvFile === readFile && envFile === defaultEnvFile())
+  if (readEnvFile === readFile)
     await validateEnvironmentPermissions({ envFile, inspectPermissions, platform });
   loadEnv(envText, environment);
   return environment;
