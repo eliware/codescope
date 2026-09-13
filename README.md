@@ -106,8 +106,6 @@ Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default mod
 Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.
 CodeScope reviews supplied repository files only; it does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
 Use `codescope review all` for release-readiness review.
-Maintainer architecture follow-up is tracked in `docs/module-decomposition-plan.md`; its
-deferred CLI-entrypoint work is not a claim that the user-facing CLI is incomplete.
 
 ## Support
 
