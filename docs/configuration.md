@@ -9,7 +9,10 @@ Set `OPENAI_API_TOKEN` in the process environment or in the user-level
 `~/.codescope` file. Keep the token outside the repository. The repository's
 `.env.example` contains only a safe placeholder and is not a credential.
 
-The process environment takes precedence over the user-level file. On Unix,
+Only a nonblank `OPENAI_API_TOKEN` from the process environment takes
+precedence over the user-level file. A missing or whitespace-only process
+value is treated as absent, so a nonblank value from `~/.codescope` may be
+used. On Unix,
 the user-level file must not be group- or world-readable. A missing or blank
 token stops the request before any provider call. On Windows, CodeScope requires
 the parsed ACL identity list to contain only the current user. CodeScope uses

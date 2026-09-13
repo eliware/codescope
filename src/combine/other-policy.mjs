@@ -1,6 +1,6 @@
 const CODE_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts'];
 
-export const MAX_OTHER_FILE_BYTES = 2_000_000;
+export const MAX_OTHER_FILE_BYTES = 100_000;
 
 export function isIncludedContent(relativePath) {
   const lower = relativePath.toLowerCase();

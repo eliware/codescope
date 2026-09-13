@@ -242,19 +242,19 @@
         "outputs": "One ordered combined evidence string or an explicit budget failure.",
         "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
         "ordering": ["Package, Convention, JSON, configuration, other-file metadata, Markdown, implementation, and tests follow the declared order."],
-        "invariants": ["Actual bytes replace stale stat reservations after each read."],
+        "invariants": ["Each other file is limited independently to 100000 bytes based on actual bytes read."],
         "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
       },
       "dos": [
         "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests.",
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
-        "Limit configuration text to 200 lines and enforce aggregate character and metadata-byte budgets.",
-        "Account for actual bytes after each read and release stale reservations when a file shrinks.",
+        "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
+        "Read no more than one byte beyond the 100000-byte per-file limit, account for actual bytes, and omit only the file that exceeds its limit.",
         "Use one shared aggregate section-joining limit for all and selected composition paths."
       ],
       "donts": [
-        "Do not let stale stat reservations omit later files after an earlier file shrinks.",
-        "Do not apply different final aggregate limits to all and selected composition.",
+        "Do not stat files before reading them or use a shared metadata budget that lets one file omit unrelated later files.",
+        "Do not apply different per-file limits to all and selected composition.",
         "Do not treat metadata summaries as full file contents."
       ],
       "implementation": { "source": [
@@ -406,11 +406,11 @@
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents."],
-        "invariants": ["The process environment takes precedence over a nonblank file value."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [
-        "Prefer a nonblank OPENAI_API_TOKEN from the process environment, otherwise read ~/.codescope.",
+        "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
         "On Unix, reject group/world-readable configuration files.",
         "On Windows, require ACL evidence showing only the current identity has access.",
@@ -418,6 +418,7 @@
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [
+        "Do not treat a missing or whitespace-only process token as authoritative over a nonblank file token.",
         "Do not accept an unverified Windows ACL as restricted.",
         "Do not silently accept a file that disappears or changes safety state during inspection.",
         "Do not place credentials, tokens, environment files, or runtime state in the repository."

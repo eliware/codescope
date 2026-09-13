@@ -1,4 +1,4 @@
-import { defaultDeveloperText } from '../../src/prompts/guidance.mjs';
+import { defaultDeveloperText, profileReviewRules } from '../../src/prompts/guidance.mjs';
 
 test('provides the shared developer guidance', () => {
   expect(defaultDeveloperText).toContain('ignore_example');
@@ -7,4 +7,5 @@ test('provides the shared developer guidance', () => {
   expect(defaultDeveloperText).toContain('Do not recommend changes that are already present');
   expect(defaultDeveloperText).toContain('one-shot reviewer');
   expect(defaultDeveloperText).toContain('partial');
+  expect(profileReviewRules).toContain('category sentinel');
 });

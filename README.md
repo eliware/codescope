@@ -73,7 +73,7 @@ See [NEW_FEATURE_SUGGESTIONS.md](NEW_FEATURE_SUGGESTIONS.md) for optional future
 
 ## Configuration
 
-The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored and a nonblank process value takes precedence. Its dotenv parser accepts optional `export`, comments, and quoted values. Configuration files, including explicitly configured paths, must not be symbolic links. On Unix, group/world-readable configuration files are rejected. On Windows, the ACL must be verifiably restricted to the current user; extra identities such as `CodexSandboxUsers` cause a clear failure. A missing or blank token causes a clear error and exit code `3`.
+The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank process token takes precedence over the file. A missing or whitespace-only process token is treated as absent, so a nonblank file token may be used. Its dotenv parser accepts optional `export`, comments, and quoted values. Configuration files, including explicitly configured paths, must not be symbolic links. On Unix, group/world-readable configuration files are rejected. On Windows, the ACL must be verifiably restricted to the current user; extra identities such as `CodexSandboxUsers` cause a clear failure. A missing or blank token causes a clear error and exit code `3`.
 
 ## Validation
 
@@ -87,6 +87,8 @@ git diff --check
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions across the review categories plus `new-features`.
 
 Use `codescope prompt "your question"` for an ad hoc request. It sends the same complete `all` context, without test execution results, and sends no review or suggestion tools. The provider response is written unchanged and has no CodeScope schema. Optional `--effort=` and `--model=` overrides are supported. Use `--` before options when the prompt itself begins with a dash, for example `codescope prompt --summarize this repository -- --effort=low`.
+
+Append one or more `-a <text>` or `--add <text>` options to any profile command, including `all`, `release`, review profiles, suggestion profiles, and `prompt`. Each added string is preserved verbatim and appended to the end of the final user message in command-line order. For example: `codescope all --add "Ignore the known local link" --add "Ignore the temporary test version"`. Additions are accepted but have no effect on bare `codescope`, `codescope help`, `codescope --help`, or version output.
 
 `codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page.
 

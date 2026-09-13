@@ -19,49 +19,50 @@ test('returns no entries when all files are supplied elsewhere', async () => {
   ).resolves.toEqual([]);
 });
 
-test('omits files after the aggregate metadata budget', async () => {
+test('applies the metadata limit independently to each file', async () => {
   const result = await describeOtherFiles(
     'repo',
-    Array.from({ length: 32 }, (_, index) => `large-${index}.txt`),
+    ['large-one.txt', 'large-two.txt'],
     {
-      readFileContents: async () => Buffer.alloc(1_500_000, 'x'),
+      readFileContents: async () => Buffer.alloc(100_001, 'x'),
     },
   );
-  expect(result.some((entry) => entry.includes('omitted'))).toBe(true);
+  expect(result).toEqual([
+    'large-one.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
+    'large-two.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
+  ]);
 });
 
-test('checks known sizes before reading files', async () => {
+test('checks actual bytes after reading files', async () => {
   const reads = [];
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
-    statFile: async (file) => ({ size: file.endsWith('first.txt') ? 1_500_000 : 1_500_000 }),
     readFileContents: async (file) => {
       reads.push(file);
-      return file.endsWith('first.txt') ? Buffer.alloc(1_500_000, 'x') : 'x';
+      return file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x';
     },
   });
   expect(result).toContain(
-    'second.txt | omitted | 1500000 bytes | aggregate metadata budget exceeded',
+    'first.txt | omitted | 100001 bytes | per-file metadata limit exceeded',
   );
-  expect(reads).toHaveLength(1);
+  expect(result).toContain('second.txt | text | 1 lines | 1 bytes');
+  expect(reads).toHaveLength(2);
 });
 
-test('omits a file that grows beyond the reserved metadata budget', async () => {
+test('omits a file that grows beyond the per-file metadata limit', async () => {
   const result = await describeOtherFiles('repo', ['growing.txt', 'later.txt'], {
-    statFile: async () => ({ size: 1_000_000 }),
     readFileContents: async (file) =>
-      file.endsWith('growing.txt') ? Buffer.alloc(2_100_000, 'x') : 'later',
+      file.endsWith('growing.txt') ? Buffer.alloc(100_001, 'x') : 'later',
   });
-  expect(result).toContain('growing.txt | omitted | 2100000 bytes | aggregate metadata budget exceeded');
+  expect(result).toContain('growing.txt | omitted | 100001 bytes | per-file metadata limit exceeded');
   expect(result).toContain('later.txt | text | 1 lines | 5 bytes');
 });
 
-test('releases reserved bytes when a file shrinks after stat', async () => {
-  const result = await describeOtherFiles('repo', ['shrinking.txt', 'later.txt'], {
-    statFile: async (file) => ({ size: file.endsWith('shrinking.txt') ? 1_500_000 : 600_000 }),
-    readFileContents: async (file) => (file.endsWith('shrinking.txt') ? 'small' : 'later'),
+test('allows multiple files when each is within the per-file limit', async () => {
+  const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
+    readFileContents: async (file) => (file.endsWith('first.txt') ? 'first' : 'second'),
   });
   expect(result).toEqual([
-    'later.txt | text | 1 lines | 5 bytes',
-    'shrinking.txt | text | 1 lines | 5 bytes',
+    'first.txt | text | 1 lines | 5 bytes',
+    'second.txt | text | 1 lines | 6 bytes',
   ]);
 });
