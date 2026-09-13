@@ -1,5 +1,4 @@
 import { getProfile } from '../profiles/index.mjs';
-import { statusForReviewResult } from './status-result.mjs';
 import { applyEffort } from './prompt-options.mjs';
 
 export async function runProfileCommand(command, options) {
@@ -18,7 +17,7 @@ export async function runProfileCommand(command, options) {
   const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
   const { combine, prompt: profilePrompt } = getProfile(target, effectiveMode);
   const prompt = applyEffort(profilePrompt, effort);
-  const result = await review(cwd, {
+  await review(cwd, {
     write,
     combine,
     usage: option === '--usage' || rawOptions.includes('--usage'),
@@ -27,7 +26,5 @@ export async function runProfileCommand(command, options) {
     dryRun,
   });
   if (dryRun) return 0;
-  return statusForReviewResult(result, {
-    isSuggestion: mode === 'suggest' || target === 'new-features',
-  });
+  return 0;
 }

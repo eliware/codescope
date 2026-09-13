@@ -27,7 +27,9 @@ artifacts are unknown rather than defects.
 - P2 is an actionable issue that does not block the current release.
 - P3 is polish, convenience, or low-risk follow-up.
 
-Finding severity is provider output only and never changes the CLI exit code.
+Unresolved P0/P1 findings should produce a `block` verdict in the provider
+report. That verdict is provider output only and never changes the CLI exit
+code.
 
 ## Known issues
 

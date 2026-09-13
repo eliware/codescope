@@ -82,7 +82,7 @@ npm test
 git diff --check
 ```
 
-`codescope all` is the main comprehensive review and suggestion command. It reports P0–P3 findings. Provider findings never change the CLI exit code.
+`codescope all` is the main comprehensive review and suggestion command. It reports P0–P3 findings; unresolved P0/P1 findings should produce an AI `block` verdict in the raw response. Provider findings never change the CLI exit code.
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for all improvement suggestions across the review categories plus `new-features`.
 
