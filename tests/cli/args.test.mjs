@@ -33,6 +33,7 @@ test('parses direct profiles and shared options', () => {
     option: undefined,
     effort: undefined,
     model: undefined,
+    add: [],
   });
 });
 
@@ -55,15 +56,15 @@ test('parses metadata command variants', () => {
   expect(parseArgs(['--version'])).toMatchObject({ command: 'version' });
   expect(parseArgs(['help', '-a', 'ignored'])).toMatchObject({
     command: 'help',
-    ignoredAdditions: ['ignored'],
+    add: ['ignored'],
   });
   expect(parseArgs(['--help', '--add', 'ignored'])).toMatchObject({
     command: 'help',
-    ignoredAdditions: ['ignored'],
+    add: ['ignored'],
   });
   expect(parseArgs(['version', '--add', 'ignored'])).toMatchObject({
     command: 'version',
-    ignoredAdditions: ['ignored'],
+    add: ['ignored'],
   });
   expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
   expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);

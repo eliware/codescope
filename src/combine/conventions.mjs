@@ -69,7 +69,11 @@ async function readConventionApplicability(
     const canonicalPaths = new Map();
     for (const name of apply) {
       if (!Object.hasOwn(repositoryTypes, name)) return null;
-      const relativePath = path.posix.basename(String(repositoryTypes[name]).replaceAll('\\', '/'));
+      const declaredPath = String(repositoryTypes[name]).replaceAll('\\', '/');
+      const specsIndex = declaredPath.lastIndexOf('/specs/');
+      const relativePath = specsIndex >= 0
+        ? declaredPath.slice(specsIndex + '/specs/'.length)
+        : path.posix.basename(declaredPath);
       canonicalPaths.set(name, relativePath);
     }
     return { profiles: new Set(apply), canonicalPaths };

@@ -15,7 +15,7 @@ export function parseArgs(args) {
       ...meta,
       effort: values.effort,
       model: values.model,
-      ...(values.add.length ? { ignoredAdditions: values.add } : {}),
+      add: values.add,
     };
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   return {

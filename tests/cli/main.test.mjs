@@ -29,6 +29,19 @@ test('main dispatches help without provider work', async () => {
   expect(output.join('')).toContain('## Owner workflow');
 });
 
+test('main preserves accepted meta-command additions without applying them', async () => {
+  const output = [];
+  let reviewed = false;
+  await expect(
+    main(['help', '--add', 'diagnostic context'], {
+      output: (value) => output.push(value),
+      review: async () => { reviewed = true; },
+    }),
+  ).resolves.toBe(0);
+  expect(output.join('')).toContain('## Owner workflow');
+  expect(reviewed).toBe(false);
+});
+
 test('main dispatches version and reports unknown commands', async () => {
   const output = [];
   expect(await main(['version'], { output: (value) => output.push(value) })).toBe(0);

@@ -55,10 +55,10 @@ test('preserves only the PowerShell runtime variables needed by the child', asyn
   expect(command[2].env).toMatchObject({
     SystemRoot: 'value-SystemRoot',
     PATH: expect.any(String),
-    Path: 'value-Path',
     PATHEXT: 'value-PATHEXT',
     COMSPEC: 'value-COMSPEC',
   });
+  expect(command[2].env.Path).toBeUndefined();
   expect(command[2].env.OPENAI_API_TOKEN).toBeUndefined();
 });
 

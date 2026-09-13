@@ -141,6 +141,7 @@
         "../src/cli/profile-args.mjs",
         "../src/cli/prompt-args.mjs",
         "../src/cli/option-values.mjs",
+        "../src/cli/dispatch-meta.mjs",
         "../src/prompts/append-user-message.mjs"
       ] },
       "verification": { "tests": [
@@ -148,6 +149,7 @@
         "../tests/cli/add-option.test.mjs",
         "../tests/cli/profile-args.test.mjs",
         "../tests/cli/prompt-args.test.mjs",
+        "../tests/cli/main.test.mjs",
         "../tests/prompts/append-user-message.test.mjs"
       ], "commands": [] }
     },

@@ -9,7 +9,6 @@ function powershellEnvironment(file) {
   return {
     SystemRoot: process.env.SystemRoot,
     PATH: process.env.PATH,
-    Path: process.env.Path,
     PATHEXT: process.env.PATHEXT,
     COMSPEC: process.env.COMSPEC,
     CODESCOPE_ACL_TARGET: file,
