@@ -3,7 +3,7 @@ import { promisify } from 'node:util';
 
 const execFile = promisify(nativeExecFile);
 const securityDescriptorCommand =
-  '& { param($Path) $security = [System.IO.File]::GetAccessControl($Path); $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value; [pscustomobject]@{ Sddl = $security.GetSecurityDescriptorSddlForm([System.Security.AccessControl.AccessControlSections]::Access); UserSid = $sid } | ConvertTo-Json -Compress }';
+  '& { $Path = [Environment]::GetEnvironmentVariable(\'CODESCOPE_ACL_TARGET\'); $security = [System.IO.File]::GetAccessControl($Path); $sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value; [pscustomobject]@{ Sddl = $security.GetSecurityDescriptorSddlForm([System.Security.AccessControl.AccessControlSections]::Access); UserSid = $sid } | ConvertTo-Json -Compress }';
 
 function parseSecurityDescriptor(stdout) {
   let descriptor;
@@ -26,7 +26,7 @@ function parseSecurityDescriptor(stdout) {
   for (const match of aceMatches) {
     const fields = match[1].split(';');
     const identity = fields[5];
-    if (fields.length !== 6 || !/^S-\d(?:-\d+)+$/u.test(identity)) {
+    if (fields.length !== 6 || fields[0] !== 'A' || !/^S-\d(?:-\d+)+$/u.test(identity)) {
       malformed = true;
       continue;
     }
@@ -41,8 +41,8 @@ export function createWindowsAclInspector({ run = execFile } = {}) {
     try {
       ({ stdout } = await run(
         'powershell.exe',
-        ['-NoProfile', '-NonInteractive', '-Command', securityDescriptorCommand, file],
-        { windowsHide: true },
+        ['-NoProfile', '-NonInteractive', '-Command', securityDescriptorCommand],
+        { windowsHide: true, env: { ...process.env, CODESCOPE_ACL_TARGET: file } },
       ));
     } catch (cause) {
       throw new Error(

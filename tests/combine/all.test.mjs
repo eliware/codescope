@@ -60,6 +60,10 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
       if (name === 'image.bin') return Buffer.from([0, 1]);
       return name.endsWith('.yml') ? 'name: check' : name.endsWith('.md') ? '# docs' : 'code';
     },
+    readOtherFileContents: async (file) => {
+      const name = file.split(/[\\/]/u).pop();
+      return { data: name === 'image.bin' ? Buffer.from([0, 1]) : 'data', truncated: false };
+    },
   });
   expect(result).toContain('===== repository configuration =====');
   expect(result).toContain('===== .github/ci.yml =====');

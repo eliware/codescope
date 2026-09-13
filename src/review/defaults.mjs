@@ -8,7 +8,9 @@ import { createWindowsAclInspector } from './windows-acl.mjs';
 
 export function createReviewDefaults({ platform = process.platform } = {}) {
   return {
-    write: process.stdout.write.bind(process.stdout),
+    write: (value) => {
+      process.stdout.write(value);
+    },
     readFile: fs.promises.readFile,
     envFile: defaultEnvFile(),
     prompt: defaultPrompt,

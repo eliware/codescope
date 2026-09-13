@@ -10,10 +10,18 @@ function assertNotSymbolicLink(envFile, metadata) {
   if (metadata.isSymbolicLink()) throw new Error(`${envFile} must not be a symbolic link`);
 }
 
+function fileIdentity(metadata) {
+  const { dev, ino } = metadata;
+  const valid = (value) => typeof value === 'number' || typeof value === 'bigint';
+  return valid(dev) && valid(ino) ? `${dev}:${ino}` : undefined;
+}
+
 export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile, onFileRead }) {
   let initiallyMissing = false;
+  let initialMetadata;
   try {
-    assertNotSymbolicLink(envFile, await inspectFile(envFile));
+    initialMetadata = await inspectFile(envFile);
+    assertNotSymbolicLink(envFile, initialMetadata);
   } catch (cause) {
     if (cause?.code === 'ENOENT') initiallyMissing = true;
     else throw inspectionError(envFile, 'Unable to inspect', cause);
@@ -27,6 +35,18 @@ export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectF
     throw inspectionError(envFile, 'Unable to read', cause);
   }
 
+  if (!initiallyMissing) {
+    try {
+      const finalMetadata = await inspectFile(envFile);
+      assertNotSymbolicLink(envFile, finalMetadata);
+      const initialIdentity = fileIdentity(initialMetadata);
+      const finalIdentity = fileIdentity(finalMetadata);
+      if (initialIdentity && finalIdentity && initialIdentity !== finalIdentity)
+        throw new Error(`${envFile} was replaced while it was being read`);
+    } catch (cause) {
+      throw inspectionError(envFile, 'Unable to verify', cause);
+    }
+  }
   onFileRead?.();
   return envText;
 }

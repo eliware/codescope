@@ -9,5 +9,5 @@ export async function readFileUpToLimit(filePath, maxBytes) {
     length += accepted.byteLength;
     if (length > maxBytes) break;
   }
-  return Buffer.concat(chunks, length);
+  return { data: Buffer.concat(chunks, length), truncated: length > maxBytes };
 }

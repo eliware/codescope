@@ -70,3 +70,31 @@ test('does not recheck a file that appears after the initial missing inspection'
   ).resolves.toBe('OPENAI_API_TOKEN=value');
   expect(inspections).toBe(1);
 });
+
+test('rejects replacement of an existing file between inspection and read', async () => {
+  let inspections = 0;
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => {
+        inspections += 1;
+        return { dev: 1, ino: inspections === 1 ? 2 : 3, isSymbolicLink: () => false };
+      },
+      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+    }),
+  ).rejects.toThrow(/replaced/);
+});
+
+test('accepts a stable existing file with bigint identity metadata', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({
+        dev: 1n,
+        ino: 2n,
+        isSymbolicLink: () => false,
+      }),
+      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+    }),
+  ).resolves.toBe('OPENAI_API_TOKEN=value');
+});

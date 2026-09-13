@@ -53,8 +53,18 @@ test('parses metadata command variants', () => {
     option: '--version',
   });
   expect(parseArgs(['--version'])).toMatchObject({ command: 'version' });
-  expect(parseArgs(['help', '-a', 'ignored'])).toMatchObject({ command: 'help' });
-  expect(parseArgs(['--help', '--add', 'ignored'])).toMatchObject({ command: 'help' });
+  expect(parseArgs(['help', '-a', 'ignored'])).toMatchObject({
+    command: 'help',
+    ignoredAdditions: ['ignored'],
+  });
+  expect(parseArgs(['--help', '--add', 'ignored'])).toMatchObject({
+    command: 'help',
+    ignoredAdditions: ['ignored'],
+  });
+  expect(parseArgs(['version', '--add', 'ignored'])).toMatchObject({
+    command: 'version',
+    ignoredAdditions: ['ignored'],
+  });
   expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
   expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);
   expect(() => parseArgs(['version', '--bad'])).toThrow(/not valid/);

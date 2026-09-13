@@ -11,3 +11,18 @@ test('creates the review collaborator defaults', () => {
   expect(typeof createReviewDefaults({ platform: 'win32' }).inspectPermissions).toBe('function');
   expect(typeof createReviewDefaults({ platform: 'linux' }).inspectPermissions).toBe('function');
 });
+
+test('default writer forwards output without exposing stream backpressure', () => {
+  const originalWrite = process.stdout.write;
+  const writes = [];
+  process.stdout.write = (value) => {
+    writes.push(value);
+    return false;
+  };
+  try {
+    createReviewDefaults().write('provider response');
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+  expect(writes).toEqual(['provider response']);
+});

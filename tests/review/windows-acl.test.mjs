@@ -27,9 +27,8 @@ test('accepts an SDDL ACL containing only the current user SID', async () => {
       '-NonInteractive',
       '-Command',
       expect.stringContaining('GetSecurityDescriptorSddlForm'),
-      'C:\\Users\\russell\\.codescope',
     ],
-    2: { windowsHide: true },
+    2: { windowsHide: true, env: expect.objectContaining({ CODESCOPE_ACL_TARGET: 'C:\\Users\\russell\\.codescope' }) },
   });
 });
 
@@ -57,6 +56,18 @@ test('fails closed for malformed SDDL ACEs', async () => {
     run: async () => ({
       stdout: JSON.stringify({
         Sddl: `O:${userSid}G:${userSid}D:PAI(A;;FA;;;not-a-sid)`,
+        UserSid: userSid,
+      }),
+    }),
+  });
+  await expect(inspect('file')).resolves.toMatchObject({ aclRestricted: false, aclIdentities: [] });
+});
+
+test('fails closed for deny ACEs even when they name the current SID', async () => {
+  const inspect = createWindowsAclInspector({
+    run: async () => ({
+      stdout: JSON.stringify({
+        Sddl: `O:${userSid}G:${userSid}D:PAI(D;;FA;;;${userSid})S:`,
         UserSid: userSid,
       }),
     }),

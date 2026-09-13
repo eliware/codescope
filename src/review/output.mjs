@@ -1,8 +1,7 @@
-// Writers may return undefined, a boolean stream-status value, or { written }
-// when they report a character count. Explicit counts must account for the
-// complete output.
+// Writers may return undefined, true, or { written } when they report a
+// character count. Explicit counts must account for the complete output.
 function assertCompleteWrite(result, output) {
-  if (result === undefined || typeof result === 'boolean') return;
+  if (result === undefined || result === true) return;
   if (result && typeof result === 'object' && 'written' in result) {
     if (!Number.isInteger(result.written) || result.written < 0)
       throw new Error('Writer reported an invalid written character count');
@@ -10,7 +9,7 @@ function assertCompleteWrite(result, output) {
       throw new Error(`Writer reported a short write: ${result.written} of ${output.length} characters`);
     return;
   }
-  throw new Error('Writer returned an unsupported result; expected undefined, a boolean, or { written }');
+  throw new Error('Writer returned an unsupported result; expected undefined, true, or { written }');
 }
 
 export async function writeProviderResult(write, output, label = 'review') {

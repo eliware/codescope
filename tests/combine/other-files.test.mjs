@@ -8,7 +8,7 @@ test('describes unsupplied text and binary files while excluding supplied conten
     ['README.md', 'docs'],
   ]);
   const result = await describeOtherFiles('repo', [...files.keys()], {
-    readFileContents: async (file) => files.get(file.split(/[\\/]/u).at(-1)),
+    readOtherFileContents: async (file) => ({ data: files.get(file.split(/[\\/]/u).at(-1)), truncated: false }),
   });
   expect(result).toEqual(['image.dat | binary | 3 bytes', 'notes.txt | text | 2 lines | 3 bytes']);
 });
@@ -24,7 +24,7 @@ test('applies the metadata limit independently to each file', async () => {
     'repo',
     ['large-one.txt', 'large-two.txt'],
     {
-      readFileContents: async () => Buffer.alloc(100_001, 'x'),
+      readOtherFileContents: async () => ({ data: Buffer.alloc(100_001, 'x'), truncated: true }),
     },
   );
   expect(result).toEqual([
@@ -36,9 +36,9 @@ test('applies the metadata limit independently to each file', async () => {
 test('checks actual bytes after reading files', async () => {
   const reads = [];
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
-    readFileContents: async (file) => {
+    readOtherFileContents: async (file) => {
       reads.push(file);
-      return file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x';
+      return { data: file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x', truncated: false };
     },
   });
   expect(result).toContain(
@@ -50,8 +50,10 @@ test('checks actual bytes after reading files', async () => {
 
 test('omits a file that grows beyond the per-file metadata limit', async () => {
   const result = await describeOtherFiles('repo', ['growing.txt', 'later.txt'], {
-    readFileContents: async (file) =>
-      file.endsWith('growing.txt') ? Buffer.alloc(100_001, 'x') : 'later',
+    readOtherFileContents: async (file) => ({
+      data: file.endsWith('growing.txt') ? Buffer.alloc(100_001, 'x') : 'later',
+      truncated: file.endsWith('growing.txt'),
+    }),
   });
   expect(result).toContain('growing.txt | omitted | 100001 bytes | per-file metadata limit exceeded');
   expect(result).toContain('later.txt | text | 1 lines | 5 bytes');
@@ -59,10 +61,24 @@ test('omits a file that grows beyond the per-file metadata limit', async () => {
 
 test('allows multiple files when each is within the per-file limit', async () => {
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
-    readFileContents: async (file) => (file.endsWith('first.txt') ? 'first' : 'second'),
+    readOtherFileContents: async (file) => ({
+      data: file.endsWith('first.txt') ? 'first' : 'second',
+      truncated: false,
+    }),
   });
   expect(result).toEqual([
     'first.txt | text | 1 lines | 5 bytes',
     'second.txt | text | 1 lines | 6 bytes',
   ]);
+});
+
+test('rejects an invalid bounded-reader result', async () => {
+  await expect(
+    describeOtherFiles('repo', ['notes.txt'], { readOtherFileContents: async () => 'notes' }),
+  ).rejects.toThrow('must return { data, truncated }');
+  await expect(
+    describeOtherFiles('repo', ['notes.txt'], {
+      readOtherFileContents: async () => ({ data: 'notes' }),
+    }),
+  ).rejects.toThrow('must return { data, truncated }');
 });
