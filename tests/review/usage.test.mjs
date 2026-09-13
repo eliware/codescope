@@ -28,3 +28,9 @@ test('adds a zeroed breakdown when the provider reports empty usage', () => {
     estimated_cost_usd: 0,
   });
 });
+
+test('treats unreadable provider usage as unavailable', () => {
+  const response = {};
+  Object.defineProperty(response, 'usage', { get: () => { throw new Error('unavailable'); } });
+  expect(withReviewUsage({}, response, 'gpt-5.6-luna', true).usage).toBeNull();
+});

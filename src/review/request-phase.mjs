@@ -1,5 +1,5 @@
 import { prepareRequest } from './request.mjs';
-import { preparePlainTextRequest } from './plain-text.mjs';
+import { preparePlainTextRequest } from './plain-text-request.mjs';
 
 export function prepareReviewRequest(prompt, combined, model, plainText) {
   const request = prepareRequest(prompt, combined);

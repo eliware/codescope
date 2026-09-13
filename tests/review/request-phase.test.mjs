@@ -8,6 +8,13 @@ test('prepares a review request and applies model/custom prompt data', () => {
   };
   const request = prepareReviewRequest(prompt, 'source', 'gpt-5.6-sol', 'summarize');
   expect(request.model).toBe('gpt-5.6-sol');
-  expect(request.text).toEqual({ format: { type: 'json_object' } });
+  expect(request.text).toBeUndefined();
   expect(request.input[0].content[0].text).toContain('source');
+});
+
+test('rejects an empty custom prompt', () => {
+  const prompt = {
+    input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }],
+  };
+  expect(() => prepareReviewRequest(prompt, 'source', undefined, '  ')).toThrow(/non-empty/);
 });

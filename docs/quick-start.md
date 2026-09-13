@@ -34,4 +34,4 @@ Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platfor
 
 Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. Use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `--usage` when needed.
 
-Custom prompt: `codescope prompt "your question"` sends the complete `all` context without tools and returns structured JSON. Use `--` before options if the prompt begins with `-`.
+Custom prompt: `codescope prompt "your question"` sends the complete `all` context without tools and returns the provider response unchanged. Use `--` before options if the prompt begins with `-`.

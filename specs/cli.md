@@ -29,15 +29,10 @@ Configuration files with unsafe Unix permissions are rejected.
 
 ## Output and status
 
-Successful operations print one JSON result. Provider response failures are
-reported as errors. Invalid or differently shaped provider JSON is preserved
-as raw or best-effort output when possible; provider payload shape is not a
-CodeScope acceptance gate. CodeScope still reviews its own request, parsing,
-preservation, fallback, error, tool-call, and verdict handling. Review status
-is derived only from the provider `verdict`: exact `pass` succeeds and every
-other or missing value is blocked. Exit codes
-distinguish configuration, request, provider, response, and review-verdict
-failures.
+Successful operations print the exact provider response unchanged. Provider
+response failures are reported as errors. CodeScope does not parse, validate,
+format, or derive status from provider content. All successful provider
+requests exit successfully.
 
 If writing a successful or fallback result fails, the operation remains fatal;
 programmatic callers may inspect the thrown error's preserved `result` and

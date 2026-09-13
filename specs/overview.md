@@ -17,12 +17,11 @@ repository.
 - The current working directory is the review root.
 - Repository context is selected by profile and ordered deterministically.
 - Symbolic links are excluded and never followed.
-- Review output is best-effort JSON for AI-to-AI transport, not a guaranteed
-  machine-readable programmatic API. Valid JSON is pretty-printed; malformed
-  output is preserved for downstream AI interpretation.
+- Review output is the exact provider response for AI-to-AI transport, not a
+  guaranteed machine-readable programmatic API.
 - Provider-output shape is transport guidance rather than a CodeScope API
   acceptance gate; CodeScope's own response handling remains reviewable.
-- Review findings use P0–P3 priorities; only unresolved P0 or qualifying P1 findings block a review verdict.
-- Suggestion profiles return recommendations and do not create a review verdict.
-- `all` runs the comprehensive unified review and merges the findings into one structured result.
+- Review findings use P0–P3 priorities in the provider's requested output.
+- Suggestion profiles return recommendations in the provider's requested output.
+- `all` requests a comprehensive review and writes the provider response unchanged.
 - The tool is read-only apart from its own output.
