@@ -51,6 +51,14 @@ test('preserves a serializable response with no function calls', () => {
   });
 });
 
+test('ignores malformed function-call collections without losing the response', () => {
+  const call = { type: 'function_call', name: 'review' };
+  Object.defineProperty(call, 'arguments', { get: () => { throw new Error('bad'); } });
+  expect(preserveProviderResponse({ output: [call] })).toEqual({
+    response_error: 'Provider response was not accepted by the response contract',
+  });
+});
+
 test('preserves function-call arguments from an unserializable response', () => {
   const response = {
     output: [{ type: 'function_call', name: 'review', arguments: '{"ok":true}' }],

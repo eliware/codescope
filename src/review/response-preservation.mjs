@@ -3,7 +3,7 @@ import { readNumericUsage, readStringProperty } from './response-accessors.mjs';
 
 function readFunctionCallArguments(response) {
   try {
-    const calls = response?.output
+    const calls = Array.isArray(response?.output) && response.output
       ?.filter((item) => item?.type === 'function_call')
       .map(({ name, arguments: args }) => ({ name, arguments: args }));
     return calls?.length ? redactTestOutput(JSON.stringify(calls)) : undefined;

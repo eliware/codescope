@@ -13,7 +13,7 @@ test('runs a custom prompt through the all context without a verdict', async () 
       promptText: 'summarize',
       effort: 'low',
     }),
-  ).resolves.toBe(0);
+  ).resolves.toBe(1);
   expect(calls[0].prompt.reasoning.effort).toBe('low');
   expect(calls[0].plainText).toBe('summarize');
 });

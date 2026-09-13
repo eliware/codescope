@@ -1,6 +1,6 @@
 ## Owner workflow
 
-1. Run `codescope all` exactly once at the beginning of this iteration. Test-inclusive profiles use a 30-second test timeout by default; pass `--test-timeout <seconds>` when a longer test run is required. Do not rerun it after making fixes; the goal harness owns subsequent iterations.
+1. Run `codescope all` exactly once at the beginning of this iteration. CodeScope never runs repository tests or includes test execution results. Do not rerun it after making fixes; the goal harness owns subsequent iterations.
 2. Fix every issue reported by that single CodeScope run.
 3. Implement every practical suggestion reported by that single CodeScope run.
 4. Run `npm test` and restore genuine 100×4 coverage.

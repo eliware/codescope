@@ -1,6 +1,8 @@
 import { EXIT_CODES } from './errors.mjs';
 
-export function statusForPromptResult(_result) {
+export function statusForPromptResult(result) {
+  if (result === undefined || result === null || result.raw_response || result.verdict === 'block')
+    return EXIT_CODES.BLOCKED;
   return EXIT_CODES.PASS;
 }
 

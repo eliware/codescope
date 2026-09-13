@@ -8,7 +8,7 @@ test('runs a prompt command without requiring a verdict', async () => {
       review: async () => ({ raw_response: 'text' }),
       promptText: 'summarize',
     }),
-  ).resolves.toBe(0);
+  ).resolves.toBe(1);
 });
 
 test('routes review options and status through one command boundary', async () => {
