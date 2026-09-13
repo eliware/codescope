@@ -29,7 +29,7 @@ export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = 
         content: [
           {
             type: 'input_text',
-            text: "Runtime contract clarification for every profile: do not report the provider's returned JSON shape, missing fields, category contents, sentinels, duplicate calls, or tool arguments as CodeScope defects. Those are provider-output guidance, not runtime acceptance gates. Continue reviewing CodeScope's own request construction, response parsing, output preservation, fallback handling, error mapping, tool-call handling, and verdict extraction. Report concrete defects in those implementations, including lost output, failed pretty-printing, or status derived from a non-verdict signal.",
+            text: "Review baseline: assume the repository's full test suite passes unless concrete failing-test evidence is supplied. Review supplied test files for contract coverage, but do not require test-run output or infer an unobserved test failure. Runtime contract clarification for every profile: do not report the provider's returned JSON shape, missing fields, category contents, sentinels, duplicate calls, or tool arguments as CodeScope defects. Those are provider-output guidance, not runtime acceptance gates. Continue reviewing CodeScope's own request construction, response parsing, output preservation, fallback handling, error mapping, tool-call handling, and verdict extraction. Report concrete defects in those implementations, including lost output, failed pretty-printing, or status derived from a non-verdict signal.",
           },
         ],
       },

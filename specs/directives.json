@@ -114,10 +114,12 @@
             "Keep the conventions profile focused on supplied repository documentation, package metadata, specifications, environment documentation, and cross-artifact consistency.",
             "Treat missing or unsupplied artifacts as unknown rather than defects.",
             "Use P0 for immediate emergencies or supplied failing-test evidence, P1 for concrete high-priority defects, P2 for actionable non-blocking issues, and P3 for polish or low-risk follow-up.",
+            "Assume the repository's full test suite passes unless concrete failing-test evidence is supplied; use source, specifications, and supplied test files to review contract coverage without requiring test-run output.",
             "Request a provider block verdict for unresolved P0/P1 findings while treating that verdict as provider output only."
           ],
           "donts": [
             "Do not make the provider verdict or any finding priority change the CLI exit code.",
+            "Do not report absent test execution output, an unobserved test failure, or a test-run requirement that is not explicit in the supplied contract.",
             "Do not replace deterministic repository, structural, test, or publication checks owned by other tooling.",
             "Do not repeat issues already documented as known unless implementation contradicts the documented boundary or concrete evidence shows impact outside it."
           ]

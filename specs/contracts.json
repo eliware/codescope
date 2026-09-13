@@ -538,11 +538,13 @@
         "Keep production modules cohesive with one meaningful responsibility and explicit orchestration at composition boundaries.",
         "Use native ESM and Node process APIs with argument arrays rather than shell-specific command construction.",
         "Use the maintained shared Eliware packages for their owned capabilities and keep public exports and package metadata synchronized.",
-        "Mirror source modules with tests under tests/ and use tests as evidence that the normative contracts are fulfilled.",
+    "Mirror source modules with tests under tests/ and use tests as evidence that the normative contracts are fulfilled.",
+    "Assume the full repository test suite passes unless concrete failing-test evidence is supplied; review test files for contract coverage without requiring execution output.",
         "Maintain full in-scope statement, branch, function, and line coverage without Istanbul ignores outside pure barrels."
       ],
       "donts": [
-        "Do not make tests the source of contract truth.",
+    "Do not make tests the source of contract truth.",
+    "Do not report missing test execution output or infer a test failure that was not supplied.",
         "Do not hide independent responsibilities in monolithic modules or comments.",
         "Do not add shell-specific pipelines, platform-specific executable assumptions, or duplicate maintained-library functionality without a documented exception."
       ],
