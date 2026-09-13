@@ -34,6 +34,7 @@ test('main dispatches version and reports unknown commands', async () => {
   expect(await main(['version'], { output: (value) => output.push(value) })).toBe(0);
   expect(output).toHaveLength(1);
   expect(await main(['unknown'], { error: () => {} })).toBe(2);
+  expect(await main(['all', '--add'], { error: () => {} })).toBe(2);
 });
 
 test('main handles metadata options without review work', async () => {

@@ -27,7 +27,7 @@ export function errorExitCode(cause) {
   if (/SIGTERM|signal termination/u.test(text)) return EXIT_CODES.SIGTERM;
   if (cause?.code === 'ETIMEDOUT' || /timed out/u.test(text)) return EXIT_CODES.TEST_TIMEOUT;
   if (
-    /Usage:|Unknown command|Unknown option|Unexpected arguments|Effort must be|not valid for/u.test(
+    /Usage:|Unknown command|Unknown option|Unexpected arguments|requires a value|Effort must be|not valid for/u.test(
       text,
     )
   )
