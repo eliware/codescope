@@ -50,3 +50,15 @@ test('formats non-error writer failures', async () => {
     ),
   ).rejects.toThrow(/disk full/);
 });
+
+test('rejects a numeric short write', async () => {
+  await expect(
+    writeProviderResult(async (value) => ({ written: value.length - 1 }), 'hello'),
+  ).rejects.toThrow('short write: 4 of 5 characters');
+});
+
+test('accepts a numeric complete write', async () => {
+  await expect(
+    writeProviderResult(async (value) => ({ written: value.length }), 'hello'),
+  ).resolves.toBeUndefined();
+});

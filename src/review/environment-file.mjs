@@ -1,27 +1,47 @@
 import { defaultEnvFile } from './env-file-path.mjs';
 
+function inspectionError(envFile, message, cause) {
+  return new Error(`${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`, {
+    cause,
+  });
+}
+
+function assertNotSymbolicLink(envFile, metadata) {
+  if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');
+}
+
 export async function readReviewEnvironmentFile({ envFile, readEnvFile, inspectFile }) {
-  let envText = '';
-  if (envFile === defaultEnvFile()) {
+  if (envFile !== defaultEnvFile()) {
     try {
-      const metadata = await inspectFile(envFile);
-      if (metadata.isSymbolicLink()) throw new Error('~/.codescope must not be a symbolic link');
+      return await readEnvFile(envFile, 'utf8');
     } catch (cause) {
-      if (cause?.code !== 'ENOENT')
-        throw new Error(
-          `Unable to inspect ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-          { cause },
-        );
+      if (cause?.code === 'ENOENT') return '';
+      throw inspectionError(envFile, 'Unable to read', cause);
     }
   }
+
+  let initiallyMissing = false;
+  try {
+    assertNotSymbolicLink(envFile, await inspectFile(envFile));
+  } catch (cause) {
+    if (cause?.code === 'ENOENT') initiallyMissing = true;
+    else throw inspectionError(envFile, 'Unable to inspect', cause);
+  }
+
+  let envText;
   try {
     envText = await readEnvFile(envFile, 'utf8');
   } catch (cause) {
-    if (cause?.code !== 'ENOENT')
-      throw new Error(
-        `Unable to read ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-        { cause },
-      );
+    if (cause?.code === 'ENOENT' && initiallyMissing) return '';
+    throw inspectionError(envFile, 'Unable to read', cause);
+  }
+
+  if (initiallyMissing) {
+    try {
+      assertNotSymbolicLink(envFile, await inspectFile(envFile));
+    } catch (cause) {
+      throw inspectionError(envFile, 'Unable to verify after it appeared', cause);
+    }
   }
   return envText;
 }

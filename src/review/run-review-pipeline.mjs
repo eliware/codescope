@@ -29,7 +29,7 @@ export async function runReviewPipeline(cwd, options) {
     plainText: options.plainText,
     add: options.add,
   });
-  return finalizeReviewSession({
+  const session = await finalizeReviewSession({
     register: options.register,
     controller,
     execute: (signal) =>
@@ -43,4 +43,5 @@ export async function runReviewPipeline(cwd, options) {
         plainText: options.plainText,
       }),
   });
+  return session.output;
 }

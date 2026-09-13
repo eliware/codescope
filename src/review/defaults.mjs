@@ -4,8 +4,9 @@ import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
 import { defaultEnvFile } from './config.mjs';
 import { lstat, stat } from 'node:fs/promises';
+import { createWindowsAclInspector } from './windows-acl.mjs';
 
-export function createReviewDefaults() {
+export function createReviewDefaults({ platform = process.platform } = {}) {
   return {
     write: process.stdout.write.bind(process.stdout),
     readFile: fs.promises.readFile,
@@ -19,7 +20,7 @@ export function createReviewDefaults() {
     createClient: createOpenAI,
     register: registerSignals,
     inspectFile: lstat,
-    inspectPermissions: stat,
-    platform: process.platform,
+    inspectPermissions: platform === 'win32' ? createWindowsAclInspector() : stat,
+    platform,
   };
 }

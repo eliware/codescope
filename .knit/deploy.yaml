@@ -5,6 +5,6 @@ on:
       - target: dev
         cwd: /opt/codescope
         commands:
-          - git pull --ff-only
+          - git pull --ff-only origin main
           - npm ci
           - npm test

@@ -105,7 +105,7 @@ test('handles permission and inspection failures with context', async () => {
       },
       inspectPermissions: async () => ({ mode: 0 }),
     }),
-  ).resolves.toBeDefined();
+  ).rejects.toThrow(/Unable to verify after it appeared/);
   await expect(
     loadReviewEnvironment({ ...defaults, inspectPermissions: async () => ({ mode: 0 }) }),
   ).resolves.toBeDefined();

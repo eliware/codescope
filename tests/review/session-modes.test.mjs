@@ -9,7 +9,8 @@ test('writes and returns dry-run results', async () => {
     write: async (value) => writes.push(value),
     usage: false,
   });
-  expect(result.estimated_input_tokens).toBe(3);
+  expect(result.kind).toBe('dry-run');
+  expect(result.output.estimated_input_tokens).toBe(3);
   expect(writes).toHaveLength(1);
 });
 
@@ -25,6 +26,7 @@ test('returns provider plain-text output for the prompt path', async () => {
   });
   writes.push(session.output);
   expect(session.providerResponse).toBe(providerResponse);
-  expect(session.result).toBe('{"answer":"ok"}');
+  expect(session.kind).toBe('prompt');
+  expect(session.output).toBe('{"answer":"ok"}');
   expect(writes).toEqual(['{"answer":"ok"}']);
 });

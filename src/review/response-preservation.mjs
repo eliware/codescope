@@ -2,11 +2,18 @@ import { redactTestOutput } from './redaction.mjs';
 import { readNumericUsage, readStringProperty } from './response-accessors.mjs';
 
 function readFunctionCallArguments(response) {
+  if (!Array.isArray(response?.output)) return undefined;
+  const calls = [];
+  for (const item of response.output) {
+    try {
+      if (item?.type !== 'function_call') continue;
+      calls.push({ name: item.name, arguments: item.arguments });
+    } catch {
+      // Preserve unaffected calls when one provider item is malformed.
+    }
+  }
   try {
-    const calls = Array.isArray(response?.output) && response.output
-      ?.filter((item) => item?.type === 'function_call')
-      .map(({ name, arguments: args }) => ({ name, arguments: args }));
-    return calls?.length ? redactTestOutput(JSON.stringify(calls)) : undefined;
+    return calls.length ? redactTestOutput(JSON.stringify(calls)) : undefined;
   } catch {
     return undefined;
   }

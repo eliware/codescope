@@ -1,0 +1,35 @@
+name: Publication
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      startsWith(github.event.workflow_run.head_branch, 'v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          registry-url: https://registry.npmjs.org
+      - name: Verify release tag
+        run: >-
+          node -e "const expected = 'v' + JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version; const tags = require('node:child_process').execFileSync('git', ['tag', '--points-at', 'HEAD'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean); if (!tags.includes(expected)) throw new Error('Release tag must match package.json version: ' + expected)"
+      - name: Publish to npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

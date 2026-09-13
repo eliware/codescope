@@ -8,4 +8,6 @@ test('creates the review collaborator defaults', () => {
   expect(typeof defaults.register).toBe('function');
   expect(typeof defaults.inspectFile).toBe('function');
   expect(typeof defaults.inspectPermissions).toBe('function');
+  expect(typeof createReviewDefaults({ platform: 'win32' }).inspectPermissions).toBe('function');
+  expect(typeof createReviewDefaults({ platform: 'linux' }).inspectPermissions).toBe('function');
 });

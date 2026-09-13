@@ -30,14 +30,14 @@ export async function describeOtherFiles(
       }
       const data = await readFileContents(filePath);
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
-      const actualAdditionalBytes = Math.max(0, bytes.byteLength - reservedBytes);
-      if (totalBytes + actualAdditionalBytes > MAX_OTHER_FILE_BYTES) {
+      const actualTotalBytes = totalBytes - reservedBytes + bytes.byteLength;
+      if (actualTotalBytes > MAX_OTHER_FILE_BYTES) {
         entries.push(
           `${relativePath} | omitted | ${bytes.byteLength} bytes | aggregate metadata budget exceeded`,
         );
         continue;
       }
-      totalBytes += actualAdditionalBytes;
+      totalBytes = actualTotalBytes;
       entries.push(formatOtherFile(relativePath, bytes));
     }
   };

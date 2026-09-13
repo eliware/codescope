@@ -11,7 +11,7 @@ test('runs a plain-text provider session and writes the result', async () => {
     usage: false,
     plainText: 'review',
   });
-  expect(result).toBe('{"verdict":"pass"}');
+  expect(result.output).toBe('{"verdict":"pass"}');
   expect(writes[0]).toBe('{"verdict":"pass"}');
   expect(writes).toHaveLength(1);
 });
@@ -41,7 +41,7 @@ test('parses a normal review tool response', async () => {
     dryRun: false,
     usage: false,
   });
-  expect(result).toBe('{"verdict":"pass","issues":{}}');
+  expect(result.output).toBe('{"verdict":"pass","issues":{}}');
 });
 
 test('preserves malformed tool arguments as a blocked raw response', async () => {
@@ -59,7 +59,7 @@ test('preserves malformed tool arguments as a blocked raw response', async () =>
     dryRun: false,
     usage: false,
   });
-  expect(result).toBe('{');
+  expect(result.output).toBe('{');
 });
 
 test('preserves an existing blocked verdict', async () => {
@@ -83,7 +83,7 @@ test('preserves an existing blocked verdict', async () => {
     dryRun: false,
     usage: false,
   });
-  expect(result).toBe('{"verdict":"block","issues":{}}');
+  expect(result.output).toBe('{"verdict":"block","issues":{}}');
 });
 
 test('returns plain JSON without usage when usage output is disabled', async () => {
@@ -97,7 +97,7 @@ test('returns plain JSON without usage when usage output is disabled', async () 
       usage: false,
       plainText: 'summarize',
     }),
-  ).resolves.toBe('{"ok":true}');
+  ).resolves.toMatchObject({ kind: 'prompt', output: '{"ok":true}' });
 });
 
 test('preserves an untyped output write failure', async () => {
@@ -134,20 +134,23 @@ test('includes usage without test execution evidence', async () => {
     plainText: 'review',
     usage: true,
   };
-  await expect(runReviewSession(base)).resolves.toBe('{"verdict":"pass"}');
+  await expect(runReviewSession(base)).resolves.toMatchObject({
+    kind: 'prompt',
+    output: '{"verdict":"pass"}',
+  });
   await expect(
     runReviewSession({
       ...base,
       client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
     }),
-  ).resolves.toBe('{"verdict":"pass"}');
+  ).resolves.toMatchObject({ kind: 'prompt', output: '{"verdict":"pass"}' });
   await expect(
     runReviewSession({
       ...base,
       client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
       usage: false,
     }),
-  ).resolves.toBe('{"verdict":"pass"}');
+  ).resolves.toMatchObject({ kind: 'prompt', output: '{"verdict":"pass"}' });
 });
 
 test('runs dry-run and preserves provider failures', async () => {
@@ -160,7 +163,7 @@ test('runs dry-run and preserves provider failures', async () => {
       dryRun: true,
       usage: false,
     }),
-  ).resolves.toMatchObject({ estimated_input_tokens: 1 });
+  ).resolves.toMatchObject({ output: { estimated_input_tokens: 1 } });
   const failure = Object.assign(new Error('provider down'), { code: 'API' });
   await expect(
     runReviewSession({

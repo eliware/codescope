@@ -16,8 +16,10 @@ CI workflow.
 
 ## Unexpected provider output
 
-CodeScope preserves valid JSON and uses best-effort formatting for malformed
-provider output so the result is not lost. Use `--usage` when investigating
-token or cost behavior, and rerun only when a fresh assessment is needed.
+CodeScope preserves the provider response text unchanged. It does not parse or
+format that response. If the provider response is malformed or unavailable,
+CodeScope reports the provider failure and preserves any safe diagnostic
+summary. Use `--usage` when investigating token or cost behavior, and rerun
+only when a fresh assessment is needed.
 
 For support, use the issue tracker linked from the root README.
