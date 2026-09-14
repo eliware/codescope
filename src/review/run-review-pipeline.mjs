@@ -20,7 +20,6 @@ export async function runReviewPipeline(cwd, options) {
     ({ client } = await prepareReview({
       envFile: options.envFile,
       readFile: options.readFile,
-      readEnvFile: options.readEnvFile,
       openEnvFile: options.openEnvFile,
       inspectFile: options.inspectFile,
       createClient: options.createClient,

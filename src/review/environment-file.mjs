@@ -28,6 +28,8 @@ export async function readReviewEnvironmentFile({
   }
 
   let handle;
+  let reportedError;
+  let envText;
   try {
     if (typeof openEnvFile !== 'function')
       throw new Error('a stable environment-file opener is required');
@@ -38,12 +40,21 @@ export async function readReviewEnvironmentFile({
     const openedIdentity = fileIdentity(envFile, openedMetadata);
     if (initialIdentity !== openedIdentity)
       throw new Error(`${envFile} was replaced while it was being opened`);
-    const envText = await handle.readFile('utf8');
-    onFileRead?.();
-    return envText;
+    envText = await handle.readFile('utf8');
   } catch (cause) {
-    throw inspectionError(envFile, 'Unable to securely read', cause);
-  } finally {
-    await handle?.close().catch(() => {});
+    reportedError = inspectionError(envFile, 'Unable to securely read', cause);
   }
+  let closeError;
+  try {
+    await handle?.close();
+  } catch (cause) {
+    closeError = cause;
+  }
+  if (reportedError) {
+    if (closeError) reportedError.closeError = closeError;
+    throw reportedError;
+  }
+  if (closeError) throw inspectionError(envFile, 'Unable to close securely', closeError);
+  onFileRead?.();
+  return envText;
 }

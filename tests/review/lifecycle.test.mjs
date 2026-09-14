@@ -33,7 +33,6 @@ const response = {
 const base = (overrides = {}) => ({
   prompt,
   combine: async () => 'source',
-  readEnvFile: async () => 'OPENAI_API_TOKEN=test-token',
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   platform: 'linux',
   openEnvFile: async () => ({
@@ -135,7 +134,6 @@ test('preserves setup fallback write failures as metadata', async () => {
     runReview(
       'C:/repo',
       base({
-        readEnvFile: async () => '',
         write: async () => {
           throw new Error('fallback disk full');
         },

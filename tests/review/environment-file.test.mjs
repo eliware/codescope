@@ -13,7 +13,6 @@ test('reads a supplied environment file', async () => {
     readReviewEnvironmentFile({
       envFile: 'file',
       readFile: () => {},
-      readEnvFile: async () => 'x',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       openEnvFile: openWith('x'),
     }),
@@ -35,7 +34,6 @@ test('rejects incomplete file inspection metadata', async () => {
     readReviewEnvironmentFile({
       envFile: 'file',
       inspectFile: async () => ({}),
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
     }),
   ).rejects.toThrow(/symbolic-link metadata/);
 });
@@ -66,7 +64,6 @@ test('preserves a default file that is absent before reading', async () => {
     readReviewEnvironmentFile({
       envFile: defaultEnvFile(),
       inspectFile: async () => { throw missing; },
-      readEnvFile: async () => { throw missing; },
     }),
   ).resolves.toBe('');
 });
@@ -125,27 +122,40 @@ test('rejects an existing file without stable identity metadata', async () => {
     readReviewEnvironmentFile({
       envFile: 'file',
       inspectFile: async () => ({ isSymbolicLink: () => false }),
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
     }),
   ).rejects.toThrow(/stable file identity/);
 });
 
-test('reads an existing file through one stable opened handle', async () => {
+test('rejects a handle that fails during cleanup', async () => {
   let closed = false;
   const metadata = { dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true };
   await expect(
     readReviewEnvironmentFile({
       envFile: 'file',
       inspectFile: async () => metadata,
-      readEnvFile: async () => { throw new Error('path read was not allowed'); },
       openEnvFile: async () => ({
         stat: async () => metadata,
         readFile: async () => 'OPENAI_API_TOKEN=stable',
         close: async () => { closed = true; throw new Error('close failed'); },
       }),
     }),
-  ).resolves.toBe('OPENAI_API_TOKEN=stable');
+  ).rejects.toThrow(/Unable to close securely/);
   expect(closed).toBe(true);
+});
+
+test('preserves cleanup failure metadata when reading already failed', async () => {
+  const error = new Error('read failed');
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+        readFile: async () => { throw error; },
+        close: async () => { throw new Error('close failed'); },
+      }),
+    }),
+  ).rejects.toMatchObject({ cause: error, closeError: { message: 'close failed' } });
 });
 
 test('rejects an opened handle whose identity differs from the initial inspection', async () => {

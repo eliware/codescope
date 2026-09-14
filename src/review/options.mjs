@@ -8,7 +8,6 @@ export function validateReviewOptions(
     dryRun,
     write,
     readFile,
-    readEnvFile,
     openEnvFile,
     combine,
     createClient,
@@ -29,7 +28,6 @@ export function validateReviewOptions(
   for (const [name, value] of Object.entries({
     write,
     readFile,
-    readEnvFile,
     combine,
     createClient,
     register,

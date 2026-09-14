@@ -6,7 +6,6 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
   const result = await runReviewPipeline('repo', {
     envFile: 'ignored',
     readFile: async () => 'OPENAI_API_TOKEN=token',
-    readEnvFile: async () => 'OPENAI_API_TOKEN=token',
     inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
     platform: 'win32',
     createClient: () => ({
@@ -75,7 +74,6 @@ test('writes fallback output when request construction fails', async () => {
     runReviewPipeline('repo', {
       combine: async () => 'source',
       readFile: async () => 'OPENAI_API_TOKEN=token',
-      readEnvFile: async () => 'OPENAI_API_TOKEN=token',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       openEnvFile: async () => ({
         stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),

@@ -4,7 +4,6 @@ import { defaultEnvFile } from '../../src/review/config.mjs';
 const base = {
   envFile: 'custom.env',
   readFile: async () => 'OPENAI_API_TOKEN=token',
-  readEnvFile: async () => 'OPENAI_API_TOKEN=token',
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   openEnvFile: async () => ({
     stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
@@ -113,9 +112,8 @@ test('does not expose unrelated process variables to review configuration', asyn
   }
 });
 
-test('uses the stable opener when the regular file reader is omitted', async () => {
-  const readFile = async () => 'OPENAI_API_TOKEN=token';
-  await expect(loadReviewEnvironment({ ...base, readFile, readEnvFile: undefined })).resolves.toMatchObject({
+test('uses the stable opener for configuration text', async () => {
+  await expect(loadReviewEnvironment({ ...base })).resolves.toMatchObject({
     OPENAI_API_TOKEN: 'token',
   });
 });

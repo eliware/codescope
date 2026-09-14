@@ -1,16 +1,14 @@
 import { resolveReviewOptions } from '../../src/review/resolve-options.mjs';
 
-test('merges defaults and derives the environment reader', () => {
+test('merges defaults and preserves the file reader', () => {
   const readFile = () => {};
   const resolved = resolveReviewOptions('repo', { readFile });
   expect(resolved.readFile).toBe(readFile);
-  expect(resolved.readEnvFile).toBe(readFile);
 });
 
-test('preserves an explicitly supplied environment reader', () => {
+test('preserves an explicitly supplied file reader', () => {
   const readFile = () => {};
-  const readEnvFile = () => {};
-  expect(resolveReviewOptions('repo', { readFile, readEnvFile }).readEnvFile).toBe(readEnvFile);
+  expect(resolveReviewOptions('repo', { readFile }).readFile).toBe(readFile);
 });
 
 test('validates the resolved options before returning them', () => {

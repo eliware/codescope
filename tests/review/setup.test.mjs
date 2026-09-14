@@ -11,19 +11,16 @@ test('resolves a trimmed token from injected environment input', async () => {
     resolveReviewSetup({
       envFile: 'ignored',
       readFile: async () => 'OPENAI_API_TOKEN=ignored',
-      readEnvFile: async () => 'OPENAI_API_TOKEN=  token  ',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       openEnvFile,
     }),
   ).resolves.toMatchObject({ token: 'token' });
 });
 
-test('uses readFile when no separate environment reader is supplied', async () => {
-  const readFile = async () => 'OPENAI_API_TOKEN=token';
+test('uses the configured opener for environment text', async () => {
   await expect(
     resolveReviewSetup({
       envFile: 'ignored',
-      readFile,
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       openEnvFile,
     }),

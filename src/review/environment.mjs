@@ -4,14 +4,12 @@ import { readReviewEnvironmentFile } from './environment-file.mjs';
 
 export async function loadReviewEnvironment({
   envFile,
-  readFile,
   openEnvFile,
   inspectFile,
   environment,
 }) {
   const envText = await readReviewEnvironmentFile({
     envFile,
-    readFile,
     openEnvFile,
     inspectFile,
   });
