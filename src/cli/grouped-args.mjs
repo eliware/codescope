@@ -4,7 +4,6 @@ import { parseCommandOptions, parseOptionValues } from './option-values.mjs';
 export function parseGroupedArgs(mode, tokens) {
   const usage = 'Usage: codescope review|suggest <profile> [options]';
   const values = parseOptionValues(tokens);
-  if (tokens[0] === '--dry-run') throw new Error('Profile must precede options');
   const [profile, ...profileTokens] = values.remaining;
   if (!profile) throw new Error(usage);
   if (!PROFILE_NAMES.includes(profile)) throw new Error(`Unknown command profile: ${profile}`);

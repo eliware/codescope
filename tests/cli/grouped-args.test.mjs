@@ -15,7 +15,10 @@ test('parses grouped review and suggestion commands', () => {
 
 test('rejects invalid grouped command shapes', () => {
   expect(() => parseGroupedArgs('review', [])).toThrow(/Usage/);
-  expect(() => parseGroupedArgs('review', ['--dry-run', 'all'])).toThrow(/Profile must precede/);
+  expect(parseGroupedArgs('review', ['--dry-run', 'all'])).toMatchObject({
+    command: 'analyze-all',
+    dryRun: true,
+  });
   expect(() => parseGroupedArgs('review', ['missing'])).toThrow(/Unknown command profile/);
   expect(() => parseGroupedArgs('review', ['new-features'])).toThrow(/suggestion-only/);
   expect(() => parseGroupedArgs('review', ['all', '--bad'])).toThrow(/Usage/);

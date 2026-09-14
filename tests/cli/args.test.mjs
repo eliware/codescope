@@ -39,7 +39,10 @@ test('parses direct profiles and shared options', () => {
 });
 
 test('rejects invalid command grammar', () => {
-  expect(() => parseArgs(['review', '--dry-run', 'all'])).toThrow(/Profile must precede/);
+  expect(parseArgs(['review', '--dry-run', 'all'])).toMatchObject({
+    command: 'analyze-all',
+    dryRun: true,
+  });
   expect(() => parseArgs(['review', 'missing'])).toThrow(/Unknown command profile/);
   expect(() => parseArgs(['review', 'new-features'])).toThrow(/suggestion-only/);
   expect(() => parseArgs(['unknown'])).toThrow(/Unknown command/);
