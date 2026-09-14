@@ -30,7 +30,7 @@ export function validateReviewOptions(
     throw new Error('runReview maxSourceChars must be a positive integer or Infinity');
   if (model !== undefined && (typeof model !== 'string' || !model.trim()))
     throw new Error('runReview option model must be a non-empty string');
-  if (model !== undefined) validateModel(model);
+  if (model !== undefined) validateModel(model.trim());
   if (plainText !== undefined && (typeof plainText !== 'string' || !plainText.trim()))
     throw new Error('runReview option plainText must be a non-empty string');
   if (add !== undefined && (!Array.isArray(add) || !add.every((value) => typeof value === 'string' && value.trim())))

@@ -15,15 +15,17 @@ export async function combineJsonFiles(
     validateSymlinks = false,
     concurrency = 16,
     maxChars = Number.POSITIVE_INFINITY,
+    platform = process.platform,
   } = {},
 ) {
   const files = (await findFiles(root, '.json', { readDirectory })).filter(isIncludedJson);
-  const rootPath = path.resolve(root);
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  const rootPath = pathApi.resolve(root);
   const sections = await readBatches(files, {
     batchSize: getBatchSize(concurrency),
     maxChars,
     read: async (relativePath) => {
-      const contents = await readSourceFile(relativePath, path.resolve(rootPath, relativePath), {
+      const contents = await readSourceFile(relativePath, pathApi.resolve(rootPath, relativePath), {
         readFileContents,
         inspectFile,
         validateSymlinks,

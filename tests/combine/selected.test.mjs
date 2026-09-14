@@ -37,5 +37,17 @@ test('passes the remaining aggregate budget into selected source reads', async (
     readDirectory: async () => [],
     readFileContents: async (file) => file.endsWith('package.json') ? '{"name":"x"}' : 'source',
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+})).resolves.toContain('source');
+});
+
+test('does not charge an empty selected section for a separator', async () => {
+  await expect(combineSelectedFiles('/repo', {
+    implementation: true,
+    docs: true,
+    inventory: ['src/app.mjs'],
+    maxChars: 300,
+    readDirectory: async () => [],
+    readFileContents: async (file) => file.endsWith('package.json') ? '{"name":"x"}' : 'source',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   })).resolves.toContain('source');
 });

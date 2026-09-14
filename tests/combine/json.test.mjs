@@ -18,6 +18,10 @@ test('includes scoped JSON while excluding package locks and unrelated JSON', as
     expect(result).not.toContain('package-lock.json');
     expect(result).not.toContain('tmp/private.json');
     await expect(combineJsonFiles(root, { maxChars: 1000 })).resolves.toContain('root.json');
+    await expect(combineJsonFiles('repo', {
+      platform: 'linux',
+      readDirectory: async () => [],
+    })).resolves.toBe('');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

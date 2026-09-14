@@ -43,13 +43,17 @@ export async function combineConventionFiles(
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
   const { profiles, canonicalPaths, includeAll } = applicability;
-  const files = includeAll
+  const files = (includeAll
     ? discoveredFiles
     : discoveredFiles.filter((relativePath) => {
       const normalized = normalizeConventionPath(relativePath);
       return [...canonicalPaths.values()].some((canonicalPath) =>
         normalizeConventionPath(canonicalPath) === normalized,
       );
+    })).sort((left, right) => {
+      const a = normalizeConventionPath(left);
+      const b = normalizeConventionPath(right);
+      return a.localeCompare(b, 'en', { sensitivity: 'variant' });
     });
   const supplied = new Set(files.map(normalizeConventionPath));
   const missing = includeAll
