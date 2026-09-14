@@ -43,7 +43,7 @@ export async function readReviewEnvironmentFile({
 async function isAbsentEnvironmentFile(envFile, inspectFile) {
   try {
     const parent = await inspectFile(path.dirname(envFile));
-    return typeof parent.isDirectory !== 'function' || parent.isDirectory();
+    return typeof parent.isDirectory === 'function' && parent.isDirectory();
   } catch (cause) {
     if (cause?.code === 'ENOENT') return true;
     throw cause;

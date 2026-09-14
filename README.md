@@ -101,9 +101,8 @@ Configuration evidence is bounded to 100000 bytes and 200 lines per file. The re
 Review profiles use package metadata, implementation files, test files, and Markdown files. CodeScope never runs tests in the target repository and never includes test execution results in provider context. Repository owners and separate validation tooling own test execution.
 Evidence and request-construction failures also emit a safe incomplete result when possible.
 
-Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `--effort <value>` wherever scalar options are accepted to override the default reasoning effort (`none`). The same equals and separated forms are supported for `--model`.
-Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
-The separated equivalent is `--model gpt-5.6-luna`.
+Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `--effort <value>` before or after a direct or grouped profile command to override the default reasoning effort (`none`). The same forms are supported for `--model`; after a prompt delimiter, use the equals form only.
+Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` or `--model gpt-5.6-luna` to override the default model.
 
 
 ## Security and operations

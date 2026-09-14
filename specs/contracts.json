@@ -117,7 +117,7 @@
         "inputs": "Command-line tokens including repeatable -a/--add, --effort, and --model options.",
         "outputs": "A normalized command representation preserving applicable additions in order.",
         "errors": ["Missing option values and unsupported values produce usage failures."],
-        "ordering": ["Added strings retain command-line order and are appended at the final user-message boundary."],
+        "ordering": ["Added strings retain command-line order and are appended verbatim inside an explicitly delimited untrusted-data section at the final user-message boundary."],
         "invariants": ["Bare, help, and version commands do not apply additions."],
         "boundaries": { "owns": ["CodeScope command options"], "doesNotOwn": ["Provider behavior"] }
       },

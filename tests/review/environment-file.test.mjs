@@ -108,7 +108,7 @@ test('does not open a file that appears after the initial missing inspection', a
       inspectFile: async () => {
         inspections += 1;
         if (inspections === 1) throw missing;
-        return { isSymbolicLink: () => false };
+        return { isDirectory: () => true };
       },
       openEnvFile: openWith(),
     }),
