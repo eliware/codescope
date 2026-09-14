@@ -10,7 +10,7 @@ export async function runProfileCommand(command, options) {
     effort,
     model,
     dryRun,
-    usage,
+    usage = false,
     cwd,
     write,
     review,

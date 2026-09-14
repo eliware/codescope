@@ -58,5 +58,5 @@ function resolveConfigPath(root, relativePath) {
   const normalized = path.posix.normalize(portable);
   if (normalized === '..' || normalized.startsWith('../'))
     throw new Error(`Configuration path escapes review root: ${relativePath}`);
-  return path.resolve(root, portable);
+  return path.resolve(root, normalized);
 }

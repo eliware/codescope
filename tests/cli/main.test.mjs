@@ -76,6 +76,15 @@ test('main handles metadata options without review work', async () => {
   expect(called).toBe(false);
 });
 
+test('main preserves leading usage for direct and grouped profile commands', async () => {
+  const received = [];
+  const review = async (_cwd, options) => received.push(options);
+  await expect(main(['--usage', 'all'], { review, write: () => {} })).resolves.toBe(0);
+  await expect(main(['--usage', 'review', 'all'], { review, write: () => {} })).resolves.toBe(0);
+  expect(received).toHaveLength(2);
+  expect(received.every(({ usage }) => usage)).toBe(true);
+});
+
 test('main returns mapped status for dry runs and provider failures', async () => {
   await expect(
     main(['all', '--dry-run'], { review: async () => ({}), output: () => {} }),
