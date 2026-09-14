@@ -13,9 +13,7 @@ export function validateReviewOptions(
     combine,
     createClient,
     register,
-    validatePermissions,
     inspectFile,
-    inspectPermissions,
     platform,
     envFile,
     prompt,
@@ -26,7 +24,7 @@ export function validateReviewOptions(
   if (!Number.isFinite(maxSourceChars) && maxSourceChars !== Infinity)
     throw new Error('runReview maxSourceChars must be finite or Infinity');
   if (maxSourceChars < 1) throw new Error('runReview maxSourceChars must be positive');
-  for (const [name, value] of Object.entries({ usage, dryRun, validatePermissions }))
+  for (const [name, value] of Object.entries({ usage, dryRun }))
     if (value !== undefined && typeof value !== 'boolean')
       throw new Error(`runReview option ${name} must be a boolean`);
   for (const [name, value] of Object.entries({
@@ -40,12 +38,10 @@ export function validateReviewOptions(
     if (typeof value !== 'function') throw new Error(`runReview option ${name} must be a function`);
   if (openEnvFile !== undefined && typeof openEnvFile !== 'function')
     throw new Error('runReview option openEnvFile must be a function');
-  for (const [name, value] of Object.entries({ inspectFile, inspectPermissions }))
+  for (const [name, value] of Object.entries({ inspectFile }))
     if (value !== undefined && typeof value !== 'function')
       throw new Error(`runReview option ${name} must be a function`);
   if (prompt !== undefined) validatePromptShape(prompt);
-  if (validatePermissions !== false && typeof inspectPermissions !== 'function')
-    throw new Error('runReview option inspectPermissions must be a function when permission validation is enabled');
   if (envFile !== undefined && (typeof envFile !== 'string' || !envFile))
     throw new Error('runReview option envFile must be a non-empty string');
   if (platform !== undefined && !['linux', 'darwin', 'freebsd', 'win32'].includes(platform))

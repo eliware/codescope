@@ -7,9 +7,6 @@ test('resolves a trimmed token from injected environment input', async () => {
       readFile: async () => 'OPENAI_API_TOKEN=ignored',
       readEnvFile: async () => 'OPENAI_API_TOKEN=  token  ',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      inspectPermissions: async () => ({}),
-      platform: 'win32',
-      validatePermissions: false,
     }),
   ).resolves.toMatchObject({ token: 'token' });
 });
@@ -21,8 +18,6 @@ test('uses readFile when no separate environment reader is supplied', async () =
       envFile: 'ignored',
       readFile,
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      inspectPermissions: async () => ({ aclRestricted: true }),
-      platform: 'win32',
     }),
   ).resolves.toMatchObject({ token: 'token' });
 });
@@ -33,8 +28,6 @@ test('rejects a missing token', async () => {
       envFile: 'ignored',
       readFile: async () => '',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      inspectPermissions: async () => ({ aclRestricted: true }),
-      platform: 'win32',
     }),
   ).rejects.toThrow(/OPENAI_API_TOKEN/);
 });

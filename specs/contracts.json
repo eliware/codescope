@@ -408,45 +408,38 @@
     {
       "id": "C-19.9",
       "title": "Configuration and credential safety",
-      "scope": "Credential loading, environment-file safety, Unix modes, and Windows ACL restrictions.",
+      "scope": "Credential loading and environment-file safety.",
       "directiveIds": ["E-19", "A-19.2"],
       "contract": {
         "purpose": "Define configuration precedence and credential-handling safety.",
-        "inputs": "Process environment, ~/.codescope, platform permission evidence, and injected filesystem seams.",
+        "inputs": "Process environment, ~/.codescope, and injected filesystem seams.",
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
-        "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
+        "errors": ["Symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Permission validation is enabled by default and is disabled only by an explicit false option."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
-        "On Linux, macOS, and FreeBSD, require stat mode evidence and reject group/world-readable configuration files.",
-        "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs, pass only the required process variables and target path to the child rather than the full credential-bearing environment, and require every parsed DACL ACE to be an allow ACE for only the current user SID.",
         "Read an existing configuration file through one opened handle after validating its identity; default the environment reader to the configured file reader for injected seams, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [
         "Do not treat a missing or whitespace-only process token as authoritative over a nonblank file token.",
-        "Do not parse localized human-readable ACL output or accept an unverified, malformed, or unknown-SID Windows ACL as restricted.",
-        "Do not silently accept a file that disappears, is replaced before secure opening, lacks stable identity evidence, or changes safety state during the permission check.",
+        "Do not silently accept a file that disappears, is replaced before secure opening, or lacks stable identity evidence.",
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [
         "../src/review/environment.mjs",
         "../src/review/environment-file.mjs",
         "../src/review/environment-file-safety.mjs",
-        "../src/review/environment-permissions.mjs",
-        "../src/review/windows-acl.mjs",
         "../src/review/dotenv-parser.mjs",
         "../src/review/config.mjs"
       ] },
       "verification": { "tests": [
         "../tests/review/environment.test.mjs",
         "../tests/review/environment-file.test.mjs",
-        "../tests/review/environment-permissions.test.mjs",
-        "../tests/review/windows-acl.test.mjs",
         "../tests/review/dotenv-parser.test.mjs",
         "../tests/review/config.test.mjs"
       ], "commands": [] }

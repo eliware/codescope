@@ -5,9 +5,6 @@ const setup = {
   readFile: async () => 'OPENAI_API_TOKEN=ignored',
   readEnvFile: async () => 'OPENAI_API_TOKEN= token ',
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-  inspectPermissions: async () => ({}),
-  platform: 'win32',
-  validatePermissions: false,
 };
 
 test('prepares the provider client from the resolved token', async () => {

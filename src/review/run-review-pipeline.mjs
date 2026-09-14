@@ -19,9 +19,6 @@ export async function runReviewPipeline(cwd, options) {
     readEnvFile: options.readEnvFile,
     openEnvFile: options.openEnvFile,
     inspectFile: options.inspectFile,
-    inspectPermissions: options.inspectPermissions,
-    platform: options.platform,
-    validatePermissions: options.validatePermissions,
     createClient: options.createClient,
   });
   const { request, controller } = createReviewSession({

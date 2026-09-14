@@ -7,10 +7,7 @@ export async function prepareReview({
   readEnvFile,
   openEnvFile,
   inspectFile,
-  inspectPermissions,
-  platform,
   createClient,
-  validatePermissions,
 }) {
   const { environment, token } = await resolveReviewSetup({
     envFile,
@@ -18,9 +15,6 @@ export async function prepareReview({
     readEnvFile,
     openEnvFile,
     inspectFile,
-    inspectPermissions,
-    platform,
-    validatePermissions,
   });
   return { environment, token, client: initializeReviewClient(createClient, token) };
 }

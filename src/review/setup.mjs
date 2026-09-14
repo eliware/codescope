@@ -6,9 +6,6 @@ export async function resolveReviewSetup({
   readEnvFile = readFile,
   openEnvFile,
   inspectFile,
-  inspectPermissions,
-  platform,
-  validatePermissions = true,
 }) {
   const environment = await loadReviewEnvironment({
     envFile,
@@ -16,9 +13,6 @@ export async function resolveReviewSetup({
     readEnvFile,
     openEnvFile,
     inspectFile,
-    inspectPermissions,
-    platform,
-    validatePermissions,
   });
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
