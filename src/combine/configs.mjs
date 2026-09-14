@@ -4,7 +4,7 @@ import { readBatches } from './batches.mjs';
 import { readFileUpToLimit } from './read-file-up-to-limit.mjs';
 
 const MAX_CONFIG_LINES = 200;
-const MAX_CONFIG_BYTES = 1_000_000;
+const MAX_CONFIG_BYTES = 100_000;
 
 export async function combineConfigFiles(
   root,

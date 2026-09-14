@@ -1,3 +1,5 @@
+import { serializeOutput } from './serialize-output.mjs';
+
 // Writers must report an explicit complete character count.
 function assertCompleteWrite(result, output) {
   if (result && typeof result === 'object' && 'written' in result) {
@@ -10,24 +12,9 @@ function assertCompleteWrite(result, output) {
   throw new Error('Writer returned an unsupported result; expected { written }');
 }
 
-function outputText(output) {
-  if (typeof output === 'string') return output;
-  try {
-    const serialized = JSON.stringify(output, (_key, value) => {
-      if (typeof value === 'bigint') return { type: 'bigint', value: value.toString() };
-      if (typeof value === 'symbol') return { type: 'symbol', value: String(value) };
-      if (typeof value === 'function') return { type: 'function', value: String(value) };
-      return value;
-    });
-    return serialized === undefined ? JSON.stringify({ type: typeof output }) : serialized;
-  } catch {
-    return JSON.stringify({ type: 'unserializable' });
-  }
-}
-
 export async function writeProviderResult(write, output, label = 'review') {
   try {
-    const text = outputText(output);
+    const text = typeof output === 'string' ? output : serializeOutput(output);
     const result = await write(text);
     assertCompleteWrite(result, text);
   } catch (cause) {
@@ -40,7 +27,7 @@ export async function writeProviderResult(write, output, label = 'review') {
 
 export async function writeFallbackResult(write, output) {
   try {
-    const text = outputText(output);
+    const text = typeof output === 'string' ? output : serializeOutput(output);
     const result = await write(text);
     assertCompleteWrite(result, text);
     return undefined;

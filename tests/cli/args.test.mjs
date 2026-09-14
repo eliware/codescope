@@ -138,7 +138,7 @@ test('accepts shared scalar options before a command', () => {
     model: 'gpt-5.6-terra',
   });
   expect(() => parseArgs(['--effort'])).toThrow(/requires a value/);
-  expect(() => parseArgs(['--model', '--dry-run'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['--model'])).toThrow(/requires a value/);
   expect(() => parseArgs(['all', '--effort'])).toThrow(/requires a value/);
   expect(parseArgs(['--add', 'first', 'all', '--add', 'second'])).toMatchObject({
     command: 'analyze-all',

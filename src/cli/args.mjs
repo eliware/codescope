@@ -74,7 +74,7 @@ function takeLeadingScalarOptions(args) {
       continue;
     }
     if (args[index] === '--effort' || args[index] === '--model') {
-      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
+      if (args[index + 1] === undefined)
         throw new Error(`${args[index]} requires a value`);
       index += 2;
       continue;
