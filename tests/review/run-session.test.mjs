@@ -124,6 +124,20 @@ test('preserves an untyped output write failure', async () => {
   ).rejects.toThrow(/output failed/);
 });
 
+test('preserves a received response when response selection fails', async () => {
+  const response = { output: [{ type: 'function_call', name: 'other', arguments: '{}' }] };
+  await expect(
+    runReviewSession({
+      client: { responses: { create: async () => response } },
+      request: { model: 'gpt-5.6-luna', tool_choice: { name: 'review' } },
+      signal: new AbortController().signal,
+      write: async (value) => ({ written: value.length }),
+      dryRun: false,
+      usage: false,
+    }),
+  ).rejects.toMatchObject({ result: { response: { response_error: expect.any(String) } } });
+});
+
 test('includes usage without test execution evidence', async () => {
   const base = {
     client: {

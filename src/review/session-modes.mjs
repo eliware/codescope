@@ -17,7 +17,13 @@ export async function runProviderSession({
   plainText,
 }) {
   const providerResponse = await requestProviderResponse(client, request, signal);
-  const output = responseText(providerResponse, request);
+  let output;
+  try {
+    output = responseText(providerResponse, request);
+  } catch (cause) {
+    cause.providerResponse = providerResponse;
+    throw cause;
+  }
   return createSessionResult(
     plainText === undefined ? 'review' : 'prompt',
     output,

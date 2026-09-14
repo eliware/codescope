@@ -29,6 +29,8 @@ export async function runReviewSession({
     await writeProviderResult(write, session.output, session.kind);
     return session;
   } catch (cause) {
+    providerResponse ??= cause.providerResponse;
+    providerResponseReceived ||= providerResponse !== undefined;
     return throwSessionFailure({ cause, providerResponse, providerResponseReceived, write });
   }
 }
