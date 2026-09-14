@@ -14,9 +14,10 @@ export function serializeResponseDiagnostic(response) {
     const serialized = JSON.stringify(response);
     if (typeof serialized !== 'string') return undefined;
     const diagnostic = redactDiagnostic(serialized);
+    const responseTruncated = diagnostic.truncated || diagnostic.text.length >= 500_000;
     return {
       response: diagnostic.text,
-      ...(diagnostic.truncated ? { response_truncated: true } : {}),
+      ...(responseTruncated ? { response_truncated: true } : {}),
     };
   } catch {
     return undefined;
