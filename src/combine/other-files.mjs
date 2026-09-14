@@ -1,13 +1,18 @@
 import path from 'node:path';
+import { lstat } from 'node:fs/promises';
 import { isIncludedContent, MAX_OTHER_FILE_BYTES } from './other-policy.mjs';
 import { formatOtherFile } from './other-metadata.mjs';
 import { readFileUpToLimit } from './read-file-up-to-limit.mjs';
+
+const defaultReadOtherFileContents = (filePath) =>
+  readFileUpToLimit(filePath, MAX_OTHER_FILE_BYTES);
 
 export async function describeOtherFiles(
   root,
   inventory,
   {
-    readOtherFileContents = (filePath) => readFileUpToLimit(filePath, MAX_OTHER_FILE_BYTES),
+    readOtherFileContents = defaultReadOtherFileContents,
+    inspectFile,
     concurrency = 8,
   } = {},
 ) {
@@ -21,6 +26,14 @@ export async function describeOtherFiles(
     while (next < paths.length) {
       const relativePath = paths[next++];
       const filePath = resolveInventoryPath(rootPath, relativePath);
+      const inspect =
+        inspectFile ?? (readOtherFileContents === defaultReadOtherFileContents ? lstat : undefined);
+      if (inspect) {
+        const metadata = await inspect(filePath);
+        if (metadata.isSymbolicLink())
+          throw new Error(`symlinked inventory files are not supported: ${relativePath}`);
+        if (!metadata.isFile()) throw new Error(`inventory path is not a regular file: ${relativePath}`);
+      }
       const result = await readOtherFileContents(filePath);
       if (
         !result ||

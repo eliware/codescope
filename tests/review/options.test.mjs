@@ -50,5 +50,8 @@ test('rejects invalid scalar and collaborator options', () => {
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(
     /finite/,
   );
+  expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: 1.5 })).toThrow(
+    /finite or Infinity/,
+  );
   expect(() => validateReviewOptions('', valid)).toThrow(/cwd/);
 });

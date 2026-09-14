@@ -1,4 +1,4 @@
-import { assertNotSymbolicLink, fileIdentity } from './environment-file-safety.mjs';
+import { assertNotSymbolicLink, assertRegularFile, fileIdentity } from './environment-file-safety.mjs';
 
 function inspectionError(envFile, message, cause) {
   return new Error(`${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -30,6 +30,7 @@ export async function readReviewEnvironmentFile({
       handle = await openEnvFile(envFile, 'r');
       const openedMetadata = await handle.stat();
       assertNotSymbolicLink(envFile, openedMetadata);
+      assertRegularFile(envFile, openedMetadata);
       const initialIdentity = fileIdentity(envFile, initialMetadata);
       const openedIdentity = fileIdentity(envFile, openedMetadata);
       if (initialIdentity !== openedIdentity)

@@ -52,3 +52,33 @@ test('returns an empty section when no text config is present', async () => {
 test('rejects missing inventory with default options', async () => {
   await expect(combineConfigFiles('repo')).rejects.toThrow();
 });
+
+test('reads configuration files in bounded batches while preserving inventory order', async () => {
+  let active = 0;
+  let maximum = 0;
+  const result = await combineConfigFiles('repo', {
+    inventory: ['.github/a.yml', '.github/b.yml', '.knit/c.yml'],
+    concurrency: 2,
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async (file) => {
+      active += 1;
+      maximum = Math.max(maximum, active);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      active -= 1;
+      return file.endsWith('a.yml') ? 'a' : file.endsWith('b.yml') ? 'b' : 'c';
+    },
+  });
+  expect(maximum).toBe(2);
+  expect(result.indexOf('===== .github/a.yml =====')).toBeLessThan(
+    result.indexOf('===== .github/b.yml ====='),
+  );
+  expect(result.indexOf('===== .github/b.yml =====')).toBeLessThan(
+    result.indexOf('===== .knit/c.yml ====='),
+  );
+});
+
+test('rejects invalid configuration concurrency', async () => {
+  await expect(
+    combineConfigFiles('repo', { inventory: ['.github/ci.yml'], concurrency: 0 }),
+  ).rejects.toThrow(/positive integer/);
+});

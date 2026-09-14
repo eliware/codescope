@@ -7,16 +7,17 @@ import { createIncompleteResult, createProviderFailure } from './failure.mjs';
 import { writeFallbackResult } from './output.mjs';
 
 export async function runReviewPipeline(cwd, options) {
-  const { combined } = await collectReviewContext({
-    cwd,
-    combine: options.combine,
-    readDirectory: options.readDirectory,
-    readFile: options.readFile,
-    maxSourceChars: options.maxSourceChars,
-    platform: options.platform,
-  });
+  let combined;
   let client;
   try {
+    ({ combined } = await collectReviewContext({
+      cwd,
+      combine: options.combine,
+      readDirectory: options.readDirectory,
+      readFile: options.readFile,
+      maxSourceChars: options.maxSourceChars,
+      platform: options.platform,
+    }));
     ({ client } = await prepareReview({
       envFile: options.envFile,
       readFile: options.readFile,

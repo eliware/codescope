@@ -112,7 +112,7 @@ test('rejects an existing file without stable identity metadata', async () => {
 
 test('reads an existing file through one stable opened handle', async () => {
   let closed = false;
-  const metadata = { dev: 1, ino: 2, isSymbolicLink: () => false };
+  const metadata = { dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true };
   await expect(
     readReviewEnvironmentFile({
       envFile: 'file',
@@ -135,13 +135,41 @@ test('rejects an opened handle whose identity differs from the initial inspectio
       envFile: 'file',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false }),
+        stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => 'unused',
         close: async () => { closed = true; },
       }),
     }),
   ).rejects.toThrow(/replaced while it was being opened/);
   expect(closed).toBe(true);
+});
+
+test('rejects an opened handle that is not a regular file', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => false }),
+        readFile: async () => 'unused',
+        close: async () => {},
+      }),
+    }),
+  ).rejects.toThrow(/regular file/);
+});
+
+test('rejects an opened handle without regular-file metadata', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+        readFile: async () => 'unused',
+        close: async () => {},
+      }),
+    }),
+  ).rejects.toThrow(/regular-file metadata/);
 });
 
 test('rejects absent identity metadata directly', () => {

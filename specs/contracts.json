@@ -126,6 +126,7 @@
         "Treat non-option tokens as free-form prompt text for codescope prompt; use -- when prompt text itself begins with a dash.",
         "Use the shared scalar option parser for effort, model, dry-run, and additions; prompt-specific delimiter partitioning is intentional grammar, not a second scalar option contract.",
         "Normalize direct and grouped scalar options through one scanner before profile-specific validation.",
+        "Accept supported scalar options before a direct or grouped command and merge them into the same normalized representation.",
         "Allow add options on profile commands including all, release, review profiles, suggestion profiles, and prompt.",
         "Accept add options on bare, help, and version commands without changing their output; retain accepted additions in normalized metadata so acceptance is not silent loss.",
         "Reject malformed option values with a usage error and keep supported effort and model values explicit."
@@ -256,6 +257,7 @@
         "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests.",
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
         "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
+        "Read configuration files in bounded batches while preserving inventory order.",
         "Validate configuration inventory entries as regular non-symlink files before reading them.",
         "Validate inventory paths remain within the canonical review root before reading remaining-file metadata.",
         "Read no more than one byte beyond the 100000-byte per-file limit, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
@@ -381,7 +383,7 @@
         "Preserve independently readable safe diagnostic fields when a provider response cannot be serialized, serialize fallback result objects as JSON, and mark capped serialized diagnostics with response_truncated.",
         "Report provider transport failures and output-write failures with their original error context.",
         "Require writers to return an object with an exact written character count; stdout adapters intentionally discard Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
-        "Write a safe incomplete result when provider setup fails, and preserve a fallback-write failure as metadata on the original failure.",
+        "Write a safe incomplete result when evidence collection or provider setup fails, and preserve a fallback-write failure as metadata on the original failure.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [
@@ -431,7 +433,7 @@
       "dos": [
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
-        "Read an existing configuration file through one opened handle after validating its identity; default the environment reader to the configured file reader for injected seams, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
+        "Read an existing regular configuration file through one opened handle after validating its identity; default the environment reader to the configured file reader for injected seams, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [
@@ -468,7 +470,7 @@
         "boundaries": { "owns": ["Dry-run accounting"], "doesNotOwn": ["Provider billing"] }
       },
       "dos": [
-        "Support model selection and effort selection through the documented values.",
+        "Support model selection and effort selection through the documented values, and accept only positive integer finite source limits or Infinity.",
         "Use dry-run to estimate input tokens without running a model review.",
         "Include usage metadata and calculated cost only when requested.",
         "Normalize provider usage and use the selected model's pricing thresholds."

@@ -112,3 +112,26 @@ test('rejects inventory paths that escape the review root', async () => {
     }),
   ).rejects.toThrow(/must be strings/);
 });
+
+test('rejects symlinked inventory entries before reading them', async () => {
+  let read = false;
+  await expect(
+    describeOtherFiles('repo', ['notes.txt'], {
+      inspectFile: async () => ({ isSymbolicLink: () => true, isFile: () => false }),
+      readOtherFileContents: async () => {
+        read = true;
+        return { data: 'notes', truncated: false };
+      },
+    }),
+  ).rejects.toThrow(/symlinked inventory files/);
+  expect(read).toBe(false);
+});
+
+test('rejects non-file inventory entries before reading them', async () => {
+  await expect(
+    describeOtherFiles('repo', ['notes.txt'], {
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => false }),
+      readOtherFileContents: async () => ({ data: 'notes', truncated: false }),
+    }),
+  ).rejects.toThrow(/not a regular file/);
+});

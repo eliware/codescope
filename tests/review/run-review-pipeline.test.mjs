@@ -41,6 +41,7 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
 
 test('collects evidence before initializing the provider', async () => {
   let initialized = false;
+  const writes = [];
   await expect(
     runReviewPipeline('repo', {
       combine: async () => {
@@ -53,7 +54,12 @@ test('collects evidence before initializing the provider', async () => {
         initialized = true;
         return {};
       },
+      write: async (value) => {
+        writes.push(value);
+        return { written: value.length };
+      },
     }),
   ).rejects.toThrow('evidence failed');
   expect(initialized).toBe(false);
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
 });
