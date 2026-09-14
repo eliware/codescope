@@ -13,9 +13,9 @@ export async function combineSelectedFiles(
   const parts = [
     metadata.packageJson,
     metadata.conventions,
+    metadata.json,
     metadata.configs,
     await collectInventorySection(root, inventory, options),
-    metadata.json,
   ];
   if (implementation) parts.push(await combineCodeFiles(root, { ...options, noTests: true }));
   if (tests) parts.push(await combineCodeFiles(root, { ...options, testsOnly: true }));

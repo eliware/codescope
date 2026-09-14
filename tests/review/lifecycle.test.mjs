@@ -68,7 +68,10 @@ test('runs dry-run evidence without initializing the provider', async () => {
     base({
       dryRun: true,
       createClient: () => ({
-        responses: { inputTokens: { count: async () => ({ input_tokens: 1 }) } },
+        responses: {
+          create: async () => { throw new Error('dry-run must not create a review'); },
+          inputTokens: { count: async () => ({ input_tokens: 1 }) },
+        },
       }),
     }),
   );

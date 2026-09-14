@@ -30,14 +30,11 @@ export async function describeOtherFiles(
     while (next < paths.length) {
       const relativePath = paths[next++];
       const filePath = resolveInventoryPath(rootPath, relativePath);
-      const inspect =
-        inspectFile ?? (readOtherFileContents === defaultReadOtherFileContents ? lstat : undefined);
-      if (inspect) {
-        const metadata = await inspect(filePath);
-        if (metadata.isSymbolicLink())
-          throw new Error(`symlinked inventory files are not supported: ${relativePath}`);
-        if (!metadata.isFile()) throw new Error(`inventory path is not a regular file: ${relativePath}`);
-      }
+      const inspect = inspectFile ?? lstat;
+      const metadata = await inspect(filePath);
+      if (metadata.isSymbolicLink())
+        throw new Error(`symlinked inventory files are not supported: ${relativePath}`);
+      if (!metadata.isFile()) throw new Error(`inventory path is not a regular file: ${relativePath}`);
       const result = await readOtherFileContents(filePath);
       if (
         !result ||

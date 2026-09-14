@@ -1,5 +1,7 @@
 import { describeOtherFiles } from '../../src/combine/other-files.mjs';
 
+const inspectRegularFile = async () => ({ isSymbolicLink: () => false, isFile: () => true });
+
 test('describes unsupplied text and binary files while excluding supplied content', async () => {
   const files = new Map([
     ['notes.txt', 'a\nb'],
@@ -8,6 +10,7 @@ test('describes unsupplied text and binary files while excluding supplied conten
     ['README.md', 'docs'],
   ]);
   const result = await describeOtherFiles('repo', [...files.keys()], {
+    inspectFile: inspectRegularFile,
     readOtherFileContents: async (file) => ({ data: files.get(file.split(/[\\/]/u).at(-1)), truncated: false }),
   });
   expect(result).toEqual(['image.dat | binary | 3 bytes', 'notes.txt | text | 2 lines | 3 bytes']);
@@ -24,6 +27,7 @@ test('applies the metadata limit independently to each file', async () => {
     'repo',
     ['large-one.txt', 'large-two.txt'],
     {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: Buffer.alloc(100_001, 'x'), truncated: true }),
     },
   );
@@ -36,6 +40,7 @@ test('applies the metadata limit independently to each file', async () => {
 test('caps reported sample size for oversized injected results', async () => {
   await expect(
     describeOtherFiles('repo', ['large.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: Buffer.alloc(200_000, 'x'), truncated: true }),
     }),
   ).resolves.toEqual([
@@ -46,6 +51,7 @@ test('caps reported sample size for oversized injected results', async () => {
 test('checks actual bytes after reading files', async () => {
   const reads = [];
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
+    inspectFile: inspectRegularFile,
     readOtherFileContents: async (file) => {
       reads.push(file);
       return { data: file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x', truncated: false };
@@ -60,6 +66,7 @@ test('checks actual bytes after reading files', async () => {
 
 test('omits a file that grows beyond the per-file metadata limit', async () => {
   const result = await describeOtherFiles('repo', ['growing.txt', 'later.txt'], {
+    inspectFile: inspectRegularFile,
     readOtherFileContents: async (file) => ({
       data: file.endsWith('growing.txt') ? Buffer.alloc(100_001, 'x') : 'later',
       truncated: file.endsWith('growing.txt'),
@@ -71,6 +78,7 @@ test('omits a file that grows beyond the per-file metadata limit', async () => {
 
 test('allows multiple files when each is within the per-file limit', async () => {
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
+    inspectFile: inspectRegularFile,
     readOtherFileContents: async (file) => ({
       data: file.endsWith('first.txt') ? 'first' : 'second',
       truncated: false,
@@ -86,6 +94,7 @@ test('uses bounded metadata concurrency while preserving sorted output', async (
   let active = 0;
   let maximum = 0;
   const result = await describeOtherFiles('repo', ['b.txt', 'a.txt', 'c.txt'], {
+    inspectFile: inspectRegularFile,
     concurrency: 2,
     readOtherFileContents: async () => {
       active += 1;
@@ -101,10 +110,11 @@ test('uses bounded metadata concurrency while preserving sorted output', async (
 
 test('rejects an invalid bounded-reader result', async () => {
   await expect(
-    describeOtherFiles('repo', ['notes.txt'], { readOtherFileContents: async () => 'notes' }),
+    describeOtherFiles('repo', ['notes.txt'], { inspectFile: inspectRegularFile, readOtherFileContents: async () => 'notes' }),
   ).rejects.toThrow('must return { data, truncated }');
   await expect(
     describeOtherFiles('repo', ['notes.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: 'notes' }),
     }),
   ).rejects.toThrow('must return { data, truncated }');
@@ -118,6 +128,7 @@ test('rejects invalid metadata concurrency values', async () => {
 test('rejects inventory paths that escape the review root', async () => {
   await expect(
     describeOtherFiles('repo', ['../outside.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
     }),
   ).rejects.toThrow(/escapes review root/);
@@ -128,11 +139,13 @@ test('rejects inventory paths that escape the review root', async () => {
   ).rejects.toThrow(/must be strings/);
   await expect(
     describeOtherFiles('repo', ['C:\\outside.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
     }),
   ).rejects.toThrow(/escapes review root/);
   await expect(
     describeOtherFiles('repo', ['/outside.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
     }),
   ).rejects.toThrow(/escapes review root/);
@@ -142,6 +155,7 @@ test('normalizes inventory separators before resolving relative paths', async ()
   const readPaths = [];
   await expect(
     describeOtherFiles('repo', ['nested\\notes.txt'], {
+      inspectFile: inspectRegularFile,
       readOtherFileContents: async (file) => {
         readPaths.push(file);
         return { data: 'notes', truncated: false };
