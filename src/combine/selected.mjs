@@ -32,7 +32,7 @@ export async function combineSelectedFiles(
       ? normalizedOptions.maxChars - usedChars
       : Number.POSITIVE_INFINITY;
     const section = await options(remaining);
-    usedChars += section.length + Math.sign(usedChars);
+    usedChars = joinCombinedSections([...parts, ...selected, section], normalizedOptions.maxChars).length;
     return section;
   };
   const selected = [];

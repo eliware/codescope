@@ -3,14 +3,13 @@ import { parseOptionValues } from './option-values.mjs';
 import { parseGroupedArgs } from './grouped-args.mjs';
 import { parseProfileArgs } from './profile-args.mjs';
 import { parseMetaCommand } from './meta-args.mjs';
-import { scanOptionTokens } from './scan-options.mjs';
 
 export function parseArgs(args) {
   const values = parseOptionValues(args, { leadingOnly: true });
   const parsed = values.consumed > 0
     ? mergeLeadingOptions(parseCommandArgs(values.remaining), values)
     : parseCommandArgs(args);
-  return { ...parsed, add: scanOptionTokens(args).add };
+  return parsed;
 }
 
 function parseCommandArgs(args) {
@@ -37,7 +36,7 @@ function parseCommandArgs(args) {
 
 function mergeLeadingOptions(parsed, values) {
   if (parsed.command === 'help' || parsed.command === 'version')
-    return { ...parsed, add: [...values.add, ...parsed.add] };
+    return { ...parsed, add: values.add };
   if (values.effort !== undefined && parsed.effort !== undefined)
     throw new Error('Only one --effort option is allowed');
   if (values.model !== undefined && parsed.model !== undefined)
@@ -54,6 +53,6 @@ function mergeLeadingOptions(parsed, values) {
     model: values.model ?? parsed.model,
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
     usage: values.usageCount > 0 || parsed.usage || undefined,
-    add: [...values.add, ...parsed.add],
+    add: values.add,
   };
 }

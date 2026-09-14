@@ -1,5 +1,6 @@
 import process from 'node:process';
 import { validatePromptShape } from './prompt-shape.mjs';
+import { validateModel } from '../model-policy.mjs';
 
 export function validateReviewOptions(
   cwd,
@@ -29,6 +30,7 @@ export function validateReviewOptions(
     throw new Error('runReview maxSourceChars must be a positive integer or Infinity');
   if (model !== undefined && (typeof model !== 'string' || !model.trim()))
     throw new Error('runReview option model must be a non-empty string');
+  if (model !== undefined) validateModel(model);
   if (plainText !== undefined && (typeof plainText !== 'string' || !plainText.trim()))
     throw new Error('runReview option plainText must be a non-empty string');
   if (add !== undefined && (!Array.isArray(add) || !add.every((value) => typeof value === 'string' && value.trim())))

@@ -113,6 +113,14 @@ test('uses bounded metadata concurrency while preserving sorted output', async (
   expect(result.map((entry) => entry.split(' | ')[0])).toEqual(['a.txt', 'b.txt', 'c.txt']);
 });
 
+test('keeps equal normalized inventory paths deterministic', async () => {
+  const result = await describeOtherFiles('repo', ['same.txt', 'same.txt'], {
+    inspectFile: inspectRegularFile,
+    readOtherFileContents: async () => ({ data: 'same', truncated: false }),
+  });
+  expect(result).toHaveLength(2);
+});
+
 test('uses explicit Windows path semantics for Windows inventory roots', async () => {
   const result = await describeOtherFiles('C:\\repo', ['notes.txt'], {
     platform: 'win32',

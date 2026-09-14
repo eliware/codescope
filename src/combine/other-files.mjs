@@ -30,7 +30,7 @@ export async function describeOtherFiles(
       return relativePath;
     })
     .filter((relativePath) => !isIncludedContent(relativePath))
-    .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
+    .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
   const entries = Array.from({ length: paths.length });
   let next = 0;
   const worker = async () => {

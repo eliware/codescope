@@ -31,6 +31,14 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnl
       if (!leadingOnly) remaining.push(token);
     } else if (leadingOnly) {
       remaining.push(...tokens.slice(index));
+      for (let suffix = index; suffix < tokens.length; suffix += 1) {
+        if (tokens[suffix] === '-a' || tokens[suffix] === '--add') {
+          const value = tokens[++suffix];
+          if (value === undefined || !value.trim() || value.startsWith('-'))
+            throw new Error(`${tokens[suffix - 1]} requires a value`);
+          add.push(value);
+        }
+      }
       break;
     } else remaining.push(token);
   }

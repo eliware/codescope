@@ -5,12 +5,24 @@ import { collectInventorySection } from './inventory-section.mjs';
 
 export async function collectAllSections(root, options = {}) {
   const inventory = await findAllFiles(root, options);
-  const metadata = await collectMetadataSections(root, options, inventory);
-  const source = await collectSourceSections(root, options, inventory);
-  const other = await collectInventorySection(root, inventory, options);
+  const readFileContents = createReadCache(options.readFileContents);
+  const sharedOptions = { ...options, readFileContents };
+  const metadata = await collectMetadataSections(root, sharedOptions, inventory);
+  const source = await collectSourceSections(root, sharedOptions, inventory);
+  const other = await collectInventorySection(root, inventory, sharedOptions);
   return {
     ...metadata,
     ...source,
     other,
+  };
+}
+
+function createReadCache(readFileContents) {
+  if (!readFileContents) return undefined;
+  const cache = new Map();
+  return async (filePath, encoding) => {
+    const key = `${filePath}\u0000${encoding ?? ''}`;
+    if (!cache.has(key)) cache.set(key, readFileContents(filePath, encoding));
+    return cache.get(key);
   };
 }
