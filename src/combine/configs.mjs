@@ -8,7 +8,7 @@ export async function combineConfigFiles(
   root,
   { inventory, readFileContents = readFile, inspectFile, concurrency = 8 } = {},
 ) {
-  const configFiles = inventory.filter((relativePath) => {
+  const configFiles = inventory.map((relativePath) => relativePath.replaceAll('\\', '/')).filter((relativePath) => {
     const normalized = relativePath.toLowerCase();
     return normalized.startsWith('.github/') || normalized.startsWith('.knit/');
   });

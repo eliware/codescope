@@ -19,7 +19,6 @@ export async function runReviewPipeline(cwd, options) {
     }));
     ({ client } = await prepareReview({
       envFile: options.envFile,
-      readFile: options.readFile,
       openEnvFile: options.openEnvFile,
       inspectFile: options.inspectFile,
       createClient: options.createClient,

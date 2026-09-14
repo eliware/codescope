@@ -11,6 +11,7 @@ export async function combinePackageJson(root, options = {}) {
     if (options.validateSymlinks || readFileContents === readFile) {
       const metadata = await inspectFile(packagePath);
       if (metadata.isSymbolicLink()) throw new Error('symlinked package.json is not supported');
+      if (!metadata.isFile()) throw new Error('package.json is not a regular file');
     }
     contents = await readFileContents(packagePath, 'utf8');
   } catch (cause) {

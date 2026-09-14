@@ -9,5 +9,8 @@ export function validateScanMode(noTests, testsOnly) {
 }
 
 export function validateScanRootMetadata(metadata) {
+  if (!metadata || typeof metadata.isSymbolicLink !== 'function' || typeof metadata.isDirectory !== 'function')
+    throw new Error('scan root metadata must describe a directory and symbolic-link state');
   if (metadata.isSymbolicLink()) throw new Error('symlinked scan roots are not supported');
+  if (!metadata.isDirectory()) throw new Error('scan roots must be directories');
 }

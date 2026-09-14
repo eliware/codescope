@@ -33,7 +33,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
             rationale: { type: 'string' },
             ignore_example: {
               type: 'string',
-              description: 'A complete copy-pasteable // codescope ignore: ... comment.',
+              description: 'For a real suggestion, provide a complete copy-pasteable // codescope ignore: ... comment; for the no-suggestion sentinel, use an empty string.',
             },
           },
           required: ['location', 'suggestion', 'rationale', 'ignore_example'],

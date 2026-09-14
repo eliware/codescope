@@ -13,15 +13,17 @@ export async function loadReviewEnvironment({
     openEnvFile,
     inspectFile,
   });
-  const effectiveEnvironment = resolveTokenEnvironment(environment);
-  loadEnv(envText, effectiveEnvironment);
-  return effectiveEnvironment;
+  const fileEnvironment = {};
+  loadEnv(envText, fileEnvironment);
+  return resolveTokenEnvironment(environment, fileEnvironment);
 }
 
-function resolveTokenEnvironment(environment) {
+function resolveTokenEnvironment(environment, fileEnvironment) {
   const processToken = process.env.OPENAI_API_TOKEN;
   const injectedToken = environment?.OPENAI_API_TOKEN;
+  const fileToken = fileEnvironment.OPENAI_API_TOKEN;
   if (processToken?.trim()) return { OPENAI_API_TOKEN: processToken };
   if (injectedToken?.trim()) return { OPENAI_API_TOKEN: injectedToken };
+  if (fileToken?.trim()) return { OPENAI_API_TOKEN: fileToken };
   return {};
 }

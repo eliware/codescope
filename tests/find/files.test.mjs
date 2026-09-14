@@ -44,7 +44,7 @@ test('rejects a symlinked scan root', async () => {
   await expect(
     findFiles('fixture-root', '.mjs', {
       readDirectory: async () => [],
-      inspectRoot: async () => ({ isSymbolicLink: () => true }),
+       inspectRoot: async () => ({ isSymbolicLink: () => true, isDirectory: () => true }),
     }),
   ).rejects.toThrow('symlinked scan roots');
 });
@@ -53,7 +53,7 @@ test('inspects the scan root even with an injected directory reader', async () =
   const inspected = [];
   const inspectRoot = async (root) => {
     inspected.push(root);
-    return { isSymbolicLink: () => false };
+    return { isSymbolicLink: () => false, isDirectory: () => true };
   };
   await findFiles('/virtual-root', '.mjs', { readDirectory: async () => [], inspectRoot });
   expect(inspected).toEqual([path.resolve('/virtual-root')]);
@@ -190,7 +190,7 @@ test('findAllFiles exposes the unrestricted extension strategy', async () => {
   await expect(
     findAllFiles('/root', {
       readDirectory: async () => [],
-      inspectRoot: async () => ({ isSymbolicLink: () => false }),
+      inspectRoot: async () => ({ isSymbolicLink: () => false, isDirectory: () => true }),
     }),
   ).resolves.toEqual([]);
 });

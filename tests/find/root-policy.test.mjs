@@ -16,6 +16,8 @@ test('accepts native roots and rejects foreign Windows roots', () => {
 test('rejects contradictory scan modes and symlink roots', () => {
   expect(() => validateScanMode(false, false)).not.toThrow();
   expect(() => validateScanMode(true, true)).toThrow(/both/);
-  expect(() => validateScanRootMetadata({ isSymbolicLink: () => true })).toThrow(/symlinked/);
-  expect(() => validateScanRootMetadata({ isSymbolicLink: () => false })).not.toThrow();
+  expect(() => validateScanRootMetadata({ isSymbolicLink: () => true, isDirectory: () => true })).toThrow(/symlinked/);
+  expect(() => validateScanRootMetadata({ isSymbolicLink: () => false, isDirectory: () => true })).not.toThrow();
+  expect(() => validateScanRootMetadata({ isSymbolicLink: () => false, isDirectory: () => false })).toThrow(/directories/);
+  expect(() => validateScanRootMetadata({ isSymbolicLink: () => false })).toThrow(/metadata/);
 });
