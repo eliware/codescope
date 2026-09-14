@@ -56,7 +56,7 @@ node bin/codescope.mjs --help
 node bin/codescope.mjs --version
 ```
 
-For this development setup, create a live global npm link from the checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed.
+For this optional development-only setup, create a live global npm link from the already-installed checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed; package consumers should use the published-install commands above.
 
 ## Usage
 

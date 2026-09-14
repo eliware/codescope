@@ -4,7 +4,7 @@ export function isCodeExtension(extension) {
   return (
     ['.js', '.cjs', '.mjs', '.ts'].includes(extension) ||
     (Array.isArray(extension) &&
-      extension.some((value) => ['.js', '.cjs', '.mjs', '.ts'].includes(value)))
+      extension.some((value) => ['.js', '.cjs', '.mjs', '.ts'].includes(value.toLowerCase())))
   );
 }
 
@@ -12,7 +12,7 @@ export function matchesFile(name, extension, testsOnly, noTests) {
   const extensionMatches =
     extension === '' ||
     (Array.isArray(extension)
-      ? extension.some((value) => name.toLowerCase().endsWith(value))
+      ? extension.some((value) => name.toLowerCase().endsWith(value.toLowerCase()))
       : name.toLowerCase().endsWith(extension));
   if (!extensionMatches) return false;
   if (!isCodeExtension(extension)) return true;

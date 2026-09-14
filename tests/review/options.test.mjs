@@ -21,6 +21,9 @@ test('rejects invalid review options', () => {
   expect(() => validateReviewOptions('/repo', { ...valid, maxSourceChars: 0 })).toThrow(
     /maxSourceChars/,
   );
+  expect(() => validateReviewOptions('/repo', { ...valid, maxSourceChars: Number.NEGATIVE_INFINITY })).toThrow(
+    /positive integer or Infinity/,
+  );
   expect(() => validateReviewOptions('/repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('/repo', { ...valid, write: null })).toThrow(/write/);
   expect(() => validateReviewOptions('/repo', { ...valid, openEnvFile: null })).toThrow(/openEnvFile/);

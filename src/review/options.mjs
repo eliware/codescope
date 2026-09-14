@@ -23,7 +23,7 @@ export function validateReviewOptions(
 ) {
   if (typeof cwd !== 'string' || !cwd)
     throw new Error('runReview cwd must be a non-empty path string');
-  if (maxSourceChars !== Infinity && (!Number.isInteger(maxSourceChars) || maxSourceChars < 1))
+  if (maxSourceChars !== Infinity && (!Number.isFinite(maxSourceChars) || !Number.isInteger(maxSourceChars) || maxSourceChars < 1))
     throw new Error('runReview maxSourceChars must be a positive integer or Infinity');
   if (model !== undefined && (typeof model !== 'string' || !model.trim()))
     throw new Error('runReview option model must be a non-empty string');
