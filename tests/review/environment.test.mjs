@@ -42,13 +42,13 @@ test('process credentials remain authoritative over injected values', async () =
   }
 });
 
-test('blank process credentials do not suppress injected values', async () => {
+test('blank process credentials prefer the file token over injected values', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   process.env.OPENAI_API_TOKEN = '   ';
   try {
     await expect(
       loadReviewEnvironment({ ...base, environment: { OPENAI_API_TOKEN: 'injected-token' } }),
-    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'injected-token' });
+    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;
@@ -62,6 +62,25 @@ test('blank process credentials fall back to the file token', async () => {
     await expect(loadReviewEnvironment({ ...base, environment: {} })).resolves.toMatchObject({
       OPENAI_API_TOKEN: 'token',
     });
+  } finally {
+    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
+    else process.env.OPENAI_API_TOKEN = previous;
+  }
+});
+
+test('uses the injected token when process and file tokens are absent', async () => {
+  const previous = process.env.OPENAI_API_TOKEN;
+  delete process.env.OPENAI_API_TOKEN;
+  try {
+    await expect(loadReviewEnvironment({
+      ...base,
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+        readFile: async () => '',
+        close: async () => {},
+      }),
+      environment: { OPENAI_API_TOKEN: 'injected-token' },
+    })).resolves.toMatchObject({ OPENAI_API_TOKEN: 'injected-token' });
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;

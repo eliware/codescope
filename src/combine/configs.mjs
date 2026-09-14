@@ -31,7 +31,8 @@ export async function combineConfigFiles(
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
       if (bytes.includes(0)) return '';
       const text = bytes.toString('utf8');
-      const lines = text.replace(/(?:\r\n|\r|\n)$/u, '').split(/\r\n|\r|\n/u);
+      const lines = text.split(/\r\n|\r|\n/u);
+      while (lines.at(-1) === '') lines.pop();
       const truncated = lines.length > MAX_CONFIG_LINES;
       const visibleLines = lines.slice(0, MAX_CONFIG_LINES);
       const width = String(visibleLines.length).length;

@@ -23,7 +23,7 @@ function resolveTokenEnvironment(environment, fileEnvironment) {
   const injectedToken = environment?.OPENAI_API_TOKEN;
   const fileToken = fileEnvironment.OPENAI_API_TOKEN;
   if (processToken?.trim()) return { OPENAI_API_TOKEN: processToken };
-  if (injectedToken?.trim()) return { OPENAI_API_TOKEN: injectedToken };
   if (fileToken?.trim()) return { OPENAI_API_TOKEN: fileToken };
+  if (injectedToken?.trim()) return { OPENAI_API_TOKEN: injectedToken };
   return {};
 }

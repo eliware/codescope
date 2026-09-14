@@ -9,7 +9,9 @@ export function readStringProperty(value, property) {
 export function readNumericUsage(value) {
   try {
     return value?.usage && typeof value.usage === 'object'
-      ? Object.fromEntries(Object.entries(value.usage).filter(([, item]) => Number.isFinite(item)))
+      ? Object.fromEntries(
+          Object.entries(value.usage).filter(([, item]) => Number.isInteger(item) && item >= 0),
+        )
       : undefined;
   } catch {
     return undefined;
