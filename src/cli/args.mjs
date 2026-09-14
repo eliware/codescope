@@ -8,7 +8,7 @@ export function parseArgs(args) {
   const leading = takeLeadingScalarOptions(args);
   if (leading.options.length) {
     const values = parseOptionValues(leading.options);
-    return mergeLeadingOptions(parseCommandArgs(leading.remaining), values);
+    return mergeLeadingOptions(parseCommandArgs([...leading.remaining, ...values.remaining]), values);
   }
   return parseCommandArgs(args);
 }
@@ -57,7 +57,12 @@ function mergeLeadingOptions(parsed, values) {
 function takeLeadingScalarOptions(args) {
   let index = 0;
   while (index < args.length) {
-    if (args[index] === '--dry-run' || args[index].startsWith('--effort=') || args[index].startsWith('--model=')) {
+    if (
+      args[index] === '--dry-run' ||
+      args[index] === '--usage' ||
+      args[index].startsWith('--effort=') ||
+      args[index].startsWith('--model=')
+    ) {
       index += 1;
       continue;
     }
