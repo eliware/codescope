@@ -62,6 +62,20 @@ test('runs a normal review and writes the raw provider result unchanged', async 
   expect(writes[0]).toBe(result);
 });
 
+test('preserves Unicode provider output and counts JavaScript characters', async () => {
+  const writes = [];
+  const result = await runReview('C:/repo', base({
+    plainText: 'summarize',
+    createClient: () => ({ responses: { create: async () => ({ output_text: 'héllo 🌍' }) } }),
+    write: async (value) => {
+      writes.push(value);
+      return { written: value.length };
+    },
+  }));
+  expect(result).toBe('héllo 🌍');
+  expect(writes).toEqual(['héllo 🌍']);
+});
+
 test('runs dry-run evidence without initializing the provider', async () => {
   const result = await runReview(
     'C:/repo',

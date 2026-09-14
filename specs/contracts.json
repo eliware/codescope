@@ -255,7 +255,7 @@
         "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
       },
       "dos": [
-        "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests.",
+        "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests. Convention evidence uses a bounded inspect-then-read boundary and does not claim atomic path replacement protection.",
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
         "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
         "Read configuration files in bounded batches while preserving inventory order.",
