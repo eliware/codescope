@@ -15,3 +15,8 @@ test('safely reads throwing optional provider fields', () => {
   expect(readStringProperty(response, 'output_text')).toBeUndefined();
   expect(readNumericUsage(response)).toBeUndefined();
 });
+
+test('marks malformed numeric usage fields in safe diagnostics', () => {
+  expect(readNumericUsage({ usage: { input_tokens: 2, output_tokens: -1, note: 'bad' } }))
+    .toEqual({ input_tokens: 2, invalid_fields: true });
+});

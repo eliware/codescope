@@ -112,7 +112,7 @@ test('redacts output and preserves numeric usage from an unserializable response
 
   expect(result.response).toEqual({
     output_text: 'TOKEN=[REDACTED]',
-    usage: { input_tokens: 3, output_tokens: 2 },
+    usage: { input_tokens: 3, output_tokens: 2, invalid_fields: true },
     response_error: 'Provider response could not be serialized',
   });
 });

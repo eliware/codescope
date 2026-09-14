@@ -8,11 +8,13 @@ export function readStringProperty(value, property) {
 
 export function readNumericUsage(value) {
   try {
-    return value?.usage && typeof value.usage === 'object'
-      ? Object.fromEntries(
-          Object.entries(value.usage).filter(([, item]) => Number.isInteger(item) && item >= 0),
-        )
-      : undefined;
+    if (!value?.usage || typeof value.usage !== 'object') return undefined;
+    const entries = Object.entries(value.usage);
+    const valid = entries.filter(([, item]) => Number.isInteger(item) && item >= 0);
+    return Object.fromEntries([
+      ...valid,
+      ...(valid.length !== entries.length ? [['invalid_fields', true]] : []),
+    ]);
   } catch {
     return undefined;
   }

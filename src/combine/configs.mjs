@@ -49,6 +49,8 @@ export async function combineConfigFiles(
       if (typeof source !== 'string' && !Buffer.isBuffer(source))
         throw new Error('Configuration reader data must be text or bytes');
       const bytes = Buffer.isBuffer(source) ? source : Buffer.from(String(source));
+      if (bytes.byteLength > MAX_CONFIG_BYTES + 1)
+        throw new Error(`Configuration reader exceeded the ${MAX_CONFIG_BYTES + 1}-byte sample boundary`);
       if (bytes.includes(0)) return '';
       const text = bytes.toString('utf8');
       const lines = text.split(/\r\n|\r|\n/u);
