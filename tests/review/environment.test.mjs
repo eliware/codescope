@@ -16,39 +16,11 @@ test('loads environment values from the configured file', async () => {
   await expect(loadReviewEnvironment(base)).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
 });
 
-test('retains process environment credentials when an injected environment is empty', async () => {
+test('prefers a nonblank process credential over the configured file', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   process.env.OPENAI_API_TOKEN = 'process-token';
   try {
-    await expect(loadReviewEnvironment({ ...base, environment: {} })).resolves.toMatchObject({
-      OPENAI_API_TOKEN: 'process-token',
-    });
-  } finally {
-    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
-    else process.env.OPENAI_API_TOKEN = previous;
-  }
-});
-
-test('process credentials remain authoritative over injected values', async () => {
-  const previous = process.env.OPENAI_API_TOKEN;
-  process.env.OPENAI_API_TOKEN = 'process-token';
-  try {
-    await expect(
-      loadReviewEnvironment({ ...base, environment: { OPENAI_API_TOKEN: 'injected-token' } }),
-    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'process-token' });
-  } finally {
-    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
-    else process.env.OPENAI_API_TOKEN = previous;
-  }
-});
-
-test('blank process credentials prefer the file token over injected values', async () => {
-  const previous = process.env.OPENAI_API_TOKEN;
-  process.env.OPENAI_API_TOKEN = '   ';
-  try {
-    await expect(
-      loadReviewEnvironment({ ...base, environment: { OPENAI_API_TOKEN: 'injected-token' } }),
-    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
+    await expect(loadReviewEnvironment(base)).resolves.toMatchObject({ OPENAI_API_TOKEN: 'process-token' });
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;
@@ -59,28 +31,9 @@ test('blank process credentials fall back to the file token', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   process.env.OPENAI_API_TOKEN = '   ';
   try {
-    await expect(loadReviewEnvironment({ ...base, environment: {} })).resolves.toMatchObject({
+    await expect(loadReviewEnvironment(base)).resolves.toMatchObject({
       OPENAI_API_TOKEN: 'token',
     });
-  } finally {
-    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
-    else process.env.OPENAI_API_TOKEN = previous;
-  }
-});
-
-test('uses the injected token when process and file tokens are absent', async () => {
-  const previous = process.env.OPENAI_API_TOKEN;
-  delete process.env.OPENAI_API_TOKEN;
-  try {
-    await expect(loadReviewEnvironment({
-      ...base,
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => '',
-        close: async () => {},
-      }),
-      environment: { OPENAI_API_TOKEN: 'injected-token' },
-    })).resolves.toMatchObject({ OPENAI_API_TOKEN: 'injected-token' });
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;
@@ -95,24 +48,7 @@ test('treats a blank process credential as absent when no file token exists', as
       stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
       readFile: async () => '',
       close: async () => {},
-    }), environment: {} })).resolves.not.toHaveProperty('OPENAI_API_TOKEN');
-  } finally {
-    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
-    else process.env.OPENAI_API_TOKEN = previous;
-  }
-});
-
-test('treats an explicitly injected blank credential as absent', async () => {
-  const previous = process.env.OPENAI_API_TOKEN;
-  delete process.env.OPENAI_API_TOKEN;
-  try {
-    await expect(
-      loadReviewEnvironment({ ...base, openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => '',
-        close: async () => {},
-      }), environment: { OPENAI_API_TOKEN: '   ' } }),
-    ).resolves.not.toHaveProperty('OPENAI_API_TOKEN');
+    }) })).resolves.not.toHaveProperty('OPENAI_API_TOKEN');
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;
@@ -123,7 +59,7 @@ test('does not expose unrelated process variables to review configuration', asyn
   const previous = process.env.CODESCOPE_TEST_SECRET;
   process.env.CODESCOPE_TEST_SECRET = 'unrelated';
   try {
-    const environment = await loadReviewEnvironment({ ...base, environment: {} });
+    const environment = await loadReviewEnvironment(base);
     expect(environment).not.toHaveProperty('CODESCOPE_TEST_SECRET');
   } finally {
     if (previous === undefined) delete process.env.CODESCOPE_TEST_SECRET;
@@ -194,7 +130,6 @@ test('checks custom files for symbolic links', async () => {
       inspected = true;
       return { dev: 1, ino: 2, isSymbolicLink: () => false };
     },
-    environment: {},
   });
   expect(environment.OPENAI_API_TOKEN).toBe('custom');
   expect(inspected).toBe(true);

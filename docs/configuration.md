@@ -10,7 +10,7 @@ Set `OPENAI_API_TOKEN` in the process environment or in the user-level
 `.env.example` contains only a safe placeholder and is not a credential.
 
 Only a nonblank `OPENAI_API_TOKEN` from the process environment takes
-precedence over injected values and the user-level file. A missing or
+precedence over the user-level file. A missing or
 whitespace-only process value is treated as absent, so a nonblank value from
 `~/.codescope` may be used. A missing or blank token stops the request before
 any provider call. CodeScope rejects symbolic-link configuration files and

@@ -10,6 +10,12 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
       const value = tokens[++index];
       if (value === undefined || value.startsWith('-')) throw new Error(`${token} requires a value`);
       add.push(value);
+    } else if (token === '--effort' || token === '--model') {
+      const value = tokens[++index];
+      if (value === undefined || value.startsWith('-')) throw new Error(`${token} requires a value`);
+      const normalized = `${token}=${value}`;
+      (token === '--effort' ? effort : model).push(normalized);
+      if (keepScalarOptions) remaining.push(normalized);
     } else if (token.startsWith('--effort=')) {
       effort.push(token);
       if (keepScalarOptions) remaining.push(token);

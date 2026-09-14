@@ -6,7 +6,7 @@ const openEnvFile = async () => ({
   close: async () => {},
 });
 
-test('resolves a trimmed token from injected environment input', async () => {
+test('resolves a trimmed token from the configured environment file', async () => {
   await expect(
     resolveReviewSetup({
       envFile: 'ignored',

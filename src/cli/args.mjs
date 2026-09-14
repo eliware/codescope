@@ -55,12 +55,18 @@ function mergeLeadingOptions(parsed, values) {
 
 function takeLeadingScalarOptions(args) {
   let index = 0;
-  while (
-    index < args.length &&
-    (args[index].startsWith('--effort=') ||
-      args[index].startsWith('--model=') ||
-      args[index] === '--dry-run')
-  )
-    index += 1;
+  while (index < args.length) {
+    if (args[index] === '--dry-run' || args[index].startsWith('--effort=') || args[index].startsWith('--model=')) {
+      index += 1;
+      continue;
+    }
+    if (args[index] === '--effort' || args[index] === '--model') {
+      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
+        throw new Error(`${args[index]} requires a value`);
+      index += 2;
+      continue;
+    }
+    break;
+  }
   return { options: args.slice(0, index), remaining: args.slice(index) };
 }

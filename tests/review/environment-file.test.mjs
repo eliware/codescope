@@ -117,6 +117,14 @@ test('accepts a stable existing file with bigint identity metadata', async () =>
   ).resolves.toBe('OPENAI_API_TOKEN=value');
 });
 
+test('normalizes safe numeric and bigint identity components equally', () => {
+  expect(fileIdentity('file', { dev: 1, ino: 2 })).toBe(fileIdentity('file', { dev: 1n, ino: 2n }));
+});
+
+test('keeps unsafe numeric identity values explicitly typed', () => {
+  expect(fileIdentity('file', { dev: Number.MAX_SAFE_INTEGER + 2, ino: 2 })).toContain('number:');
+});
+
 test('rejects an existing file without stable identity metadata', async () => {
   await expect(
     readReviewEnvironmentFile({

@@ -433,7 +433,7 @@
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated, while a file missing at startup remains absent for that run."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Provider setup exposes only OPENAI_API_TOKEN; injected environment input may supply that token for tests but cannot replace a nonblank process credential."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Provider setup exposes only OPENAI_API_TOKEN from the process environment or the configured user file."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [

@@ -92,6 +92,13 @@ test('parses the documented prompt delimiter through the public CLI parser', () 
   });
 });
 
+test('accepts separated scalar options in prompt syntax', () => {
+  expect(parseArgs(['prompt', 'summarize', '--effort', 'low'])).toMatchObject({
+    command: 'prompt',
+    effort: 'low',
+  });
+});
+
 test('parses grouped dry-run options', () => {
   expect(parseArgs(['review', 'all', '--dry-run'])).toMatchObject({
     command: 'analyze-all',
@@ -116,6 +123,14 @@ test('accepts shared scalar options before a command', () => {
   );
   expect(() => parseArgs(['--dry-run', 'all', '--dry-run'])).toThrow(/Only one --dry-run/);
   expect(parseArgs(['--dry-run', 'all'])).toMatchObject({ command: 'analyze-all', dryRun: true });
+  expect(parseArgs(['--effort', 'low', 'all'])).toMatchObject({ command: 'analyze-all', effort: 'low' });
+  expect(parseArgs(['all', '--model', 'gpt-5.6-terra'])).toMatchObject({
+    command: 'analyze-all',
+    model: 'gpt-5.6-terra',
+  });
+  expect(() => parseArgs(['--effort'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['--model', '--dry-run'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['all', '--effort'])).toThrow(/requires a value/);
 });
 
 test('normalizes direct profile scalar options exactly once', () => {
