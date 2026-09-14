@@ -22,6 +22,7 @@ export function parseGroupedArgs(mode, tokens) {
     options: profileValues.remaining,
     effort: values.effort,
     model: values.model,
+    ...(values.usage ? { usage: true } : {}),
     add: values.add,
     ...(values.dryRun ? { dryRun: true } : {}),
   };

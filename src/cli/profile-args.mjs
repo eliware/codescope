@@ -12,6 +12,7 @@ export function parseProfileArgs(profile, tokens) {
     option: values.remaining[0],
     effort: values.effort,
     model: values.model,
+    ...(values.usage ? { usage: true } : {}),
     add: values.add,
   };
 }

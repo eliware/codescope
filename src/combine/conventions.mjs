@@ -11,7 +11,7 @@ export async function combineConventionFiles(
     readDirectory,
     readFileContents = readFile,
     readPackageJson = readFileContents,
-    readConventionManifest = readFile,
+    readConventionManifest,
     inspectFile = lstat,
   } = {},
 ) {
@@ -23,6 +23,7 @@ export async function combineConventionFiles(
   }
 
   const applicability = await readConventionApplicability(root, {
+    conventionsRoot,
     readPackageJson,
     readConventionManifest,
   });
@@ -72,7 +73,7 @@ function normalizeConventionPath(relativePath) {
 
 async function readConventionApplicability(
   root,
-  { readPackageJson = readFile, readConventionManifest = readFile } = {},
+  { conventionsRoot, readPackageJson = readFile, readConventionManifest } = {},
 ) {
   try {
     const packageJson = JSON.parse(
@@ -80,12 +81,11 @@ async function readConventionApplicability(
     );
     if (packageJson.name === '@eliware/test')
       return { profiles: new Set(), canonicalPaths: new Map(), includeAll: true };
-    const manifest = JSON.parse(
-      await readConventionManifest(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
-    );
     const apply = packageJson.eliware?.conventions?.apply;
-    const repositoryTypes = manifest.repositoryTypes;
     if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string')) return null;
+    const repositoryTypes = readConventionManifest
+      ? JSON.parse(await readConventionManifest(path.join(conventionsRoot, 'specs', 'conventions.json'), 'utf8')).repositoryTypes
+      : Object.fromEntries(apply.map((name) => [name, `${name}.json`]));
     const canonicalPaths = new Map();
     for (const name of apply) {
       if (!Object.hasOwn(repositoryTypes, name)) return null;

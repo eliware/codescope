@@ -4,7 +4,7 @@ export { validateEffort, validateModel } from './option-validation.mjs';
 
 export function parseOptionValues(tokens) {
   const values = scanOptionTokens(tokens);
-  const { effort: effortTokens, model: modelTokens, dryRun: dryRunCount } = values;
+  const { effort: effortTokens, model: modelTokens, dryRun: dryRunCount, usage: usageCount } = values;
   if (effortTokens.length > 1) throw new Error('Only one --effort option is allowed');
   if (modelTokens.length > 1) throw new Error('Only one --model option is allowed');
   if (dryRunCount > 1) throw new Error('Only one --dry-run option is allowed');
@@ -16,6 +16,7 @@ export function parseOptionValues(tokens) {
     effort,
     model,
     dryRun: dryRunCount > 0,
+    ...(usageCount > 0 ? { usage: true } : {}),
     add: values.add,
     remaining: values.remaining,
   };

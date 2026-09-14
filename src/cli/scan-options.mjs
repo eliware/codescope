@@ -4,6 +4,7 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
   const effort = [];
   const model = [];
   let dryRun = 0;
+  let usage = 0;
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
     if (token === '-a' || token === '--add') {
@@ -25,7 +26,10 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
     } else if (token === '--dry-run') {
       dryRun += 1;
       if (keepScalarOptions) remaining.push(token);
+    } else if (token === '--usage') {
+      usage += 1;
+      remaining.push(token);
     } else remaining.push(token);
   }
-  return { add, effort, model, dryRun, remaining };
+  return { add, effort, model, dryRun, usage, remaining };
 }

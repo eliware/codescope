@@ -10,6 +10,7 @@ export async function runProfileCommand(command, options) {
     effort,
     model,
     dryRun,
+    usage,
     cwd,
     write,
     review,
@@ -21,7 +22,7 @@ export async function runProfileCommand(command, options) {
   await review(cwd, {
     write,
     combine,
-    usage: option === '--usage' || rawOptions.includes('--usage'),
+    usage: usage || option === '--usage' || rawOptions.includes('--usage'),
     prompt,
     model,
     dryRun,

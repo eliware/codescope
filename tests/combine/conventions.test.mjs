@@ -83,7 +83,7 @@ test('reports unverified convention evidence when an applied profile is missing'
   }
 });
 
-test('reports unavailable applicability when a repository type is not in the manifest', async () => {
+test('accepts an applied convention profile when no separate manifest is supplied', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await mkdir(path.join(root, 'project'));
@@ -96,7 +96,45 @@ test('reports unavailable applicability when a repository type is not in the man
     const result = await combineConventionFiles(path.join(root, 'project'), {
       conventionsRoot: root,
     });
+    expect(result).toContain('conventions/specs/unknown.json');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('reports unavailable applicability when an injected manifest omits an applied profile', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(
+    path.join(root, 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(root, {
+      conventionsRoot: root,
+      readConventionManifest: async () => JSON.stringify({ repositoryTypes: {} }),
+    });
     expect(result).toContain('Convention applicability unavailable');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('matches an injected manifest path without a specs segment', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(
+    path.join(root, 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(root, {
+      conventionsRoot: root,
+      readConventionManifest: async () => JSON.stringify({ repositoryTypes: { general: '../../conventions/specs/general.json' } }),
+    });
+    expect(result).toContain('conventions/specs/general.json');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
