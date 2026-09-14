@@ -16,11 +16,13 @@ export async function combineConventionFiles(
     inspectFile = lstat,
     concurrency = 8,
     maxChars = Number.POSITIVE_INFINITY,
+    platform = process.platform,
   } = {},
 ) {
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error('Convention read concurrency must be a positive integer');
-  const specsRoot = path.join(conventionsRoot, 'specs');
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  const specsRoot = pathApi.join(conventionsRoot, 'specs');
   let discoveredFiles;
   try {
     discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
@@ -37,6 +39,7 @@ export async function combineConventionFiles(
     readPackageJson,
     readFileContents,
     readConventionManifest,
+    platform,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
   const { profiles, canonicalPaths, includeAll } = applicability;
@@ -64,7 +67,7 @@ export async function combineConventionFiles(
     batchSize: concurrency,
     maxChars,
     read: async (relativePath) => {
-    const portablePath = resolveConventionPath(specsRoot, relativePath);
+    const portablePath = resolveConventionPath(specsRoot, relativePath, platform);
     const contents = await readSourceFile(
       'conventions/specs/' + relativePath,
       portablePath,
@@ -76,12 +79,13 @@ export async function combineConventionFiles(
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
 
-export function resolveConventionPath(specsRoot, relativePath) {
+export function resolveConventionPath(specsRoot, relativePath, platform = process.platform) {
   const portable = String(relativePath).replaceAll('\\', '/');
   const normalized = path.posix.normalize(portable);
   if (normalized === '..' || normalized.startsWith('../'))
     throw new Error(`Convention path escapes specs root: ${relativePath}`);
-  return path.resolve(specsRoot, ...normalized.split('/'));
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  return pathApi.resolve(specsRoot, ...normalized.split('/'));
 }
 
 function normalizeConventionPath(relativePath) {
@@ -95,6 +99,7 @@ async function readConventionApplicability(
     readPackageJson = readFile,
     readFileContents = readFile,
     readConventionManifest,
+    platform = process.platform,
   } = {},
 ) {
   try {
@@ -107,7 +112,10 @@ async function readConventionApplicability(
     if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string')) return null;
     const manifestReader = readConventionManifest ?? readFileContents;
     const repositoryTypes = JSON.parse(
-      await manifestReader(path.join(conventionsRoot, 'specs', 'conventions.json'), 'utf8'),
+      await manifestReader(
+        (platform === 'win32' ? path.win32 : path.posix).join(conventionsRoot, 'specs', 'conventions.json'),
+        'utf8',
+      ),
     ).repositoryTypes;
     const canonicalPaths = new Map();
     for (const name of apply) {

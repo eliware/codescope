@@ -19,6 +19,11 @@ test('rejects a batch that exceeds the aggregate limit', async () => {
   ).rejects.toThrow(/limit/);
 });
 
+test('rejects invalid batch sizes before starting reads', async () => {
+  await expect(readBatches(['a'], { batchSize: 0, maxChars: 10, read: async () => 'a' }))
+    .rejects.toThrow(/positive integer/);
+});
+
 test('preserves source order while workers complete out of order', async () => {
   const result = await readBatches(['slow', 'fast'], {
     batchSize: 2,

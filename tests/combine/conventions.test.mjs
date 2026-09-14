@@ -41,6 +41,17 @@ test('rejects convention paths that escape the specs root', () => {
   expect(() => resolveConventionPath('specs', '../outside.json')).toThrow(/escapes specs root/);
 });
 
+test('supports explicit POSIX convention path semantics', async () => {
+  await expect(combineConventionFiles('repo', {
+    conventionsRoot: 'conventions',
+    platform: 'linux',
+    readDirectory: async () => [],
+    readPackageJson: async () => JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+    readConventionManifest: async () => JSON.stringify({ repositoryTypes: { general: 'specs/general.json' } }),
+  })).resolves.toContain('Convention evidence incomplete');
+  expect(resolveConventionPath('/repo/specs', 'general.json', 'linux')).toBe('/repo/specs/general.json');
+});
+
 test('reports unavailable applicability metadata', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });

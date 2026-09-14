@@ -3,21 +3,14 @@ import { parseOptionValues } from './option-values.mjs';
 import { parseGroupedArgs } from './grouped-args.mjs';
 import { parseProfileArgs } from './profile-args.mjs';
 import { parseMetaCommand } from './meta-args.mjs';
+import { scanOptionTokens } from './scan-options.mjs';
 
 export function parseArgs(args) {
   const values = parseOptionValues(args, { leadingOnly: true });
   const parsed = values.consumed > 0
     ? mergeLeadingOptions(parseCommandArgs(values.remaining), values)
     : parseCommandArgs(args);
-  return { ...parsed, add: collectAdditions(args) };
-}
-
-function collectAdditions(args) {
-  const additions = [];
-  for (let index = 0; index < args.length; index += 1) {
-    if (args[index] === '-a' || args[index] === '--add') additions.push(args[++index]);
-  }
-  return additions;
+  return { ...parsed, add: scanOptionTokens(args).add };
 }
 
 function parseCommandArgs(args) {

@@ -25,6 +25,10 @@ export async function describeOtherFiles(
     if (typeof relativePath !== 'string') throw new Error('Inventory paths must be strings');
   const paths = inventory
     .map((relativePath) => relativePath.replaceAll('\\', '/'))
+    .map((relativePath) => {
+      resolveInventoryPath(rootPath, relativePath, pathApi);
+      return relativePath;
+    })
     .filter((relativePath) => !isIncludedContent(relativePath))
     .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
   const entries = Array.from({ length: paths.length });
