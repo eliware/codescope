@@ -60,16 +60,24 @@ export async function combineConventionFiles(
     batchSize: concurrency,
     maxChars,
     read: async (relativePath) => {
-    const portablePath = relativePath.replaceAll('\\', '/');
+    const portablePath = resolveConventionPath(specsRoot, relativePath);
     const contents = await readSourceFile(
       'conventions/specs/' + relativePath,
-      path.resolve(specsRoot, ...portablePath.split('/')),
+      portablePath,
       { readFileContents, inspectFile, validateSymlinks: true },
     );
       return formatSourceSection('conventions/specs/' + relativePath, contents);
     },
   });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
+}
+
+export function resolveConventionPath(specsRoot, relativePath) {
+  const portable = String(relativePath).replaceAll('\\', '/');
+  const normalized = path.posix.normalize(portable);
+  if (normalized === '..' || normalized.startsWith('../'))
+    throw new Error(`Convention path escapes specs root: ${relativePath}`);
+  return path.resolve(specsRoot, ...normalized.split('/'));
 }
 
 function normalizeConventionPath(relativePath) {

@@ -82,7 +82,7 @@ npm test
 git diff --check
 ```
 
-`codescope all` is the main comprehensive review and suggestion command. It requests a provider-defined review result containing P0–P3 findings; unresolved P0/P1 findings should produce an AI `block` verdict in that unchanged provider response. CodeScope does not guarantee or parse a response schema, and provider findings never change the CLI exit code.
+`codescope all` is the main comprehensive review and suggestion command. It requests a provider-defined review result containing P0–P3 findings; unresolved P0/P1 findings should produce an AI `block` verdict in that unchanged provider response. `block` is provider output only: CodeScope does not guarantee or parse a response schema, and provider findings never change the CLI exit code.
 
 Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for one non-blocking suggestion pass over every review category plus `new-features`; it uses the generic suggestion tool and never interprets findings as review status.
 

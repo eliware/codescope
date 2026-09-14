@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { combineConventionFiles } from '../../src/combine/conventions.mjs';
+import { combineConventionFiles, resolveConventionPath } from '../../src/combine/conventions.mjs';
 
 test('includes convention specs and excludes package metadata', async () => {
   const root = await fsTemp('codescope-conventions-');
@@ -34,6 +34,10 @@ test('reports unavailable sibling checkout', async () => {
     conventionsRoot: 'C:/missing-conventions',
   });
   expect(result).toContain('Convention checkout not supplied');
+});
+
+test('rejects convention paths that escape the specs root', () => {
+  expect(() => resolveConventionPath('specs', '../outside.json')).toThrow(/escapes specs root/);
 });
 
 test('reports unavailable applicability metadata', async () => {
