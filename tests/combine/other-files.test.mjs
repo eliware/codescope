@@ -113,6 +113,24 @@ test('uses bounded metadata concurrency while preserving sorted output', async (
   expect(result.map((entry) => entry.split(' | ')[0])).toEqual(['a.txt', 'b.txt', 'c.txt']);
 });
 
+test('uses explicit Windows path semantics for Windows inventory roots', async () => {
+  const result = await describeOtherFiles('C:\\repo', ['notes.txt'], {
+    platform: 'win32',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readOtherFileContents: async () => ({ data: 'notes', truncated: false }),
+  });
+  expect(result[0]).toContain('notes.txt');
+});
+
+test('uses POSIX path semantics when explicitly selected', async () => {
+  const result = await describeOtherFiles('repo', ['notes.txt'], {
+    platform: 'linux',
+    inspectFile: inspectRegularFile,
+    readOtherFileContents: async () => ({ data: 'notes', truncated: false }),
+  });
+  expect(result[0]).toContain('notes.txt');
+});
+
 test('rejects an invalid bounded-reader result', async () => {
   await expect(
     describeOtherFiles('repo', ['notes.txt'], { inspectFile: inspectRegularFile, readOtherFileContents: async () => 'notes' }),

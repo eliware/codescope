@@ -10,6 +10,7 @@ test('includes convention specs and excludes package metadata', async () => {
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(specs, 'general.json'), '{"version":"8.0"}');
   await writeFile(path.join(specs, 'web.json'), '{"version":"8.0","web":true}');
+  await writeManifest(specs, { general: 'specs/general.json' });
   await writeFile(path.join(root, 'package.json'), '{}');
   await writeFile(path.join(root, 'package-lock.json'), '{}');
   await writeFile(
@@ -95,6 +96,7 @@ test('reports unverified convention evidence when an applied profile is missing'
     path.join(root, 'project', 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general', 'cli'] } } }),
   );
+  await writeManifest(path.join(root, 'specs'), { general: 'specs/general.json', cli: 'specs/cli.json' });
   try {
     const result = await combineConventionFiles(path.join(root, 'project'), {
       conventionsRoot: root,
@@ -106,7 +108,7 @@ test('reports unverified convention evidence when an applied profile is missing'
   }
 });
 
-test('accepts an applied convention profile when no separate manifest is supplied', async () => {
+test('reports unavailable applicability when the canonical manifest is not supplied', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await mkdir(path.join(root, 'project'));
@@ -119,7 +121,7 @@ test('accepts an applied convention profile when no separate manifest is supplie
     const result = await combineConventionFiles(path.join(root, 'project'), {
       conventionsRoot: root,
     });
-    expect(result).toContain('conventions/specs/unknown.json');
+    expect(result).toContain('Convention applicability unavailable');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -217,6 +219,10 @@ async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }
 
+async function writeManifest(specs, repositoryTypes) {
+  await writeFile(path.join(specs, 'conventions.json'), JSON.stringify({ repositoryTypes }));
+}
+
 test('normalizes convention paths before matching applied profiles', async () => {
   const root = await fsTemp('codescope-conventions-');
   const specs = path.join(root, 'specs');
@@ -248,6 +254,7 @@ test('rejects symlinked convention evidence before reading it', async () => {
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
   );
+  await writeManifest(path.join(root, 'specs'), { general: 'specs/general.json' });
   try {
     await expect(
       combineConventionFiles(root, {
@@ -268,6 +275,7 @@ test('rejects non-file convention evidence before reading it', async () => {
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
   );
+  await writeManifest(path.join(root, 'specs'), { general: 'specs/general.json' });
   try {
     await expect(
       combineConventionFiles(root, {
@@ -289,6 +297,7 @@ test('bounds convention reads by concurrency and aggregate characters', async ()
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general', 'cli'] } } }),
   );
+  await writeManifest(path.join(root, 'specs'), { general: 'specs/general.json', cli: 'specs/cli.json' });
   try {
     await expect(combineConventionFiles(root, { conventionsRoot: root, concurrency: 0 })).rejects.toThrow(
       /positive integer/,

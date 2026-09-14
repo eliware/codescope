@@ -14,11 +14,13 @@ export async function describeOtherFiles(
     readOtherFileContents = defaultReadOtherFileContents,
     inspectFile,
     concurrency = 8,
+    platform = process.platform,
   } = {},
 ) {
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error('Other-file read concurrency must be a positive integer');
-  const rootPath = path.resolve(root);
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  const rootPath = pathApi.resolve(root);
   for (const relativePath of inventory)
     if (typeof relativePath !== 'string') throw new Error('Inventory paths must be strings');
   const paths = inventory
@@ -31,7 +33,7 @@ export async function describeOtherFiles(
     while (next < paths.length) {
       const index = next++;
       const relativePath = paths[index];
-      const filePath = resolveInventoryPath(rootPath, relativePath);
+      const filePath = resolveInventoryPath(rootPath, relativePath, pathApi);
       const inspect = inspectFile ?? lstat;
       const metadata = await inspect(filePath);
       if (metadata.isSymbolicLink())
@@ -64,7 +66,7 @@ export async function describeOtherFiles(
   return entries.filter(Boolean);
 }
 
-function resolveInventoryPath(rootPath, relativePath) {
+function resolveInventoryPath(rootPath, relativePath, pathApi) {
   const portablePath = relativePath.replaceAll('\\', '/');
   if (
     path.posix.isAbsolute(portablePath) ||
@@ -75,5 +77,5 @@ function resolveInventoryPath(rootPath, relativePath) {
   const portableRelative = path.posix.normalize(portablePath);
   if (portableRelative === '..' || portableRelative.startsWith('../'))
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
-  return path.resolve(rootPath, portableRelative);
+  return pathApi.resolve(rootPath, portableRelative);
 }

@@ -44,3 +44,13 @@ test('rejects a missing required function call', () => {
 test('preserves an explicitly empty raw output text', () => {
   expect(responseText({ output_text: '' }, {})).toBe('');
 });
+
+test('propagates a throwing provider output accessor for safe fallback handling', () => {
+  const response = {};
+  Object.defineProperty(response, 'output', {
+    get() {
+      throw new Error('malformed output');
+    },
+  });
+  expect(() => responseText(response, {})).toThrow('malformed output');
+});

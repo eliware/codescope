@@ -25,7 +25,7 @@ export async function combineConventionFiles(
   try {
     discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
   } catch (cause) {
-    if (cause?.code === 'ENOENT')
+    if (cause?.code === 'ENOENT' || cause?.code === 'ENOTDIR')
       return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
     throw new Error(
       `Unable to discover convention evidence: ${String(cause)}`,
@@ -35,6 +35,7 @@ export async function combineConventionFiles(
   const applicability = await readConventionApplicability(root, {
     conventionsRoot,
     readPackageJson,
+    readFileContents,
     readConventionManifest,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
@@ -89,7 +90,12 @@ function normalizeConventionPath(relativePath) {
 
 async function readConventionApplicability(
   root,
-  { conventionsRoot, readPackageJson = readFile, readConventionManifest } = {},
+  {
+    conventionsRoot,
+    readPackageJson = readFile,
+    readFileContents = readFile,
+    readConventionManifest,
+  } = {},
 ) {
   try {
     const packageJson = JSON.parse(
@@ -99,9 +105,10 @@ async function readConventionApplicability(
       return { profiles: new Set(), canonicalPaths: new Map(), includeAll: true };
     const apply = packageJson.eliware?.conventions?.apply;
     if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string')) return null;
-    const repositoryTypes = readConventionManifest
-      ? JSON.parse(await readConventionManifest(path.join(conventionsRoot, 'specs', 'conventions.json'), 'utf8')).repositoryTypes
-      : Object.fromEntries(apply.map((name) => [name, `${name}.json`]));
+    const manifestReader = readConventionManifest ?? readFileContents;
+    const repositoryTypes = JSON.parse(
+      await manifestReader(path.join(conventionsRoot, 'specs', 'conventions.json'), 'utf8'),
+    ).repositoryTypes;
     const canonicalPaths = new Map();
     for (const name of apply) {
       if (!Object.hasOwn(repositoryTypes, name)) return null;

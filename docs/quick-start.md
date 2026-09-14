@@ -34,4 +34,4 @@ Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platfor
 
 Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. Use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `--usage` when needed.
 
-Custom prompt: `codescope prompt "your question"` sends the complete `all` context without tools and returns the provider response unchanged. Use `--` to end prompt text before supported trailing options if the prompt begins with `-`; only `--effort=<value>` and `--model=<value>` may follow the delimiter, otherwise CodeScope reports the delimiter grammar error.
+Custom prompt: `codescope prompt "your question"` sends the complete `all` context without tools and returns the provider response unchanged. Use `--` to end prompt text before supported trailing options if the prompt begins with `-`; trailing `--effort` and `--model` options may use either equals or separated forms, otherwise CodeScope reports the delimiter grammar error.
