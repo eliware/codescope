@@ -7,13 +7,14 @@ export async function throwSessionFailure({
   providerResponseReceived,
   write,
 }) {
-  const incomplete = providerResponseReceived
-    ? createIncompleteResult(cause, providerResponse)
-    : undefined;
-  const fallbackError = incomplete ? await writeFallbackResult(write, incomplete) : undefined;
+  const incomplete = createIncompleteResult(
+    cause,
+    providerResponseReceived ? providerResponse : undefined,
+  );
+  const fallbackError = await writeFallbackResult(write, incomplete);
   const failure = createProviderFailure(cause);
   if (cause?.code) failure.code = cause.code;
-  if (incomplete) failure.result = incomplete;
+  failure.result = incomplete;
   if (fallbackError) failure.fallbackError = fallbackError;
   throw failure;
 }

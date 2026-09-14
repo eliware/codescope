@@ -13,16 +13,13 @@ function readFunctionCallArguments(response) {
         typeof argumentsValue === 'string'
           ? redactTestOutput(argumentsValue)
           : redactTestOutput(JSON.stringify(argumentsValue));
-      calls.push({ name, arguments: safeArguments });
+      const serialized = JSON.stringify({ name, arguments: safeArguments });
+      calls.push(serialized);
     } catch {
       // Preserve unaffected calls when one provider item is malformed.
     }
   }
-  try {
-    return calls.length ? JSON.stringify(calls) : undefined;
-  } catch {
-    return undefined;
-  }
+  return calls.length ? `[${calls.join(',')}]` : undefined;
 }
 
 export function summarizeProviderResponse(response) {

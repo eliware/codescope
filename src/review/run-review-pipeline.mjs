@@ -3,8 +3,7 @@ import { createReviewSession } from './create-session.mjs';
 import { finalizeReviewSession } from './finalize-session.mjs';
 import { prepareReview } from './prepare-review.mjs';
 import { runReviewSession } from './run-session.mjs';
-import { createIncompleteResult, createProviderFailure } from './failure.mjs';
-import { writeFallbackResult } from './output.mjs';
+import { throwSessionFailure } from './session-failure.mjs';
 
 export async function runReviewPipeline(cwd, options) {
   let combined;
@@ -27,12 +26,11 @@ export async function runReviewPipeline(cwd, options) {
       createClient: options.createClient,
     }));
   } catch (cause) {
-    const result = createIncompleteResult(cause);
-    const failure = createProviderFailure(cause);
-    failure.result = result;
-    const fallbackError = await writeFallbackResult(options.write, result);
-    if (fallbackError) failure.fallbackError = fallbackError;
-    throw failure;
+    return throwSessionFailure({
+      cause,
+      providerResponseReceived: false,
+      write: options.write,
+    });
   }
   const { request, controller } = createReviewSession({
     prompt: options.prompt,

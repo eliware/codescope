@@ -48,10 +48,10 @@ test('rejects invalid scalar and collaborator options', () => {
   expect(() => validateReviewOptions('repo', { ...valid, prompt: { input: [] } })).toThrow(/developer/);
   expect(() => validateReviewOptions('repo', { ...valid, envFile: '' })).toThrow(/envFile/);
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: Number.NaN })).toThrow(
-    /finite/,
+    /positive integer or Infinity/,
   );
   expect(() => validateReviewOptions('repo', { ...valid, maxSourceChars: 1.5 })).toThrow(
-    /finite or Infinity/,
+    /positive integer or Infinity/,
   );
   expect(() => validateReviewOptions('', valid)).toThrow(/cwd/);
 });

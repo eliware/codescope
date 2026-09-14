@@ -16,12 +16,17 @@ test('preserves provider failures and fallback metadata', async () => {
   expect(writes).toHaveLength(1);
 });
 
-test('wraps failures before a provider response without fallback output', async () => {
+test('writes fallback output before a provider response', async () => {
+  const writes = [];
   await expect(
     throwSessionFailure({
       cause: new Error('request failed'),
       providerResponseReceived: false,
-      write: async (value) => ({ written: value.length }),
+      write: async (value) => {
+        writes.push(value);
+        return { written: value.length };
+      },
     }),
   ).rejects.toThrow('request failed');
+  expect(writes).toHaveLength(1);
 });

@@ -73,11 +73,11 @@
           "id": "A-19.2",
           "dos": [
             "Use a nonblank OPENAI_API_TOKEN from the process environment when present; treat a missing or whitespace-only process value as absent and otherwise use a nonblank value from ~/.codescope.",
-            "Layer injected environment values over the process environment without suppressing process credentials.",
+            "Layer injected environment values only for variables absent from the process environment; a nonblank process credential remains authoritative.",
             "Treat missing credentials and provider transport failures as errors."
           ],
           "donts": [
-            "Do not let a missing or whitespace-only process token suppress a nonblank ~/.codescope token.",
+            "Do not let a missing or whitespace-only process token suppress a nonblank ~/.codescope token, and do not let injected environment values replace a nonblank process token.",
             "Do not place credentials, tokens, environment files, or runtime state in the reviewed repository.",
             "Do not claim that redaction or review context handling is a complete secret-removal boundary."
           ]
@@ -87,7 +87,7 @@
           "dos": [
             "Assemble comprehensive context in this order: package.json; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
-            "Read Convention JSON only from the adjacent conventions checkout and report it unavailable when it is not supplied; for @eliware/test, include every JSON convention record so the validator can review the full convention set.",
+            "Read Convention JSON only from the adjacent conventions checkout and report it unavailable when it is not supplied; when the reviewed package name is exactly @eliware/test, ignore eliware.conventions.apply and include every JSON record discovered directly under the checkout's specs directory so the validator can review the full convention set.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."

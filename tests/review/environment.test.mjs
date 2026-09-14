@@ -25,6 +25,32 @@ test('retains process environment credentials when an injected environment is em
   }
 });
 
+test('process credentials remain authoritative over injected values', async () => {
+  const previous = process.env.OPENAI_API_TOKEN;
+  process.env.OPENAI_API_TOKEN = 'process-token';
+  try {
+    await expect(
+      loadReviewEnvironment({ ...base, environment: { OPENAI_API_TOKEN: 'injected-token' } }),
+    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'process-token' });
+  } finally {
+    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
+    else process.env.OPENAI_API_TOKEN = previous;
+  }
+});
+
+test('blank process credentials do not suppress injected values', async () => {
+  const previous = process.env.OPENAI_API_TOKEN;
+  process.env.OPENAI_API_TOKEN = '   ';
+  try {
+    await expect(
+      loadReviewEnvironment({ ...base, environment: { OPENAI_API_TOKEN: 'injected-token' } }),
+    ).resolves.toMatchObject({ OPENAI_API_TOKEN: 'injected-token' });
+  } finally {
+    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
+    else process.env.OPENAI_API_TOKEN = previous;
+  }
+});
+
 test('uses readFile when readEnvFile is omitted', async () => {
   const readFile = async () => 'OPENAI_API_TOKEN=token';
   await expect(loadReviewEnvironment({ ...base, readFile, readEnvFile: undefined })).resolves.toMatchObject({

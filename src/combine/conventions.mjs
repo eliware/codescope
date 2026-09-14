@@ -31,11 +31,16 @@ export async function combineConventionFiles(
   const discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
   const files = includeAll
     ? discoveredFiles
-    : discoveredFiles.filter((relativePath) => [...canonicalPaths.values()].includes(relativePath));
-  const supplied = new Set(files);
+    : discoveredFiles.filter((relativePath) => {
+      const normalized = normalizeConventionPath(relativePath);
+      return [...canonicalPaths.values()].some((canonicalPath) =>
+        normalizeConventionPath(canonicalPath) === normalized,
+      );
+    });
+  const supplied = new Set(files.map(normalizeConventionPath));
   const missing = includeAll
     ? []
-    : [...profiles].filter((profile) => !supplied.has(canonicalPaths.get(profile)));
+    : [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
@@ -54,6 +59,10 @@ export async function combineConventionFiles(
     sections.push(formatSourceSection('conventions/specs/' + relativePath, contents));
   }
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
+}
+
+function normalizeConventionPath(relativePath) {
+  return String(relativePath).replaceAll('\\', '/').toLowerCase();
 }
 
 async function readConventionApplicability(

@@ -17,7 +17,11 @@ export async function loadReviewEnvironment({
     openEnvFile,
     inspectFile,
   });
-  const effectiveEnvironment = { ...process.env, ...environment };
+  const effectiveEnvironment = { ...environment };
+  for (const [name, value] of Object.entries(process.env)) {
+    if (name !== 'OPENAI_API_TOKEN' || value?.trim() || effectiveEnvironment[name] === undefined)
+      effectiveEnvironment[name] = value;
+  }
   loadEnv(envText, effectiveEnvironment);
   return effectiveEnvironment;
 }

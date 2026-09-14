@@ -261,7 +261,8 @@
         "Validate configuration inventory entries as regular non-symlink files before reading them.",
         "Validate inventory paths remain within the canonical review root before reading remaining-file metadata.",
         "Read no more than one byte beyond the 100000-byte per-file limit, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
-        "Use one shared aggregate section-joining limit for all and selected composition paths."
+        "Use one shared aggregate section-joining limit for all and selected composition paths.",
+        "Normalize convention evidence paths across separators and case before matching canonical records."
       ],
       "donts": [
         "Do not stat files before reading them, infer overflow from a short injected prefix, serialize all metadata reads unnecessarily, or use a shared metadata budget that lets one file omit unrelated later files.",
@@ -298,19 +299,21 @@
         "outputs": "Only applicable canonical Convention JSON records or an explicit unavailable/incomplete-evidence marker.",
         "errors": ["Missing or malformed applicability is reported as unavailable rather than inferred."],
         "ordering": ["Read applicability before selecting canonical records."],
-        "invariants": ["CodeScope does not redefine Convention requirements."],
+        "invariants": ["CodeScope does not redefine Convention requirements.", "The exact package name @eliware/test selects full convention-spec discovery and does not consult eliware.conventions.apply."],
         "boundaries": { "owns": ["CodeScope profile selection"], "doesNotOwn": ["Convention requirements"] }
       },
       "dos": [
-        "Read only the repository types declared by package.json eliware.conventions.apply, except that @eliware/test receives every JSON convention record from the supplied conventions checkout.",
-        "Load canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader.",
+        "Read only the repository types declared by package.json eliware.conventions.apply for ordinary packages.",
+        "When package.json name is exactly @eliware/test, ignore eliware.conventions.apply and include every JSON record discovered directly under the adjacent conventions checkout's specs directory.",
+        "Load ordinary canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader; the @eliware/test full-discovery path uses directory discovery instead of manifest applicability.",
         "Read repository package applicability through the injected package reader when one is supplied.",
+        "Normalize discovered and canonical convention paths before matching them.",
         "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",
         "Treat canonical Conventions records as the authority for repository requirements."
       ],
       "donts": [
         "Do not redefine, duplicate, or extend Convention requirements in CodeScope contracts.",
-        "Do not infer Convention requirements when canonical evidence is unavailable.",
+        "Do not infer Convention requirements when canonical evidence is unavailable, and do not treat the @eliware/test full-discovery exception as a requirement for other packages.",
         "Do not treat CodeScope's convention-evidence behavior as authority over repository structure.",
         "Do not bind virtual or injected repository roots to an unrelated native manifest read."
       ],
@@ -381,6 +384,7 @@
         "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
         "Accept only raw string function-call arguments as successful provider response text; preserve non-text arguments only in redacted diagnostic summaries.",
         "Preserve independently readable safe diagnostic fields when a provider response cannot be serialized, serialize fallback result objects as JSON, and mark capped serialized diagnostics with response_truncated.",
+        "Serialize each sanitized function-call summary independently so one malformed call cannot discard unaffected calls.",
         "Report provider transport failures and output-write failures with their original error context.",
         "Require writers to return an object with an exact written character count; stdout adapters intentionally discard Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
         "Write a safe incomplete result when evidence collection or provider setup fails, and preserve a fallback-write failure as metadata on the original failure.",
@@ -427,7 +431,7 @@
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Injected environment seams are layered over the process environment rather than suppressing it."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Injected environment values fill only variables absent from the process environment and cannot replace a nonblank process credential."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [

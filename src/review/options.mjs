@@ -21,12 +21,8 @@ export function validateReviewOptions(
 ) {
   if (typeof cwd !== 'string' || !cwd)
     throw new Error('runReview cwd must be a non-empty path string');
-  if (
-    maxSourceChars !== Infinity &&
-    (!Number.isFinite(maxSourceChars) || !Number.isInteger(maxSourceChars))
-  )
-    throw new Error('runReview maxSourceChars must be finite or Infinity');
-  if (maxSourceChars < 1) throw new Error('runReview maxSourceChars must be positive');
+  if (maxSourceChars !== Infinity && (!Number.isInteger(maxSourceChars) || maxSourceChars < 1))
+    throw new Error('runReview maxSourceChars must be a positive integer or Infinity');
   for (const [name, value] of Object.entries({ usage, dryRun }))
     if (value !== undefined && typeof value !== 'boolean')
       throw new Error(`runReview option ${name} must be a boolean`);

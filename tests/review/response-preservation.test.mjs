@@ -103,6 +103,18 @@ test('preserves safe function calls when another call is malformed', () => {
   expect(result.function_call_arguments).not.toContain('bad');
 });
 
+test('preserves a valid function call when another call cannot be serialized', () => {
+  const malformedName = {};
+  Object.defineProperty(malformedName, 'toJSON', { value: () => { throw new Error('bad'); } });
+  const result = preserveProviderResponse({
+    output: [
+      { type: 'function_call', name: 'good', arguments: '{"ok":true}' },
+      { type: 'function_call', name: malformedName, arguments: 'bad' },
+    ],
+  });
+  expect(result.function_call_arguments).toContain('good');
+});
+
 test('ignores non-function output items', () => {
   expect(preserveProviderResponse({ output: [{ type: 'message' }] })).toMatchObject({
     response_error: 'Provider response was not accepted by the response contract',

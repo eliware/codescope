@@ -155,3 +155,26 @@ test('includes every convention JSON for @eliware/test', async () => {
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }
+
+test('normalizes convention paths before matching applied profiles', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  const specs = path.join(root, 'specs');
+  await mkdir(specs, { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(specs, 'general.json'), '{"normalized":true}');
+  await writeFile(
+    path.join(root, 'project', 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+      readConventionManifest: async () =>
+        JSON.stringify({ repositoryTypes: { general: 'specs\\GENERAL.JSON' } }),
+    });
+    expect(result).toContain('conventions/specs/general.json');
+    expect(result).not.toContain('evidence incomplete');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
