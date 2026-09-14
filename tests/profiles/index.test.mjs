@@ -25,7 +25,7 @@ test('builds every profile strategy and validates modes', async () => {
       combine('/root', {
         readDirectory: async () => [],
         readFileContents: async () => '{}',
-        inspectFile: async () => ({ isSymbolicLink: () => false }),
+        inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
       }),
     ).resolves.toContain('===== package.json =====');
   }
@@ -38,7 +38,7 @@ test('applies review source selection to suggestion profiles', async () => {
     getProfile('architecture', 'suggest').combine('/root', {
       readDirectory: async () => [],
       readFileContents: async () => '{}',
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).resolves.toContain('package.json');
 });

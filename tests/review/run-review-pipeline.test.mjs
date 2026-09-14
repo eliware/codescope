@@ -68,6 +68,26 @@ test('collects evidence before initializing the provider', async () => {
   expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
 });
 
+test('preserves setup failure when fallback output cannot be written', async () => {
+  await expect(
+    runReviewPipeline('repo', {
+      combine: async () => {
+        throw new Error('evidence failed');
+      },
+      readFile: async () => '',
+      maxSourceChars: 10,
+      platform: 'linux',
+      createClient: () => ({}),
+      write: async () => {
+        throw new Error('fallback disk full');
+      },
+    }),
+  ).rejects.toMatchObject({
+    message: 'CodeScope setup failed: evidence failed',
+    fallbackError: { message: 'fallback disk full' },
+  });
+});
+
 test('writes fallback output when request construction fails', async () => {
   const writes = [];
   await expect(

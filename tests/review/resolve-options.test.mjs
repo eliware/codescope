@@ -15,6 +15,6 @@ test('validates the resolved options before returning them', () => {
   expect(() => resolveReviewOptions('repo', { maxSourceChars: 0 })).toThrow(/positive/);
 });
 
-test('normalizes surrounding model whitespace before provider setup', () => {
-  expect(resolveReviewOptions('repo', { model: ' gpt-5.6-luna ' }).model).toBe('gpt-5.6-luna');
+test('rejects surrounding model whitespace before provider setup', () => {
+  expect(() => resolveReviewOptions('repo', { model: ' gpt-5.6-luna ' })).toThrow(/Model must/);
 });

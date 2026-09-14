@@ -20,6 +20,14 @@ test('combines text GitHub and Knit configs with numbered, truncated content', a
   expect(result).not.toContain('image.bin');
 });
 
+test('labels byte-only configuration truncation accurately', async () => {
+  await expect(combineConfigFiles('repo', {
+    inventory: ['.github/workflow.yml'],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => 'x'.repeat(100_001),
+  })).resolves.toContain('[truncated after the per-file byte limit; remaining config omitted]');
+});
+
 test('accepts Windows separators in inventory configuration paths', async () => {
   await expect(combineConfigFiles('repo', {
     inventory: ['.github\\workflow.yml'],

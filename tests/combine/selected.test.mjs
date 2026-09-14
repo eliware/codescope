@@ -4,6 +4,7 @@ test('combines selected implementation, tests, and docs in order', async () => {
   const options = {
     readDirectory: async () => [],
     readFileContents: async () => '',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     combinePackageJson: undefined,
   };
   const result = await combineSelectedFiles('/repo', {
@@ -21,6 +22,7 @@ test('returns package metadata when no optional sections are selected', async ()
     combineSelectedFiles('/repo', {
       readDirectory: async () => [],
       readFileContents: async () => '{"name":"x"}',
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).resolves.toContain('package.json');
 });

@@ -108,7 +108,10 @@ async function readConventionApplicability(
 ) {
   try {
     const packageJson = JSON.parse(
-      await readPackageJson(path.join(root, 'package.json'), 'utf8'),
+      await readPackageJson(
+        (platform === 'win32' ? path.win32 : path.posix).join(root, 'package.json'),
+        'utf8',
+      ),
     );
     if (packageJson.name === '@eliware/test')
       return { profiles: new Set(), canonicalPaths: new Map(), includeAll: true };

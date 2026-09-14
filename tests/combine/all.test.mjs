@@ -86,6 +86,7 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
     combineAllFiles('/repo', {
       readDirectory: async () => [],
       readFileContents: async () => '{}',
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
       maxChars: 1,
     }),
   ).rejects.toThrow(/character limit/);
@@ -93,7 +94,11 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
 
 test('reports package and configuration read failures clearly', async () => {
   await expect(
-    combineAllFiles('/repo', { readDirectory: async () => [], readFileContents: async () => null }),
+    combineAllFiles('/repo', {
+      readDirectory: async () => [],
+      readFileContents: async () => null,
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
   ).rejects.toThrow(/non-string/);
   await expect(
     combineAllFiles('/repo', {
@@ -101,6 +106,7 @@ test('reports package and configuration read failures clearly', async () => {
       readFileContents: async () => {
         throw 'package failed';
       },
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).rejects.toThrow(/package failed/);
   await expect(
@@ -144,6 +150,7 @@ test('enforces selected-source limits', async () => {
         { name: 'guide.md', isFile: () => true },
       ],
       readFileContents: async () => 'content',
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).rejects.toThrow(/character limit/);
 });

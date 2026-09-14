@@ -56,14 +56,18 @@ export async function combineConfigFiles(
       const text = bytes.subarray(0, MAX_CONFIG_BYTES).toString('utf8');
       const lines = text.split(/\r\n|\r|\n/u);
       while (lines.at(-1) === '') lines.pop();
-      const truncated = exceeded || bounded?.truncated === true || lines.length > MAX_CONFIG_LINES;
+      const byteTruncated = exceeded || bounded?.truncated === true;
+      const lineTruncated = lines.length > MAX_CONFIG_LINES;
+      const truncated = byteTruncated || lineTruncated;
       const visibleLines = lines.slice(0, MAX_CONFIG_LINES);
       const width = String(visibleLines.length).length;
       const body = visibleLines.map(
         (line, index) => `${String(index + 1).padStart(width, ' ')} ${line}`,
       );
       if (truncated)
-        body.push(`[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`);
+        body.push(byteTruncated && !lineTruncated
+          ? '[truncated after the per-file byte limit; remaining config omitted]'
+          : `[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`);
       return `===== ${relativePath} =====\n${body.join('\n')}\n`;
     },
   });

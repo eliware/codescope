@@ -22,3 +22,12 @@ test('rejects a package path that is not a regular file', async () => {
     }),
   ).rejects.toThrow(/regular file/);
 });
+
+test('inspects package metadata before using a custom reader', async () => {
+  await expect(
+    combinePackageJson('/virtual', {
+      readFileContents: async () => '{"name":"virtual"}',
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
+  ).resolves.toContain('virtual');
+});

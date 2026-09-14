@@ -27,6 +27,7 @@ test('collects all ordered section inputs through injected collaborators', async
   const result = await collectAllSections('repo', {
     readDirectory: async () => [],
     readFileContents: async () => '{}',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   });
   expect(result).toHaveProperty('packageJson');
   expect(result.other).toContain('other files');
