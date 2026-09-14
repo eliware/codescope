@@ -124,6 +124,15 @@ test('accepts shared scalar options before a command', () => {
   expect(() => parseArgs(['--dry-run', 'all', '--dry-run'])).toThrow(/Only one --dry-run/);
   expect(parseArgs(['--dry-run', 'all'])).toMatchObject({ command: 'analyze-all', dryRun: true });
   expect(parseArgs(['--effort', 'low', 'all'])).toMatchObject({ command: 'analyze-all', effort: 'low' });
+  expect(parseArgs(['--model', 'gpt-5.6-terra', 'all'])).toMatchObject({
+    command: 'analyze-all',
+    model: 'gpt-5.6-terra',
+  });
+  expect(parseArgs(['--effort', 'low', 'review', 'all'])).toMatchObject({
+    command: 'analyze-all',
+    mode: 'review',
+    effort: 'low',
+  });
   expect(parseArgs(['all', '--model', 'gpt-5.6-terra'])).toMatchObject({
     command: 'analyze-all',
     model: 'gpt-5.6-terra',
