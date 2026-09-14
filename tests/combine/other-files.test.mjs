@@ -100,6 +100,11 @@ test('rejects an invalid bounded-reader result', async () => {
   ).rejects.toThrow('must return { data, truncated }');
 });
 
+test('rejects invalid metadata concurrency values', async () => {
+  for (const concurrency of [0, 1.5, Number.NaN, '2'])
+    await expect(describeOtherFiles('repo', ['notes.txt'], { concurrency })).rejects.toThrow(/concurrency/);
+});
+
 test('rejects inventory paths that escape the review root', async () => {
   await expect(
     describeOtherFiles('repo', ['../outside.txt'], {
@@ -127,7 +132,7 @@ test('normalizes inventory separators before resolving relative paths', async ()
         return { data: 'notes', truncated: false };
       },
     }),
-  ).resolves.toEqual(['nested\\notes.txt | text | 1 lines | 5 bytes']);
+  ).resolves.toEqual(['nested/notes.txt | text | 1 lines | 5 bytes']);
   expect(readPaths[0]).toMatch(/[\\/]nested[\\/]notes\.txt$/u);
 });
 

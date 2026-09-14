@@ -15,13 +15,15 @@ export async function loadReviewEnvironment({
     openEnvFile,
     inspectFile,
   });
-  const effectiveEnvironment = {};
-  const processToken = process.env.OPENAI_API_TOKEN;
-  const injectedToken = environment?.OPENAI_API_TOKEN;
-  if (processToken?.trim()) effectiveEnvironment.OPENAI_API_TOKEN = processToken;
-  else if (injectedToken?.trim()) effectiveEnvironment.OPENAI_API_TOKEN = injectedToken;
-  else if (processToken !== undefined) effectiveEnvironment.OPENAI_API_TOKEN = processToken;
-  else if (injectedToken !== undefined) effectiveEnvironment.OPENAI_API_TOKEN = injectedToken;
+  const effectiveEnvironment = resolveTokenEnvironment(environment);
   loadEnv(envText, effectiveEnvironment);
   return effectiveEnvironment;
+}
+
+function resolveTokenEnvironment(environment) {
+  const processToken = process.env.OPENAI_API_TOKEN;
+  const injectedToken = environment?.OPENAI_API_TOKEN;
+  if (processToken?.trim()) return { OPENAI_API_TOKEN: processToken };
+  if (injectedToken?.trim()) return { OPENAI_API_TOKEN: injectedToken };
+  return {};
 }

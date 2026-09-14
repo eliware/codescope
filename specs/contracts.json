@@ -250,7 +250,7 @@
         "outputs": "One ordered combined evidence string or an explicit budget failure.",
         "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
         "ordering": ["Package, Convention, JSON, configuration, other-file metadata, Markdown, implementation, and tests follow the declared order."],
-        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag; oversized metadata reports a bounded sample rather than total file size, and reads use bounded concurrency with sorted output."],
+        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag; oversized metadata reports a bounded sample rather than total file size, underlying reads request no more than the limit plus one byte, and reads use positive-integer bounded concurrency with sorted output."],
         "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
       },
       "dos": [
@@ -260,7 +260,9 @@
         "Read configuration files in bounded batches while preserving inventory order.",
         "Validate configuration inventory entries as regular non-symlink files before reading them.",
         "Validate inventory paths remain within the canonical review root before reading remaining-file metadata.",
-        "Read no more than one byte beyond the 100000-byte per-file limit, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
+        "Read no more than one byte beyond the 100000-byte per-file limit from the underlying file, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
+        "Reject zero, fractional, nonnumeric, and other invalid metadata concurrency values before starting workers.",
+        "Normalize inventory separators to the canonical forward-slash form before filtering, resolving, and formatting entries.",
         "Use one shared aggregate section-joining limit for all and selected composition paths.",
         "Normalize convention evidence paths across separators and case before matching canonical records."
       ],

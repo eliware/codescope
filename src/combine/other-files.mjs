@@ -16,10 +16,14 @@ export async function describeOtherFiles(
     concurrency = 8,
   } = {},
 ) {
+  if (!Number.isInteger(concurrency) || concurrency < 1)
+    throw new Error('Other-file read concurrency must be a positive integer');
   const rootPath = path.resolve(root);
   for (const relativePath of inventory)
     if (typeof relativePath !== 'string') throw new Error('Inventory paths must be strings');
-  const paths = inventory.filter((relativePath) => !isIncludedContent(relativePath));
+  const paths = inventory
+    .map((relativePath) => relativePath.replaceAll('\\', '/'))
+    .filter((relativePath) => !isIncludedContent(relativePath));
   const entries = [];
   let next = 0;
   const worker = async () => {

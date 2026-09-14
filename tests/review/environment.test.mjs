@@ -56,16 +56,12 @@ test('blank process credentials do not suppress injected values', async () => {
   }
 });
 
-test('preserves a blank process credential when no injected credential exists', async () => {
+test('blank process credentials fall back to the file token', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   process.env.OPENAI_API_TOKEN = '   ';
   try {
-    await expect(loadReviewEnvironment({ ...base, readFile: async () => '', openEnvFile: async () => ({
-      stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-      readFile: async () => '',
-      close: async () => {},
-    }), environment: {} })).resolves.toMatchObject({
-      OPENAI_API_TOKEN: '   ',
+    await expect(loadReviewEnvironment({ ...base, environment: {} })).resolves.toMatchObject({
+      OPENAI_API_TOKEN: 'token',
     });
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
@@ -73,7 +69,22 @@ test('preserves a blank process credential when no injected credential exists', 
   }
 });
 
-test('retains an explicitly injected blank credential when process credentials are absent', async () => {
+test('treats a blank process credential as absent when no file token exists', async () => {
+  const previous = process.env.OPENAI_API_TOKEN;
+  process.env.OPENAI_API_TOKEN = '   ';
+  try {
+    await expect(loadReviewEnvironment({ ...base, readFile: async () => '', openEnvFile: async () => ({
+      stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+      readFile: async () => '',
+      close: async () => {},
+    }), environment: {} })).resolves.not.toHaveProperty('OPENAI_API_TOKEN');
+  } finally {
+    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
+    else process.env.OPENAI_API_TOKEN = previous;
+  }
+});
+
+test('treats an explicitly injected blank credential as absent', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   delete process.env.OPENAI_API_TOKEN;
   try {
@@ -83,7 +94,7 @@ test('retains an explicitly injected blank credential when process credentials a
         readFile: async () => '',
         close: async () => {},
       }), environment: { OPENAI_API_TOKEN: '   ' } }),
-    ).resolves.toMatchObject({ OPENAI_API_TOKEN: '   ' });
+    ).resolves.not.toHaveProperty('OPENAI_API_TOKEN');
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
     else process.env.OPENAI_API_TOKEN = previous;

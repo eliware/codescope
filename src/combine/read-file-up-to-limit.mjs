@@ -1,17 +1,17 @@
-import { createReadStream } from 'node:fs';
-
-const READ_CHUNK_BYTES = 64 * 1024;
+import { open } from 'node:fs/promises';
 
 export async function readFileUpToLimit(filePath, maxBytes) {
-  const chunks = [];
+  const handle = await open(filePath, 'r');
+  const buffer = Buffer.alloc(maxBytes + 1);
   let length = 0;
-  for await (const chunk of createReadStream(filePath, {
-    highWaterMark: Math.min(maxBytes + 1, READ_CHUNK_BYTES),
-  })) {
-    const accepted = chunk.subarray(0, maxBytes + 1 - length);
-    chunks.push(accepted);
-    length += accepted.byteLength;
-    if (length > maxBytes) break;
+  try {
+    while (length < buffer.length) {
+      const { bytesRead } = await handle.read(buffer, length, buffer.length - length, null);
+      if (bytesRead === 0) break;
+      length += bytesRead;
+    }
+  } finally {
+    await handle.close();
   }
-  return { data: Buffer.concat(chunks, length), truncated: length > maxBytes };
+  return { data: buffer.subarray(0, length), truncated: length > maxBytes };
 }
