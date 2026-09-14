@@ -48,8 +48,9 @@ export async function describeOtherFiles(
         throw new Error('Other-file reader must return { data, truncated }');
       const bytes = Buffer.isBuffer(result.data) ? result.data : Buffer.from(String(result.data));
       if (result.truncated === true || bytes.byteLength > MAX_OTHER_FILE_BYTES) {
+        const sampledBytes = Math.min(bytes.byteLength, MAX_OTHER_FILE_BYTES + 1);
         entries.push(
-          `${relativePath} | omitted | at least ${bytes.byteLength} sampled bytes | per-file metadata limit reached`,
+          `${relativePath} | omitted | at least ${sampledBytes} sampled bytes | per-file metadata limit reached`,
         );
         continue;
       }

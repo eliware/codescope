@@ -95,3 +95,29 @@ test('writes fallback output when request construction fails', async () => {
   ).rejects.toThrow(/developer text/);
   expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
 });
+
+test('writes fallback output when session finalization fails', async () => {
+  const writes = [];
+  await expect(
+    runReviewPipeline('repo', {
+      combine: async () => 'source',
+      readFile: async () => '',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+        readFile: async () => 'OPENAI_API_TOKEN=token',
+        close: async () => {},
+      }),
+      maxSourceChars: 10,
+      platform: 'linux',
+      createClient: () => ({}),
+      prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }], tools: [] },
+      write: async (value) => {
+        writes.push(value);
+        return { written: value.length };
+      },
+      register: () => { throw new Error('finalization failed'); },
+    }),
+  ).rejects.toThrow(/finalization failed/);
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
+});

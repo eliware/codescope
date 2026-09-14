@@ -48,19 +48,28 @@ export async function runReviewPipeline(cwd, options) {
       write: options.write,
     });
   }
-  const session = await finalizeReviewSession({
-    register: options.register,
-    controller,
-    execute: (signal) =>
-      runReviewSession({
-        client,
-        request,
-        signal,
-        write: options.write,
-        dryRun: options.dryRun,
-        usage: options.usage,
-        plainText: options.plainText,
-      }),
-  });
-  return session.output;
+  try {
+    const session = await finalizeReviewSession({
+      register: options.register,
+      controller,
+      execute: (signal) =>
+        runReviewSession({
+          client,
+          request,
+          signal,
+          write: options.write,
+          dryRun: options.dryRun,
+          usage: options.usage,
+          plainText: options.plainText,
+        }),
+    });
+    return session.output;
+  } catch (cause) {
+    if (cause?.result) throw cause;
+    return throwSessionFailure({
+      cause,
+      providerResponseReceived: false,
+      write: options.write,
+    });
+  }
 }

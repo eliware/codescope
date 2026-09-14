@@ -250,7 +250,7 @@
         "outputs": "One ordered combined evidence string or an explicit budget failure.",
         "errors": ["Aggregate limits fail deterministically when actual content exceeds the configured budget."],
         "ordering": ["Package, Convention, JSON, configuration, other-file metadata, Markdown, implementation, and tests follow the declared order."],
-        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag; oversized metadata reports a bounded sample rather than total file size, underlying reads request no more than the limit plus one byte, and reads use positive-integer bounded concurrency with sorted output."],
+        "invariants": ["Each other file is limited independently to 100000 bytes based on a reader result containing data and an explicit truncated flag; oversized metadata reports at most a limit-plus-one bounded sample rather than total file size, underlying reads request no more than the limit plus one byte, and reads use positive-integer bounded concurrency with sorted output."],
         "boundaries": { "owns": ["Review input accounting"], "doesNotOwn": ["Filesystem mutation"] }
       },
       "dos": [
