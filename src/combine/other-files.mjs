@@ -75,5 +75,5 @@ function resolveInventoryPath(rootPath, relativePath) {
   const portableRelative = path.posix.normalize(portablePath);
   if (portableRelative === '..' || portableRelative.startsWith('../'))
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
-  return path.resolve(rootPath, portablePath);
+  return path.resolve(rootPath, portableRelative);
 }

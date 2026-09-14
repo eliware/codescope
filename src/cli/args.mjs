@@ -42,6 +42,8 @@ function mergeLeadingOptions(parsed, values) {
     throw new Error('Only one --model option is allowed');
   if (values.dryRun && parsed.dryRun)
     throw new Error('Only one --dry-run option is allowed');
+  if (values.usageCount + (parsed.usage ? 1 : 0) > 1)
+    throw new Error('Only one --usage option is allowed');
   if (parsed.command === 'prompt' && values.dryRun)
     throw new Error('Usage: codescope prompt <prompt text> [--effort=...] [--model=...]');
   return {

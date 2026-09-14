@@ -20,6 +20,7 @@ export function parseOptionValues(tokens, options) {
     add: values.add,
     remaining: values.remaining,
     ...(options?.leadingOnly ? { consumed: values.consumed } : {}),
+    ...(options?.leadingOnly ? { usageCount: values.usage } : {}),
   };
 }
 
