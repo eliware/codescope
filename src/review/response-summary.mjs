@@ -11,10 +11,11 @@ function readFunctionCallArguments(response) {
       if (typeof rawName !== 'string') continue;
       const name = redactTestOutput(rawName);
       const argumentsValue = item.arguments;
-      const safeArguments =
-        typeof argumentsValue === 'string'
-          ? redactTestOutput(argumentsValue)
-          : redactTestOutput(JSON.stringify(argumentsValue));
+      const rawArguments = typeof argumentsValue === 'string'
+        ? argumentsValue
+        : JSON.stringify(argumentsValue);
+      if (typeof rawArguments !== 'string') continue;
+      const safeArguments = redactTestOutput(rawArguments);
       calls.push({ name, arguments: safeArguments });
     } catch {
       // Preserve unaffected calls when one provider item is malformed.

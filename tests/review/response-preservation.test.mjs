@@ -72,6 +72,12 @@ test('skips function calls without serializable names', () => {
   })).not.toHaveProperty('function_call_arguments');
 });
 
+test('skips function calls without serializable non-string arguments', () => {
+  expect(preserveProviderResponse({
+    output: [{ type: 'function_call', name: 'review', arguments: undefined }],
+  })).not.toHaveProperty('function_call_arguments');
+});
+
 test('preserves function-call arguments from an unserializable response', () => {
   const response = {
     output: [{ type: 'function_call', name: 'review', arguments: '{"ok":true}' }],

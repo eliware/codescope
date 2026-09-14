@@ -50,6 +50,7 @@ function mergeLeadingOptions(parsed, values) {
     effort: values.effort ?? parsed.effort,
     model: values.model ?? parsed.model,
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
+    add: [...values.add, ...parsed.add],
   };
 }
 
@@ -58,6 +59,12 @@ function takeLeadingScalarOptions(args) {
   while (index < args.length) {
     if (args[index] === '--dry-run' || args[index].startsWith('--effort=') || args[index].startsWith('--model=')) {
       index += 1;
+      continue;
+    }
+    if (args[index] === '-a' || args[index] === '--add') {
+      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
+        throw new Error(`${args[index]} requires a value`);
+      index += 2;
       continue;
     }
     if (args[index] === '--effort' || args[index] === '--model') {

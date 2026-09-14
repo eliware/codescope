@@ -131,6 +131,16 @@ test('accepts shared scalar options before a command', () => {
   expect(() => parseArgs(['--effort'])).toThrow(/requires a value/);
   expect(() => parseArgs(['--model', '--dry-run'])).toThrow(/requires a value/);
   expect(() => parseArgs(['all', '--effort'])).toThrow(/requires a value/);
+  expect(parseArgs(['--add', 'first', 'all', '--add', 'second'])).toMatchObject({
+    command: 'analyze-all',
+    add: ['first', 'second'],
+  });
+  expect(parseArgs(['-a', 'first', 'review', 'all'])).toMatchObject({
+    command: 'analyze-all',
+    add: ['first'],
+  });
+  expect(() => parseArgs(['--add'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['--add', '--dry-run'])).toThrow(/requires a value/);
 });
 
 test('normalizes direct profile scalar options exactly once', () => {
