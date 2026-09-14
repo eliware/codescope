@@ -155,3 +155,22 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
 test('main uses default collaborators for help', async () => {
   await expect(main(['--help'])).resolves.toBe(0);
 });
+
+test('main adapts the default stream writer to the review writer contract', async () => {
+  const originalWrite = process.stdout.write;
+  const writes = [];
+  process.stdout.write = (value) => {
+    writes.push(value);
+    return true;
+  };
+  try {
+    await expect(
+      main(['all'], {
+        review: async (_cwd, options) => options.write('provider response'),
+      }),
+    ).resolves.toBe(0);
+  } finally {
+    process.stdout.write = originalWrite;
+  }
+  expect(writes).toEqual(['provider response']);
+});

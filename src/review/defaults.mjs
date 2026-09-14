@@ -7,7 +7,10 @@ import { lstat, open } from 'node:fs/promises';
 
 export function createReviewDefaults({ platform = process.platform } = {}) {
   return {
-    write: (value) => { process.stdout.write(value); },
+    write: (value) => {
+      process.stdout.write(value);
+      return { written: value.length };
+    },
     readFile: fs.promises.readFile,
     openEnvFile: open,
     envFile: defaultEnvFile(),

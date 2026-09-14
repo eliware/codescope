@@ -8,6 +8,7 @@ test('runs a plain-text provider session and writes the result', async () => {
     signal: new AbortController().signal,
     write: async (value) => {
       writes.push(value);
+      return { written: value.length };
     },
     dryRun: false,
     usage: false,
@@ -39,6 +40,7 @@ test('parses a normal review tool response', async () => {
     signal: new AbortController().signal,
     write: async (value) => {
       expect(JSON.parse(value)).toEqual({ verdict: 'pass', issues: {} });
+      return { written: value.length };
     },
     dryRun: false,
     usage: false,
@@ -57,7 +59,7 @@ test('preserves malformed tool arguments as a blocked raw response', async () =>
     },
     request: reviewRequest,
     signal: new AbortController().signal,
-    write: async () => {},
+    write: async (value) => ({ written: value.length }),
     dryRun: false,
     usage: false,
   });
@@ -81,7 +83,7 @@ test('preserves an existing blocked verdict', async () => {
     },
     request: reviewRequest,
     signal: new AbortController().signal,
-    write: async () => {},
+    write: async (value) => ({ written: value.length }),
     dryRun: false,
     usage: false,
   });
@@ -94,7 +96,7 @@ test('returns plain JSON without usage when usage output is disabled', async () 
       client: { responses: { create: async () => ({ output_text: '{"ok":true}' }) } },
       request: reviewRequest,
       signal: new AbortController().signal,
-      write: async () => {},
+      write: async (value) => ({ written: value.length }),
       dryRun: false,
       usage: false,
       plainText: 'summarize',
@@ -131,7 +133,7 @@ test('includes usage without test execution evidence', async () => {
     },
     request: { model: 'gpt-5.6-luna' },
     signal: new AbortController().signal,
-    write: async () => {},
+    write: async (value) => ({ written: value.length }),
     dryRun: false,
     plainText: 'review',
     usage: true,
@@ -161,7 +163,7 @@ test('runs dry-run and preserves provider failures', async () => {
       client: { responses: { inputTokens: { count: async () => ({ input_tokens: 1 }) } } },
       request: { model: 'gpt-5.6-luna', input: [], tools: [] },
       signal: new AbortController().signal,
-      write: async () => {},
+      write: async (value) => ({ written: value.length }),
       dryRun: true,
       usage: false,
     }),
@@ -178,7 +180,7 @@ test('runs dry-run and preserves provider failures', async () => {
       },
       request: { model: 'gpt-5.6-luna' },
       signal: new AbortController().signal,
-      write: async () => {},
+      write: async (value) => ({ written: value.length }),
       dryRun: false,
       usage: false,
     }),

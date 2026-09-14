@@ -133,7 +133,8 @@
             "Write the exact successful provider response unchanged.",
             "Keep provider tool schemas and prompt instructions as requested-output guidance rather than CodeScope acceptance requirements.",
             "Allow review, suggestion, and custom-prompt responses to be provider-defined and not machine-readable.",
-            "Report provider transport failures and output-write failures as errors, preserving fallback error metadata where available."
+            "Report provider transport, setup, and output-write failures as errors, preserving safe fallback output and fallback error metadata where available.",
+            "Require output writers to report an exact written character count; do not treat an absent result as successful completion."
           ],
           "donts": [
             "Do not parse, validate, redact, pretty-print, reformat, or otherwise transform successful provider output.",

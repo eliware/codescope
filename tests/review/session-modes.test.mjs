@@ -8,6 +8,7 @@ test('writes and returns dry-run results', async () => {
     signal: new AbortController().signal,
     write: async (value) => {
       writes.push(value);
+      return { written: value.length };
     },
     usage: false,
   });

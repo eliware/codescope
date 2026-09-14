@@ -10,7 +10,10 @@ export async function main(
   {
     output = console.log,
     error = console.error,
-    write = process.stdout.write.bind(process.stdout),
+    write = (value) => {
+      process.stdout.write(value);
+      return { written: value.length };
+    },
     cwd = process.cwd(),
     review = runReview,
   } = {},

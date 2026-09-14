@@ -27,6 +27,7 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
     model: 'gpt-5.6-luna',
     write: async (value) => {
       writes.push(value);
+      return { written: value.length };
     },
     dryRun: false,
     usage: false,

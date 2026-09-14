@@ -1,7 +1,5 @@
-// Writers may return undefined or { written }. Explicit counts must account
-// for the complete output.
+// Writers must report an explicit complete character count.
 function assertCompleteWrite(result, output) {
-  if (result === undefined) return;
   if (result && typeof result === 'object' && 'written' in result) {
     if (!Number.isInteger(result.written) || result.written < 0)
       throw new Error('Writer reported an invalid written character count');
@@ -9,12 +7,18 @@ function assertCompleteWrite(result, output) {
       throw new Error(`Writer reported a short write: ${result.written} of ${output.length} characters`);
     return;
   }
-  throw new Error('Writer returned an unsupported result; expected undefined or { written }');
+  throw new Error('Writer returned an unsupported result; expected { written }');
+}
+
+function outputText(output) {
+  if (typeof output === 'string') return output;
+  const serialized = JSON.stringify(output);
+  return serialized === undefined ? String(output) : serialized;
 }
 
 export async function writeProviderResult(write, output, label = 'review') {
   try {
-    const text = typeof output === 'string' ? output : String(output);
+    const text = outputText(output);
     const result = await write(text);
     assertCompleteWrite(result, text);
   } catch (cause) {
@@ -27,7 +31,7 @@ export async function writeProviderResult(write, output, label = 'review') {
 
 export async function writeFallbackResult(write, output) {
   try {
-    const text = typeof output === 'string' ? output : String(output);
+    const text = outputText(output);
     const result = await write(text);
     assertCompleteWrite(result, text);
     return undefined;

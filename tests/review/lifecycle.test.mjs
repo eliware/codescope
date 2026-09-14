@@ -39,7 +39,7 @@ const base = (overrides = {}) => ({
   openEnvFile: undefined,
   createClient: () => ({ responses: { create: async () => response } }),
   register: () => ({ removeHandlers() {} }),
-  write: async () => {},
+  write: async (value) => ({ written: value.length }),
   ...overrides,
 });
 
@@ -50,6 +50,7 @@ test('runs a normal review and writes the raw provider result unchanged', async 
     base({
       write: async (value) => {
         writes.push(value);
+        return { written: value.length };
       },
     }),
   );
@@ -94,4 +95,39 @@ test('rejects invalid prompt and token setup', async () => {
   await expect(runReview('C:/repo', base({ readEnvFile: async () => '' }))).rejects.toThrow(
     /OPENAI_API_TOKEN/,
   );
+});
+
+test('writes a safe fallback when provider setup fails', async () => {
+  const writes = [];
+  await expect(
+    runReview(
+      'C:/repo',
+      base({
+        readEnvFile: async () => '',
+        write: async (value) => {
+          writes.push(value);
+          return { written: value.length };
+        },
+      }),
+    ),
+  ).rejects.toMatchObject({ result: { issues: 'not submitted', suggestions: 'not submitted' } });
+  expect(JSON.parse(writes[0])).toMatchObject({
+    issues: 'not submitted',
+    suggestions: 'not submitted',
+    error: expect.stringContaining('OPENAI_API_TOKEN'),
+  });
+});
+
+test('preserves setup fallback write failures as metadata', async () => {
+  await expect(
+    runReview(
+      'C:/repo',
+      base({
+        readEnvFile: async () => '',
+        write: async () => {
+          throw new Error('fallback disk full');
+        },
+      }),
+    ),
+  ).rejects.toMatchObject({ fallbackError: { message: 'fallback disk full' } });
 });

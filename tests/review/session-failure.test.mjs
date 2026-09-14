@@ -9,6 +9,7 @@ test('preserves provider failures and fallback metadata', async () => {
       providerResponseReceived: true,
       write: async (value) => {
         writes.push(value);
+        return { written: value.length };
       },
     }),
   ).rejects.toMatchObject({ result: { issues: 'not submitted' } });
@@ -20,7 +21,7 @@ test('wraps failures before a provider response without fallback output', async 
     throwSessionFailure({
       cause: new Error('request failed'),
       providerResponseReceived: false,
-      write: async () => {},
+      write: async (value) => ({ written: value.length }),
     }),
   ).rejects.toThrow('request failed');
 });

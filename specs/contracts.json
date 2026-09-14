@@ -253,6 +253,7 @@
         "Compose comprehensive evidence in the documented order: package metadata, applicable Convention JSON, eligible JSON, configuration, other-file metadata, Markdown, implementation, and tests.",
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
         "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
+        "Validate configuration inventory entries as regular non-symlink files before reading them.",
         "Read no more than one byte beyond the 100000-byte per-file limit, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
         "Use one shared aggregate section-joining limit for all and selected composition paths."
       ],
@@ -365,16 +366,17 @@
         "outputs": "The exact successful provider response text or a provider failure with preserved diagnostics.",
         "errors": ["Transport failures and incomplete output writes are nonzero CodeScope-owned failures."],
         "ordering": ["Collect and validate local repository evidence before provider setup; complete provider execution before writing the result; cleanup follows success or failure."],
-        "invariants": ["Successful provider output is not parsed, formatted, or transformed.", "Fallback diagnostic serialization is redacted, capped at 500000 characters, and explicitly marked when capped."],
+        "invariants": ["Successful provider output is not parsed, formatted, or transformed.", "Fallback diagnostics preserve independently readable safe fields, serialize redacted output when possible, cap it at 500000 characters, and explicitly mark capped output."],
         "boundaries": { "owns": ["Provider output handling"], "doesNotOwn": ["Provider output semantics"] }
       },
       "dos": [
         "Send the prepared request to the provider and preserve the exact successful response text unchanged.",
         "Allow review, suggestion, and custom-prompt responses to remain provider-defined and non-machine-readable.",
         "Accept only raw string function-call arguments as successful provider response text; preserve non-text arguments only in redacted diagnostic summaries.",
-        "Preserve safe diagnostic summaries when a provider response cannot be serialized, and mark capped serialized diagnostics with response_truncated.",
+        "Preserve independently readable safe diagnostic fields when a provider response cannot be serialized, serialize fallback result objects as JSON, and mark capped serialized diagnostics with response_truncated.",
         "Report provider transport failures and output-write failures with their original error context.",
-        "Accept writer results of undefined or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
+        "Require writers to return an object with an exact written character count; stdout adapters intentionally discard Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
+        "Write a safe incomplete result when provider setup fails, and preserve a fallback-write failure as metadata on the original failure.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [
@@ -382,7 +384,7 @@
         "Do not derive process status or exit code from provider content.",
         "Do not discard all safe function-call summaries because one provider call is malformed.",
         "Do not describe capped fallback diagnostics as unchanged successful provider output.",
-        "Do not accept booleans, numbers, strings, null, or unrelated objects as writer results.",
+        "Do not accept undefined, booleans, numbers, strings, null, or unrelated objects as writer results.",
         "Do not treat a short explicit writer count as a successful complete write."
       ],
       "implementation": { "source": [
@@ -393,6 +395,7 @@
         "../src/review/run-session.mjs",
         "../src/review/run-review-pipeline.mjs",
         "../src/review/output.mjs",
+        "../src/review/response-diagnostic.mjs",
         "../src/review/response-preservation.mjs"
       ] },
       "verification": { "tests": [
@@ -402,6 +405,7 @@
         "../tests/review/run-session.test.mjs",
         "../tests/review/run-review-pipeline.test.mjs",
         "../tests/review/output.test.mjs",
+        "../tests/review/response-diagnostic.test.mjs",
         "../tests/review/response-preservation.test.mjs"
       ], "commands": [] }
     },

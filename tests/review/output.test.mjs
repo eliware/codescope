@@ -5,6 +5,7 @@ test('writes raw string output unchanged', async () => {
   await writeProviderResult(
     (value) => {
       output = value;
+      return { written: value.length };
     },
     '{"ok":true}',
   );
@@ -12,8 +13,19 @@ test('writes raw string output unchanged', async () => {
 });
 
 test('returns no fallback error when writing succeeds', async () => {
-  await expect(writeFallbackResult(() => undefined, { ok: true })).resolves.toBeUndefined();
-  await expect(writeFallbackResult(() => undefined, '{"ok":true}')).resolves.toBeUndefined();
+  await expect(writeFallbackResult((value) => ({ written: value.length }), { ok: true })).resolves.toBeUndefined();
+  await expect(writeFallbackResult((value) => ({ written: value.length }), '{"ok":true}')).resolves.toBeUndefined();
+});
+
+test('serializes non-JSON fallback values without discarding them', async () => {
+  const writes = [];
+  await expect(
+    writeFallbackResult((value) => {
+      writes.push(value);
+      return { written: value.length };
+    }, () => {}),
+  ).resolves.toBeUndefined();
+  expect(writes).toEqual(['() => {}']);
 });
 
 test('adds output context to writer failures', async () => {
@@ -69,7 +81,8 @@ test('accepts a numeric complete write', async () => {
   ).resolves.toBeUndefined();
 });
 
-test('rejects ambiguous boolean stream status results', async () => {
+test('rejects missing or ambiguous writer results', async () => {
+  await expect(writeProviderResult(async () => undefined, 'hello')).rejects.toThrow('unsupported result');
   await expect(writeProviderResult(async () => true, 'hello')).rejects.toThrow('unsupported result');
   await expect(writeProviderResult(async () => false, 'hello')).rejects.toThrow(
     'unsupported result',

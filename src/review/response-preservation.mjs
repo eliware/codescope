@@ -1,22 +1,14 @@
-import { summarizeProviderResponse } from './response-summary.mjs';
-import { redactDiagnostic } from './redaction.mjs';
+import { safeResponseSummary, serializeResponseDiagnostic } from './response-diagnostic.mjs';
 
 export function preserveProviderResponse(response) {
   if (response === undefined) return undefined;
-  const summary = summarizeProviderResponse(response);
-  try {
-    const serialized = JSON.stringify(response);
-    const diagnostic = redactDiagnostic(serialized);
-    return {
-      ...summary,
-      response: diagnostic.text,
-      ...(diagnostic.truncated ? { response_truncated: true } : {}),
-      response_error: 'Provider response was not accepted by the response contract',
-    };
-  } catch {
-    return {
-      ...summary,
-      response_error: 'Provider response could not be serialized',
-    };
-  }
+  const summary = safeResponseSummary(response);
+  const diagnostic = serializeResponseDiagnostic(response);
+  return {
+    ...summary,
+    ...diagnostic,
+    response_error: diagnostic
+      ? 'Provider response was not accepted by the response contract'
+      : 'Provider response could not be serialized',
+  };
 }
