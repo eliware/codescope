@@ -29,7 +29,7 @@ export function validateReviewOptions(
     throw new Error('runReview option model must be a non-empty string');
   if (plainText !== undefined && (typeof plainText !== 'string' || !plainText.trim()))
     throw new Error('runReview option plainText must be a non-empty string');
-  if (add !== undefined && (!Array.isArray(add) || !add.every((value) => typeof value === 'string')))
+  if (add !== undefined && (!Array.isArray(add) || !add.every((value) => typeof value === 'string' && value.trim())))
     throw new Error('runReview option add must be an array of strings');
   if (plainText !== undefined && (dryRun || usage))
     throw new Error('runReview option plainText cannot be combined with dryRun or usage');

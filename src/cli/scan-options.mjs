@@ -9,7 +9,7 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnl
     const token = tokens[index];
     if (token === '-a' || token === '--add') {
       const value = tokens[++index];
-      if (value === undefined || value.startsWith('-')) throw new Error(`${token} requires a value`);
+      if (value === undefined || !value.trim() || value.startsWith('-')) throw new Error(`${token} requires a value`);
       add.push(value);
     } else if (token === '--effort' || token === '--model') {
       const value = tokens[++index];

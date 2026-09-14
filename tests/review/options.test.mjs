@@ -30,6 +30,7 @@ test('rejects invalid review options', () => {
   expect(() => validateReviewOptions('/repo', { ...valid, platform: 'plan9' })).toThrow(/unsupported/);
   expect(() => validateReviewOptions('/repo', { ...valid, plainText: ' ' })).toThrow(/plainText/);
   expect(() => validateReviewOptions('/repo', { ...valid, add: ['ok', 1] })).toThrow(/add/);
+  expect(() => validateReviewOptions('/repo', { ...valid, add: [' '] })).toThrow(/add/);
   expect(() => validateReviewOptions('/repo', { ...valid, model: 42 })).toThrow(/model/);
   expect(() => validateReviewOptions('/repo', { ...valid, model: ' ' })).toThrow(/model/);
   expect(() => validateReviewOptions('/repo', { ...valid, plainText: 'prompt', dryRun: true })).toThrow(
