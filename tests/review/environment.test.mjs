@@ -12,6 +12,19 @@ test('loads environment values from the configured file', async () => {
   await expect(loadReviewEnvironment(base)).resolves.toMatchObject({ OPENAI_API_TOKEN: 'token' });
 });
 
+test('retains process environment credentials when an injected environment is empty', async () => {
+  const previous = process.env.OPENAI_API_TOKEN;
+  process.env.OPENAI_API_TOKEN = 'process-token';
+  try {
+    await expect(loadReviewEnvironment({ ...base, environment: {} })).resolves.toMatchObject({
+      OPENAI_API_TOKEN: 'process-token',
+    });
+  } finally {
+    if (previous === undefined) delete process.env.OPENAI_API_TOKEN;
+    else process.env.OPENAI_API_TOKEN = previous;
+  }
+});
+
 test('uses readFile when readEnvFile is omitted', async () => {
   const readFile = async () => 'OPENAI_API_TOKEN=token';
   await expect(loadReviewEnvironment({ ...base, readFile, readEnvFile: undefined })).resolves.toMatchObject({

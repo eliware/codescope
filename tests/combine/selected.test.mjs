@@ -13,6 +13,7 @@ test('combines selected implementation, tests, and docs in order', async () => {
     docs: true,
   });
   expect(result).toContain('package.json');
+  expect(result).toContain('===== other files (names and sizes only) =====');
 });
 
 test('returns package metadata when no optional sections are selected', async () => {

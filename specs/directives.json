@@ -73,6 +73,7 @@
           "id": "A-19.2",
           "dos": [
             "Use a nonblank OPENAI_API_TOKEN from the process environment when present; treat a missing or whitespace-only process value as absent and otherwise use a nonblank value from ~/.codescope.",
+            "Layer injected environment values over the process environment without suppressing process credentials.",
             "Treat missing credentials and provider transport failures as errors."
           ],
           "donts": [

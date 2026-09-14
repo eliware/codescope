@@ -92,7 +92,7 @@ Append one or more `-a <text>` or `--add <text>` options to any profile command,
 
 `codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page.
 
-Append `--usage` to either grouped (`codescope review all`) or direct (`codescope all`) syntax to include API usage metadata in the final JSON result.
+Append `--usage` to either grouped (`codescope review all`) or direct (`codescope all`) syntax to request usage metadata from the supported review path. `--dry-run` returns that metadata as CodeScope output; successful provider response text remains unchanged.
 
 Append `--dry-run` to prepare a request derived from the review context and ask OpenAI for its estimated input-token count without running a model review. The option reports the selected model and estimated input tokens; combine it with `--usage` when you want the count under `usage` as well.
 

@@ -99,3 +99,16 @@ test('rejects an invalid bounded-reader result', async () => {
     }),
   ).rejects.toThrow('must return { data, truncated }');
 });
+
+test('rejects inventory paths that escape the review root', async () => {
+  await expect(
+    describeOtherFiles('repo', ['../outside.txt'], {
+      readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
+    }),
+  ).rejects.toThrow(/escapes review root/);
+  await expect(
+    describeOtherFiles('repo', [42], {
+      readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
+    }),
+  ).rejects.toThrow(/must be strings/);
+});

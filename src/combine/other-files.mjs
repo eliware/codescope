@@ -11,13 +11,16 @@ export async function describeOtherFiles(
     concurrency = 8,
   } = {},
 ) {
+  const rootPath = path.resolve(root);
+  for (const relativePath of inventory)
+    if (typeof relativePath !== 'string') throw new Error('Inventory paths must be strings');
   const paths = inventory.filter((relativePath) => !isIncludedContent(relativePath));
   const entries = [];
   let next = 0;
   const worker = async () => {
     while (next < paths.length) {
       const relativePath = paths[next++];
-      const filePath = path.join(root, relativePath);
+      const filePath = resolveInventoryPath(rootPath, relativePath);
       const result = await readOtherFileContents(filePath);
       if (
         !result ||
@@ -39,4 +42,12 @@ export async function describeOtherFiles(
   const workerCount = Math.min(paths.length, Math.max(1, concurrency));
   await Promise.all(Array.from({ length: workerCount }, () => worker()));
   return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
+}
+
+function resolveInventoryPath(rootPath, relativePath) {
+  const filePath = path.resolve(rootPath, relativePath);
+  const relative = path.relative(rootPath, filePath);
+  if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative))
+    throw new Error(`Inventory path escapes review root: ${relativePath}`);
+  return filePath;
 }

@@ -115,6 +115,7 @@ test('uses the injected convention manifest reader for virtual roots', async () 
   try {
     const result = await combineConventionFiles(path.join(root, 'project'), {
       conventionsRoot: root,
+      readPackageJson: async () => JSON.stringify({ eliware: { conventions: { apply: ['virtual'] } } }),
       readConventionManifest: async () =>
         JSON.stringify({ repositoryTypes: { virtual: 'specs/virtual.json' } }),
     });

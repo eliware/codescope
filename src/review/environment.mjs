@@ -8,7 +8,7 @@ export async function loadReviewEnvironment({
   readEnvFile = readFile,
   openEnvFile,
   inspectFile,
-  environment = { ...process.env },
+  environment,
 }) {
   const envText = await readReviewEnvironmentFile({
     envFile,
@@ -17,6 +17,7 @@ export async function loadReviewEnvironment({
     openEnvFile,
     inspectFile,
   });
-  loadEnv(envText, environment);
-  return environment;
+  const effectiveEnvironment = { ...process.env, ...environment };
+  loadEnv(envText, effectiveEnvironment);
+  return effectiveEnvironment;
 }

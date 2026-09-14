@@ -140,6 +140,7 @@
         "../src/cli/add-option.mjs",
         "../src/cli/profile-args.mjs",
         "../src/cli/prompt-args.mjs",
+        "../src/cli/prompt-partition.mjs",
         "../src/cli/option-values.mjs",
         "../src/cli/dispatch-meta.mjs",
         "../src/prompts/append-user-message.mjs"
@@ -149,6 +150,7 @@
         "../tests/cli/add-option.test.mjs",
         "../tests/cli/profile-args.test.mjs",
         "../tests/cli/prompt-args.test.mjs",
+        "../tests/cli/prompt-partition.test.mjs",
         "../tests/cli/main.test.mjs",
         "../tests/prompts/append-user-message.test.mjs"
       ], "commands": [] }
@@ -172,6 +174,7 @@
         "Use the all operation for comprehensive implementation, test, documentation, metadata, and remaining-file evidence.",
         "Route suggest all through one generic non-blocking suggestion prompt covering every review category plus new-features.",
         "Use prompt with the all context and no review or suggestion tool requirement.",
+        "Include configuration and remaining-file inventory sections in selected composition before optional source sections.",
         "Keep new-features in suggestion mode when invoked through the review command."
       ],
       "donts": [
@@ -254,6 +257,7 @@
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
         "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
         "Validate configuration inventory entries as regular non-symlink files before reading them.",
+        "Validate inventory paths remain within the canonical review root before reading remaining-file metadata.",
         "Read no more than one byte beyond the 100000-byte per-file limit, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
         "Use one shared aggregate section-joining limit for all and selected composition paths."
       ],
@@ -298,6 +302,7 @@
       "dos": [
         "Read only the repository types declared by package.json eliware.conventions.apply.",
         "Load canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader.",
+        "Read repository package applicability through the injected package reader when one is supplied.",
         "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",
         "Treat canonical Conventions records as the authority for repository requirements."
       ],
@@ -420,7 +425,7 @@
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
         "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Injected environment seams are layered over the process environment rather than suppressing it."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [

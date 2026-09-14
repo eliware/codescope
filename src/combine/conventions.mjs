@@ -10,6 +10,7 @@ export async function combineConventionFiles(
     conventionsRoot = path.resolve(root, '..', 'conventions'),
     readDirectory,
     readFileContents = readFile,
+    readPackageJson = readFileContents,
     readConventionManifest = readFile,
     inspectFile = lstat,
   } = {},
@@ -22,7 +23,7 @@ export async function combineConventionFiles(
   }
 
   const applicability = await readConventionApplicability(root, {
-    readFileContents,
+    readPackageJson,
     readConventionManifest,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
@@ -54,11 +55,11 @@ export async function combineConventionFiles(
 
 async function readConventionApplicability(
   root,
-  { readFileContents = readFile, readConventionManifest = readFile } = {},
+  { readPackageJson = readFile, readConventionManifest = readFile } = {},
 ) {
   try {
     const packageJson = JSON.parse(
-      await readFileContents(path.resolve(root, 'package.json'), 'utf8'),
+      await readPackageJson(path.join(root, 'package.json'), 'utf8'),
     );
     const manifest = JSON.parse(
       await readConventionManifest(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
