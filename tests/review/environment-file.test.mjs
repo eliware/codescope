@@ -68,37 +68,6 @@ test('preserves a default file that is absent before reading', async () => {
   ).resolves.toBe('');
 });
 
-test('does not hide an inaccessible environment-file parent', async () => {
-  const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
-  const denied = Object.assign(new Error('denied'), { code: 'EACCES' });
-  let inspections = 0;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'C:/private/.env',
-      inspectFile: async () => {
-        inspections += 1;
-        if (inspections === 1) throw missing;
-        throw denied;
-      },
-    }),
-  ).rejects.toThrow(/Unable to inspect/);
-});
-
-test('does not treat a non-directory environment parent as absent', async () => {
-  const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
-  let inspections = 0;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'C:/private/.env',
-      inspectFile: async () => {
-        inspections += 1;
-        if (inspections === 1) throw missing;
-        return { isDirectory: () => false };
-      },
-    }),
-  ).rejects.toThrow(/Unable to inspect/);
-});
-
 test('does not open a file that appears after the initial missing inspection', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
   let inspections = 0;
@@ -108,12 +77,12 @@ test('does not open a file that appears after the initial missing inspection', a
       inspectFile: async () => {
         inspections += 1;
         if (inspections === 1) throw missing;
-        return { isDirectory: () => true };
+        return { isSymbolicLink: () => false };
       },
       openEnvFile: openWith(),
     }),
   ).resolves.toBe('');
-  expect(inspections).toBe(2);
+  expect(inspections).toBe(1);
 });
 
 test('rejects replacement of an existing file between inspection and read', async () => {

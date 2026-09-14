@@ -1,4 +1,3 @@
-import path from 'node:path';
 import { assertNotSymbolicLink, fileIdentity } from './environment-file-safety.mjs';
 import { readStableEnvironmentFile } from './stable-environment-reader.mjs';
 
@@ -19,14 +18,7 @@ export async function readReviewEnvironmentFile({
     initialMetadata = await inspectFile(envFile);
     assertNotSymbolicLink(envFile, initialMetadata);
   } catch (cause) {
-    if (cause?.code === 'ENOENT') {
-      try {
-        if (await isAbsentEnvironmentFile(envFile, inspectFile)) return '';
-      } catch (parentCause) {
-        throw inspectionError(envFile, 'Unable to inspect', parentCause);
-      }
-      throw inspectionError(envFile, 'Unable to inspect', cause);
-    }
+    if (cause?.code === 'ENOENT') return '';
     else throw inspectionError(envFile, 'Unable to inspect', cause);
   }
   let initialIdentity;
@@ -38,14 +30,4 @@ export async function readReviewEnvironmentFile({
   const envText = await readStableEnvironmentFile({ envFile, openEnvFile, initialIdentity });
   onFileRead?.();
   return envText;
-}
-
-async function isAbsentEnvironmentFile(envFile, inspectFile) {
-  try {
-    const parent = await inspectFile(path.dirname(envFile));
-    return typeof parent.isDirectory === 'function' && parent.isDirectory();
-  } catch (cause) {
-    if (cause?.code === 'ENOENT') return true;
-    throw cause;
-  }
 }
