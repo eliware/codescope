@@ -70,6 +70,11 @@ test('parses metadata command variants', () => {
     command: 'version',
     add: ['ignored'],
   });
+  expect(parseArgs(['--effort=low', 'help', '--model=gpt-5.6-sol', '--usage'])).toEqual({
+    command: 'help',
+    option: undefined,
+    add: [],
+  });
   expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
   expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);
   expect(() => parseArgs(['version', '--bad'])).toThrow(/not valid/);

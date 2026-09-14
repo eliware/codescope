@@ -14,5 +14,5 @@ export async function resolveReviewSetup({
   });
   const token = environment.OPENAI_API_TOKEN?.trim();
   if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
-  return { environment, token };
+  return { token };
 }

@@ -18,12 +18,11 @@ function parseCommandArgs(args) {
   if (first === 'prompt') return parsePromptArgs(rest);
   if (first === 'review' || first === 'suggest') return parseGroupedArgs(first, rest);
   const values = parseOptionValues(rest);
-  const meta = parseMetaCommand(first, values.remaining);
+  const metaTokens = values.remaining.filter((token) => !['--usage', '--dry-run'].includes(token));
+  const meta = parseMetaCommand(first, metaTokens);
   if (meta)
     return {
       ...meta,
-      effort: values.effort,
-      model: values.model,
       add: values.add,
     };
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
@@ -37,6 +36,8 @@ function parseCommandArgs(args) {
 }
 
 function mergeLeadingOptions(parsed, values) {
+  if (parsed.command === 'help' || parsed.command === 'version')
+    return parsed;
   if (values.effort !== undefined && parsed.effort !== undefined)
     throw new Error('Only one --effort option is allowed');
   if (values.model !== undefined && parsed.model !== undefined)

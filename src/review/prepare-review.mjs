@@ -7,10 +7,10 @@ export async function prepareReview({
   inspectFile,
   createClient,
 }) {
-  const { environment, token } = await resolveReviewSetup({
+  const { token } = await resolveReviewSetup({
     envFile,
     openEnvFile,
     inspectFile,
   });
-  return { environment, token, client: initializeReviewClient(createClient, token) };
+  return { token, client: initializeReviewClient(createClient, token) };
 }

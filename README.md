@@ -90,7 +90,7 @@ Use `codescope prompt "your question"` for an ad hoc request. It sends the same 
 
 Append one or more `-a <text>` or `--add <text>` options to any profile command, including `all`, `release`, review profiles, suggestion profiles, and `prompt`. Each added string is untrusted provider prompt text, cannot override system or developer instructions, is preserved verbatim, and is appended to the end of the final user message in command-line order. For example: `codescope all --add "Review local-link handling as a separate known limitation"`. Bare `codescope`, `codescope help`, `codescope --help`, and version output accept additions in normalized command metadata but intentionally do not apply them.
 
-`codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page. Help and version output intentionally ignore review-only metadata such as `--usage` and `--dry-run`.
+`codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page. Help and version output intentionally ignore review-only metadata such as `--usage`, `--dry-run`, `--effort`, and `--model`.
 
 Append `--usage` with `--dry-run` to either grouped (`codescope review all`) or direct (`codescope all`) review syntax to include usage metadata. `--dry-run` is supported on review and suggestion profile commands and returns that metadata as CodeScope output; it is not valid for `codescope prompt`, whose successful provider response text remains unchanged.
 
