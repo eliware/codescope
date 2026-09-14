@@ -19,7 +19,7 @@ function normalizeTrailingOptions(tokens) {
       if (value === undefined || value.startsWith('-'))
         throw new Error('Only --effort=... or --model=... may follow --');
       options.push(`${token}=${value}`);
-    } else if (token.startsWith('--effort=') || token.startsWith('--model=') || ['--dry-run', '--usage'].includes(token)) {
+    } else if (token.startsWith('--effort=') || token.startsWith('--model=')) {
       options.push(token);
     } else {
       throw new Error('Only --effort=... or --model=... may follow --');

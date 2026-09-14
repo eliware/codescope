@@ -10,7 +10,11 @@ export async function combineConfigFiles(
   root,
   { inventory, readFileContents, inspectFile, concurrency = 8 } = {},
 ) {
-  const configFiles = inventory.map((relativePath) => relativePath.replaceAll('\\', '/')).filter((relativePath) => {
+  const portableInventory = inventory.map((relativePath) => relativePath.replaceAll('\\', '/'));
+  for (const relativePath of portableInventory)
+    if (isAbsolutePortablePath(relativePath))
+      throw new Error(`Configuration path escapes review root: ${relativePath}`);
+  const configFiles = portableInventory.filter((relativePath) => {
     const normalized = relativePath.toLowerCase();
     return (
       normalized.startsWith('.github/') || normalized.startsWith('.knit/')
@@ -59,4 +63,12 @@ function resolveConfigPath(root, relativePath) {
   if (normalized === '..' || normalized.startsWith('../'))
     throw new Error(`Configuration path escapes review root: ${relativePath}`);
   return path.resolve(root, normalized);
+}
+
+function isAbsolutePortablePath(relativePath) {
+  return (
+    path.posix.isAbsolute(relativePath) ||
+    path.win32.isAbsolute(relativePath) ||
+    /^(?:\\\\|\/\/)/u.test(relativePath)
+  );
 }

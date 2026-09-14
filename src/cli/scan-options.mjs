@@ -1,4 +1,4 @@
-export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
+export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnly = false } = {}) {
   const add = [];
   const remaining = [];
   const effort = [];
@@ -28,8 +28,11 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
       if (keepScalarOptions) remaining.push(token);
     } else if (token === '--usage') {
       usage += 1;
-      remaining.push(token);
+      if (!leadingOnly) remaining.push(token);
+    } else if (leadingOnly) {
+      remaining.push(...tokens.slice(index));
+      break;
     } else remaining.push(token);
   }
-  return { add, effort, model, dryRun, usage, remaining };
+  return { add, effort, model, dryRun, usage, remaining, consumed: tokens.length - remaining.length };
 }

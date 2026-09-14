@@ -1,4 +1,4 @@
-export function getBatchSize(maxChars, concurrency) {
+export function getBatchSize(concurrency) {
   return concurrency;
 }
 

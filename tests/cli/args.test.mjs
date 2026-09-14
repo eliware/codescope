@@ -146,7 +146,7 @@ test('accepts shared scalar options before a command', () => {
     command: 'analyze-all',
     add: ['first', 'second'],
   });
-  expect(parseArgs(['--usage', 'all'])).toMatchObject({ command: 'analyze-all', option: '--usage', usage: true });
+  expect(parseArgs(['--usage', 'all'])).toMatchObject({ command: 'analyze-all', option: undefined, usage: true });
   expect(parseArgs(['-a', 'first', 'review', 'all'])).toMatchObject({
     command: 'analyze-all',
     add: ['first'],

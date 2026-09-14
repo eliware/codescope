@@ -5,10 +5,9 @@ import { parseProfileArgs } from './profile-args.mjs';
 import { parseMetaCommand } from './meta-args.mjs';
 
 export function parseArgs(args) {
-  const leading = takeLeadingScalarOptions(args);
-  if (leading.options.length) {
-    const values = parseOptionValues(leading.options);
-    return mergeLeadingOptions(parseCommandArgs([...leading.remaining, ...values.remaining]), values);
+  const values = parseOptionValues(args, { leadingOnly: true });
+  if (values.consumed > 0) {
+    return mergeLeadingOptions(parseCommandArgs(values.remaining), values);
   }
   return parseCommandArgs(args);
 }
@@ -53,33 +52,4 @@ function mergeLeadingOptions(parsed, values) {
     ...(values.usage || parsed.usage ? { usage: true } : {}),
     add: [...values.add, ...parsed.add],
   };
-}
-
-function takeLeadingScalarOptions(args) {
-  let index = 0;
-  while (index < args.length) {
-    if (args[index] === '--effort' || args[index] === '--model') {
-      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
-        throw new Error(`${args[index]} requires a value`);
-      index += 2;
-      continue;
-    }
-    if (
-      args[index] === '--dry-run' ||
-      args[index] === '--usage' ||
-      args[index].startsWith('--effort=') ||
-      args[index].startsWith('--model=')
-    ) {
-      index += 1;
-      continue;
-    }
-    if (args[index] === '-a' || args[index] === '--add') {
-      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
-        throw new Error(`${args[index]} requires a value`);
-      index += 2;
-      continue;
-    }
-    break;
-  }
-  return { options: args.slice(0, index), remaining: args.slice(index) };
 }

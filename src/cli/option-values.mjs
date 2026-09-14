@@ -2,8 +2,8 @@ import { validateEffort, validateModel } from './option-validation.mjs';
 import { scanOptionTokens } from './scan-options.mjs';
 export { validateEffort, validateModel } from './option-validation.mjs';
 
-export function parseOptionValues(tokens) {
-  const values = scanOptionTokens(tokens);
+export function parseOptionValues(tokens, options) {
+  const values = scanOptionTokens(tokens, options);
   const { effort: effortTokens, model: modelTokens, dryRun: dryRunCount, usage: usageCount } = values;
   if (effortTokens.length > 1) throw new Error('Only one --effort option is allowed');
   if (modelTokens.length > 1) throw new Error('Only one --model option is allowed');
@@ -19,6 +19,7 @@ export function parseOptionValues(tokens) {
     ...(usageCount > 0 ? { usage: true } : {}),
     add: values.add,
     remaining: values.remaining,
+    ...(options?.leadingOnly ? { consumed: values.consumed } : {}),
   };
 }
 

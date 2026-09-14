@@ -20,7 +20,7 @@ export async function combineJsonFiles(
   const files = (await findFiles(root, '.json', { readDirectory })).filter(isIncludedJson);
   const rootPath = path.resolve(root);
   const sections = await readBatches(files, {
-    batchSize: getBatchSize(maxChars, concurrency),
+    batchSize: getBatchSize(concurrency),
     maxChars,
     read: async (relativePath) => {
       const contents = await readSourceFile(relativePath, path.resolve(rootPath, relativePath), {

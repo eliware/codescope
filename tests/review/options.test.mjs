@@ -25,6 +25,8 @@ test('rejects invalid review options', () => {
   expect(() => validateReviewOptions('/repo', { ...valid, write: null })).toThrow(/write/);
   expect(() => validateReviewOptions('/repo', { ...valid, openEnvFile: null })).toThrow(/openEnvFile/);
   expect(() => validateReviewOptions('/repo', { ...valid, platform: 'plan9' })).toThrow(/unsupported/);
+  expect(() => validateReviewOptions('/repo', { ...valid, plainText: ' ' })).toThrow(/plainText/);
+  expect(() => validateReviewOptions('/repo', { ...valid, add: ['ok', 1] })).toThrow(/add/);
 });
 
 test('rejects invalid scalar and collaborator options', () => {

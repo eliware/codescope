@@ -36,6 +36,12 @@ test('rejects configuration paths outside the review root', async () => {
   })).rejects.toThrow(/escapes review root/);
 });
 
+test('rejects Windows absolute configuration paths before filtering', async () => {
+  await expect(combineConfigFiles('repo', {
+    inventory: ['C:\\outside.yml'],
+  })).rejects.toThrow(/escapes review root/);
+});
+
 test('rejects symlinked configuration files before reading them', async () => {
   let read = false;
   await expect(
