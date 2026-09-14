@@ -60,11 +60,14 @@ test('reports convention discovery failures explicitly', async () => {
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(root, 'project', 'package.json'), '{}');
   try {
-    const result = await combineConventionFiles(path.join(root, 'project'), {
+    await expect(combineConventionFiles(path.join(root, 'project'), {
       conventionsRoot: root,
       readDirectory: async () => { throw Object.assign(new Error('denied'), { code: 'EACCES' }); },
-    });
-    expect(result).toContain('unavailable during discovery');
+    })).rejects.toThrow(/Unable to discover convention evidence: .*Unable to scan .*denied/);
+    await expect(combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+      readDirectory: async () => { throw 'denied'; },
+    })).rejects.toThrow(/Unable to discover convention evidence: .*Unable to scan .*denied/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

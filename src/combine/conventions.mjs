@@ -25,9 +25,12 @@ export async function combineConventionFiles(
   try {
     discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
   } catch (cause) {
-    return cause?.code === 'ENOENT'
-      ? '===== Convention v8 JSON =====\nConvention checkout not supplied.\n'
-      : '===== Convention v8 JSON =====\nConvention checkout unavailable during discovery.\n';
+    if (cause?.code === 'ENOENT')
+      return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
+    throw new Error(
+      `Unable to discover convention evidence: ${String(cause)}`,
+      { cause },
+    );
   }
   const applicability = await readConventionApplicability(root, {
     conventionsRoot,
