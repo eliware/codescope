@@ -124,7 +124,7 @@
       "dos": [
         "Accept -a and --add with a required string value, preserve each value verbatim, and preserve command-line order.",
         "Treat non-option tokens as free-form prompt text for codescope prompt; use -- when prompt text itself begins with a dash.",
-        "Use the shared scalar option parser for effort, model, dry-run, and additions; accept both --effort=<value>/--model=<value> and separated scalar values before commands, while prompt-specific delimiter partitioning remains intentional grammar.",
+        "Use the shared scalar option parser for effort, model, dry-run, and additions; accept both --effort=<value>/--model=<value> and separated scalar values wherever scalar options are accepted, while prompt-specific delimiter partitioning remains intentional grammar.",
         "After a prompt delimiter, accept only --effort=<value> and --model=<value>; reject every other token with an explicit delimiter grammar error.",
         "Normalize direct and grouped scalar options through one scanner before profile-specific validation.",
         "Accept supported scalar options before a direct or grouped command and merge them into the same normalized representation.",

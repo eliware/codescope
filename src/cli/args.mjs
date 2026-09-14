@@ -58,6 +58,12 @@ function mergeLeadingOptions(parsed, values) {
 function takeLeadingScalarOptions(args) {
   let index = 0;
   while (index < args.length) {
+    if (args[index] === '--effort' || args[index] === '--model') {
+      if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
+        throw new Error(`${args[index]} requires a value`);
+      index += 2;
+      continue;
+    }
     if (
       args[index] === '--dry-run' ||
       args[index] === '--usage' ||
@@ -69,12 +75,6 @@ function takeLeadingScalarOptions(args) {
     }
     if (args[index] === '-a' || args[index] === '--add') {
       if (args[index + 1] === undefined || args[index + 1].startsWith('-'))
-        throw new Error(`${args[index]} requires a value`);
-      index += 2;
-      continue;
-    }
-    if (args[index] === '--effort' || args[index] === '--model') {
-      if (args[index + 1] === undefined)
         throw new Error(`${args[index]} requires a value`);
       index += 2;
       continue;

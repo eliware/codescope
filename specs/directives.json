@@ -59,7 +59,7 @@
             "When -a or --add is supplied one or more times to any codescope profile command, including all, release, review profiles, suggestion profiles, and prompt, append each string verbatim to the end of the final user message in command-line order.",
             "Accept -a or --add on the bare codescope command and on codescope help or codescope --help without applying it to output or help text.",
             "Treat non-option tokens as free-form prompt text; require -- when prompt text itself begins with a dash.",
-            "Use shared scalar option parsing for effort, model, dry-run, and additions, accepting both equals and separated scalar forms before commands while keeping prompt-specific delimiter partitioning explicit."
+            "Use shared scalar option parsing for effort, model, dry-run, and additions, accepting both equals and separated scalar forms wherever scalar options are accepted while keeping prompt-specific delimiter partitioning explicit."
           ],
           "donts": [
             "Do not require custom prompts to produce a verdict or a stable response schema.",
