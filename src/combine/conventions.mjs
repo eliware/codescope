@@ -27,12 +27,15 @@ export async function combineConventionFiles(
     readConventionManifest,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
-  const { profiles, canonicalPaths } = applicability;
-  const files = (await findFiles(specsRoot, '.json', { readDirectory })).filter((relativePath) => {
-    return [...canonicalPaths.values()].includes(relativePath);
-  });
+  const { profiles, canonicalPaths, includeAll } = applicability;
+  const discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
+  const files = includeAll
+    ? discoveredFiles
+    : discoveredFiles.filter((relativePath) => [...canonicalPaths.values()].includes(relativePath));
   const supplied = new Set(files);
-  const missing = [...profiles].filter((profile) => !supplied.has(canonicalPaths.get(profile)));
+  const missing = includeAll
+    ? []
+    : [...profiles].filter((profile) => !supplied.has(canonicalPaths.get(profile)));
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
@@ -61,6 +64,8 @@ async function readConventionApplicability(
     const packageJson = JSON.parse(
       await readPackageJson(path.join(root, 'package.json'), 'utf8'),
     );
+    if (packageJson.name === '@eliware/test')
+      return { profiles: new Set(), canonicalPaths: new Map(), includeAll: true };
     const manifest = JSON.parse(
       await readConventionManifest(new URL('../../specs/conventions.json', import.meta.url), 'utf8'),
     );

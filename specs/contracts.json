@@ -302,7 +302,7 @@
         "boundaries": { "owns": ["CodeScope profile selection"], "doesNotOwn": ["Convention requirements"] }
       },
       "dos": [
-        "Read only the repository types declared by package.json eliware.conventions.apply.",
+        "Read only the repository types declared by package.json eliware.conventions.apply, except that @eliware/test receives every JSON convention record from the supplied conventions checkout.",
         "Load canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader.",
         "Read repository package applicability through the injected package reader when one is supplied.",
         "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",

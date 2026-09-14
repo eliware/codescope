@@ -87,7 +87,7 @@
           "dos": [
             "Assemble comprehensive context in this order: package.json; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
-            "Read Convention JSON only from the adjacent conventions checkout and report it unavailable when it is not supplied.",
+            "Read Convention JSON only from the adjacent conventions checkout and report it unavailable when it is not supplied; for @eliware/test, include every JSON convention record so the validator can review the full convention set.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."

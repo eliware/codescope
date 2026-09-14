@@ -125,6 +125,33 @@ test('uses the injected convention manifest reader for virtual roots', async () 
   }
 });
 
+test('includes every convention JSON for @eliware/test', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  const specs = path.join(root, 'specs');
+  await mkdir(specs, { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(specs, 'general.json'), '{"profile":"general"}');
+  await writeFile(path.join(specs, 'application.json'), '{"profile":"application"}');
+  await writeFile(path.join(specs, 'cli.json'), '{"profile":"cli"}');
+  await writeFile(path.join(specs, 'npm-published.json'), '{"profile":"npm-published"}');
+  await writeFile(
+    path.join(root, 'project', 'package.json'),
+    JSON.stringify({ name: '@eliware/test', eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    const result = await combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+      readConventionManifest: async () => { throw new Error('manifest is not required'); },
+    });
+    expect(result).toContain('conventions/specs/general.json');
+    expect(result).toContain('conventions/specs/application.json');
+    expect(result).toContain('conventions/specs/cli.json');
+    expect(result).toContain('conventions/specs/npm-published.json');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }

@@ -43,7 +43,7 @@
     "npm-published": "../../conventions/specs/npm-published.json"
   },
   "reviewContract": {
-    "applicability": "Read only the repository types declared by package.json eliware.conventions.apply.",
+    "applicability": "Read only the repository types declared by package.json eliware.conventions.apply, except that the @eliware/test package receives every JSON convention record from the supplied conventions checkout so the validator can review the full convention set.",
     "authority": "Treat the linked Conventions records as the sole authority for repository requirements and directive text.",
     "missingEvidence": "If the canonical Conventions checkout or an applicable record is unavailable, report convention alignment as unverified; do not infer or import requirements.",
     "scope": "Supply the selected canonical records as review evidence. Do not redefine, duplicate, or extend their requirements."
