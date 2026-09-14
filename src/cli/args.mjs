@@ -6,10 +6,18 @@ import { parseMetaCommand } from './meta-args.mjs';
 
 export function parseArgs(args) {
   const values = parseOptionValues(args, { leadingOnly: true });
-  if (values.consumed > 0) {
-    return mergeLeadingOptions(parseCommandArgs(values.remaining), values);
+  const parsed = values.consumed > 0
+    ? mergeLeadingOptions(parseCommandArgs(values.remaining), values)
+    : parseCommandArgs(args);
+  return { ...parsed, add: collectAdditions(args) };
+}
+
+function collectAdditions(args) {
+  const additions = [];
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === '-a' || args[index] === '--add') additions.push(args[++index]);
   }
-  return parseCommandArgs(args);
+  return additions;
 }
 
 function parseCommandArgs(args) {
