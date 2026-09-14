@@ -110,6 +110,40 @@ test('rejects an existing file without stable identity metadata', async () => {
   ).rejects.toThrow(/stable file identity/);
 });
 
+test('reads an existing file through one stable opened handle', async () => {
+  let closed = false;
+  const metadata = { dev: 1, ino: 2, isSymbolicLink: () => false };
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => metadata,
+      readEnvFile: async () => { throw new Error('path read was not allowed'); },
+      openEnvFile: async () => ({
+        stat: async () => metadata,
+        readFile: async () => 'OPENAI_API_TOKEN=stable',
+        close: async () => { closed = true; throw new Error('close failed'); },
+      }),
+    }),
+  ).resolves.toBe('OPENAI_API_TOKEN=stable');
+  expect(closed).toBe(true);
+});
+
+test('rejects an opened handle whose identity differs from the initial inspection', async () => {
+  let closed = false;
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false }),
+        readFile: async () => 'unused',
+        close: async () => { closed = true; },
+      }),
+    }),
+  ).rejects.toThrow(/replaced while it was being opened/);
+  expect(closed).toBe(true);
+});
+
 test('rejects absent identity metadata directly', () => {
   expect(() => fileIdentity('file', undefined)).toThrow(/stable file identity/);
 });

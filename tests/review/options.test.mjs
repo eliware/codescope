@@ -25,6 +25,7 @@ test('rejects invalid review options', () => {
   );
   expect(() => validateReviewOptions('/repo', { ...valid, usage: 'yes' })).toThrow(/usage/);
   expect(() => validateReviewOptions('/repo', { ...valid, write: null })).toThrow(/write/);
+  expect(() => validateReviewOptions('/repo', { ...valid, openEnvFile: null })).toThrow(/openEnvFile/);
   expect(() => validateReviewOptions('/repo', { ...valid, platform: 'plan9' })).toThrow(/unsupported/);
 });
 

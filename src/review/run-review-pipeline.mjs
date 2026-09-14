@@ -17,6 +17,7 @@ export async function runReviewPipeline(cwd, options) {
     envFile: options.envFile,
     readFile: options.readFile,
     readEnvFile: options.readEnvFile,
+    openEnvFile: options.openEnvFile,
     inspectFile: options.inspectFile,
     inspectPermissions: options.inspectPermissions,
     platform: options.platform,

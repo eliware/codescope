@@ -37,6 +37,7 @@ const base = (overrides = {}) => ({
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   inspectPermissions: async () => ({ mode: 0o600 }),
   platform: 'linux',
+  openEnvFile: undefined,
   createClient: () => ({ responses: { create: async () => response } }),
   register: () => ({ removeHandlers() {} }),
   write: async () => {},

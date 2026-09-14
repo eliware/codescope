@@ -69,8 +69,8 @@ test('accepts a numeric complete write', async () => {
   ).resolves.toBeUndefined();
 });
 
-test('accepts boolean stream status results', async () => {
-  await expect(writeProviderResult(async () => true, 'hello')).resolves.toBeUndefined();
+test('rejects ambiguous boolean stream status results', async () => {
+  await expect(writeProviderResult(async () => true, 'hello')).rejects.toThrow('unsupported result');
   await expect(writeProviderResult(async () => false, 'hello')).rejects.toThrow(
     'unsupported result',
   );

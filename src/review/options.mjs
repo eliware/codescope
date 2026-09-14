@@ -9,6 +9,7 @@ export function validateReviewOptions(
     write,
     readFile,
     readEnvFile,
+    openEnvFile,
     combine,
     createClient,
     register,
@@ -37,6 +38,8 @@ export function validateReviewOptions(
     register,
   }))
     if (typeof value !== 'function') throw new Error(`runReview option ${name} must be a function`);
+  if (openEnvFile !== undefined && typeof openEnvFile !== 'function')
+    throw new Error('runReview option openEnvFile must be a function');
   for (const [name, value] of Object.entries({ inspectFile, inspectPermissions }))
     if (value !== undefined && typeof value !== 'function')
       throw new Error(`runReview option ${name} must be a function`);

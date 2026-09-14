@@ -374,7 +374,7 @@
         "Accept only raw string function-call arguments as successful provider response text; preserve non-text arguments only in redacted diagnostic summaries.",
         "Preserve safe diagnostic summaries when a provider response cannot be serialized, and mark capped serialized diagnostics with response_truncated.",
         "Report provider transport failures and output-write failures with their original error context.",
-        "Accept writer results of undefined, true, or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
+        "Accept writer results of undefined or an object with an exact written character count; the default stdout adapter intentionally discards Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [
@@ -382,7 +382,7 @@
         "Do not derive process status or exit code from provider content.",
         "Do not discard all safe function-call summaries because one provider call is malformed.",
         "Do not describe capped fallback diagnostics as unchanged successful provider output.",
-        "Do not accept false, numbers, strings, null, or unrelated objects as writer results.",
+        "Do not accept booleans, numbers, strings, null, or unrelated objects as writer results.",
         "Do not treat a short explicit writer count as a successful complete write."
       ],
       "implementation": { "source": [
@@ -415,7 +415,7 @@
         "inputs": "Process environment, ~/.codescope, platform permission evidence, and injected filesystem seams.",
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Unsafe permissions, symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
-        "ordering": ["Inspect configuration safety before accepting its contents."],
+        "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated."],
         "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Permission validation is enabled by default and is disabled only by an explicit false option."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
@@ -424,13 +424,13 @@
         "Reject symbolic-link configuration files.",
         "On Linux, macOS, and FreeBSD, require stat mode evidence and reject group/world-readable configuration files.",
         "On Windows, obtain a machine-readable SDDL descriptor through PowerShell's .NET security APIs, pass only the required process variables and target path to the child rather than the full credential-bearing environment, and require every parsed DACL ACE to be an allow ACE for only the current user SID.",
-        "Default the environment reader to the configured file reader, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
+        "Read an existing configuration file through one opened handle after validating its identity; default the environment reader to the configured file reader for injected seams, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [
         "Do not treat a missing or whitespace-only process token as authoritative over a nonblank file token.",
         "Do not parse localized human-readable ACL output or accept an unverified, malformed, or unknown-SID Windows ACL as restricted.",
-        "Do not silently accept a file that disappears, is replaced, lacks stable identity evidence, or changes safety state during the permission check.",
+        "Do not silently accept a file that disappears, is replaced before secure opening, lacks stable identity evidence, or changes safety state during the permission check.",
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [

@@ -7,6 +7,7 @@ export async function loadReviewEnvironment({
   envFile,
   readFile,
   readEnvFile = readFile,
+  openEnvFile,
   inspectFile,
   inspectPermissions,
   platform,
@@ -18,6 +19,7 @@ export async function loadReviewEnvironment({
     envFile,
     readFile,
     readEnvFile,
+    openEnvFile,
     inspectFile,
     onFileRead: () => {
       filePresent = true;
