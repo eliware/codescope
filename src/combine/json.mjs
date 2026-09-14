@@ -25,9 +25,8 @@ export async function combineJsonFiles(
     batchSize: getBatchSize(concurrency),
     maxChars,
     read: async (relativePath) => {
-      const portablePath = relativePath.replaceAll('\\', '/');
-      const normalizedPath = path.posix.normalize(portablePath);
-      const contents = await readSourceFile(relativePath, pathApi.resolve(rootPath, ...normalizedPath.split('/')), {
+      const resolvedPath = resolveJsonPath(rootPath, relativePath, pathApi);
+      const contents = await readSourceFile(relativePath, resolvedPath, {
         readFileContents,
         inspectFile,
         validateSymlinks,
@@ -37,6 +36,20 @@ export async function combineJsonFiles(
     },
   });
   return sections.join('\n');
+}
+
+export function resolveJsonPath(rootPath, relativePath, pathApi = path) {
+  const portablePath = String(relativePath).replaceAll('\\', '/');
+  if (
+    path.posix.isAbsolute(portablePath) ||
+    path.win32.isAbsolute(portablePath) ||
+    /^(?:\\\\|\/\/)/u.test(portablePath)
+  )
+    throw new Error(`JSON path escapes review root: ${relativePath}`);
+  const normalizedPath = pathApi.normalize(portablePath).replaceAll('\\', '/');
+  if (normalizedPath === '..' || normalizedPath.startsWith('../'))
+    throw new Error(`JSON path escapes review root: ${relativePath}`);
+  return pathApi.resolve(rootPath, ...normalizedPath.split('/'));
 }
 
 function isIncludedJson(relativePath) {
