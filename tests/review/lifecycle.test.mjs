@@ -128,7 +128,7 @@ test('writes a safe fallback when provider setup fails', async () => {
   expect(JSON.parse(writes[0])).toMatchObject({
     issues: 'not submitted',
     suggestions: 'not submitted',
-    error: expect.stringContaining('OPENAI_API_TOKEN'),
+    error: 'Review setup failed',
   });
 });
 

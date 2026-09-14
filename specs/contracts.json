@@ -259,7 +259,7 @@
         "Exclude package-lock.json from JSON evidence and exclude Convention package metadata and lockfiles.",
         "Limit configuration text to 200 lines and enforce the 100000-byte per-file metadata limit.",
         "Read configuration files in bounded batches while preserving inventory order.",
-        "Validate configuration inventory entries as regular non-symlink files before reading them.",
+        "Normalize configuration inventory separators, reject paths that escape the review root, and validate entries as regular non-symlink files before reading them.",
         "Validate inventory paths remain within the canonical review root before reading remaining-file metadata.",
         "Read no more than one byte beyond the 100000-byte per-file limit from the underlying file, return the bytes with an explicit truncated flag, and omit content only when the extra byte proves the limit was exceeded.",
         "Reject zero, fractional, nonnumeric, and other invalid metadata concurrency values before starting workers.",

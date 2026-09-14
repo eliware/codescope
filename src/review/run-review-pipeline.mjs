@@ -31,6 +31,7 @@ export async function runReviewPipeline(cwd, options) {
       providerResponseReceived: cause.providerResponse !== undefined,
       write: options.write,
       createFailure: createSetupFailure,
+      fallbackCause: new Error('Review setup failed'),
     });
   }
   let request;

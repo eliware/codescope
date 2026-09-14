@@ -2,6 +2,8 @@ export async function walkDirectories(
   root,
   { readEntries, classify, shouldDescend, onFile, resolveChild, concurrency = 8 },
 ) {
+  if (!Number.isInteger(concurrency) || concurrency < 1)
+    throw new Error('Directory walk concurrency must be a positive integer');
   const pending = [root];
   const files = [];
   while (pending.length > 0) {

@@ -53,3 +53,8 @@ test('reads directories with bounded concurrency and deterministic file order', 
   expect(maximum).toBe(2);
   expect(files).toEqual(['root/a/a.mjs', 'root/z/z.mjs']);
 });
+
+test('rejects invalid directory walk concurrency', async () => {
+  for (const concurrency of [0, -1, 1.5, '2'])
+    await expect(walkDirectories('root', { concurrency })).rejects.toThrow(/positive integer/);
+});

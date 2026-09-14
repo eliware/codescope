@@ -7,10 +7,11 @@ export async function throwSessionFailure({
   providerResponseReceived,
   write,
   createFailure = createProviderFailure,
+  fallbackCause = cause,
 }) {
   let incomplete;
   try {
-    incomplete = createIncompleteResult(cause, providerResponseReceived ? providerResponse : undefined);
+    incomplete = createIncompleteResult(fallbackCause, providerResponseReceived ? providerResponse : undefined);
   } catch {
     incomplete = { issues: 'not submitted', suggestions: 'not submitted', error: 'Failure details unavailable' };
   }

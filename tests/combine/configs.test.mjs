@@ -28,6 +28,14 @@ test('accepts Windows separators in inventory configuration paths', async () => 
   })).resolves.toContain('.github/workflow.yml');
 });
 
+test('rejects configuration paths outside the review root', async () => {
+  await expect(combineConfigFiles('repo', {
+    inventory: ['.github\\..\\..\\outside.yml'],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => 'outside',
+  })).rejects.toThrow(/escapes review root/);
+});
+
 test('rejects symlinked configuration files before reading them', async () => {
   let read = false;
   await expect(
