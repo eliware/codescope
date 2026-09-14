@@ -2,6 +2,7 @@ import { lstat } from 'node:fs/promises';
 import path from 'node:path';
 import { readBatches } from './batches.mjs';
 import { readFileUpToLimit } from './read-file-up-to-limit.mjs';
+import { validateScanRoot } from '../find/root-policy.mjs';
 
 const MAX_CONFIG_LINES = 200;
 const MAX_CONFIG_BYTES = 100_000;
@@ -10,6 +11,7 @@ export async function combineConfigFiles(
   root,
   { inventory, readFileContents, inspectFile, concurrency = 8, platform = process.platform } = {},
 ) {
+  validateScanRoot(root, platform);
   const portableInventory = inventory.map((relativePath) => relativePath.replaceAll('\\', '/'));
   for (const relativePath of portableInventory)
     if (isAbsolutePortablePath(relativePath))
