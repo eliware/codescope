@@ -5,6 +5,11 @@ const setup = {
   readFile: async () => 'OPENAI_API_TOKEN=ignored',
   readEnvFile: async () => 'OPENAI_API_TOKEN= token ',
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+  openEnvFile: async () => ({
+    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+    readFile: async () => 'OPENAI_API_TOKEN= token ',
+    close: async () => {},
+  }),
 };
 
 test('prepares the provider client from the resolved token', async () => {
@@ -21,7 +26,11 @@ test('does not initialize the provider when setup fails', async () => {
   await expect(
     prepareReview({
       ...setup,
-      readEnvFile: async () => '',
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+        readFile: async () => '',
+        close: async () => {},
+      }),
       createClient,
     }),
   ).rejects.toThrow(/OPENAI_API_TOKEN/);

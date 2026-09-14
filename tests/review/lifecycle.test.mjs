@@ -36,7 +36,11 @@ const base = (overrides = {}) => ({
   readEnvFile: async () => 'OPENAI_API_TOKEN=test-token',
   inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
   platform: 'linux',
-  openEnvFile: undefined,
+  openEnvFile: async () => ({
+    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+    readFile: async () => 'OPENAI_API_TOKEN=test-token',
+    close: async () => {},
+  }),
   createClient: () => ({ responses: { create: async () => response } }),
   register: () => ({ removeHandlers() {} }),
   write: async (value) => ({ written: value.length }),
@@ -92,7 +96,11 @@ test('wraps signal registration failures', async () => {
 
 test('rejects invalid prompt and token setup', async () => {
   await expect(runReview('C:/repo', base({ prompt: null }))).rejects.toThrow(/Prompt/);
-  await expect(runReview('C:/repo', base({ readEnvFile: async () => '' }))).rejects.toThrow(
+  await expect(runReview('C:/repo', base({ openEnvFile: async () => ({
+    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+    readFile: async () => '',
+    close: async () => {},
+  }) }))).rejects.toThrow(
     /OPENAI_API_TOKEN/,
   );
 });
@@ -103,7 +111,11 @@ test('writes a safe fallback when provider setup fails', async () => {
     runReview(
       'C:/repo',
       base({
-        readEnvFile: async () => '',
+        openEnvFile: async () => ({
+          stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+          readFile: async () => '',
+          close: async () => {},
+        }),
         write: async (value) => {
           writes.push(value);
           return { written: value.length };

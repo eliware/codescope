@@ -8,22 +8,12 @@ export function parseArgs(args) {
   const leading = takeLeadingScalarOptions(args);
   if (leading.options.length) {
     const values = parseOptionValues(leading.options);
-    const parsed = parseArgs(leading.remaining);
-    if (values.effort !== undefined && parsed.effort !== undefined)
-      throw new Error('Only one --effort option is allowed');
-    if (values.model !== undefined && parsed.model !== undefined)
-      throw new Error('Only one --model option is allowed');
-    if (values.dryRun && parsed.dryRun)
-      throw new Error('Only one --dry-run option is allowed');
-    if (parsed.command === 'prompt' && values.dryRun)
-      throw new Error('Usage: codescope prompt <prompt text> [--effort=...] [--model=...]');
-    return {
-      ...parsed,
-      effort: values.effort ?? parsed.effort,
-      model: values.model ?? parsed.model,
-      ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
-    };
+    return mergeLeadingOptions(parseCommandArgs(leading.remaining), values);
   }
+  return parseCommandArgs(args);
+}
+
+function parseCommandArgs(args) {
   const [first = 'help', ...rest] = args;
   if (first === 'prompt') return parsePromptArgs(rest);
   if (first === 'review' || first === 'suggest') return parseGroupedArgs(first, rest);
@@ -43,6 +33,23 @@ export function parseArgs(args) {
     model: values.model,
     ...(values.dryRun ? { dryRun: true } : {}),
     add: values.add,
+  };
+}
+
+function mergeLeadingOptions(parsed, values) {
+  if (values.effort !== undefined && parsed.effort !== undefined)
+    throw new Error('Only one --effort option is allowed');
+  if (values.model !== undefined && parsed.model !== undefined)
+    throw new Error('Only one --model option is allowed');
+  if (values.dryRun && parsed.dryRun)
+    throw new Error('Only one --dry-run option is allowed');
+  if (parsed.command === 'prompt' && values.dryRun)
+    throw new Error('Usage: codescope prompt <prompt text> [--effort=...] [--model=...]');
+  return {
+    ...parsed,
+    effort: values.effort ?? parsed.effort,
+    model: values.model ?? parsed.model,
+    ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
   };
 }
 

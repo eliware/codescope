@@ -1,8 +1,12 @@
 export function responseText(response, request) {
   const name = request.tool_choice?.name;
-  const call = (response?.output ?? []).find(
-    (item) => item?.type === 'function_call' && (!name || item.name === name),
-  );
+  const calls = (response?.output ?? []).filter((item) => item?.type === 'function_call');
+  const matchingCalls = name ? calls.filter((item) => item.name === name) : calls;
+  if (name && matchingCalls.length === 0)
+    throw new Error(`Provider response did not contain required function call: ${name}`);
+  if (matchingCalls.length > 1)
+    throw new Error('Provider response contained multiple matching function calls');
+  const call = matchingCalls[0];
   if (call) {
     if (typeof call.arguments !== 'string')
       throw new Error('Provider function-call arguments were not raw text');

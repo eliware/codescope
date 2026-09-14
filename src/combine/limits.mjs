@@ -1,5 +1,5 @@
 export function getBatchSize(maxChars, concurrency) {
-  return Number.isFinite(maxChars) ? 1 : concurrency;
+  return concurrency;
 }
 
 export function addBatchLength(totalChars, sectionsLength, batchLength) {

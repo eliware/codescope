@@ -5,7 +5,6 @@ import { readReviewEnvironmentFile } from './environment-file.mjs';
 export async function loadReviewEnvironment({
   envFile,
   readFile,
-  readEnvFile = readFile,
   openEnvFile,
   inspectFile,
   environment,
@@ -13,15 +12,16 @@ export async function loadReviewEnvironment({
   const envText = await readReviewEnvironmentFile({
     envFile,
     readFile,
-    readEnvFile,
     openEnvFile,
     inspectFile,
   });
-  const effectiveEnvironment = { ...environment };
-  for (const [name, value] of Object.entries(process.env)) {
-    if (name !== 'OPENAI_API_TOKEN' || value?.trim() || effectiveEnvironment[name] === undefined)
-      effectiveEnvironment[name] = value;
-  }
+  const effectiveEnvironment = {};
+  const processToken = process.env.OPENAI_API_TOKEN;
+  const injectedToken = environment?.OPENAI_API_TOKEN;
+  if (processToken?.trim()) effectiveEnvironment.OPENAI_API_TOKEN = processToken;
+  else if (injectedToken?.trim()) effectiveEnvironment.OPENAI_API_TOKEN = injectedToken;
+  else if (processToken !== undefined) effectiveEnvironment.OPENAI_API_TOKEN = processToken;
+  else if (injectedToken !== undefined) effectiveEnvironment.OPENAI_API_TOKEN = injectedToken;
   loadEnv(envText, effectiveEnvironment);
   return effectiveEnvironment;
 }

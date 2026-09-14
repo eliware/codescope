@@ -58,7 +58,10 @@ export async function describeOtherFiles(
 }
 
 function resolveInventoryPath(rootPath, relativePath) {
-  const filePath = path.resolve(rootPath, relativePath);
+  if (/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/u.test(relativePath))
+    throw new Error(`Inventory path escapes review root: ${relativePath}`);
+  const normalizedPath = relativePath.replaceAll(/[\\/]/gu, path.sep);
+  const filePath = path.resolve(rootPath, normalizedPath);
   const relative = path.relative(rootPath, filePath);
   if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative))
     throw new Error(`Inventory path escapes review root: ${relativePath}`);

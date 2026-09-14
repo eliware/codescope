@@ -2,6 +2,12 @@ import { readReviewEnvironmentFile } from '../../src/review/environment-file.mjs
 import { fileIdentity } from '../../src/review/environment-file-safety.mjs';
 import { defaultEnvFile } from '../../src/review/env-file-path.mjs';
 
+const openWith = (text = 'OPENAI_API_TOKEN=value', metadata = { dev: 1, ino: 2 }) => async () => ({
+  stat: async () => ({ ...metadata, isSymbolicLink: () => false, isFile: () => true }),
+  readFile: async () => text,
+  close: async () => {},
+});
+
 test('reads a supplied environment file', async () => {
   await expect(
     readReviewEnvironmentFile({
@@ -9,6 +15,7 @@ test('reads a supplied environment file', async () => {
       readFile: () => {},
       readEnvFile: async () => 'x',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: openWith('x'),
     }),
   ).resolves.toBe('x');
 });
@@ -17,10 +24,10 @@ test('wraps errors reading a supplied environment file', async () => {
   await expect(
     readReviewEnvironmentFile({
       envFile: 'file',
-      readEnvFile: async () => { throw new Error('read failed'); },
+      openEnvFile: async () => { throw new Error('read failed'); },
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
     }),
-  ).rejects.toThrow('Unable to read file: read failed');
+  ).rejects.toThrow('Unable to securely read file: read failed');
 });
 
 test('rejects incomplete file inspection metadata', async () => {
@@ -39,9 +46,18 @@ test('rejects a file that disappears after it was inspected', async () => {
     readReviewEnvironmentFile({
       envFile: defaultEnvFile(),
       inspectFile: async () => ({ isSymbolicLink: () => false }),
-      readEnvFile: async () => { throw missing; },
+      openEnvFile: async () => { throw missing; },
     }),
-  ).rejects.toThrow(/Unable to read/);
+  ).rejects.toThrow(/Unable to inspect/);
+});
+
+test('requires a stable opener for an existing file', async () => {
+  await expect(
+    readReviewEnvironmentFile({
+      envFile: 'file',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+    }),
+  ).rejects.toThrow(/stable environment-file opener/);
 });
 
 test('preserves a default file that is absent before reading', async () => {
@@ -66,9 +82,9 @@ test('does not recheck a file that appears after the initial missing inspection'
         if (inspections === 1) throw missing;
         return { isSymbolicLink: () => false };
       },
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+      openEnvFile: openWith(),
     }),
-  ).resolves.toBe('OPENAI_API_TOKEN=value');
+  ).resolves.toBe('');
   expect(inspections).toBe(1);
 });
 
@@ -81,7 +97,11 @@ test('rejects replacement of an existing file between inspection and read', asyn
         inspections += 1;
         return { dev: 1, ino: inspections === 1 ? 2 : 3, isSymbolicLink: () => false };
       },
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+       openEnvFile: async () => ({
+         stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false, isFile: () => true }),
+         readFile: async () => 'unused',
+         close: async () => {},
+       }),
     }),
   ).rejects.toThrow(/replaced/);
 });
@@ -95,7 +115,7 @@ test('accepts a stable existing file with bigint identity metadata', async () =>
         ino: 2n,
         isSymbolicLink: () => false,
       }),
-      readEnvFile: async () => 'OPENAI_API_TOKEN=value',
+       openEnvFile: openWith('OPENAI_API_TOKEN=value', { dev: 1, ino: 2 }),
     }),
   ).resolves.toBe('OPENAI_API_TOKEN=value');
 });

@@ -13,6 +13,11 @@ test('coordinates preparation, context, request, execution, and cleanup', async 
       responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) },
     }),
     omitTestResults: false,
+    openEnvFile: async () => ({
+      stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+      readFile: async () => 'OPENAI_API_TOKEN=token',
+      close: async () => {},
+    }),
     redactOutput: (value) => value,
     combine: async (_cwd, options) => {
       combineOptions = options;
@@ -72,6 +77,11 @@ test('writes fallback output when request construction fails', async () => {
       readFile: async () => 'OPENAI_API_TOKEN=token',
       readEnvFile: async () => 'OPENAI_API_TOKEN=token',
       inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      openEnvFile: async () => ({
+        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+        readFile: async () => 'OPENAI_API_TOKEN=token',
+        close: async () => {},
+      }),
       maxSourceChars: 10,
       platform: 'linux',
       createClient: () => ({}),

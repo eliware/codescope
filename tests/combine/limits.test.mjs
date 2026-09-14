@@ -1,7 +1,7 @@
 import { addBatchLength, assertWithinLimit, getBatchSize } from '../../src/combine/limits.mjs';
 
-test('selects serial finite-limit batches and concurrent unlimited batches', () => {
-  expect(getBatchSize(100, 4)).toBe(1);
+test('keeps reads bounded by configured concurrency for every limit mode', () => {
+  expect(getBatchSize(100, 4)).toBe(4);
   expect(getBatchSize(Infinity, 4)).toBe(4);
 });
 

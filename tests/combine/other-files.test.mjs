@@ -111,6 +111,24 @@ test('rejects inventory paths that escape the review root', async () => {
       readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
     }),
   ).rejects.toThrow(/must be strings/);
+  await expect(
+    describeOtherFiles('repo', ['C:\\outside.txt'], {
+      readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
+    }),
+  ).rejects.toThrow(/escapes review root/);
+});
+
+test('normalizes inventory separators before resolving relative paths', async () => {
+  const readPaths = [];
+  await expect(
+    describeOtherFiles('repo', ['nested\\notes.txt'], {
+      readOtherFileContents: async (file) => {
+        readPaths.push(file);
+        return { data: 'notes', truncated: false };
+      },
+    }),
+  ).resolves.toEqual(['nested\\notes.txt | text | 1 lines | 5 bytes']);
+  expect(readPaths[0]).toMatch(/[\\/]nested[\\/]notes\.txt$/u);
 });
 
 test('rejects symlinked inventory entries before reading them', async () => {

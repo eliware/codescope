@@ -430,14 +430,14 @@
         "inputs": "Process environment, ~/.codescope, and injected filesystem seams.",
         "outputs": "A validated environment for provider setup or an explicit safety failure.",
         "errors": ["Symbolic links, unstable races, missing credentials, and inspection failures are handled explicitly."],
-        "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated."],
-        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Injected environment values fill only variables absent from the process environment and cannot replace a nonblank process credential."],
+        "ordering": ["Inspect configuration safety before accepting its contents; existing files are read through the same opened handle whose identity is validated, while a file missing at startup remains absent for that run."],
+        "invariants": ["A nonblank process token wins; a missing or whitespace-only process token is absent and may be replaced by a nonblank file token.", "Provider setup exposes only OPENAI_API_TOKEN; injected environment input may supply that token for tests but cannot replace a nonblank process credential."],
         "boundaries": { "owns": ["CodeScope configuration resolution"], "doesNotOwn": ["Process environment ownership"] }
       },
       "dos": [
         "Use a nonblank OPENAI_API_TOKEN from the process environment when present; otherwise read ~/.codescope and use its nonblank token.",
         "Reject symbolic-link configuration files.",
-        "Read an existing regular configuration file through one opened handle after validating its identity; default the environment reader to the configured file reader for injected seams, treat a missing optional configuration file as empty when the initial read also reports absence, and if it appears during startup use the read contents without a second appearance check.",
+        "Read an existing regular configuration file through one opened handle after validating its identity; treat a configuration file missing at startup as empty without reopening or rechecking it during that run.",
         "Preserve provider credentials outside the reviewed repository."
       ],
       "donts": [

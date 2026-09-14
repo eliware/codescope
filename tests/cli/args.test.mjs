@@ -83,6 +83,14 @@ test('routes custom prompt arguments', () => {
   });
 });
 
+test('parses the documented prompt delimiter through the public CLI parser', () => {
+  expect(parseArgs(['prompt', '--summarize', 'this', 'repository', '--', '--effort=low'])).toMatchObject({
+    command: 'prompt',
+    promptText: '--summarize this repository',
+    effort: 'low',
+  });
+});
+
 test('parses grouped dry-run options', () => {
   expect(parseArgs(['review', 'all', '--dry-run'])).toMatchObject({
     command: 'analyze-all',
