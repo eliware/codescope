@@ -37,6 +37,13 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
   expect(await findMdFiles(root, { readDirectory })).toEqual(['guide.md']);
 });
 
+test('uses explicit POSIX path semantics when requested', async () => {
+  await expect(findFiles('/virtual-root', '.mjs', {
+    platform: 'linux',
+    readDirectory: async () => [],
+  })).resolves.toEqual([]);
+});
+
 test('finds files with default options', async () => {
   await expect(findFiles(process.cwd(), '.mjs')).resolves.toContain('src/cli.mjs');
 });

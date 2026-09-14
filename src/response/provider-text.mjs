@@ -1,6 +1,9 @@
 export function responseText(response, request) {
   const name = request.tool_choice?.name;
-  const calls = (response?.output ?? []).filter((item) => item?.type === 'function_call');
+  const output = response?.output;
+  if (output !== undefined && !Array.isArray(output))
+    throw new Error('Provider response output was not an array');
+  const calls = (output ?? []).filter((item) => item?.type === 'function_call');
   const matchingCalls = name ? calls.filter((item) => item.name === name) : calls;
   if (name && matchingCalls.length === 0)
     throw new Error(`Provider response did not contain required function call: ${name}`);

@@ -21,7 +21,7 @@ export async function findFiles(
   validateScanRoot(root, platform);
   validateScanMode(noTests, testsOnly);
 
-  const pathApi = path;
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
   root = pathApi.resolve(root);
 
   try {

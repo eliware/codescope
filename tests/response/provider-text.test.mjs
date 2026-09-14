@@ -41,6 +41,10 @@ test('rejects a missing required function call', () => {
   ).toThrow(/required function call/);
 });
 
+test('rejects a non-array provider output collection', () => {
+  expect(() => responseText({ output: {} }, {})).toThrow(/output was not an array/);
+});
+
 test('preserves an explicitly empty raw output text', () => {
   expect(responseText({ output_text: '' }, {})).toBe('');
 });
