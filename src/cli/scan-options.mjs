@@ -13,7 +13,7 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false } = {}) {
       add.push(value);
     } else if (token === '--effort' || token === '--model') {
       const value = tokens[++index];
-      if (value === undefined) throw new Error(`${token} requires a value`);
+      if (value === undefined || value.startsWith('-')) throw new Error(`${token} requires a value`);
       const normalized = `${token}=${value}`;
       (token === '--effort' ? effort : model).push(normalized);
       if (keepScalarOptions) remaining.push(normalized);

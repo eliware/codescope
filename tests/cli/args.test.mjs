@@ -139,6 +139,8 @@ test('accepts shared scalar options before a command', () => {
   });
   expect(() => parseArgs(['--effort'])).toThrow(/requires a value/);
   expect(() => parseArgs(['--model'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['--effort', '--dry-run', 'all'])).toThrow(/requires a value/);
+  expect(() => parseArgs(['--model', '--usage', 'all'])).toThrow(/requires a value/);
   expect(() => parseArgs(['all', '--effort'])).toThrow(/requires a value/);
   expect(parseArgs(['--add', 'first', 'all', '--add', 'second'])).toMatchObject({
     command: 'analyze-all',

@@ -37,15 +37,13 @@ test('applies the metadata limit independently to each file', async () => {
   ]);
 });
 
-test('caps reported sample size for oversized injected results', async () => {
+test('rejects injected results beyond the bounded sample', async () => {
   await expect(
     describeOtherFiles('repo', ['large.txt'], {
       inspectFile: inspectRegularFile,
       readOtherFileContents: async () => ({ data: Buffer.alloc(200_000, 'x'), truncated: true }),
     }),
-  ).resolves.toEqual([
-    'large.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached',
-  ]);
+  ).rejects.toThrow(/sample boundary/);
 });
 
 test('checks actual bytes after reading files', async () => {
