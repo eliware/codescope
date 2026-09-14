@@ -32,13 +32,23 @@ export async function runReviewPipeline(cwd, options) {
       write: options.write,
     });
   }
-  const { request, controller } = createReviewSession({
-    prompt: options.prompt,
-    combined,
-    model: options.model,
-    plainText: options.plainText,
-    add: options.add,
-  });
+  let request;
+  let controller;
+  try {
+    ({ request, controller } = createReviewSession({
+      prompt: options.prompt,
+      combined,
+      model: options.model,
+      plainText: options.plainText,
+      add: options.add,
+    }));
+  } catch (cause) {
+    return throwSessionFailure({
+      cause,
+      providerResponseReceived: false,
+      write: options.write,
+    });
+  }
   const session = await finalizeReviewSession({
     register: options.register,
     controller,

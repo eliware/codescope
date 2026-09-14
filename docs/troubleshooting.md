@@ -17,8 +17,9 @@ CI workflow.
 ## Unexpected provider output
 
 CodeScope preserves successful provider response text unchanged. It does not
-parse or format that response. If provider setup or response handling fails,
-CodeScope reports the failure and emits a safe incomplete result when possible.
+parse or format that response. If evidence collection, provider setup, request
+construction, or response handling fails, CodeScope reports the failure and
+emits a safe incomplete result when possible.
 Fallback diagnostics preserve independently readable fields, are JSON-serialized,
 redacted, and capped; a `response_truncated` marker identifies capped output.
 Tool-call arguments in that summary are diagnostic serialization, not successful

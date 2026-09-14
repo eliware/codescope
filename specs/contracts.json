@@ -387,7 +387,7 @@
         "Serialize each sanitized function-call summary independently so one malformed call cannot discard unaffected calls.",
         "Report provider transport failures and output-write failures with their original error context.",
         "Require writers to return an object with an exact written character count; stdout adapters intentionally discard Node stream backpressure booleans and the count is measured in JavaScript characters, not bytes.",
-        "Write a safe incomplete result when evidence collection or provider setup fails, and preserve a fallback-write failure as metadata on the original failure.",
+        "Write a safe incomplete result when evidence collection, provider setup, or request/session construction fails, and preserve a fallback-write failure as metadata on the original failure.",
         "Use an explicit common internal session-result shape for dry-run and provider sessions while returning the output at the public pipeline boundary."
       ],
       "donts": [

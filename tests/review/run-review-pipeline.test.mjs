@@ -63,3 +63,27 @@ test('collects evidence before initializing the provider', async () => {
   expect(initialized).toBe(false);
   expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
 });
+
+test('writes fallback output when request construction fails', async () => {
+  const writes = [];
+  await expect(
+    runReviewPipeline('repo', {
+      combine: async () => 'source',
+      readFile: async () => 'OPENAI_API_TOKEN=token',
+      readEnvFile: async () => 'OPENAI_API_TOKEN=token',
+      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      maxSourceChars: 10,
+      platform: 'linux',
+      createClient: () => ({}),
+      prompt: {
+        input: [{ role: 'developer', content: [{ type: 'input_text', text: 'invalid' }] }],
+        tools: [],
+      },
+      write: async (value) => {
+        writes.push(value);
+        return { written: value.length };
+      },
+    }),
+  ).rejects.toThrow(/developer text/);
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
+});
