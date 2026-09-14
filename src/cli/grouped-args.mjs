@@ -6,6 +6,7 @@ export function parseGroupedArgs(mode, tokens) {
   const values = parseOptionValues(tokens);
   const [profile, ...profileTokens] = values.remaining;
   if (!profile) throw new Error(usage);
+  if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
   if (!PROFILE_NAMES.includes(profile)) throw new Error(`Unknown command profile: ${profile}`);
   if (mode === 'review' && profile === 'new-features')
     throw new Error('new-features is suggestion-only; use suggest new-features');

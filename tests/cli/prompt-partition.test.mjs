@@ -7,6 +7,13 @@ test('preserves unknown option-like prompt text and partitions known options', (
   });
 });
 
+test('preserves invalid scalar-looking prompt text', () => {
+  expect(partitionPromptArgs(['explain', '--effort=details', '--model=custom'])).toEqual({
+    promptArgs: ['explain', '--effort=details', '--model=custom'],
+    optionArgs: [],
+  });
+});
+
 test('keeps all text before the delimiter and options after it', () => {
   expect(partitionPromptArgs(['--summarize', 'this', '--', '--effort=low'])).toEqual({
     promptArgs: ['--summarize', 'this'],

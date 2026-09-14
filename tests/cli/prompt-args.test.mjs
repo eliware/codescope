@@ -26,8 +26,8 @@ test('rejects missing, duplicate, and invalid prompt options', () => {
   expect(() => parsePromptArgs(['x', '--model=gpt-5.6-sol', '--model=gpt-5.6-luna'])).toThrow(
     /Only one/,
   );
-  expect(() => parsePromptArgs(['x', '--effort=bad'])).toThrow(/Effort/);
-  expect(() => parsePromptArgs(['x', '--model=bad'])).toThrow(/Model/);
+  expect(parsePromptArgs(['x', '--effort=bad']).promptText).toContain('--effort=bad');
+  expect(parsePromptArgs(['x', '--model=bad']).promptText).toContain('--model=bad');
   expect(() => parsePromptArgs(['x', '--usage'])).toThrow(/Usage/);
   expect(() => parsePromptArgs(['x', '--dry-run'])).toThrow(/Usage/);
 });

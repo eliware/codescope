@@ -26,10 +26,25 @@ export async function combineSelectedFiles(
     metadata.configs,
     await collectInventorySection(root, inventory, normalizedOptions),
   ];
+  let usedChars = joinCombinedSections(parts, normalizedOptions.maxChars).length;
+  const withRemainingBudget = async (options) => {
+    const remaining = Number.isFinite(normalizedOptions.maxChars)
+      ? normalizedOptions.maxChars - usedChars
+      : Number.POSITIVE_INFINITY;
+    const section = await options(remaining);
+    usedChars += section.length + Math.sign(usedChars);
+    return section;
+  };
+  const selected = [];
   if (implementation)
-    parts.push(await combineCodeFiles(root, { ...normalizedOptions, files: inventory, noTests: true }));
+    selected.push(await withRemainingBudget((maxChars) =>
+      combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, noTests: true })));
   if (tests)
-    parts.push(await combineCodeFiles(root, { ...normalizedOptions, files: inventory, testsOnly: true }));
-  if (docs) parts.push(await combineMdFiles(root, { ...normalizedOptions, files: inventory }));
+    selected.push(await withRemainingBudget((maxChars) =>
+      combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, testsOnly: true })));
+  if (docs)
+    selected.push(await withRemainingBudget((maxChars) =>
+      combineMdFiles(root, { ...normalizedOptions, maxChars, files: inventory })));
+  parts.push(...selected);
   return joinCombinedSections(parts, normalizedOptions.maxChars);
 }

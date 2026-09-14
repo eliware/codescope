@@ -62,6 +62,8 @@ const suggestionCategories = {
 };
 
 export function getPromptRouting(profile, mode) {
+  if (!Object.hasOwn(prompts, profile) && !Object.hasOwn(suggestionCategories, profile))
+    throw new Error(`Unknown analysis profile: ${profile}`);
   const categories = suggestionCategories[profile];
   const promptSource =
     profile === 'all' && mode === 'review'

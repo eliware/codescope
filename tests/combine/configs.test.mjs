@@ -43,7 +43,12 @@ test('rejects malformed bounded configuration reader results', async () => {
     inventory: ['.github/workflow.yml'],
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     readFileContents: async () => ({ data: 'workflow' }),
-  })).rejects.toThrow(/must return text, bytes, or/);
+})).rejects.toThrow(/must return text, bytes, or/);
+  await expect(combineConfigFiles('repo', {
+    inventory: ['.github/workflow.yml'],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => ({ data: {}, truncated: false }),
+  })).rejects.toThrow(/data must be text or bytes/);
 });
 
 test('rejects configuration paths outside the review root', async () => {

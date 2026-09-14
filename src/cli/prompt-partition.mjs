@@ -1,7 +1,17 @@
+import { validateEffort, validateModel } from './option-validation.mjs';
+
 export function partitionPromptArgs(args) {
   const delimiter = args.indexOf('--');
-  const isOption = (value) =>
-    value.startsWith('--effort=') || value.startsWith('--model=') || ['--dry-run', '--usage'].includes(value);
+  const isOption = (value) => {
+    if (['--dry-run', '--usage'].includes(value)) return true;
+    if (value.startsWith('--effort=')) {
+      try { validateEffort(value.slice('--effort='.length)); return true; } catch { return false; }
+    }
+    if (value.startsWith('--model=')) {
+      try { validateModel(value.slice('--model='.length)); return true; } catch { return false; }
+    }
+    return false;
+  };
   const optionArgs = delimiter < 0 ? args.filter(isOption) : normalizeTrailingOptions(args.slice(delimiter + 1));
   return {
     promptArgs:

@@ -7,7 +7,7 @@ test('routes profile prompts and scoped categories', () => {
   ]);
   const release = getPromptRouting('release', 'review').promptSource;
   expect(release.tools.map((tool) => tool.name)).toEqual(['submit_unified_review']);
-  expect(getPromptRouting('unlisted', 'review').promptSource).toBeDefined();
+  expect(() => getPromptRouting('unlisted', 'review')).toThrow(/Unknown analysis profile/);
 });
 
 test('routes the conventions profile through the full review tool', () => {
@@ -20,5 +20,5 @@ test('routes generic suggestions and scoped reviews', () => {
   expect(getPromptRouting('conventions', 'suggest').promptSource.tools).toHaveLength(1);
   expect(getPromptRouting('security', 'review').promptSource.tools).toHaveLength(1);
   expect(getPromptRouting('release', 'suggest').promptSource.tools).toHaveLength(1);
-  expect(getPromptRouting('unknown', 'suggest').suggestionCategories).toBeUndefined();
+  expect(() => getPromptRouting('unknown', 'suggest')).toThrow(/Unknown analysis profile/);
 });

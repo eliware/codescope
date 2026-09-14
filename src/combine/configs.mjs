@@ -46,6 +46,8 @@ export async function combineConfigFiles(
       )
         throw new Error('Configuration reader must return text, bytes, or { data, truncated }');
       const source = bounded && typeof bounded === 'object' && 'data' in bounded ? bounded.data : bounded;
+      if (typeof source !== 'string' && !Buffer.isBuffer(source))
+        throw new Error('Configuration reader data must be text or bytes');
       const bytes = Buffer.isBuffer(source) ? source : Buffer.from(String(source));
       if (bytes.includes(0)) return '';
       const text = bytes.toString('utf8');

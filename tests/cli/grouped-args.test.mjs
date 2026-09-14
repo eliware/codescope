@@ -23,4 +23,5 @@ test('rejects invalid grouped command shapes', () => {
   expect(() => parseGroupedArgs('review', ['new-features'])).toThrow(/suggestion-only/);
   expect(() => parseGroupedArgs('review', ['all', '--bad'])).toThrow(/Usage/);
   expect(() => parseGroupedArgs('review', ['all', '--usage', '--usage'])).toThrow(/Usage/);
+  expect(() => parseGroupedArgs('inspect', ['all'])).toThrow(/Unknown profile mode/);
 });

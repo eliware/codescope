@@ -28,3 +28,14 @@ test('returns package metadata when no optional sections are selected', async ()
 test('uses default options for selected package metadata', async () => {
   await expect(combineSelectedFiles(process.cwd())).resolves.toContain('package.json');
 });
+
+test('passes the remaining aggregate budget into selected source reads', async () => {
+  await expect(combineSelectedFiles('/repo', {
+    implementation: true,
+    inventory: ['src/app.mjs'],
+    maxChars: 200,
+    readDirectory: async () => [],
+    readFileContents: async (file) => file.endsWith('package.json') ? '{"name":"x"}' : 'source',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  })).resolves.toContain('source');
+});
