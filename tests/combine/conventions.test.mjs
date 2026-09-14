@@ -247,7 +247,7 @@ test('rejects symlinked convention evidence before reading it', async () => {
         conventionsRoot: root,
         inspectFile: async () => ({ isSymbolicLink: () => true, isFile: () => false }),
       }),
-    ).rejects.toThrow(/symlinked convention files/);
+    ).rejects.toThrow(/symlinked source files/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

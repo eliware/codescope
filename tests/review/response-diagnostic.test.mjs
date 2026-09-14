@@ -24,3 +24,9 @@ test('marks unserializable and non-serializable diagnostics as unavailable', () 
   expect(serializeResponseDiagnostic(circular)).toBeUndefined();
   expect(serializeResponseDiagnostic(() => {})).toBeUndefined();
 });
+
+test('does not mark an exact diagnostic boundary as truncated', () => {
+  const output = serializeResponseDiagnostic({ output_text: 'x'.repeat(499_982) });
+  expect(output.response).toHaveLength(500_000);
+  expect(output.response_truncated).toBeUndefined();
+});
