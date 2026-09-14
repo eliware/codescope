@@ -178,3 +178,43 @@ test('normalizes convention paths before matching applied profiles', async () =>
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('rejects symlinked convention evidence before reading it', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(
+    path.join(root, 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    await expect(
+      combineConventionFiles(root, {
+        conventionsRoot: root,
+        inspectFile: async () => ({ isSymbolicLink: () => true, isFile: () => false }),
+      }),
+    ).rejects.toThrow(/symlinked convention files/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('rejects non-file convention evidence before reading it', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(
+    path.join(root, 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
+  );
+  try {
+    await expect(
+      combineConventionFiles(root, {
+        conventionsRoot: root,
+        inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => false }),
+      }),
+    ).rejects.toThrow(/not a regular file/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

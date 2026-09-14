@@ -22,10 +22,13 @@ test('runs a plain-text provider session and writes the result', async () => {
 const reviewRequest = { model: 'gpt-5.6-luna', tools: [], tool_choice: undefined };
 
 test('parses a normal review tool response', async () => {
+  const requests = [];
   const result = await runReviewSession({
     client: {
       responses: {
-        create: async () => ({
+        create: async (request) => {
+          requests.push(request);
+          return {
           output: [
             {
               type: 'function_call',
@@ -33,10 +36,11 @@ test('parses a normal review tool response', async () => {
               arguments: '{"verdict":"pass","issues":{}}',
             },
           ],
-        }),
+          };
+        },
       },
     },
-    request: reviewRequest,
+    request: { model: 'gpt-5.6-luna', tool_choice: { name: 'submit_review' } },
     signal: new AbortController().signal,
     write: async (value) => {
       expect(JSON.parse(value)).toEqual({ verdict: 'pass', issues: {} });
@@ -46,6 +50,7 @@ test('parses a normal review tool response', async () => {
     usage: false,
   });
   expect(result.output).toBe('{"verdict":"pass","issues":{}}');
+  expect(requests[0].tool_choice).toEqual({ name: 'submit_review' });
 });
 
 test('preserves malformed tool arguments as a blocked raw response', async () => {

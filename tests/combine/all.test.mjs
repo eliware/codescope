@@ -3,7 +3,7 @@ import { combineAllFiles, combineSelectedFiles } from '../../src/combine/all.mjs
 const options = {
   readFileContents: async (file) =>
     file.endsWith('package.json') ? '{"name":"fixture"}\n' : 'content\n',
-  inspectFile: async () => ({ isSymbolicLink: () => false }),
+  inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   readDirectory: async () => [],
 };
 
@@ -64,6 +64,7 @@ test('anchors metadata first, places inventory in the middle, and ends with sour
       const name = file.split(/[\\/]/u).pop();
       return { data: name === 'image.bin' ? Buffer.from([0, 1]) : 'data', truncated: false };
     },
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   });
   expect(result).toContain('===== repository configuration =====');
   expect(result).toContain('===== .github/ci.yml =====');
@@ -128,6 +129,7 @@ test('omits binary configs and truncates long text configs', async () => {
         : file.endsWith('binary.yml')
           ? Buffer.from([0, 1])
           : longConfig,
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   });
   expect(result).toContain('[truncated after 200 lines; remaining config omitted]');
   expect(result).not.toContain('binary.yml');

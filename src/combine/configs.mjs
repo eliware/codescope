@@ -22,14 +22,12 @@ export async function combineConfigFiles(
     maxChars: Infinity,
     read: async (relativePath) => {
       const resolvedPath = path.join(root, relativePath);
-      const inspect = inspectFile ?? (readFileContents === readFile ? lstat : undefined);
-      if (inspect) {
-        const metadata = await inspect(resolvedPath);
-        if (metadata.isSymbolicLink())
-          throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
-        if (!metadata.isFile())
-          throw new Error(`configuration path is not a regular file: ${relativePath}`);
-      }
+      const inspect = inspectFile ?? lstat;
+      const metadata = await inspect(resolvedPath);
+      if (metadata.isSymbolicLink())
+        throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
+      if (!metadata.isFile())
+        throw new Error(`configuration path is not a regular file: ${relativePath}`);
       const data = await readFileContents(resolvedPath);
       const bytes = Buffer.isBuffer(data) ? data : Buffer.from(String(data));
       if (bytes.includes(0)) return '';

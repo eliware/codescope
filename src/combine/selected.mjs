@@ -1,8 +1,5 @@
 import { combineCodeFiles, combineMdFiles } from './files.mjs';
-import { combinePackageJson } from './package-json.mjs';
-import { combineJsonFiles } from './json.mjs';
-import { combineConventionFiles } from './conventions.mjs';
-import { combineConfigFiles } from './configs.mjs';
+import { collectMetadataSections } from './metadata-sections.mjs';
 import { collectInventorySection } from './inventory-section.mjs';
 import { findAllFiles } from '../find/files.mjs';
 import { joinCombinedSections } from './combined-source.mjs';
@@ -12,13 +9,14 @@ export async function combineSelectedFiles(
   { implementation = false, tests = false, docs = false, ...options } = {},
 ) {
   const inventory = options.inventory ?? (await findAllFiles(root, options));
+  const metadata = await collectMetadataSections(root, options, inventory);
   const parts = [
-    await combinePackageJson(root, options),
-    await combineConventionFiles(root, options),
-    await combineConfigFiles(root, { ...options, inventory }),
+    metadata.packageJson,
+    metadata.conventions,
+    metadata.configs,
     await collectInventorySection(root, inventory, options),
+    metadata.json,
   ];
-  parts.push(await combineJsonFiles(root, options));
   if (implementation) parts.push(await combineCodeFiles(root, { ...options, noTests: true }));
   if (tests) parts.push(await combineCodeFiles(root, { ...options, testsOnly: true }));
   if (docs) parts.push(await combineMdFiles(root, options));

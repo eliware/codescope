@@ -28,6 +28,18 @@ test('serializes non-JSON fallback values without discarding them', async () => 
   expect(writes).toEqual(['() => {}']);
 });
 
+test('preserves values JSON cannot serialize', async () => {
+  const writes = [];
+  const value = 123n;
+  await expect(
+    writeFallbackResult((text) => {
+      writes.push(text);
+      return { written: text.length };
+    }, value),
+  ).resolves.toBeUndefined();
+  expect(writes).toEqual(['123']);
+});
+
 test('adds output context to writer failures', async () => {
   await expect(
     writeProviderResult(

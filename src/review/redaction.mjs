@@ -8,8 +8,9 @@ export const redactTestOutput = (value) =>
   });
 
 export function redactDiagnostic(value) {
+  const text = typeof value === 'string' ? value : String(value ?? '');
   return {
-    text: redactTestOutput(value),
-    truncated: value.length > CODE_SCOPE_MAX_OUTPUT,
+    text: redactTestOutput(text),
+    truncated: text.length > CODE_SCOPE_MAX_OUTPUT,
   };
 }

@@ -12,8 +12,12 @@ function assertCompleteWrite(result, output) {
 
 function outputText(output) {
   if (typeof output === 'string') return output;
-  const serialized = JSON.stringify(output);
-  return serialized === undefined ? String(output) : serialized;
+  try {
+    const serialized = JSON.stringify(output);
+    return serialized === undefined ? String(output) : serialized;
+  } catch {
+    return String(output);
+  }
 }
 
 export async function writeProviderResult(write, output, label = 'review') {

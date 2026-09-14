@@ -51,6 +51,11 @@ export async function combineConventionFiles(
   }
   const sections = [];
   for (const relativePath of files) {
+    const metadata = await inspectFile(path.resolve(specsRoot, relativePath));
+    if (metadata.isSymbolicLink())
+      throw new Error(`symlinked convention files are not supported: ${relativePath}`);
+    if (!metadata.isFile())
+      throw new Error(`convention path is not a regular file: ${relativePath}`);
     const contents = await readSourceFile(
       'conventions/specs/' + relativePath,
       path.resolve(specsRoot, relativePath),
