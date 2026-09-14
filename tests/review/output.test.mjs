@@ -25,7 +25,7 @@ test('serializes non-JSON fallback values without discarding them', async () => 
       return { written: value.length };
     }, () => {}),
   ).resolves.toBeUndefined();
-  expect(writes).toEqual(['"() => {}"']);
+  expect(writes).toEqual(['{"type":"function","value":"() => {}"}']);
 });
 
 test('preserves values JSON cannot serialize', async () => {
@@ -37,7 +37,7 @@ test('preserves values JSON cannot serialize', async () => {
       return { written: text.length };
     }, value),
   ).resolves.toBeUndefined();
-  expect(writes).toEqual(['"123n"']);
+  expect(writes).toEqual(['{"type":"bigint","value":"123"}']);
 });
 
 test('serializes symbol fallback values as JSON strings', async () => {
@@ -48,7 +48,7 @@ test('serializes symbol fallback values as JSON strings', async () => {
       return { written: text.length };
     }, Symbol('diagnostic')),
   ).resolves.toBeUndefined();
-  expect(writes).toEqual(['"Symbol(diagnostic)"']);
+  expect(writes).toEqual(['{"type":"symbol","value":"Symbol(diagnostic)"}']);
 });
 
 test('serializes circular fallback values with an explicit safe marker', async () => {
@@ -61,7 +61,7 @@ test('serializes circular fallback values with an explicit safe marker', async (
       return { written: text.length };
     }, value),
   ).resolves.toBeUndefined();
-  expect(writes).toEqual(['"[unserializable output]"']);
+  expect(writes).toEqual(['{"type":"unserializable"}']);
 });
 
 test('serializes an undefined fallback value as a JSON string', async () => {
@@ -72,7 +72,7 @@ test('serializes an undefined fallback value as a JSON string', async () => {
       return { written: text.length };
     }, undefined),
   ).resolves.toBeUndefined();
-  expect(writes).toEqual(['"undefined"']);
+  expect(writes).toEqual(['{"type":"undefined"}']);
 });
 
 test('adds output context to writer failures', async () => {

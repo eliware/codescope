@@ -4,6 +4,7 @@ import { finalizeReviewSession } from './finalize-session.mjs';
 import { prepareReview } from './prepare-review.mjs';
 import { runReviewSession } from './run-session.mjs';
 import { throwSessionFailure } from './session-failure.mjs';
+import { createSetupFailure } from './failure.mjs';
 
 export async function runReviewPipeline(cwd, options) {
   let combined;
@@ -29,6 +30,7 @@ export async function runReviewPipeline(cwd, options) {
       providerResponse: cause.providerResponse,
       providerResponseReceived: cause.providerResponse !== undefined,
       write: options.write,
+      createFailure: createSetupFailure,
     });
   }
   let request;

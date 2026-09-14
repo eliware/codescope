@@ -14,14 +14,14 @@ function outputText(output) {
   if (typeof output === 'string') return output;
   try {
     const serialized = JSON.stringify(output, (_key, value) => {
-      if (typeof value === 'bigint') return `${value}n`;
-      if (typeof value === 'symbol') return String(value);
-      if (typeof value === 'function') return String(value);
+      if (typeof value === 'bigint') return { type: 'bigint', value: value.toString() };
+      if (typeof value === 'symbol') return { type: 'symbol', value: String(value) };
+      if (typeof value === 'function') return { type: 'function', value: String(value) };
       return value;
     });
-    return serialized === undefined ? JSON.stringify(String(output)) : serialized;
+    return serialized === undefined ? JSON.stringify({ type: typeof output }) : serialized;
   } catch {
-    return JSON.stringify('[unserializable output]');
+    return JSON.stringify({ type: 'unserializable' });
   }
 }
 

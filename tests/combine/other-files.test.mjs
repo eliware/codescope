@@ -54,7 +54,7 @@ test('checks actual bytes after reading files', async () => {
     inspectFile: inspectRegularFile,
     readOtherFileContents: async (file) => {
       reads.push(file);
-      return { data: file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x', truncated: false };
+      return { data: file.endsWith('first.txt') ? Buffer.alloc(100_001, 'x') : 'x', truncated: file.endsWith('first.txt') };
     },
   });
   expect(result).toContain(
@@ -62,6 +62,13 @@ test('checks actual bytes after reading files', async () => {
   );
   expect(result).toContain('second.txt | text | 1 lines | 1 bytes');
   expect(reads).toHaveLength(2);
+});
+
+test('rejects oversized data without a truthful truncation flag', async () => {
+  await expect(describeOtherFiles('repo', ['large.txt'], {
+    inspectFile: inspectRegularFile,
+    readOtherFileContents: async () => ({ data: Buffer.alloc(100_001, 'x'), truncated: false }),
+  })).rejects.toThrow(/oversized data without truncated=true/);
 });
 
 test('omits a file that grows beyond the per-file metadata limit', async () => {

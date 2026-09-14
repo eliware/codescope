@@ -23,12 +23,14 @@ export async function describeOtherFiles(
     if (typeof relativePath !== 'string') throw new Error('Inventory paths must be strings');
   const paths = inventory
     .map((relativePath) => relativePath.replaceAll('\\', '/'))
-    .filter((relativePath) => !isIncludedContent(relativePath));
-  const entries = [];
+    .filter((relativePath) => !isIncludedContent(relativePath))
+    .sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
+  const entries = Array.from({ length: paths.length });
   let next = 0;
   const worker = async () => {
     while (next < paths.length) {
-      const relativePath = paths[next++];
+      const index = next++;
+      const relativePath = paths[index];
       const filePath = resolveInventoryPath(rootPath, relativePath);
       const inspect = inspectFile ?? lstat;
       const metadata = await inspect(filePath);
@@ -44,19 +46,20 @@ export async function describeOtherFiles(
       )
         throw new Error('Other-file reader must return { data, truncated }');
       const bytes = Buffer.isBuffer(result.data) ? result.data : Buffer.from(String(result.data));
-      if (result.truncated === true || bytes.byteLength > MAX_OTHER_FILE_BYTES) {
+      if (bytes.byteLength > MAX_OTHER_FILE_BYTES && result.truncated !== true)
+        throw new Error('Other-file reader returned oversized data without truncated=true');
+      if (result.truncated === true) {
         const sample = bytes.subarray(0, MAX_OTHER_FILE_BYTES + 1);
-        entries.push(
-          `${relativePath} | omitted | at least ${sample.byteLength} sampled bytes | per-file metadata limit reached`,
-        );
+        entries[index] =
+          `${relativePath} | omitted | at least ${sample.byteLength} sampled bytes | per-file metadata limit reached`;
         continue;
       }
-      entries.push(formatOtherFile(relativePath, bytes));
+      entries[index] = formatOtherFile(relativePath, bytes);
     }
   };
   const workerCount = Math.min(paths.length, Math.max(1, concurrency));
   await Promise.all(Array.from({ length: workerCount }, () => worker()));
-  return entries.sort((left, right) => left.localeCompare(right, 'en', { sensitivity: 'variant' }));
+  return entries.filter(Boolean);
 }
 
 function resolveInventoryPath(rootPath, relativePath) {
@@ -70,6 +73,5 @@ function resolveInventoryPath(rootPath, relativePath) {
   const portableRelative = path.posix.normalize(portablePath);
   if (portableRelative === '..' || portableRelative.startsWith('../'))
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
-  const normalizedPath = portablePath.replaceAll('/', path.sep);
-  return path.resolve(rootPath, normalizedPath);
+  return path.resolve(rootPath, portablePath);
 }
