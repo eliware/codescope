@@ -25,7 +25,9 @@ export async function combineJsonFiles(
     batchSize: getBatchSize(concurrency),
     maxChars,
     read: async (relativePath) => {
-      const contents = await readSourceFile(relativePath, pathApi.resolve(rootPath, relativePath), {
+      const portablePath = relativePath.replaceAll('\\', '/');
+      const normalizedPath = path.posix.normalize(portablePath);
+      const contents = await readSourceFile(relativePath, pathApi.resolve(rootPath, ...normalizedPath.split('/')), {
         readFileContents,
         inspectFile,
         validateSymlinks,

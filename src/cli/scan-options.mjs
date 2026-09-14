@@ -9,7 +9,7 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnl
     const token = tokens[index];
     if (token === '-a' || token === '--add') {
       const value = tokens[++index];
-      if (value === undefined || !value.trim() || value.startsWith('-')) throw new Error(`${token} requires a value`);
+      if (value === undefined || !value.trim()) throw new Error(`${token} requires a value`);
       add.push(value);
     } else if (token === '--effort' || token === '--model') {
       const value = tokens[++index];
@@ -34,7 +34,7 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnl
       for (let suffix = index; suffix < tokens.length; suffix += 1) {
         if (tokens[suffix] === '-a' || tokens[suffix] === '--add') {
           const value = tokens[++suffix];
-          if (value === undefined || !value.trim() || value.startsWith('-'))
+          if (value === undefined || !value.trim())
             throw new Error(`${tokens[suffix - 1]} requires a value`);
           add.push(value);
         }

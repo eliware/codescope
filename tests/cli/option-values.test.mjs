@@ -29,7 +29,7 @@ test('rejects duplicate and unsupported scalar options', () => {
   expect(() => parseOptionValues(['all', '--model=bad'])).toThrow(/Model must/);
   expect(() => parseOptionValues(['all', '--dry-run', '--dry-run'])).toThrow(/Only one/);
   expect(() => parseOptionValues(['all', '--add'])).toThrow(/requires a value/);
-  expect(() => parseOptionValues(['all', '-a', '--usage'])).toThrow(/requires a value/);
+  expect(parseOptionValues(['all', '-a', '--usage']).add).toEqual(['--usage']);
 });
 
 test('parses command options and rejects unsupported command tokens', () => {

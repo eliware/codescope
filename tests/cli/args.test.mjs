@@ -73,8 +73,12 @@ test('parses metadata command variants', () => {
   expect(parseArgs(['--effort=low', 'help', '--model=gpt-5.6-sol', '--usage'])).toEqual({
     command: 'help',
     option: undefined,
+    effort: 'low',
+    model: 'gpt-5.6-sol',
+    usage: true,
     add: [],
   });
+  expect(parseArgs(['help', '--dry-run'])).toMatchObject({ command: 'help', dryRun: true });
   expect(parseArgs(['--add', 'leading', 'help'])).toMatchObject({
     command: 'help',
     add: ['leading'],
@@ -177,7 +181,7 @@ test('accepts shared scalar options before a command', () => {
     add: ['first'],
   });
   expect(() => parseArgs(['--add'])).toThrow(/requires a value/);
-  expect(() => parseArgs(['--add', '--dry-run'])).toThrow(/requires a value/);
+  expect(parseArgs(['--add', '--dry-run'])).toMatchObject({ command: 'help', add: ['--dry-run'] });
 });
 
 test('normalizes direct profile scalar options exactly once', () => {

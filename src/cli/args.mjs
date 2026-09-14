@@ -22,6 +22,10 @@ function parseCommandArgs(args) {
   if (meta)
     return {
       ...meta,
+      effort: values.effort,
+      model: values.model,
+      ...(values.dryRun ? { dryRun: true } : {}),
+      ...(values.usage ? { usage: true } : {}),
       add: values.add,
     };
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
@@ -35,8 +39,6 @@ function parseCommandArgs(args) {
 }
 
 function mergeLeadingOptions(parsed, values) {
-  if (parsed.command === 'help' || parsed.command === 'version')
-    return { ...parsed, add: values.add };
   if (values.effort !== undefined && parsed.effort !== undefined)
     throw new Error('Only one --effort option is allowed');
   if (values.model !== undefined && parsed.model !== undefined)

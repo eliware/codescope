@@ -52,10 +52,11 @@ export async function combineConfigFiles(
       if (bytes.byteLength > MAX_CONFIG_BYTES + 1)
         throw new Error(`Configuration reader exceeded the ${MAX_CONFIG_BYTES + 1}-byte sample boundary`);
       if (bytes.includes(0)) return '';
-      const text = bytes.toString('utf8');
+      const exceeded = bytes.byteLength > MAX_CONFIG_BYTES;
+      const text = bytes.subarray(0, MAX_CONFIG_BYTES).toString('utf8');
       const lines = text.split(/\r\n|\r|\n/u);
       while (lines.at(-1) === '') lines.pop();
-      const truncated = bounded?.truncated === true || lines.length > MAX_CONFIG_LINES;
+      const truncated = exceeded || bounded?.truncated === true || lines.length > MAX_CONFIG_LINES;
       const visibleLines = lines.slice(0, MAX_CONFIG_LINES);
       const width = String(visibleLines.length).length;
       const body = visibleLines.map(
