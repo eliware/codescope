@@ -103,6 +103,7 @@ Evidence and request-construction failures also emit a safe incomplete result wh
 
 Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `--effort <value>` wherever scalar options are accepted to override the default reasoning effort (`none`). The same equals and separated forms are supported for `--model`.
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` to override the default model.
+The separated equivalent is `--model gpt-5.6-luna`.
 
 
 ## Security and operations

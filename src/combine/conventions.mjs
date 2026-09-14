@@ -1,4 +1,4 @@
-import { access, lstat, readFile } from 'node:fs/promises';
+import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { findFiles } from '../find/files.mjs';
 import { readSourceFile } from './read-file.mjs';
@@ -21,12 +21,14 @@ export async function combineConventionFiles(
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error('Convention read concurrency must be a positive integer');
   const specsRoot = path.join(conventionsRoot, 'specs');
+  let discoveredFiles;
   try {
-    await access(specsRoot);
-  } catch {
-    return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
+    discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
+  } catch (cause) {
+    return cause?.code === 'ENOENT'
+      ? '===== Convention v8 JSON =====\nConvention checkout not supplied.\n'
+      : '===== Convention v8 JSON =====\nConvention checkout unavailable during discovery.\n';
   }
-
   const applicability = await readConventionApplicability(root, {
     conventionsRoot,
     readPackageJson,
@@ -34,7 +36,6 @@ export async function combineConventionFiles(
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
   const { profiles, canonicalPaths, includeAll } = applicability;
-  const discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
   const files = includeAll
     ? discoveredFiles
     : discoveredFiles.filter((relativePath) => {
@@ -59,14 +60,15 @@ export async function combineConventionFiles(
     batchSize: concurrency,
     maxChars,
     read: async (relativePath) => {
-    const metadata = await inspectFile(path.resolve(specsRoot, relativePath));
+    const portablePath = relativePath.replaceAll('\\', '/');
+    const metadata = await inspectFile(path.resolve(specsRoot, ...portablePath.split('/')));
     if (metadata.isSymbolicLink())
       throw new Error(`symlinked convention files are not supported: ${relativePath}`);
     if (!metadata.isFile())
       throw new Error(`convention path is not a regular file: ${relativePath}`);
     const contents = await readSourceFile(
       'conventions/specs/' + relativePath,
-      path.resolve(specsRoot, relativePath),
+      path.resolve(specsRoot, ...portablePath.split('/')),
       { readFileContents, inspectFile, validateSymlinks: true },
     );
       return formatSourceSection('conventions/specs/' + relativePath, contents);

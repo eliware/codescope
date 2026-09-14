@@ -50,6 +50,22 @@ test('reports unavailable applicability metadata', async () => {
   }
 });
 
+test('reports convention discovery failures explicitly', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(root, 'project', 'package.json'), '{}');
+  try {
+    const result = await combineConventionFiles(path.join(root, 'project'), {
+      conventionsRoot: root,
+      readDirectory: async () => { throw Object.assign(new Error('denied'), { code: 'EACCES' }); },
+    });
+    expect(result).toContain('unavailable during discovery');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('reports unavailable applicability for invalid package metadata', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
