@@ -11,8 +11,7 @@ export async function combineConfigFiles(
   const configFiles = inventory.map((relativePath) => relativePath.replaceAll('\\', '/')).filter((relativePath) => {
     const normalized = relativePath.toLowerCase();
     return (
-      (normalized.startsWith('.github/') && relativePath.startsWith('.github/')) ||
-      (normalized.startsWith('.knit/') && relativePath.startsWith('.knit/'))
+      normalized.startsWith('.github/') || normalized.startsWith('.knit/')
     );
   });
   if (!Number.isInteger(concurrency) || concurrency < 1)

@@ -13,3 +13,9 @@ test('keeps all text before the delimiter and options after it', () => {
     optionArgs: ['--effort=low'],
   });
 });
+
+test('rejects non-option tokens after the delimiter with a grammar error', () => {
+  expect(() => partitionPromptArgs(['summarize', '--', 'extra'])).toThrow(
+    'Only --effort=... or --model=... may follow --',
+  );
+});

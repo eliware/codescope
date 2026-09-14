@@ -34,7 +34,7 @@ test('preserves redacted function-call arguments', () => {
     preserveProviderResponse({
       output: [{ type: 'function_call', name: 'review', arguments: 'TOKEN=secret' }],
     }),
-  ).toMatchObject({ function_call_arguments: expect.stringContaining('TOKEN=[REDACTED]') });
+  ).toMatchObject({ function_call_arguments: [{ name: 'review', arguments: 'TOKEN=[REDACTED]' }] });
 });
 
 test('survives an invalid output collection while preserving the response summary', () => {
@@ -66,12 +66,18 @@ test('ignores malformed function-call collections without losing the response', 
   });
 });
 
+test('skips function calls without serializable names', () => {
+  expect(preserveProviderResponse({
+    output: [{ type: 'function_call', arguments: 'ignored' }],
+  })).not.toHaveProperty('function_call_arguments');
+});
+
 test('preserves function-call arguments from an unserializable response', () => {
   const response = {
     output: [{ type: 'function_call', name: 'review', arguments: '{"ok":true}' }],
   };
   response.self = response;
-  expect(preserveProviderResponse(response).function_call_arguments).toContain('review');
+  expect(preserveProviderResponse(response).function_call_arguments[0].name).toBe('review');
 });
 
 test('redacts non-string function-call arguments safely', () => {
@@ -79,7 +85,7 @@ test('redacts non-string function-call arguments safely', () => {
     preserveProviderResponse({
       output: [{ type: 'function_call', name: 'review', arguments: { token: 'TOKEN=secret' } }],
     }),
-  ).toMatchObject({ function_call_arguments: expect.stringContaining('[REDACTED]') });
+  ).toMatchObject({ function_call_arguments: [{ name: 'review', arguments: '{"token":"TOKEN=[REDACTED]}' }] });
 });
 
 test('omits a summary when the safe call list cannot be serialized', () => {
@@ -99,8 +105,7 @@ test('preserves safe function calls when another call is malformed', () => {
       malformed,
     ],
   });
-  expect(result.function_call_arguments).toContain('good');
-  expect(result.function_call_arguments).not.toContain('bad');
+  expect(result.function_call_arguments.map(({ name }) => name)).toEqual(['good']);
 });
 
 test('preserves a valid function call when another call cannot be serialized', () => {
@@ -112,7 +117,7 @@ test('preserves a valid function call when another call cannot be serialized', (
       { type: 'function_call', name: malformedName, arguments: 'bad' },
     ],
   });
-  expect(result.function_call_arguments).toContain('good');
+  expect(result.function_call_arguments.map(({ name }) => name)).toEqual(['good']);
 });
 
 test('ignores non-function output items', () => {

@@ -17,8 +17,8 @@ export async function combineSelectedFiles(
     metadata.configs,
     await collectInventorySection(root, inventory, options),
   ];
-  if (implementation) parts.push(await combineCodeFiles(root, { ...options, noTests: true }));
-  if (tests) parts.push(await combineCodeFiles(root, { ...options, testsOnly: true }));
-  if (docs) parts.push(await combineMdFiles(root, options));
+  if (implementation) parts.push(await combineCodeFiles(root, { ...options, files: inventory, noTests: true }));
+  if (tests) parts.push(await combineCodeFiles(root, { ...options, files: inventory, testsOnly: true }));
+  if (docs) parts.push(await combineMdFiles(root, { ...options, files: inventory }));
   return joinCombinedSections(parts, options.maxChars);
 }

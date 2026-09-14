@@ -13,10 +13,15 @@ function assertCompleteWrite(result, output) {
 function outputText(output) {
   if (typeof output === 'string') return output;
   try {
-    const serialized = JSON.stringify(output);
-    return serialized === undefined ? String(output) : serialized;
+    const serialized = JSON.stringify(output, (_key, value) => {
+      if (typeof value === 'bigint') return `${value}n`;
+      if (typeof value === 'symbol') return String(value);
+      if (typeof value === 'function') return String(value);
+      return value;
+    });
+    return serialized === undefined ? JSON.stringify(String(output)) : serialized;
   } catch {
-    return String(output);
+    return JSON.stringify('[unserializable output]');
   }
 }
 

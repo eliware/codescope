@@ -124,7 +124,8 @@
       "dos": [
         "Accept -a and --add with a required string value, preserve each value verbatim, and preserve command-line order.",
         "Treat non-option tokens as free-form prompt text for codescope prompt; use -- when prompt text itself begins with a dash.",
-        "Use the shared scalar option parser for effort, model, dry-run, and additions; prompt-specific delimiter partitioning is intentional grammar, not a second scalar option contract.",
+        "Use the shared scalar option parser for effort, model, dry-run, and additions; accept both --effort=<value>/--model=<value> and separated scalar values before commands, while prompt-specific delimiter partitioning remains intentional grammar.",
+        "After a prompt delimiter, accept only --effort=<value> and --model=<value>; reject every other token with an explicit delimiter grammar error.",
         "Normalize direct and grouped scalar options through one scanner before profile-specific validation.",
         "Accept supported scalar options before a direct or grouped command and merge them into the same normalized representation.",
         "Allow add options on profile commands including all, release, review profiles, suggestion profiles, and prompt.",
@@ -175,7 +176,7 @@
         "Use the all operation for comprehensive implementation, test, documentation, metadata, and remaining-file evidence.",
         "Route suggest all through one generic non-blocking suggestion prompt covering every review category plus new-features.",
         "Use prompt with the all context and no review or suggestion tool requirement.",
-        "Include configuration and remaining-file inventory sections in selected composition before optional source sections.",
+        "Include selected metadata in the declared order: package.json, conventions, eligible JSON, configuration, and remaining-file inventory, before optional source sections.",
         "Keep new-features in suggestion mode when invoked through the review command."
       ],
       "donts": [
@@ -477,7 +478,7 @@
       },
       "dos": [
         "Support model selection and effort selection through the documented values, and accept only positive integer finite source limits or Infinity.",
-        "Use dry-run to estimate input tokens without running a model review; retain normal credential and provider setup because the estimate is requested from OpenAI.",
+        "Use dry-run to estimate input tokens without running a model review; retain credential setup and initialize the provider client because the estimate is requested from OpenAI's input-token capability.",
         "Include usage metadata and calculated cost only when requested.",
         "Normalize provider usage and use the selected model's pricing thresholds."
       ],

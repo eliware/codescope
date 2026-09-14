@@ -7,19 +7,20 @@ function readFunctionCallArguments(response) {
   for (const item of response.output) {
     try {
       if (item?.type !== 'function_call') continue;
-      const name = typeof item.name === 'string' ? redactTestOutput(item.name) : item.name;
+      const rawName = typeof item.name === 'string' ? item.name : JSON.stringify(item.name);
+      if (typeof rawName !== 'string') continue;
+      const name = redactTestOutput(rawName);
       const argumentsValue = item.arguments;
       const safeArguments =
         typeof argumentsValue === 'string'
           ? redactTestOutput(argumentsValue)
           : redactTestOutput(JSON.stringify(argumentsValue));
-      const serialized = JSON.stringify({ name, arguments: safeArguments });
-      calls.push(serialized);
+      calls.push({ name, arguments: safeArguments });
     } catch {
       // Preserve unaffected calls when one provider item is malformed.
     }
   }
-  return calls.length ? `[${calls.join(',')}]` : undefined;
+  return calls.length ? calls : undefined;
 }
 
 export function summarizeProviderResponse(response) {

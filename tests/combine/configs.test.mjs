@@ -20,6 +20,14 @@ test('combines text GitHub and Knit configs with numbered, truncated content', a
   expect(result).not.toContain('image.bin');
 });
 
+test('accepts Windows separators in inventory configuration paths', async () => {
+  await expect(combineConfigFiles('repo', {
+    inventory: ['.github\\workflow.yml'],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => 'name: workflow',
+  })).resolves.toContain('.github/workflow.yml');
+});
+
 test('rejects symlinked configuration files before reading them', async () => {
   let read = false;
   await expect(
