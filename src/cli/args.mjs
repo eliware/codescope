@@ -37,7 +37,7 @@ function parseCommandArgs(args) {
 
 function mergeLeadingOptions(parsed, values) {
   if (parsed.command === 'help' || parsed.command === 'version')
-    return parsed;
+    return { ...parsed, add: [...values.add, ...parsed.add] };
   if (values.effort !== undefined && parsed.effort !== undefined)
     throw new Error('Only one --effort option is allowed');
   if (values.model !== undefined && parsed.model !== undefined)

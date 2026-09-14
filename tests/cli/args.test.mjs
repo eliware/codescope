@@ -75,6 +75,14 @@ test('parses metadata command variants', () => {
     option: undefined,
     add: [],
   });
+  expect(parseArgs(['--add', 'leading', 'help'])).toMatchObject({
+    command: 'help',
+    add: ['leading'],
+  });
+  expect(parseArgs(['--add', 'leading', 'version'])).toMatchObject({
+    command: 'version',
+    add: ['leading'],
+  });
   expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
   expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);
   expect(() => parseArgs(['version', '--bad'])).toThrow(/not valid/);
