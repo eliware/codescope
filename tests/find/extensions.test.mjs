@@ -10,6 +10,7 @@ test('recognizes supported implementation extensions', () => {
 
 test('matches code and exact test extensions', () => {
   expect(matchesFile('app.MJS', '.mjs', false, false)).toBe(true);
+  expect(matchesFile('app.mjs', '.MJS', false, false)).toBe(true);
   expect(matchesFile('app.MJS', ['.MJS'], false, false)).toBe(true);
   expect(matchesFile('app.md', '.mjs', false, false)).toBe(false);
   expect(matchesFile('README.md', '.md', false, false)).toBe(true);

@@ -29,6 +29,23 @@ test('accepts Windows separators in inventory configuration paths', async () => 
   })).resolves.toContain('.github/workflow.yml');
 });
 
+test('uses explicit Windows path semantics for Windows roots', async () => {
+  await expect(combineConfigFiles('C:\\repo', {
+    inventory: ['.github\\workflow.yml'],
+    platform: 'win32',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => 'name: workflow',
+  })).resolves.toContain('.github/workflow.yml');
+});
+
+test('rejects malformed bounded configuration reader results', async () => {
+  await expect(combineConfigFiles('repo', {
+    inventory: ['.github/workflow.yml'],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () => ({ data: 'workflow' }),
+  })).rejects.toThrow(/must return text, bytes, or/);
+});
+
 test('rejects configuration paths outside the review root', async () => {
   await expect(combineConfigFiles('repo', {
     inventory: ['.github\\..\\..\\outside.yml'],

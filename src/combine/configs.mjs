@@ -38,6 +38,13 @@ export async function combineConfigFiles(
       const bounded = readFileContents
         ? await readFileContents(resolvedPath)
         : await readFileUpToLimit(resolvedPath, MAX_CONFIG_BYTES);
+      if (
+        bounded &&
+        typeof bounded === 'object' &&
+        !Buffer.isBuffer(bounded) &&
+        (!Object.hasOwn(bounded, 'data') || typeof bounded.truncated !== 'boolean')
+      )
+        throw new Error('Configuration reader must return text, bytes, or { data, truncated }');
       const source = bounded && typeof bounded === 'object' && 'data' in bounded ? bounded.data : bounded;
       const bytes = Buffer.isBuffer(source) ? source : Buffer.from(String(source));
       if (bytes.includes(0)) return '';

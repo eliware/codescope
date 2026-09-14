@@ -13,7 +13,7 @@ export function matchesFile(name, extension, testsOnly, noTests) {
     extension === '' ||
     (Array.isArray(extension)
       ? extension.some((value) => name.toLowerCase().endsWith(value.toLowerCase()))
-      : name.toLowerCase().endsWith(extension));
+      : name.toLowerCase().endsWith(extension.toLowerCase()));
   if (!extensionMatches) return false;
   if (!isCodeExtension(extension)) return true;
   return (
