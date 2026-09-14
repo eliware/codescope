@@ -14,6 +14,7 @@ export function createReviewDefaults({ platform = process.platform } = {}) {
     readFile: fs.promises.readFile,
     openEnvFile: open,
     envFile: defaultEnvFile(),
+    environment: process.env,
     prompt: defaultPrompt,
     combine: combineMjsFiles,
     maxSourceChars: 2_000_000,

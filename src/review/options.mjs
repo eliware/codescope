@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { validatePromptShape } from './prompt-shape.mjs';
 
 export function validateReviewOptions(
@@ -18,6 +19,7 @@ export function validateReviewOptions(
     inspectFile,
     platform,
     envFile,
+    environment = process.env,
     prompt,
   },
 ) {
@@ -54,4 +56,6 @@ export function validateReviewOptions(
     throw new Error('runReview option envFile must be a non-empty string');
   if (platform !== undefined && !['linux', 'darwin', 'freebsd', 'win32'].includes(platform))
     throw new Error(`runReview option platform is unsupported: ${platform}`);
+  if (!environment || typeof environment !== 'object')
+    throw new Error('runReview option environment must be an object');
 }

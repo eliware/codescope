@@ -18,3 +18,14 @@ test('rejects a batch that exceeds the aggregate limit', async () => {
     }),
   ).rejects.toThrow(/limit/);
 });
+
+test('preserves source order while workers complete out of order', async () => {
+  const result = await readBatches(['slow', 'fast'], {
+    batchSize: 2,
+    maxChars: 100,
+    read: (value) => new Promise((resolve) => {
+      setTimeout(() => resolve(value), value === 'slow' ? 10 : 0);
+    }),
+  });
+  expect(result).toEqual(['slow', 'fast']);
+});

@@ -27,6 +27,13 @@ test('prefers a nonblank process credential over the configured file', async () 
   }
 });
 
+test('uses an injected process environment without reading global state', async () => {
+  await expect(loadReviewEnvironment({
+    ...base,
+    environment: { OPENAI_API_TOKEN: 'injected-token' },
+  })).resolves.toMatchObject({ OPENAI_API_TOKEN: 'injected-token' });
+});
+
 test('blank process credentials fall back to the file token', async () => {
   const previous = process.env.OPENAI_API_TOKEN;
   process.env.OPENAI_API_TOKEN = '   ';

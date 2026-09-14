@@ -69,7 +69,7 @@ export async function combineConventionFiles(
       portablePath,
       { readFileContents, inspectFile, validateSymlinks: true },
     );
-      return formatSourceSection('conventions/specs/' + relativePath, contents);
+      return formatSourceSection('conventions/specs/' + normalizeConventionPath(relativePath), contents);
     },
   });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';

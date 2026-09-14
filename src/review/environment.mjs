@@ -6,6 +6,7 @@ export async function loadReviewEnvironment({
   envFile,
   openEnvFile,
   inspectFile,
+  environment = process.env,
 }) {
   const envText = await readReviewEnvironmentFile({
     envFile,
@@ -14,11 +15,11 @@ export async function loadReviewEnvironment({
   });
   const fileEnvironment = {};
   loadEnv(envText, fileEnvironment);
-  return resolveTokenEnvironment(fileEnvironment);
+  return resolveTokenEnvironment(fileEnvironment, environment);
 }
 
-function resolveTokenEnvironment(fileEnvironment) {
-  const processToken = process.env.OPENAI_API_TOKEN;
+function resolveTokenEnvironment(fileEnvironment, environment) {
+  const processToken = environment.OPENAI_API_TOKEN;
   const fileToken = fileEnvironment.OPENAI_API_TOKEN;
   if (processToken?.trim()) return { OPENAI_API_TOKEN: processToken };
   if (fileToken?.trim()) return { OPENAI_API_TOKEN: fileToken };

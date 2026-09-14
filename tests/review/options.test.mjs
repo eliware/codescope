@@ -33,6 +33,7 @@ test('rejects invalid review options', () => {
   expect(() => validateReviewOptions('/repo', { ...valid, add: [' '] })).toThrow(/add/);
   expect(() => validateReviewOptions('/repo', { ...valid, model: 42 })).toThrow(/model/);
   expect(() => validateReviewOptions('/repo', { ...valid, model: ' ' })).toThrow(/model/);
+  expect(() => validateReviewOptions('/repo', { ...valid, environment: null })).toThrow(/environment/);
   expect(() => validateReviewOptions('/repo', { ...valid, plainText: 'prompt', dryRun: true })).toThrow(
     /cannot be combined/,
   );

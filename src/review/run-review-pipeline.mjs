@@ -22,6 +22,7 @@ export async function runReviewPipeline(cwd, options) {
       envFile: options.envFile,
       openEnvFile: options.openEnvFile,
       inspectFile: options.inspectFile,
+      environment: options.environment,
       createClient: options.createClient,
     }));
   } catch (cause) {
