@@ -28,6 +28,7 @@ test('parses direct profiles and shared options', () => {
     model: 'gpt-5.6-terra',
     dryRun: true,
   });
+  expect(parseArgs(['all', '--dry-run'])).toMatchObject({ dryRun: true });
   expect(parseArgs([])).toEqual({
     command: 'help',
     option: undefined,
