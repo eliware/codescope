@@ -23,6 +23,7 @@ test('combines text GitHub and Knit configs with numbered, truncated content', a
 test('accepts Windows separators in inventory configuration paths', async () => {
   await expect(combineConfigFiles('repo', {
     inventory: ['.github\\workflow.yml'],
+    platform: 'linux',
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     readFileContents: async () => 'name: workflow',
   })).resolves.toContain('.github/workflow.yml');

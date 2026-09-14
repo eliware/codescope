@@ -256,3 +256,24 @@ test('rejects non-file convention evidence before reading it', async () => {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('bounds convention reads by concurrency and aggregate characters', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await writeFile(path.join(root, 'specs', 'general.json'), '{"general":true}');
+  await writeFile(path.join(root, 'specs', 'cli.json'), '{"cli":true}');
+  await writeFile(
+    path.join(root, 'package.json'),
+    JSON.stringify({ eliware: { conventions: { apply: ['general', 'cli'] } } }),
+  );
+  try {
+    await expect(combineConventionFiles(root, { conventionsRoot: root, concurrency: 0 })).rejects.toThrow(
+      /positive integer/,
+    );
+    await expect(
+      combineConventionFiles(root, { conventionsRoot: root, maxChars: 10 }),
+    ).rejects.toThrow(/exceeds/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

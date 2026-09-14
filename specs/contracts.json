@@ -479,7 +479,7 @@
       "dos": [
         "Support model selection and effort selection through the documented values, and accept only positive integer finite source limits or Infinity.",
         "Use dry-run to estimate input tokens without running a model review; retain credential setup and initialize the provider client because the estimate is requested from OpenAI's input-token capability.",
-        "Include usage metadata and calculated cost only when requested.",
+        "Include usage metadata and calculated cost only when requested for a dry-run.",
         "Normalize provider usage and use the selected model's pricing thresholds."
       ],
       "donts": [

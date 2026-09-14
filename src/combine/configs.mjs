@@ -8,7 +8,7 @@ const MAX_CONFIG_BYTES = 100_000;
 
 export async function combineConfigFiles(
   root,
-  { inventory, readFileContents, inspectFile, concurrency = 8 } = {},
+  { inventory, readFileContents, inspectFile, concurrency = 8, platform = process.platform } = {},
 ) {
   const portableInventory = inventory.map((relativePath) => relativePath.replaceAll('\\', '/'));
   for (const relativePath of portableInventory)
@@ -26,7 +26,7 @@ export async function combineConfigFiles(
     batchSize: concurrency,
     maxChars: Infinity,
     read: async (relativePath) => {
-      const resolvedPath = resolveConfigPath(root, relativePath);
+      const resolvedPath = resolveConfigPath(root, relativePath, platform);
       const inspect = inspectFile ?? lstat;
       const metadata = await inspect(resolvedPath);
       if (metadata.isSymbolicLink())
@@ -57,12 +57,13 @@ export async function combineConfigFiles(
   return included.length ? `===== repository configuration =====\n${included.join('\n')}` : '';
 }
 
-function resolveConfigPath(root, relativePath) {
+function resolveConfigPath(root, relativePath, platform) {
   const portable = relativePath.replaceAll('\\', '/');
   const normalized = path.posix.normalize(portable);
   if (normalized === '..' || normalized.startsWith('../'))
     throw new Error(`Configuration path escapes review root: ${relativePath}`);
-  return path.resolve(root, normalized);
+  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  return pathApi.resolve(root, ...normalized.split('/'));
 }
 
 function isAbsolutePortablePath(relativePath) {

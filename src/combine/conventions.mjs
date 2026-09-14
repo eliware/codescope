@@ -3,6 +3,7 @@ import path from 'node:path';
 import { findFiles } from '../find/files.mjs';
 import { readSourceFile } from './read-file.mjs';
 import { formatSourceSection } from './section-format.mjs';
+import { readBatches } from './batches.mjs';
 
 export async function combineConventionFiles(
   root,
@@ -13,8 +14,12 @@ export async function combineConventionFiles(
     readPackageJson = readFileContents,
     readConventionManifest,
     inspectFile = lstat,
+    concurrency = 8,
+    maxChars = Number.POSITIVE_INFINITY,
   } = {},
 ) {
+  if (!Number.isInteger(concurrency) || concurrency < 1)
+    throw new Error('Convention read concurrency must be a positive integer');
   const specsRoot = path.join(conventionsRoot, 'specs');
   try {
     await access(specsRoot);
@@ -50,8 +55,10 @@ export async function combineConventionFiles(
       '.\n'
     );
   }
-  const sections = [];
-  for (const relativePath of files) {
+  const sections = await readBatches(files, {
+    batchSize: concurrency,
+    maxChars,
+    read: async (relativePath) => {
     const metadata = await inspectFile(path.resolve(specsRoot, relativePath));
     if (metadata.isSymbolicLink())
       throw new Error(`symlinked convention files are not supported: ${relativePath}`);
@@ -62,8 +69,9 @@ export async function combineConventionFiles(
       path.resolve(specsRoot, relativePath),
       { readFileContents, inspectFile, validateSymlinks: true },
     );
-    sections.push(formatSourceSection('conventions/specs/' + relativePath, contents));
-  }
+      return formatSourceSection('conventions/specs/' + relativePath, contents);
+    },
+  });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
 
