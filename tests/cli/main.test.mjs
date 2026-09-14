@@ -168,8 +168,9 @@ test('main uses default collaborators for help', async () => {
 test('main adapts the default stream writer to the review writer contract', async () => {
   const originalWrite = process.stdout.write;
   const writes = [];
-  process.stdout.write = (value) => {
+  process.stdout.write = (value, callback) => {
     writes.push(value);
+    callback();
     return true;
   };
   try {
@@ -182,4 +183,20 @@ test('main adapts the default stream writer to the review writer contract', asyn
     process.stdout.write = originalWrite;
   }
   expect(writes).toEqual(['provider response']);
+});
+
+test('main reports default stream writer errors', async () => {
+  const originalWrite = process.stdout.write;
+  process.stdout.write = (_value, callback) => {
+    callback(new Error('stream failed'));
+    return false;
+  };
+  try {
+    await expect(main(['all'], {
+      review: async (_cwd, options) => options.write('provider response'),
+      error: () => {},
+    })).resolves.toBe(4);
+  } finally {
+    process.stdout.write = originalWrite;
+  }
 });

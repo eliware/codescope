@@ -44,6 +44,12 @@ test('uses explicit POSIX path semantics when requested', async () => {
   })).resolves.toEqual([]);
 });
 
+test('keeps duplicate discovered paths deterministically ordered', async () => {
+  await expect(findFiles('/virtual-root', '.mjs', {
+    readDirectory: async () => [file('same.mjs'), file('same.mjs')],
+  })).resolves.toEqual(['same.mjs', 'same.mjs']);
+});
+
 test('finds files with default options', async () => {
   await expect(findFiles(process.cwd(), '.mjs')).resolves.toContain('src/cli.mjs');
 });

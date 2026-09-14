@@ -26,6 +26,10 @@ export async function walkDirectories(
     }
   }
   files
-    .sort((left, right) => `${left.directory}/${left.name}`.localeCompare(`${right.directory}/${right.name}`))
+    .sort((left, right) => {
+      const a = `${left.directory}/${left.name}`;
+      const b = `${right.directory}/${right.name}`;
+      return a < b ? -1 : a > b ? 1 : 0;
+    })
     .forEach(({ name, directory }) => onFile(name, directory, root));
 }

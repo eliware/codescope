@@ -10,10 +10,12 @@ export async function main(
   {
     output = console.log,
     error = console.error,
-    write = (value) => {
-      process.stdout.write(value);
-      return { written: value.length };
-    },
+    write = (value) => new Promise((resolve, reject) => {
+      process.stdout.write(value, (cause) => {
+        if (cause) reject(cause);
+        else resolve({ written: value.length });
+      });
+    }),
     cwd = process.cwd(),
     review = runReview,
   } = {},

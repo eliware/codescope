@@ -22,7 +22,14 @@ export function createReadCache(readFileContents) {
   const cache = new Map();
   return async (filePath, encoding) => {
     const key = `${filePath}\u0000${encoding ?? ''}`;
-    if (!cache.has(key)) cache.set(key, readFileContents(filePath, encoding));
-    return cache.get(key);
+    if (cache.has(key)) return cache.get(key);
+    const pending = Promise.resolve(readFileContents(filePath, encoding));
+    cache.set(key, pending);
+    try {
+      return await pending;
+    } catch (cause) {
+      cache.delete(key);
+      throw cause;
+    }
   };
 }
