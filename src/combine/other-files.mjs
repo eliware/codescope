@@ -63,7 +63,7 @@ export async function describeOtherFiles(
 }
 
 function resolveInventoryPath(rootPath, relativePath) {
-  if (/^(?:[A-Za-z]:[\\/]|\\\\|\/\/)/u.test(relativePath))
+  if (path.isAbsolute(relativePath) || path.win32.isAbsolute(relativePath) || /^(?:\\\\|\/\/)/u.test(relativePath))
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
   const normalizedPath = relativePath.replaceAll(/[\\/]/gu, path.sep);
   const filePath = path.resolve(rootPath, normalizedPath);

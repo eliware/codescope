@@ -10,7 +10,10 @@ export async function combineConfigFiles(
 ) {
   const configFiles = inventory.map((relativePath) => relativePath.replaceAll('\\', '/')).filter((relativePath) => {
     const normalized = relativePath.toLowerCase();
-    return normalized.startsWith('.github/') || normalized.startsWith('.knit/');
+    return (
+      (normalized.startsWith('.github/') && relativePath.startsWith('.github/')) ||
+      (normalized.startsWith('.knit/') && relativePath.startsWith('.knit/'))
+    );
   });
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error('Configuration concurrency must be a positive integer');

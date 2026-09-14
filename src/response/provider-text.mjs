@@ -12,7 +12,7 @@ export function responseText(response, request) {
       throw new Error('Provider function-call arguments were not raw text');
     return call.arguments;
   }
-  if (typeof response?.output_text === 'string' && response.output_text.length > 0)
+  if (typeof response?.output_text === 'string')
     return response.output_text;
   throw new Error('Provider response did not contain usable output');
 }

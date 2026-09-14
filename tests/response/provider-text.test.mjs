@@ -40,3 +40,7 @@ test('rejects a missing required function call', () => {
     ),
   ).toThrow(/required function call/);
 });
+
+test('preserves an explicitly empty raw output text', () => {
+  expect(responseText({ output_text: '' }, {})).toBe('');
+});

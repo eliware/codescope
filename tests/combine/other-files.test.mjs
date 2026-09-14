@@ -131,6 +131,11 @@ test('rejects inventory paths that escape the review root', async () => {
       readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
     }),
   ).rejects.toThrow(/escapes review root/);
+  await expect(
+    describeOtherFiles('repo', ['/outside.txt'], {
+      readOtherFileContents: async () => ({ data: 'outside', truncated: false }),
+    }),
+  ).rejects.toThrow(/escapes review root/);
 });
 
 test('normalizes inventory separators before resolving relative paths', async () => {

@@ -26,7 +26,8 @@ export async function runReviewPipeline(cwd, options) {
   } catch (cause) {
     return throwSessionFailure({
       cause,
-      providerResponseReceived: false,
+      providerResponse: cause.providerResponse,
+      providerResponseReceived: cause.providerResponse !== undefined,
       write: options.write,
     });
   }
@@ -67,7 +68,8 @@ export async function runReviewPipeline(cwd, options) {
     if (cause?.result) throw cause;
     return throwSessionFailure({
       cause,
-      providerResponseReceived: false,
+      providerResponse: cause.providerResponse,
+      providerResponseReceived: cause.providerResponse !== undefined,
       write: options.write,
     });
   }
