@@ -17,7 +17,7 @@ export async function collectAllSections(root, options = {}) {
   };
 }
 
-function createReadCache(readFileContents) {
+export function createReadCache(readFileContents) {
   if (!readFileContents) return undefined;
   const cache = new Map();
   return async (filePath, encoding) => {

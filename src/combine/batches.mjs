@@ -6,12 +6,18 @@ export async function readBatches(files, { batchSize, maxChars, read }) {
   const sections = Array(files.length);
   let totalChars = 0;
   let nextIndex = 0;
+  let failed = false;
   async function worker() {
-    while (nextIndex < files.length) {
+    while (!failed && nextIndex < files.length) {
       const index = nextIndex++;
       const section = await read(files[index]);
       totalChars = addBatchLength(totalChars, section.length, 1);
-      assertWithinLimit(totalChars, maxChars);
+      try {
+        assertWithinLimit(totalChars, maxChars);
+      } catch (cause) {
+        failed = true;
+        throw cause;
+      }
       sections[index] = section;
     }
   }

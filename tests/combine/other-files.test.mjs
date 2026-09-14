@@ -130,13 +130,11 @@ test('uses explicit Windows path semantics for Windows inventory roots', async (
   expect(result[0]).toContain('notes.txt');
 });
 
-test('formats in-limit data even when a reader reports truncation', async () => {
-  const result = await describeOtherFiles('repo', ['notes.txt'], {
+test('rejects inconsistent in-limit truncation metadata', async () => {
+  await expect(describeOtherFiles('repo', ['notes.txt'], {
     inspectFile: inspectRegularFile,
     readOtherFileContents: async () => ({ data: 'notes', truncated: true }),
-  });
-  expect(result[0]).toContain('notes.txt');
-  expect(result[0]).not.toContain('per-file metadata limit reached');
+  })).rejects.toThrow(/in-limit/);
 });
 
 test('uses POSIX path semantics when explicitly selected', async () => {

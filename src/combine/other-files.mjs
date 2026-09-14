@@ -56,7 +56,9 @@ export async function describeOtherFiles(
         throw new Error(`Other-file reader exceeded the ${MAX_OTHER_FILE_BYTES + 1}-byte sample boundary`);
       if (bytes.byteLength > MAX_OTHER_FILE_BYTES && result.truncated !== true)
         throw new Error('Other-file reader returned oversized data without truncated=true');
-      if (result.truncated === true && bytes.byteLength > MAX_OTHER_FILE_BYTES) {
+      if (result.truncated === true && bytes.byteLength <= MAX_OTHER_FILE_BYTES)
+        throw new Error('Other-file reader marked an in-limit sample as truncated');
+      if (result.truncated === true) {
         const sample = bytes.subarray(0, MAX_OTHER_FILE_BYTES + 1);
         entries[index] =
           `${relativePath} | omitted | at least ${sample.byteLength} sampled bytes | per-file metadata limit reached`;

@@ -138,6 +138,7 @@ test('accepts shared scalar options before a command', () => {
   });
   expect(() => parseArgs(['--dry-run', 'prompt', 'text'])).toThrow(/Usage/);
   expect(() => parseArgs(['--effort=low', 'all', '--effort=high'])).toThrow(/Only one --effort/);
+  expect(() => parseArgs(['--effort', 'all'])).toThrow(/Effort must/);
   expect(() => parseArgs(['--model=gpt-5.6-luna', 'all', '--model=gpt-5.6-sol'])).toThrow(
     /Only one --model/,
   );
