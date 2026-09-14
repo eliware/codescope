@@ -51,7 +51,7 @@ function mergeLeadingOptions(parsed, values) {
     effort: values.effort ?? parsed.effort,
     model: values.model ?? parsed.model,
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
-    usage: values.usage || parsed.usage || undefined,
+    usage: values.usageCount > 0 || parsed.usage || undefined,
     add: [...values.add, ...parsed.add],
   };
 }
