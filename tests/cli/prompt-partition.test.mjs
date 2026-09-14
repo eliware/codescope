@@ -19,3 +19,16 @@ test('rejects non-option tokens after the delimiter with a grammar error', () =>
     'Only --effort=... or --model=... may follow --',
   );
 });
+
+test('normalizes separated trailing scalar options after the delimiter', () => {
+  expect(partitionPromptArgs(['summarize', '--', '--effort', 'low', '--model', 'gpt-5.6-sol'])).toEqual({
+    promptArgs: ['summarize'],
+    optionArgs: ['--effort=low', '--model=gpt-5.6-sol'],
+  });
+});
+
+test('rejects missing separated trailing scalar values', () => {
+  expect(() => partitionPromptArgs(['summarize', '--', '--effort'])).toThrow(
+    'Only --effort=... or --model=... may follow --',
+  );
+});
