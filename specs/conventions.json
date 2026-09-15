@@ -43,9 +43,9 @@
     "npm-published": "../../conventions/specs/npm-published.json"
   },
   "reviewContract": {
-    "applicability": "For ordinary packages, read only the repository types declared by package.json eliware.conventions.apply. When package.json name is exactly @eliware/test, ignore eliware.conventions.apply and discover every JSON record directly under the supplied conventions checkout's specs directory.",
+    "applicability": "Always include conventions/specs/contracts.json. For ordinary packages, read only the other repository types declared by package.json eliware.conventions.apply. When package.json name is exactly @eliware/test, ignore eliware.conventions.apply and discover every JSON record directly under the supplied conventions checkout's specs directory.",
     "authority": "Treat the linked Conventions records as the sole authority for repository requirements and directive text.",
-    "missingEvidence": "If the canonical Conventions checkout or an applicable record is unavailable, report convention alignment as unverified; for @eliware/test, unavailable discovered specs records are incomplete evidence. Do not infer or import requirements.",
+    "missingEvidence": "If the canonical Conventions checkout, contracts.json, or an applicable record is unavailable, report convention alignment as unverified; for @eliware/test, unavailable discovered specs records are incomplete evidence. Do not infer or import requirements.",
     "scope": "Supply the selected canonical records as review evidence. Do not redefine, duplicate, or extend their requirements."
   }
 }

@@ -302,16 +302,17 @@
         "outputs": "Only applicable canonical Convention JSON records or an explicit unavailable/incomplete-evidence marker.",
         "errors": ["Missing or malformed applicability is reported as unavailable rather than inferred."],
         "ordering": ["Read applicability before selecting canonical records."],
-        "invariants": ["CodeScope does not redefine Convention requirements.", "The exact package name @eliware/test selects full convention-spec discovery and does not consult eliware.conventions.apply."],
+        "invariants": ["CodeScope does not redefine Convention requirements.", "conventions/specs/contracts.json is included for every reviewed repository.", "The exact package name @eliware/test selects full convention-spec discovery and does not consult eliware.conventions.apply."],
         "boundaries": { "owns": ["CodeScope profile selection"], "doesNotOwn": ["Convention requirements"] }
       },
       "dos": [
-        "Read only the repository types declared by package.json eliware.conventions.apply for ordinary packages.",
+        "Always include the canonical conventions/specs/contracts.json record for every reviewed repository.",
+        "For ordinary packages, read only the other repository types declared by package.json eliware.conventions.apply.",
         "When package.json name is exactly @eliware/test, ignore eliware.conventions.apply and include every JSON record discovered directly under the adjacent conventions checkout's specs directory.",
         "Load ordinary canonical Convention JSON from the adjacent conventions checkout through the configured manifest reader; the @eliware/test full-discovery path uses directory discovery instead of manifest applicability.",
         "Read repository package applicability through the injected package reader when one is supplied.",
         "Normalize discovered and canonical convention paths before matching them.",
-        "Report the checkout, applicability, or applied record as unavailable when it cannot be supplied.",
+        "Report the checkout, applicability, contracts record, or applied record as unavailable when it cannot be supplied.",
         "Treat canonical Conventions records as the authority for repository requirements."
       ],
       "donts": [

@@ -9,6 +9,7 @@ test('includes convention specs and excludes package metadata', async () => {
   await mkdir(specs, { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(specs, 'general.json'), '{"version":"8.0"}');
+  await writeFile(path.join(specs, 'contracts.json'), '{"contracts":[]}');
   await writeFile(path.join(specs, 'web.json'), '{"version":"8.0","web":true}');
   await writeManifest(specs, { general: 'specs/general.json' });
   await writeFile(path.join(root, 'package.json'), '{}');
@@ -57,6 +58,7 @@ test('reports unavailable applicability metadata', async () => {
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(path.join(root, 'package.json'), '{"eliware":{"conventions":{}}}');
   try {
     const result = await combineConventionFiles(root, { conventionsRoot: root });
@@ -89,6 +91,7 @@ test('reports unavailable applicability for invalid package metadata', async () 
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(path.join(root, 'package.json'), '{invalid');
   try {
     const result = await combineConventionFiles(root, { conventionsRoot: root });
@@ -161,6 +164,7 @@ test('matches an injected manifest path without a specs segment', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
@@ -182,6 +186,7 @@ test('uses the injected convention manifest reader for virtual roots', async () 
   await mkdir(specs, { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(specs, 'virtual.json'), '{"virtual":true}');
+  await writeFile(path.join(specs, 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'project', 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['virtual'] } } }),
@@ -205,6 +210,7 @@ test('includes every convention JSON for @eliware/test', async () => {
   await mkdir(specs, { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(specs, 'general.json'), '{"profile":"general"}');
+  await writeFile(path.join(specs, 'contracts.json'), '{"contracts":[]}');
   await writeFile(path.join(specs, 'application.json'), '{"profile":"application"}');
   await writeFile(path.join(specs, 'cli.json'), '{"profile":"cli"}');
   await writeFile(path.join(specs, 'npm-published.json'), '{"profile":"npm-published"}');
@@ -221,6 +227,7 @@ test('includes every convention JSON for @eliware/test', async () => {
     expect(result).toContain('conventions/specs/application.json');
     expect(result).toContain('conventions/specs/cli.json');
     expect(result).toContain('conventions/specs/npm-published.json');
+    expect(result).toContain('conventions/specs/contracts.json');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -240,6 +247,7 @@ test('normalizes convention paths before matching applied profiles', async () =>
   await mkdir(specs, { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(specs, 'general.json'), '{"normalized":true}');
+  await writeFile(path.join(specs, 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'project', 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
@@ -261,6 +269,7 @@ test('rejects symlinked convention evidence before reading it', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
@@ -282,6 +291,7 @@ test('rejects non-file convention evidence before reading it', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general'] } } }),
@@ -304,6 +314,7 @@ test('bounds convention reads by concurrency and aggregate characters', async ()
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await writeFile(path.join(root, 'specs', 'general.json'), '{"general":true}');
   await writeFile(path.join(root, 'specs', 'cli.json'), '{"cli":true}');
+  await writeFile(path.join(root, 'specs', 'contracts.json'), '{}');
   await writeFile(
     path.join(root, 'package.json'),
     JSON.stringify({ eliware: { conventions: { apply: ['general', 'cli'] } } }),

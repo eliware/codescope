@@ -43,10 +43,14 @@ export async function combineConventionFiles(
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
   const { profiles, canonicalPaths, includeAll } = applicability;
+  const contractsPath = discoveredFiles.find(
+    (relativePath) => normalizeConventionPath(relativePath) === 'contracts.json',
+  );
   const files = (includeAll
     ? discoveredFiles
     : discoveredFiles.filter((relativePath) => {
       const normalized = normalizeConventionPath(relativePath);
+      if (normalized === 'contracts.json') return true;
       return [...canonicalPaths.values()].some((canonicalPath) =>
         normalizeConventionPath(canonicalPath) === normalized,
       );
@@ -56,13 +60,17 @@ export async function combineConventionFiles(
       return a.localeCompare(b, 'en', { sensitivity: 'variant' });
     });
   const supplied = new Set(files.map(normalizeConventionPath));
-  const missing = includeAll
+  const missingProfiles = includeAll
     ? []
     : [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
+  const missing = [
+    ...missingProfiles,
+    ...(contractsPath === undefined ? ['contracts.json'] : []),
+  ];
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
-      'Convention evidence incomplete; missing applied profiles: ' +
+      'Convention evidence incomplete; missing records: ' +
       missing.join(', ') +
       '.\n'
     );
