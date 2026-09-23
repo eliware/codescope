@@ -21,7 +21,6 @@ export const PROFILE_DEFINITIONS = Object.freeze({
   'p0-1': { files: [true, false, false] },
   'p0-2': { files: [true, false, false] },
   'p0-3': { files: [true, false, false] },
-  tests: { files: [true, false, false], suggestions: ['tests'] },
 });
 
 export function getSuggestionCategories(profile) {

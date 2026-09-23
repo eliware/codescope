@@ -22,6 +22,6 @@ test('routes generic suggestions and scoped reviews', () => {
   expect(getPromptRouting('release', 'suggest').promptSource.tools).toHaveLength(1);
   expect(() => getPromptRouting('unknown', 'suggest')).toThrow(/Unknown analysis profile/);
   expect(getPromptRouting('architecture', 'review').promptSource.tools).toHaveLength(1);
-  expect(getPromptRouting('tests', 'review').promptSource.tools).toHaveLength(1);
-  expect(getPromptRouting('tests', 'other').promptSource).toBeDefined();
+  expect(getPromptRouting('cross-platform', 'review').promptSource.tools).toHaveLength(1);
+  expect(getPromptRouting('cross-platform', 'other').promptSource).toBeDefined();
 });
