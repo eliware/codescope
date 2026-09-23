@@ -1,11 +1,9 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { findFiles } from '../find/files.mjs';
-import { readSourceFile } from './read-file.mjs';
-import { formatSourceSection } from './section-format.mjs';
-import { readBatches } from './batches.mjs';
 import { readConventionApplicability } from './convention/applicability.mjs';
-import { conventionFilesForApplicability, normalizeConventionPath, resolveConventionPath } from './convention/paths.mjs';
+import { conventionFilesForApplicability } from './convention/paths.mjs';
+import { discoverConventionFiles } from './convention/discover.mjs';
+import { readConventionRecords } from './convention/read-records.mjs';
 export async function combineConventionFiles(
   root,
   {
@@ -22,19 +20,8 @@ export async function combineConventionFiles(
 ) {
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error('Convention read concurrency must be a positive integer');
-  const pathApi = platform === 'win32' ? path.win32 : path.posix;
-  const specsRoot = pathApi.join(conventionsRoot, 'specs');
-  let discoveredFiles;
-  try {
-    discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory, platform });
-  } catch (cause) {
-    if (cause?.code === 'ENOENT' || cause?.code === 'ENOTDIR')
-      return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
-    throw new Error(
-      `Unable to discover convention evidence: ${String(cause)}`,
-      { cause },
-    );
-  }
+  const discovery = await discoverConventionFiles(conventionsRoot, { readDirectory, platform });
+  if (!discovery) return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
   const applicability = await readConventionApplicability(root, {
     conventionsRoot,
     readPackageJson,
@@ -43,7 +30,7 @@ export async function combineConventionFiles(
     platform,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
-  const { files, missing } = conventionFilesForApplicability(discoveredFiles, applicability);
+  const { files, missing } = conventionFilesForApplicability(discovery.files, applicability);
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
@@ -52,19 +39,8 @@ export async function combineConventionFiles(
       '.\n'
     );
   }
-  const sections = await readBatches(files, {
-    batchSize: concurrency,
-    maxChars,
-    read: async (relativePath) => {
-    const portablePath = resolveConventionPath(specsRoot, relativePath, platform);
-    const contents = await readSourceFile(
-      'conventions/specs/' + relativePath,
-      portablePath,
-      { readFileContents, inspectFile, validateSymlinks: true },
-    );
-      const normalizedPath = normalizeConventionPath(relativePath);
-      return formatSourceSection('conventions/specs/' + normalizedPath, contents);
-    },
+  const sections = await readConventionRecords(discovery.specsRoot, files, {
+    concurrency, maxChars, readFileContents, inspectFile, platform,
   });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
