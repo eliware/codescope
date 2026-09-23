@@ -1,9 +1,9 @@
 import { parseOptionValues } from './options/parse-values.mjs';
-import { parseAddOptions } from './add-option.mjs';
+import { scanOptionStream } from './options/scan-option-stream.mjs';
 import { partitionPromptArgs } from './prompt-partition.mjs';
 
 export function parsePromptArgs(args) {
-  const additions = parseAddOptions(args);
+  const additions = scanOptionStream(args, { keepScalarOptions: true });
   args = additions.remaining;
   const { promptArgs, optionArgs } = partitionPromptArgs(args);
   const promptText = promptArgs.join(' ').trim();
