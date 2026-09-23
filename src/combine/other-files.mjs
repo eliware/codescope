@@ -31,4 +31,3 @@ export async function describeOtherFiles(
   return entries.filter(Boolean);
 }
 
-export { resolveInventoryPath } from './inventory/paths.mjs';
