@@ -37,9 +37,9 @@
     }
   ],
   "conventionEvidence": {
-    "applicability": "Read only the Convention directive records named by package.json eliware.apply. For the @eliware/test package, supply every canonical Convention directive record so its validator can verify complete coverage. Directive examples are inline explanatory evidence and do not create a separate contract record.",
+    "applicability": "Read only the Convention directive records named by package.json eliware.apply. For @eliware/test, derive canonical directive-record paths from unannotated JSON links in conventions/specs/README.md, supply only those indexed records, and report any indexed record that is missing. Do not use all discovered JSON files as a proxy for canonical records. Directive examples are inline explanatory evidence and do not create a separate contract record.",
     "authority": "Treat the linked Conventions records as the sole authority for repository requirements and directive text.",
-    "missingEvidence": "If the canonical Conventions checkout or an applied directive record is unavailable, report convention alignment as unverified. Do not infer or import requirements.",
+    "missingEvidence": "If the canonical Conventions checkout, its specs/README.md directive index, or an applied/indexed directive record is unavailable, report convention alignment as unverified. Do not infer or import requirements.",
     "scope": "Supply the selected canonical records as review evidence. Do not redefine, duplicate, or extend their requirements."
   }
 }

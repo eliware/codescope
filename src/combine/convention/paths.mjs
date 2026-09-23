@@ -13,12 +13,19 @@ export function resolveConventionPath(specsRoot, relativePath, platform = proces
   return pathApi.resolve(specsRoot, ...normalized.split('/'));
 }
 
-export function conventionFilesForApplicability(discoveredFiles, applicability) {
+export function conventionFilesForApplicability(discoveredFiles, applicability, canonicalRecords) {
   const { includeAll = false, profiles, canonicalPaths } = applicability;
   if (includeAll) {
+    const expected = canonicalRecords ?? [];
+    const supplied = new Set(discoveredFiles.map(normalizeConventionPath));
+    const files = expected
+      .filter((file) => supplied.has(normalizeConventionPath(file)))
+      .sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' }));
     return {
-      files: [...discoveredFiles].sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' })),
-      missing: [],
+      files,
+      missing: canonicalRecords
+        ? expected.filter((file) => !supplied.has(normalizeConventionPath(file)))
+        : ['specs/README.md (canonical directive index)'],
     };
   }
   const selectedPaths = [...profiles]

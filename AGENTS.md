@@ -28,8 +28,17 @@ Maintain `README.md`, `AGENTS.md`,
 ## Development
 
 Use Node.js 26, npm, and native ESM modules in the required environment.
-Supported commands include `codescope all`,
-review and suggestion profiles, `codescope prompt`, `--help`, and `--version`.
+The executable entrypoint is `bin/codescope.mjs`. Supported commands include
+`codescope all`, review and suggestion profiles, `codescope prompt <text>`,
+`--help`, and `--version`. Profile commands accept repeatable `-a|--add <text>`
+additions, model and effort options, usage reporting, and dry-run estimates.
+Prompt text beginning with `-` requires `--`, after which only effort and
+model options are accepted. The CLI uses the same Node.js command syntax on
+Windows and Ubuntu; CI currently validates Ubuntu only. Successful commands
+exit `0`; usage, configuration, input, provider, and response errors exit `2`,
+`3`, `4`, `5`, and `6`; timeout and termination exits are `124`, `130`, and
+`143`. Provider findings and verdicts do not affect the exit code. CodeScope
+is read-only and has no destructive review action.
 Read `README.md`, relevant `docs/`, and relevant `specs/` records before
 changing files. Read `eliware/docs` for authority mapping,
 `eliware/conventions` for applicable repository requirements, and

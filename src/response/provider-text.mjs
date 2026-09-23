@@ -1,4 +1,18 @@
 export function responseText(response, request) {
+  try {
+    return readResponseText(response, request);
+  } catch (cause) {
+    if (cause?.code === 'INVALID_RESPONSE') throw cause;
+    const error = new Error(
+      cause instanceof Error ? cause.message : 'Provider response was invalid',
+      { cause },
+    );
+    error.code = 'INVALID_RESPONSE';
+    throw error;
+  }
+}
+
+function readResponseText(response, request) {
   const name = request.tool_choice?.name;
   const output = response?.output;
   if (output !== undefined && !Array.isArray(output))

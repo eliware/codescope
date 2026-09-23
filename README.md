@@ -2,7 +2,7 @@
 
 ## @eliware/codescope [![npm version](https://img.shields.io/npm/v/@eliware/codescope.svg)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/github/license/eliware/codescope.svg)](LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions)
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [RELEASE_NOTES.md](RELEASE_NOTES.md) · [examples](examples/README.md)
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
 
 A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
 
@@ -37,6 +37,7 @@ Repository: https://github.com/eliware/codescope.
 - [Operations](#operations)
 - [Commands](#commands)
 - [Exit codes](#exit-codes)
+- [Examples](#examples)
 
 ## Features
 
@@ -183,8 +184,8 @@ codescope --help
 codescope --version
 ```
 
-The CLI uses the same command syntax on Windows and Ubuntu, which are both
-covered by CI.
+CI validates the CLI on Ubuntu. Windows uses the same Node.js command syntax,
+but is not currently covered by the supplied CI workflow.
 
 ## Exit codes
 
@@ -194,3 +195,7 @@ CodeScope response errors exit with `6`; this status is not derived from review
 content. Timeout and termination exits are `124`, `130` (SIGINT), and `143`
 (SIGTERM). A successful provider response is written unchanged, and its
 findings or verdict text do not affect process exit status.
+
+## Examples
+
+See [examples/README.md](examples/README.md) for end-user command examples.

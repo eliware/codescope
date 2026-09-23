@@ -36,6 +36,7 @@
     "src/",
     "README.md",
     "docs/",
+    "prompts/",
     "specs/",
     "KNOWN_ISSUES.md",
     "NEW_FEATURE_SUGGESTIONS.md",
@@ -75,6 +76,14 @@
   },
   "license": "MIT",
   "eliware": {
+    "environment": {
+      "providerToken": {
+        "name": "OPENAI_API_TOKEN",
+        "required": true,
+        "sources": ["process environment", "~/.codescope"],
+        "precedence": "nonblank process value, then nonblank ~/.codescope value"
+      }
+    },
     "apply": [
       "general",
       "application",

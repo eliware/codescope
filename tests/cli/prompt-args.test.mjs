@@ -20,6 +20,12 @@ test('supports a delimiter for dash-leading prompt text', () => {
   });
 });
 
+test('rejects additions after the prompt delimiter', () => {
+  expect(() => parsePromptArgs(['question', '--', '--add', 'note'])).toThrow(
+    'Only --effort=... or --model=... may follow --',
+  );
+});
+
 test('rejects missing, duplicate, and invalid prompt options', () => {
   expect(() => parsePromptArgs([])).toThrow(/prompt/);
   expect(() => parsePromptArgs(['x', '--effort=low', '--effort=high'])).toThrow(/Only one/);

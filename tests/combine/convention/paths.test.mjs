@@ -26,10 +26,21 @@ test('reports unsupported and unmapped profile names as missing', () => {
   })).toEqual({ files: [], missing: ['unsupported', 'unmapped'] });
 });
 
-test('selects every discovered convention file for eliware test', () => {
-  expect(conventionFilesForApplicability(['cli.json', 'general.json', 'web.json'], {
+test('selects only indexed canonical records for eliware test and reports missing records', () => {
+  expect(conventionFilesForApplicability(['cli.json', 'general.json', 'unrelated.json'], {
     includeAll: true,
     profiles: new Set(['general']),
     canonicalPaths: new Map([['general', 'general.json']]),
-  })).toEqual({ files: ['cli.json', 'general.json', 'web.json'], missing: [] });
+  }, ['cli.json', 'general.json', 'private.json'])).toEqual({
+    files: ['cli.json', 'general.json'],
+    missing: ['private.json'],
+  });
+});
+
+test('reports the canonical index as missing when no index records are available', () => {
+  expect(conventionFilesForApplicability(['unrelated.json'], {
+    includeAll: true,
+    profiles: new Set(),
+    canonicalPaths: new Map(),
+  })).toEqual({ files: [], missing: ['specs/README.md (canonical directive index)'] });
 });

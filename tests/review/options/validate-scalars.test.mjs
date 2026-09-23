@@ -4,6 +4,12 @@ test('accepts valid scalar review options', () => {
   expect(() => validateReviewScalars({ maxSourceChars: 1, usage: false, dryRun: false })).not.toThrow();
 });
 
+test('accepts nonblank additions with surrounding whitespace without normalizing them', () => {
+  const additions = ['  first note  ', '\tsecond note\t'];
+  expect(() => validateReviewScalars({ maxSourceChars: 1, add: additions })).not.toThrow();
+  expect(additions).toEqual(['  first note  ', '\tsecond note\t']);
+});
+
 test('rejects invalid source, additions, and prompt combinations', () => {
   expect(() => validateReviewScalars({ maxSourceChars: 0 })).toThrow(/positive/);
   expect(() => validateReviewScalars({ maxSourceChars: 1, add: ['ok', 1] })).toThrow(/add/);

@@ -62,3 +62,73 @@ test('propagates a throwing provider output accessor for safe fallback handling'
   });
   expect(() => responseText(response, {})).toThrow('malformed output');
 });
+
+test('classifies every malformed provider output shape as an invalid response', () => {
+  const cases = [
+    [{ output: {} }, {}],
+    [{ output: [] }, { tool_choice: { name: 'review' } }],
+    [
+      { output: [{ type: 'function_call', name: 'review', arguments: 1 }] },
+      { tool_choice: { name: 'review' } },
+    ],
+    [
+      {
+        output: [
+          { type: 'function_call', name: 'review', arguments: '{}' },
+          { type: 'function_call', name: 'review', arguments: '{}' },
+        ],
+      },
+      { tool_choice: { name: 'review' } },
+    ],
+    [{ output: [] }, {}],
+  ];
+
+  for (const [response, request] of cases) {
+    let caught;
+    try {
+      responseText(response, request);
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toMatchObject({ code: 'INVALID_RESPONSE' });
+  }
+});
+
+test('preserves an already classified response error', () => {
+  const expected = Object.assign(new Error('classified'), { code: 'INVALID_RESPONSE' });
+  const response = {};
+  Object.defineProperty(response, 'output', {
+    get() {
+      throw expected;
+    },
+  });
+
+  let caught;
+  try {
+    responseText(response, {});
+  } catch (error) {
+    caught = error;
+  }
+  expect(caught).toBe(expected);
+});
+
+test('classifies non-Error provider failures as invalid responses', () => {
+  const malformed = Object.create(null);
+  const response = {};
+  Object.defineProperty(response, 'output', {
+    get() {
+      throw malformed;
+    },
+  });
+
+  try {
+    responseText(response, {});
+  } catch (error) {
+    expect(error).toMatchObject({
+      code: 'INVALID_RESPONSE',
+      message: 'Provider response was invalid',
+    });
+    return;
+  }
+  throw new Error('Expected malformed provider output to fail');
+});

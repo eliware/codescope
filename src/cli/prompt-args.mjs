@@ -3,8 +3,13 @@ import { scanOptionStream } from './options/scan-option-stream.mjs';
 import { partitionPromptArgs } from './prompt-partition.mjs';
 
 export function parsePromptArgs(args) {
-  const additions = scanOptionStream(args, { keepScalarOptions: true });
-  args = additions.remaining;
+  const delimiter = args.indexOf('--');
+  const optionBoundary = delimiter < 0 ? args.length : delimiter;
+  const additions = scanOptionStream(args.slice(0, optionBoundary), { keepScalarOptions: true });
+  args = [
+    ...additions.remaining,
+    ...(delimiter < 0 ? [] : args.slice(delimiter)),
+  ];
   const { promptArgs, optionArgs } = partitionPromptArgs(args);
   const promptText = promptArgs.join(' ').trim();
   if (!promptText) throw new Error('Usage: codescope prompt <prompt text>');

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { readConventionApplicability } from './convention/applicability.mjs';
 import { conventionFilesForApplicability } from './convention/paths.mjs';
 import { discoverConventionFiles } from './convention/discover.mjs';
+import { readCanonicalDirectiveIndex } from './convention/canonical-index.mjs';
 import { readConventionRecords } from './convention/read-records.mjs';
 export async function combineConventionFiles(
   root,
@@ -31,7 +32,14 @@ export async function combineConventionFiles(
   if (applicability.kind === 'invalid') {
     return `===== Convention v8 JSON =====\nConvention applicability invalid: ${applicability.reason}.\n`;
   }
-  const { files, missing } = conventionFilesForApplicability(discovery.files, applicability);
+  const canonicalRecords = applicability.includeAll
+    ? await readCanonicalDirectiveIndex(discovery.specsRoot, { readFileContents, inspectFile, platform })
+    : undefined;
+  const { files, missing } = conventionFilesForApplicability(
+    discovery.files,
+    applicability,
+    canonicalRecords,
+  );
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
