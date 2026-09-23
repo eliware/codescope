@@ -1,13 +1,13 @@
-import { redactTestOutput } from './redaction.mjs';
-import { readNumericUsage, readStringProperty } from './response-accessors.mjs';
 import { readFunctionCallArguments } from './diagnostics/function-call-summary.mjs';
+import { readOutputTextSummary } from './diagnostics/output-text-summary.mjs';
+import { readUsageSummary } from './diagnostics/usage-summary.mjs';
 
 export function summarizeProviderResponse(response) {
   const functionCallArguments = readFunctionCallArguments(response);
-  const outputText = readStringProperty(response, 'output_text');
-  const usage = readNumericUsage(response);
+  const outputText = readOutputTextSummary(response);
+  const usage = readUsageSummary(response);
   return {
-    ...(outputText !== undefined ? { output_text: redactTestOutput(outputText) } : {}),
+    ...(outputText !== undefined ? { output_text: outputText } : {}),
     ...(usage ? { usage } : {}),
     ...(functionCallArguments ? { function_call_arguments: functionCallArguments } : {}),
   };
