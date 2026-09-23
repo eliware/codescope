@@ -1,7 +1,7 @@
 import { fs, registerSignals } from '@eliware/common';
 import { createOpenAI } from '@eliware/openai';
 import { combineMjsFiles } from '../combine/source-file-aliases.mjs';
-import { prompt as defaultPrompt } from '../prompts/public/review.mjs';
+import { prompt as defaultPrompt } from '../prompts/public/review-profiles.mjs';
 import { defaultEnvFile } from './env-file-path.mjs';
 import { lstat, open } from 'node:fs/promises';
 import { createDefaultWriter } from '../cli/default-writer.mjs';

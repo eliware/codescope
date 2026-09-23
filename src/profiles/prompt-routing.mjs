@@ -1,11 +1,10 @@
 import {
   profilePrompt,
-  allPrompt,
-  combinedAllPrompt,
   refactorPrompt,
-  releasePrompt,
-  conventionsPrompt,
-} from '../prompts/public/review.mjs';
+} from '../prompts/public/review-profiles.mjs';
+import { allPrompt, combinedAllPrompt } from '../prompts/public/unified-review.mjs';
+import { releasePrompt } from '../prompts/public/release-review.mjs';
+import { conventionsPrompt } from '../prompts/public/convention-review.mjs';
 import { createAnalysisPrompt, priorityPrompt } from '../prompts/public/analysis.mjs';
 import {
   architecturePrompt, newFeaturesPrompt, securityPrompt, performancePrompt,
