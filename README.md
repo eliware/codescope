@@ -28,16 +28,20 @@ Repository: https://github.com/eliware/codescope.
 - [Development](#development)
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
-- [Configuration](#configuration)
 - [Security](#security)
 - [Support](#support)
 - [License](#license)
 - [Links](#links)
+- [Configuration](#configuration)
+- [Validation](#validation)
+- [Operations](#operations)
+- [Commands](#commands)
+- [Exit codes](#exit-codes)
 
 ## Features
 
 - Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
-- Comprehensive `all` reviews that combine implementation, tests, and Markdown into one structured JSON result.
+- Comprehensive `all` reviews that combine implementation, tests, and Markdown into one provider review request.
 - Token and cost estimates, model selection, and reasoning-effort controls.
 - Symlink-safe discovery and documented boundaries for intentional behavior.
 - Read-only analysis that does not modify the reviewed repository.
@@ -90,12 +94,6 @@ CodeScope uses Node.js 26 native ESM. Keep runtime implementation in `src/`,
 the CLI entrypoint in `bin/`, end-user guidance in `docs/`, and CodeScope
 directives in `specs/`.
 
-### Configuration
-
-The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN`
-from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank
-process token takes precedence over the file.
-
 ## Testing
 
 Use the global `eliware-test` validator for installation, tests, lint, audit,
@@ -108,48 +106,9 @@ If convention evidence is unavailable, verify that the adjacent
 `eliware/conventions` checkout exists and that `package.json.eliware.apply`
 names valid directive files under its `specs/` directory.
 
-### Operations
-
-CodeScope is read-only against reviewed repositories. Publication and deployment
-are handled by release and Knit workflows; this CLI does not deploy or publish
-reviewed code.
-
-### Validation
-
-```text
-eliware-test
-git diff --check
-```
-
-`codescope all` is the direct shorthand for `codescope review all`, the main comprehensive review command. It requests the provider to report P0–P3 findings and ask for a `block` verdict when unresolved P0/P1 findings exist. This is provider-request guidance only: CodeScope does not guarantee or parse a response schema, and provider findings never change the CLI exit code. `git diff --check` is a manual external whitespace check, not a CodeScope runtime or CI command.
-
-Running `codescope` with no command displays the single help page. Use `codescope review all` for the comprehensive review, or `codescope suggest all` for one non-blocking suggestion pass over every review category plus `new-features`; it uses the generic suggestion tool and never interprets findings as review status.
-
-Use `codescope prompt "your question"` for an ad hoc request. It sends the same complete `all` context, without test execution results, and sends no review or suggestion tools. The provider response is written unchanged and has no CodeScope schema. Optional `--effort=`/`--effort <value>` and `--model=`/`--model <value>` overrides are supported; `--usage` and `--dry-run` are rejected for prompts. Use `--` to terminate prompt text before supported trailing options when the prompt itself begins with a dash; trailing scalar options may use either form, for example `codescope prompt --summarize this repository -- --effort=low`.
-
-Append one or more `-a <text>` or `--add <text>` options to any profile command, including `all`, `release`, review profiles, suggestion profiles, and `prompt`. Each added string is untrusted provider prompt text, cannot override system or developer instructions, is preserved verbatim, and is appended to the end of the final user message in command-line order. For example: `codescope all --add "Review local-link handling as a separate known limitation"`. Bare `codescope`, `codescope help`, `codescope --help`, and version output accept additions in normalized command metadata but intentionally do not apply them.
-
-`codescope --help` is the single help page. A profile may also be followed by `--help` to display that same page. Help and version output intentionally ignore review-only metadata such as `--usage`, `--dry-run`, `--effort`, and `--model`.
-
-Append `--usage` with `--dry-run` to either grouped (`codescope review all`) or direct (`codescope all`) review syntax to include usage metadata. `--dry-run` is supported on review and suggestion profile commands and returns that metadata as CodeScope output; it is not valid for `codescope prompt`, whose successful provider response text remains unchanged.
-
-Append `--dry-run` to prepare a request derived from the review context and perform an OpenAI token-count API call without running a model review. Dry-run still requires credentials, connectivity, and a working provider token-count endpoint, so those failures are reported as errors. The option reports the selected model and estimated input tokens; combine it with `--usage` to include the `usage` object and calculated cost.
-
-With `--dry-run --usage`, the result includes `estimated_cost_usd` calculated from the selected model’s input, cached-input, cache-write, output, and long-context rates. Dry-run reports input-token cost only because no output is generated. Internal output writers return `{ written }` with an exact JavaScript character count; missing results, booleans, false, short counts, and unrelated values fail. Counts are JavaScript characters, not UTF-8 bytes. Successful provider response text is written unchanged and is not capped or transformed. Fallback diagnostics preserve independently readable safe fields, are JSON-serialized, redacted, capped, and marked with `response_truncated` when capped. Provider setup failures also emit a safe incomplete result when possible.
-Configuration evidence is root-bound, symlink-checked, and bounded to 100000 bytes and 200 lines per configuration file. JSON evidence is root-bound and subject to the review aggregate character budget. The remaining-file inventory samples each unsupplied file up to 100000 bytes. Oversized samples are omitted from content and reported as a bounded sample (`at least N sampled bytes`); an exact-limit file is included, and no sample count is presented as the file's total size. Serialized response diagnostics are redacted and capped; failure messages are handled separately. Successful provider response text is written unchanged for provider sessions; dry-run emits its generated estimate object.
-An absent adjacent conventions checkout is reported as unavailable evidence; unreadable convention discovery failures remain explicit setup errors.
-Review profiles use package metadata, implementation files, test files, and Markdown files. CodeScope never runs tests in the target repository and never includes test execution results in provider context. Repository owners and separate validation tooling own test execution.
-Evidence and request-construction failures also emit a safe incomplete result when possible.
-
-Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `--effort <value>` before or after a direct or grouped profile command to override the default reasoning effort (`none`). The same forms are supported for `--model`. For prompt commands, place free-form text before `--`; trailing effort and model options may use either equals or separated forms.
-CodeScope defaults to `gpt-6-luna`. Use `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` or `--model gpt-6-luna` to override it.
-
-
 ## Security
 
-CodeScope documents exit codes for its own CLI failures; provider findings and verdict text do not determine them.
-
-Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.
+Do not place credentials, tokens, `.env` files, or runtime state in the repository. CodeScope is read-only: it analyzes supplied files and writes its output without modifying the reviewed repository.
 CodeScope reviews supplied repository files only; it does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
 Use `codescope review all` for release-readiness review.
 
@@ -181,20 +140,57 @@ diagnostics when requesting help.
 
 ## Configuration
 
-See the configuration guidance above.
+The CLI starts with the process environment, then reads only
+`OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are
+ignored. A nonblank process token takes precedence over the file. A missing or
+whitespace-only process token is treated as absent, so a nonblank file token
+may be used. The dotenv parser accepts optional `export`, comments, and quoted
+values. A missing or blank token causes a clear error and exit code `3`.
+
+Configuration evidence is root-bound, symlink-checked, and bounded to 100000
+bytes and 200 lines per configuration file. JSON evidence is root-bound and
+subject to the review aggregate character budget.
+
+## Validation
+
+Use the global `eliware-test` validator for repository checks. CodeScope does
+not run that validator or execute tests in a reviewed repository.
 
 ## Operations
 
-See the operations guidance above.
+CodeScope is read-only against reviewed repositories. It does not deploy or
+publish reviewed code; publication and deployment are handled by separate
+release workflows.
 
-## Validation
+## Commands
 
-Use the global `eliware-test` validator for repository validation.
+`codescope all` is shorthand for `codescope review all`. Use
+`codescope suggest all` for a non-blocking suggestion pass or
+`codescope prompt "your question"` for an ad hoc request. The provider response
+to a prompt is written unchanged; provider findings and verdict text never
+change the CLI exit code.
 
-### Configuration
+Add one or more `-a <text>` or `--add <text>` options to profile commands to
+append custom guidance to the final user message. Bare `codescope`, help, and
+version output do not apply additions. Use `codescope --help` for the complete
+command and option reference, including supported review/suggestion profiles,
+model and effort options, usage reporting, and dry-run estimates. CodeScope
+defaults to `gpt-6-luna`.
 
-The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank process token takes precedence over the file. A missing or whitespace-only process token is treated as absent, so a nonblank file token may be used. Its dotenv parser accepts optional `export`, comments, and quoted values. A missing or blank token causes a clear error and exit code `3`.
+```text
+codescope all --add "Focus on reliability risks in recently changed code"
+codescope --help
+codescope --version
+```
 
-## Validation
+The CLI uses the same command syntax on Windows and Ubuntu, which are both
+covered by CI.
 
-Use the global `eliware-test` validator for the repository validation suite.
+## Exit codes
+
+Successful commands exit with `0`. Usage errors exit with `2`, configuration
+errors with `3`, input errors with `4`, provider/API errors with `5`, and
+CodeScope response errors exit with `6`; this status is not derived from review
+content. Timeout and termination exits are `124`, `130` (SIGINT), and `143`
+(SIGTERM). A successful provider response is written unchanged, and its
+findings or verdict text do not affect process exit status.

@@ -2,12 +2,12 @@ export function loadEnv(text = '', environment) {
   if (!environment || typeof environment !== 'object' || Array.isArray(environment))
     throw new Error('Environment must be a mutable object');
   for (const line of text.split(/\r?\n/u)) {
-    const match = line.match(/^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/u);
+    const match = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/u);
     if (!match) {
       if (line.trim() && !line.trim().startsWith('#')) throw new Error('Invalid .env line');
       continue;
     }
-    if (environment[match[1]]?.trim()) continue;
+    if (match[1] !== 'OPENAI_API_TOKEN' || environment[match[1]]?.trim()) continue;
     const raw = match[2].trim();
     if (
       (raw.startsWith('"') && (!raw.endsWith('"') || !/^"(?:[^"\\]|\\.)*"$/u.test(raw))) ||
@@ -26,6 +26,6 @@ export function loadEnv(text = '', environment) {
         ? raw.slice(1, -1).replaceAll("\\'", "'")
         : raw.replace(/\s+#.*$/u, '').trim();
     if (!value.trim()) continue;
-    if (match[1] === 'OPENAI_API_TOKEN') environment[match[1]] = value;
+    environment[match[1]] = value;
   }
 }

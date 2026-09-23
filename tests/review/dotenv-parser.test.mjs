@@ -8,7 +8,7 @@ test('loads the supported token from dotenv text', () => {
 
 test('ignores comments, blanks, and already-populated values', () => {
   const environment = { OPENAI_API_TOKEN: 'existing' };
-  loadEnv('\n# comment\nOPENAI_API_TOKEN=ignored\nOTHER=value', environment);
+  loadEnv('\n# comment\nOPENAI_API_TOKEN=ignored\nOTHER=value\nlowercase=value\nMixed_Name=value', environment);
   expect(environment).toEqual({ OPENAI_API_TOKEN: 'existing' });
 });
 

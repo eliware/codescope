@@ -51,10 +51,22 @@ test('reports unavailable checkout and applicability', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await mkdir(path.join(root, 'project'));
-  await writeFile(path.join(root, 'project', 'package.json'), '{}');
   try {
     await expect(combineConventionFiles(path.join(root, 'project'), { conventionsRoot: root }))
       .resolves.toContain('Convention applicability unavailable');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('reports invalid applicability separately from an unavailable checkout', async () => {
+  const root = await fsTemp('codescope-conventions-');
+  await mkdir(path.join(root, 'specs'), { recursive: true });
+  await mkdir(path.join(root, 'project'));
+  await writeFile(path.join(root, 'project', 'package.json'), '{');
+  try {
+    await expect(combineConventionFiles(path.join(root, 'project'), { conventionsRoot: root }))
+      .resolves.toContain('Convention applicability invalid: package.json is not valid JSON.');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

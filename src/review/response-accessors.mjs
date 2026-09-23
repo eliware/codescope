@@ -1,6 +1,7 @@
 export function readStringProperty(value, property) {
   try {
-    return typeof value?.[property] === 'string' ? value[property] : undefined;
+    const propertyValue = value?.[property];
+    return typeof propertyValue === 'string' ? propertyValue : undefined;
   } catch {
     return undefined;
   }

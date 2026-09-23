@@ -28,6 +28,9 @@ export async function combineConventionFiles(
     platform,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
+  if (applicability.kind === 'invalid') {
+    return `===== Convention v8 JSON =====\nConvention applicability invalid: ${applicability.reason}.\n`;
+  }
   const { files, missing } = conventionFilesForApplicability(discovery.files, applicability);
   if (missing.length > 0) {
     return (
