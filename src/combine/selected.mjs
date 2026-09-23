@@ -4,6 +4,7 @@ import { collectInventorySection } from './inventory-section.mjs';
 import { findAllFiles } from '../find/file-aliases.mjs';
 import { joinCombinedSections } from './combined-source.mjs';
 import { validateCombineOptions } from './policies.mjs';
+import { createSectionBudget } from './section-budget.mjs';
 
 const DEFAULT_SELECTED_OPTIONS = {
   concurrency: 16,
@@ -26,26 +27,19 @@ export async function combineSelectedFiles(
     metadata.configs,
     await collectInventorySection(root, inventory, normalizedOptions),
   ];
-  let usedChars = joinCombinedSections(parts, normalizedOptions.maxChars).length;
-  const withRemainingBudget = async (options) => {
-    const remaining = Number.isFinite(normalizedOptions.maxChars)
-      ? normalizedOptions.maxChars - usedChars
-      : Number.POSITIVE_INFINITY;
-    const section = await options(remaining);
-    usedChars += section.length === 0
-      ? 0
-      : section.length + Math.min(1, Math.sign(usedChars));
-    return section;
-  };
+  const budget = createSectionBudget(
+    joinCombinedSections(parts, normalizedOptions.maxChars).length,
+    normalizedOptions.maxChars,
+  );
   const selected = [];
   if (implementation)
-    selected.push(await withRemainingBudget((maxChars) =>
+    selected.push(await budget.read((maxChars) =>
       combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, noTests: true })));
   if (tests)
-    selected.push(await withRemainingBudget((maxChars) =>
+    selected.push(await budget.read((maxChars) =>
       combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, testsOnly: true })));
   if (docs)
-    selected.push(await withRemainingBudget((maxChars) =>
+    selected.push(await budget.read((maxChars) =>
       combineMdFiles(root, { ...normalizedOptions, maxChars, files: inventory })));
   parts.push(...selected);
   return joinCombinedSections(parts, normalizedOptions.maxChars);
