@@ -32,6 +32,7 @@ test('includes convention specs and excludes package metadata', async () => {
 test('reports unavailable sibling checkout', async () => {
   const result = await combineConventionFiles('C:/missing-project', {
     conventionsRoot: 'C:/missing-conventions',
+    platform: 'win32',
   });
   expect(result).toContain('Convention checkout not supplied');
 });
