@@ -1,4 +1,4 @@
-import { prompt as defaultPrompt } from '../prompts/public/focused-review-profiles.mjs';
+import { defaultPrompt } from '../profiles/prompt-sources.mjs';
 import { createOutputDefaults } from './defaults/output.mjs';
 import { createEnvironmentDefaults } from './defaults/environment.mjs';
 import { createProviderDefaults } from './defaults/provider.mjs';

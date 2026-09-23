@@ -1,14 +1,28 @@
-import { profilePrompt } from '../prompts/public/profile-prompt.mjs';
-import { releasePrompt } from '../prompts/public/release-review.mjs';
-import { createAnalysisPrompt, priorityPrompt } from '../prompts/public/analysis.mjs';
+import { createProfilePrompt } from '../prompts/builders.mjs';
+import { globalReviewInstructions } from '../prompts/policy/review-guidance.mjs';
+import { createAllPrompt } from '../prompts/all.mjs';
+import { createCombinedAllPrompt } from '../prompts/combined.mjs';
+import { createUnifiedTool } from '../prompts/unified-tool.mjs';
+import { createAnalysisProfiles } from '../prompts/analysis-profiles.mjs';
+import { createReviewProfiles } from '../prompts/review-profiles.mjs';
+import { createSuggestionProfiles } from '../prompts/suggestion-profiles.mjs';
+import { createConventionPrompt } from '../prompts/conventions.mjs';
+import { createReviewTool } from '../prompts/review-tool.mjs';
 import { createSuggestionTool } from '../prompts/suggestion-tool.mjs';
-import {
-  architecturePrompt, newFeaturesPrompt, securityPrompt, performancePrompt,
+const profilePrompt = (focus, tool = createReviewTool()) =>
+  createProfilePrompt(focus, tool, { globalReviewInstructions });
+const { priorityPrompt, analysisPrompt: createAnalysisPrompt } =
+  createAnalysisProfiles({ profilePrompt, createReviewTool });
+const reviewProfiles = createReviewProfiles({ profilePrompt, reviewTool: createReviewTool() });
+const { refactorPrompt, prompt: defaultPrompt } = reviewProfiles;
+const { architecturePrompt, newFeaturesPrompt, securityPrompt, performancePrompt,
   reliabilityPrompt, apiDesignPrompt, dependenciesPrompt, observabilityPrompt,
-  accessibilityPrompt, quickWinsPrompt, prioritizePrompt,
-} from '../prompts/public/suggestions.mjs';
-import { refactorPrompt } from '../prompts/public/focused-review-profiles.mjs';
-import { conventionsPrompt } from '../prompts/public/convention-review.mjs';
+  accessibilityPrompt, quickWinsPrompt, prioritizePrompt } =
+  createSuggestionProfiles({ profilePrompt, suggestionTool: createSuggestionTool() });
+const conventionsPrompt = createConventionPrompt(profilePrompt);
+const allPrompt = createAllPrompt(profilePrompt);
+const combinedAllPrompt = createCombinedAllPrompt({ allPrompt, unifiedTool: createUnifiedTool() });
+const releasePrompt = createCombinedAllPrompt({ allPrompt, unifiedTool: createUnifiedTool(), releaseGate: true });
 
 const promptSources = Object.freeze({
   conventions: conventionsPrompt,
@@ -41,4 +55,4 @@ export function createGenericSuggestionPrompt(profile) {
   );
 }
 
-export { createAnalysisPrompt, releasePrompt };
+export { createAnalysisPrompt, releasePrompt, combinedAllPrompt, defaultPrompt };

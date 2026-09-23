@@ -1,6 +1,5 @@
-import { combinedAllPrompt } from '../prompts/public/unified-review.mjs';
 import { PROFILE_DEFINITIONS, getSuggestionCategories } from './profile-definitions.mjs';
-import { createAnalysisPrompt, createGenericSuggestionPrompt, getPromptSource, releasePrompt } from './prompt-sources.mjs';
+import { combinedAllPrompt, createAnalysisPrompt, createGenericSuggestionPrompt, getPromptSource, releasePrompt } from './prompt-sources.mjs';
 
 export function getPromptRouting(profile, mode) {
   if (!Object.hasOwn(PROFILE_DEFINITIONS, profile))
