@@ -31,3 +31,40 @@ test('inspects package metadata before using a custom reader', async () => {
     }),
   ).resolves.toContain('virtual');
 });
+
+test('formats non-Error package reader failures', async () => {
+  await expect(combinePackageJson('/virtual', {
+    readFileContents: async () => { throw 'package unavailable'; },
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  })).rejects.toThrow('Unable to read package.json: package unavailable');
+});
+
+test('rewrites symlink package errors with package-specific guidance', async () => {
+  await expect(combinePackageJson('/virtual', {
+    readFileContents: async () => '{}',
+    inspectFile: async () => ({ isSymbolicLink: () => true, isFile: () => false }),
+  })).rejects.toThrow(/symlinked package\.json/);
+});
+
+test('supports explicit POSIX package paths', async () => {
+  await expect(combinePackageJson('/virtual', {
+    platform: 'linux',
+    readFileContents: async () => '{}',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  })).resolves.toContain('package.json');
+});
+
+test('supports explicit Windows package paths', async () => {
+  await expect(combinePackageJson('C:\\virtual', {
+    platform: 'win32',
+    readFileContents: async () => '{}',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  })).resolves.toContain('package.json');
+});
+
+test('preserves Error package reader messages', async () => {
+  await expect(combinePackageJson('/virtual', {
+    readFileContents: async () => { throw new Error('reader failed'); },
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  })).rejects.toThrow('Unable to read package.json: reader failed');
+});

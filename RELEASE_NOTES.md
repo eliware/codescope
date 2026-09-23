@@ -1,5 +1,9 @@
 # Release notes
 
+### User-visible changes
+
+The current release notes below document user-visible changes for CodeScope.
+
 ## 8.0.0
 
 - Strengthened one-shot review completeness instructions and unified-tool
@@ -19,6 +23,10 @@
   but does not run commands or infer unsupplied CI, release, or registry state.
 - Updated the development test dependency to `@eliware/test` 4.0.0 and
   restored 100×4 validation with the compatible project test configuration.
+
+### Fixed
+
+- Corrected Convention v8 metadata, publication workflow, and documentation alignment.
 
 ## 6.2.0
 

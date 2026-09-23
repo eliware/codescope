@@ -1,4 +1,5 @@
-import { safeResponseSummary, serializeResponseDiagnostic } from './response-diagnostic.mjs';
+import { safeResponseSummary } from './diagnostics/safe-response-summary.mjs';
+import { serializeResponseDiagnostic } from './diagnostics/serialize-response-diagnostic.mjs';
 
 export function preserveProviderResponse(response) {
   if (response === undefined) return undefined;

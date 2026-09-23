@@ -1,12 +1,23 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [convention manifest](specs/conventions.json)
+## @eliware/codescope [![npm version](https://img.shields.io/npm/v/@eliware/codescope.svg)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/github/license/eliware/codescope.svg)](LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions)
 
-## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/npm/l/@eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/nodejs.yml)
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [RELEASE_NOTES.md](RELEASE_NOTES.md) · [examples](examples/README.md)
 
 A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
 
 ---
+
+## Purpose
+
+CodeScope reviews supplied repository evidence with focused OpenAI-backed review
+and suggestion profiles while leaving the reviewed repository unchanged.
+
+Description: OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
+Keywords: code-review, documentation, openai, cli, architecture, security, testing, release-readiness, static-analysis, developer-tools.
+Author: Eliware <eliware@eliware.org>.
+License: MIT.
+Repository: https://github.com/eliware/codescope.
 
 ## Table of Contents
 
@@ -16,7 +27,8 @@ A structured OpenAI CLI for focused codebase reviews, suggestions, and token est
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Validation](#validation)
-- [Security and Operations](#security-and-operations)
+- [Operations](#operations)
+- [Security](#security)
 - [Support](#support)
 - [License](#license)
 - [Links](#links)
@@ -34,7 +46,7 @@ A structured OpenAI CLI for focused codebase reviews, suggestions, and token est
 - Node.js 26 or newer
 - npm
 
-## Installation
+## Setup
 
 For package consumers, install the published CLI globally or add it to a project. The published package uses registry dependencies and does not require a sibling checkout:
 
@@ -75,6 +87,12 @@ See [NEW_FEATURE_SUGGESTIONS.md](NEW_FEATURE_SUGGESTIONS.md) for optional future
 
 The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank process token takes precedence over the file. A missing or whitespace-only process token is treated as absent, so a nonblank file token may be used. Its dotenv parser accepts optional `export`, comments, and quoted values. Configuration files discovered by review, including internally injected configuration paths, must not be symbolic links. A missing or blank token causes a clear error and exit code `3`.
 
+## Operations
+
+CodeScope is read-only against reviewed repositories. Publication and deployment
+are handled by release and Knit workflows; this CLI does not deploy or publish
+reviewed code.
+
 ## Validation
 
 ```text
@@ -106,7 +124,9 @@ Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `
 Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` or `--model gpt-5.6-luna` to override the default model.
 
 
-## Security and operations
+## Security
+
+CodeScope documents exit codes for its own CLI failures; provider findings and verdict text do not determine them.
 
 Do not place credentials, tokens, `.env` files, or runtime state in the repository. Codescope is read-only: it analyzes files and writes one completed structured result without modifying the reviewed repository.
 CodeScope reviews supplied repository files only; it does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
@@ -114,15 +134,26 @@ Use `codescope review all` for release-readiness review.
 
 ## Support
 
-Open an issue in the [GitHub repository](https://github.com/eliware/codescope/issues) or join the [Eliware Discord community](https://discord.gg/M6aTR9eTwN).
+[![Discord](https://eliware.org/logos/discord_96.png)](https://discord.gg/M6aTR9eTwN)
+
+**[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
+
+Use the [Eliware Discord community](https://discord.gg/M6aTR9eTwN),
+[GitHub issues](https://github.com/eliware/codescope/issues), or
+eliware@eliware.org. Include the command, Node.js version, and redacted
+diagnostics when requesting help.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+[license](LICENSE)
 
 ## Links
 
-- [npm package](https://www.npmjs.com/package/@eliware/codescope)
-- [GitHub repository](https://github.com/eliware/codescope)
-- [Release notes](RELEASE_NOTES.md)
-- [Eliware Discord](https://discord.gg/M6aTR9eTwN)
+- [Documentation](docs/README.md)
+- [Specifications](specs/README.md)
+- [Home Page](https://eliware.org)
+- [GitHub Repo](https://github.com/eliware/codescope)
+- [GitHub Org](https://github.com/eliware)
+- [npm Package](https://www.npmjs.com/package/@eliware/codescope)
+- [Release Notes](RELEASE_NOTES.md)
+- [Discord](https://discord.gg/M6aTR9eTwN)

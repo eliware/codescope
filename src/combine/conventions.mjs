@@ -4,6 +4,8 @@ import { findFiles } from '../find/files.mjs';
 import { readSourceFile } from './read-file.mjs';
 import { formatSourceSection } from './section-format.mjs';
 import { readBatches } from './batches.mjs';
+import { readConventionApplicability } from './convention/applicability.mjs';
+import { conventionFilesForApplicability, normalizeConventionPath, resolveConventionPath } from './convention/paths.mjs';
 
 export async function combineConventionFiles(
   root,
@@ -42,31 +44,7 @@ export async function combineConventionFiles(
     platform,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';
-  const { profiles, canonicalPaths, includeAll } = applicability;
-  const contractsPath = discoveredFiles.find(
-    (relativePath) => normalizeConventionPath(relativePath) === 'contracts.json',
-  );
-  const files = (includeAll
-    ? discoveredFiles
-    : discoveredFiles.filter((relativePath) => {
-      const normalized = normalizeConventionPath(relativePath);
-      if (normalized === 'contracts.json') return true;
-      return [...canonicalPaths.values()].some((canonicalPath) =>
-        normalizeConventionPath(canonicalPath) === normalized,
-      );
-    })).sort((left, right) => {
-      const a = normalizeConventionPath(left);
-      const b = normalizeConventionPath(right);
-      return a.localeCompare(b, 'en', { sensitivity: 'variant' });
-    });
-  const supplied = new Set(files.map(normalizeConventionPath));
-  const missingProfiles = includeAll
-    ? []
-    : [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
-  const missing = [
-    ...missingProfiles,
-    ...(contractsPath === undefined ? ['contracts.json'] : []),
-  ];
+  const { files, missing } = conventionFilesForApplicability(discoveredFiles, applicability);
   if (missing.length > 0) {
     return (
       '===== Convention v8 JSON =====\n' +
@@ -85,65 +63,11 @@ export async function combineConventionFiles(
       portablePath,
       { readFileContents, inspectFile, validateSymlinks: true },
     );
-      return formatSourceSection('conventions/specs/' + normalizeConventionPath(relativePath), contents);
+      const normalizedPath = normalizeConventionPath(relativePath);
+      return formatSourceSection('conventions/specs/' + normalizedPath, contents);
     },
   });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
 
-export function resolveConventionPath(specsRoot, relativePath, platform = process.platform) {
-  const portable = String(relativePath).replaceAll('\\', '/');
-  const normalized = path.posix.normalize(portable);
-  if (normalized === '..' || normalized.startsWith('../'))
-    throw new Error(`Convention path escapes specs root: ${relativePath}`);
-  const pathApi = platform === 'win32' ? path.win32 : path.posix;
-  return pathApi.resolve(specsRoot, ...normalized.split('/'));
-}
-
-function normalizeConventionPath(relativePath) {
-  return String(relativePath).replaceAll('\\', '/').toLowerCase();
-}
-
-async function readConventionApplicability(
-  root,
-  {
-    conventionsRoot,
-    readPackageJson = readFile,
-    readFileContents = readFile,
-    readConventionManifest,
-    platform = process.platform,
-  } = {},
-) {
-  try {
-    const packageJson = JSON.parse(
-      await readPackageJson(
-        (platform === 'win32' ? path.win32 : path.posix).join(root, 'package.json'),
-        'utf8',
-      ),
-    );
-    if (packageJson.name === '@eliware/test')
-      return { profiles: new Set(), canonicalPaths: new Map(), includeAll: true };
-    const apply = packageJson.eliware?.conventions?.apply;
-    if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string')) return null;
-    const manifestReader = readConventionManifest ?? readFileContents;
-    const repositoryTypes = JSON.parse(
-      await manifestReader(
-        (platform === 'win32' ? path.win32 : path.posix).join(conventionsRoot, 'specs', 'conventions.json'),
-        'utf8',
-      ),
-    ).repositoryTypes;
-    const canonicalPaths = new Map();
-    for (const name of apply) {
-      if (!Object.hasOwn(repositoryTypes, name)) return null;
-      const declaredPath = String(repositoryTypes[name]).replaceAll('\\', '/');
-      const specsIndex = declaredPath.lastIndexOf('/specs/');
-      const relativePath = specsIndex >= 0
-        ? declaredPath.slice(specsIndex + '/specs/'.length)
-        : path.posix.basename(declaredPath);
-      canonicalPaths.set(name, relativePath);
-    }
-    return { profiles: new Set(apply), canonicalPaths };
-  } catch {
-    return null;
-  }
-}
+export { resolveConventionPath, normalizeConventionPath } from './convention/paths.mjs';

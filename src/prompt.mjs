@@ -1,9 +1,9 @@
 import {
   createReviewTool,
-  createUnifiedTool,
   reviewTool,
-  suggestionTool,
-} from './prompts/tool-schemas.mjs';
+} from './prompts/review-tool.mjs';
+import { createUnifiedTool } from './prompts/unified-tool.mjs';
+import { suggestionTool } from './prompts/suggestion-tool.mjs';
 import { createSuggestionProfiles } from './prompts/suggestion-profiles.mjs';
 import { createAnalysisProfiles } from './prompts/analysis-profiles.mjs';
 import { createCombinedAllPrompt } from './prompts/combined.mjs';
@@ -16,10 +16,9 @@ export { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from './prompts/categories.m
 export {
   createReviewTool,
   reviewTool,
-  createSuggestionTool,
-  createUnifiedTool,
-  suggestionTool,
-} from './prompts/tool-schemas.mjs';
+} from './prompts/review-tool.mjs';
+export { createSuggestionTool, suggestionTool } from './prompts/suggestion-tool.mjs';
+export { createUnifiedTool } from './prompts/unified-tool.mjs';
 
 export { defaultDeveloperText } from './prompts/guidance.mjs';
 import { globalReviewInstructions } from './prompts/policy.mjs';

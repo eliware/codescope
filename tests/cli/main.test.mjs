@@ -1,6 +1,5 @@
 import { main } from '../../src/cli/main.mjs';
 import { getProfile } from '../../src/profiles/index.mjs';
-
 const validResult = (profile, mode = 'review') => {
   const { prompt } = getProfile(profile, mode);
   const field = mode === 'suggest' ? 'suggestions' : 'issues';
@@ -22,13 +21,21 @@ const validResult = (profile, mode = 'review') => {
   const payload = Object.fromEntries(categories.map((category) => [category, [item]]));
   return mode === 'suggest' ? { suggestions: payload } : { issues: payload, verdict: 'pass' };
 };
-
 test('main dispatches help without provider work', async () => {
   const output = [];
   await expect(main(['help'], { output: (value) => output.push(value) })).resolves.toBe(0);
+  expect(output.join('')).toContain('## Owner workflow'); });
+test('main uses default collaborators when options are omitted', async () => {
+  const originalLog = console.log;
+  const output = [];
+  console.log = (value) => output.push(value);
+  try {
+    await expect(main(['help'])).resolves.toBe(0);
+  } finally {
+    console.log = originalLog;
+  }
   expect(output.join('')).toContain('## Owner workflow');
 });
-
 test('main preserves accepted meta-command additions without applying them', async () => {
   const output = [];
   let reviewed = false;
@@ -38,10 +45,8 @@ test('main preserves accepted meta-command additions without applying them', asy
       review: async () => { reviewed = true; },
     }),
   ).resolves.toBe(0);
-  expect(output.join('')).toContain('## Owner workflow');
-  expect(reviewed).toBe(false);
+  expect(output.join('')).toContain('## Owner workflow'); expect(reviewed).toBe(false);
 });
-
 test('main forwards additions to profile execution', async () => {
   let received;
   await expect(
@@ -50,9 +55,7 @@ test('main forwards additions to profile execution', async () => {
       write: () => {},
     }),
   ).resolves.toBe(0);
-  expect(received.add).toEqual(['first', 'second']);
-});
-
+  expect(received.add).toEqual(['first', 'second']); });
 test('main dispatches version and reports unknown commands', async () => {
   const output = [];
   expect(await main(['version'], { output: (value) => output.push(value) })).toBe(0);
@@ -60,7 +63,6 @@ test('main dispatches version and reports unknown commands', async () => {
   expect(await main(['unknown'], { error: () => {} })).toBe(2);
   expect(await main(['all', '--add'], { error: () => {} })).toBe(2);
 });
-
 test('main handles metadata options without review work', async () => {
   const output = [];
   let called = false;
@@ -75,7 +77,6 @@ test('main handles metadata options without review work', async () => {
   ).resolves.toBe(0);
   expect(called).toBe(false);
 });
-
 test('main preserves leading usage for direct and grouped profile commands', async () => {
   const received = [];
   const review = async (_cwd, options) => received.push(options);
@@ -84,7 +85,6 @@ test('main preserves leading usage for direct and grouped profile commands', asy
   expect(received).toHaveLength(2);
   expect(received.every(({ usage }) => usage)).toBe(true);
 });
-
 test('main returns mapped status for dry runs and provider failures', async () => {
   await expect(
     main(['all', '--dry-run'], { review: async () => ({}), output: () => {} }),
@@ -98,7 +98,6 @@ test('main returns mapped status for dry runs and provider failures', async () =
     }),
   ).resolves.toBe(5);
 });
-
 test('main handles prompt, suggestion, combined, and invalid response paths', async () => {
   const write = () => {};
   await expect(
@@ -160,11 +159,11 @@ test('main handles prompt, suggestion, combined, and invalid response paths', as
     }),
   ).resolves.toBe(4);
 });
-
 test('main uses default collaborators for help', async () => {
-  await expect(main(['--help'])).resolves.toBe(0);
+  const output = [];
+  await expect(main(['--help'], { output: (value) => output.push(value) })).resolves.toBe(0);
+  expect(output).toHaveLength(1);
 });
-
 test('main adapts the default stream writer to the review writer contract', async () => {
   const originalWrite = process.stdout.write;
   const writes = [];
@@ -184,7 +183,6 @@ test('main adapts the default stream writer to the review writer contract', asyn
   }
   expect(writes).toEqual(['provider response']);
 });
-
 test('main reports default stream writer errors', async () => {
   const originalWrite = process.stdout.write;
   process.stdout.write = (_value, callback) => {

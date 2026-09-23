@@ -1,5 +1,5 @@
 import { loadReviewEnvironment } from '../../src/review/environment.mjs';
-import { defaultEnvFile } from '../../src/review/config.mjs';
+import { defaultEnvFile } from '../../src/review/env-file-path.mjs';
 
 const base = {
   envFile: 'custom.env',

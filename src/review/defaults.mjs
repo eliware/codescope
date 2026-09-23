@@ -2,7 +2,7 @@ import { fs, registerSignals } from '@eliware/common';
 import { createOpenAI } from '@eliware/openai';
 import { combineMjsFiles } from '../combine/files.mjs';
 import { prompt as defaultPrompt } from '../prompt.mjs';
-import { defaultEnvFile } from './config.mjs';
+import { defaultEnvFile } from './env-file-path.mjs';
 import { lstat, open } from 'node:fs/promises';
 
 export function createReviewDefaults({ platform = process.platform } = {}) {

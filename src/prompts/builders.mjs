@@ -1,4 +1,4 @@
-import { reviewTool } from './tool-schemas.mjs';
+import { reviewTool } from './review-tool.mjs';
 import { defaultDeveloperText, profileReviewRules } from './guidance.mjs';
 import { baseRequest } from './request-envelope.mjs';
 

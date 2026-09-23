@@ -92,20 +92,17 @@
         "Do not add deployment, publication, synchronization, commit, push, or release behavior."
       ],
       "implementation": { "source": [
-        "../bin/codescope.mjs",
-        "../src/cli.mjs",
-        "../src/cli/main.mjs",
-        "../src/cli/dispatch-meta.mjs",
-        "../src/cli/profile-command.mjs",
-        "../src/cli/prompt-command.mjs"
+        "src/cli/main.mjs",
+        "src/cli/dispatch-meta.mjs",
+        "src/cli/profile-command.mjs",
+        "src/cli/prompt-command.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/cli.test.mjs",
-        "../tests/cli/main.test.mjs",
-        "../tests/cli/dispatch-meta.test.mjs",
-        "../tests/cli/profile-command.test.mjs",
-        "../tests/cli/prompt-command.test.mjs"
-      ], "commands": [] }
+        "tests/cli/main.test.mjs",
+        "tests/cli/dispatch-meta.test.mjs",
+        "tests/cli/profile-command.test.mjs",
+        "tests/cli/prompt-command.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.2",
@@ -138,24 +135,23 @@
         "Do not treat an added prompt as a replacement for the profile prompt."
       ],
       "implementation": { "source": [
-        "../src/cli/args.mjs",
-        "../src/cli/add-option.mjs",
-        "../src/cli/profile-args.mjs",
-        "../src/cli/prompt-args.mjs",
-        "../src/cli/prompt-partition.mjs",
-        "../src/cli/option-values.mjs",
-        "../src/cli/dispatch-meta.mjs",
-        "../src/prompts/append-user-message.mjs"
+        "src/cli/args.mjs",
+        "src/cli/add-option.mjs",
+        "src/cli/profile-args.mjs",
+        "src/cli/prompt-args.mjs",
+        "src/cli/prompt-partition.mjs",
+        "src/cli/dispatch-meta.mjs",
+        "src/prompts/append-user-message.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/cli/args.test.mjs",
-        "../tests/cli/add-option.test.mjs",
-        "../tests/cli/profile-args.test.mjs",
-        "../tests/cli/prompt-args.test.mjs",
-        "../tests/cli/prompt-partition.test.mjs",
-        "../tests/cli/main.test.mjs",
-        "../tests/prompts/append-user-message.test.mjs"
-      ], "commands": [] }
+        "tests/cli/args.test.mjs",
+        "tests/cli/add-option.test.mjs",
+        "tests/cli/profile-args.test.mjs",
+        "tests/cli/prompt-args.test.mjs",
+        "tests/cli/prompt-partition.test.mjs",
+        "tests/cli/main.test.mjs",
+        "tests/prompts/append-user-message.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.3",
@@ -185,19 +181,19 @@
         "Do not make profile selection alter the read-only repository boundary."
       ],
       "implementation": { "source": [
-        "../src/profiles/metadata.mjs",
-        "../src/profiles/index.mjs",
-        "../src/profiles/prompt-routing.mjs",
-        "../src/profiles/source-selection.mjs",
-        "../src/profiles/tool-decoration.mjs"
+        "src/profiles/metadata.mjs",
+        "src/profiles/index.mjs",
+        "src/profiles/prompt-routing.mjs",
+        "src/profiles/source-selection.mjs",
+        "src/profiles/tool-decoration.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/profiles/metadata.test.mjs",
-        "../tests/profiles/index.test.mjs",
-        "../tests/profiles/prompt-routing.test.mjs",
-        "../tests/profiles/source-selection.test.mjs",
-        "../tests/profiles/tool-decoration.test.mjs"
-      ], "commands": [] }
+        "tests/profiles/metadata.test.mjs",
+        "tests/profiles/index.test.mjs",
+        "tests/profiles/prompt-routing.test.mjs",
+        "tests/profiles/source-selection.test.mjs",
+        "tests/profiles/tool-decoration.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.4",
@@ -226,19 +222,19 @@
         "Do not write fixes, commits, or other changes to the reviewed repository."
       ],
       "implementation": { "source": [
-        "../src/find",
-        "../src/combine/files.mjs",
-        "../src/combine/read-file.mjs",
-        "../src/combine/policies.mjs",
-        "../src/combine/limits.mjs"
+        "src/find",
+        "src/combine/files.mjs",
+        "src/combine/read-file.mjs",
+        "src/combine/policies.mjs",
+        "src/combine/limits.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/find",
-        "../tests/combine/files.test.mjs",
-        "../tests/combine/read-file.test.mjs",
-        "../tests/combine/policies.test.mjs",
-        "../tests/combine/limits.test.mjs"
-      ], "commands": [] }
+        "tests/find",
+        "tests/combine/files.test.mjs",
+        "tests/combine/read-file.test.mjs",
+        "tests/combine/policies.test.mjs",
+        "tests/combine/limits.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.5",
@@ -273,23 +269,23 @@
         "Do not treat metadata summaries as full file contents."
       ],
       "implementation": { "source": [
-        "../src/combine/all.mjs",
-        "../src/combine/all-sections.mjs",
-        "../src/combine/selected.mjs",
-        "../src/combine/combined-source.mjs",
-        "../src/combine/other-files.mjs",
-        "../src/combine/configs.mjs",
-        "../src/combine/inventory-section.mjs"
+        "src/combine/all.mjs",
+        "src/combine/all-sections.mjs",
+        "src/combine/selected.mjs",
+        "src/combine/combined-source.mjs",
+        "src/combine/other-files.mjs",
+        "src/combine/configs.mjs",
+        "src/combine/inventory-section.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/combine/all.test.mjs",
-        "../tests/combine/all-sections.test.mjs",
-        "../tests/combine/selected.test.mjs",
-        "../tests/combine/combined-source.test.mjs",
-        "../tests/combine/other-files.test.mjs",
-        "../tests/combine/configs.test.mjs",
-        "../tests/combine/inventory-section.test.mjs"
-      ], "commands": [] }
+        "tests/combine/all.test.mjs",
+        "tests/combine/all-sections.test.mjs",
+        "tests/combine/selected.test.mjs",
+        "tests/combine/combined-source.test.mjs",
+        "tests/combine/other-files.test.mjs",
+        "tests/combine/configs.test.mjs",
+        "tests/combine/inventory-section.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.6",
@@ -322,14 +318,14 @@
         "Do not bind virtual or injected repository roots to an unrelated native manifest read."
       ],
       "implementation": { "source": [
-        "../src/combine/conventions.mjs",
-        "../src/prompts/conventions.mjs",
-        "../specs/conventions.json"
+        "src/combine/conventions.mjs",
+        "src/prompts/conventions.mjs",
+        "specs/conventions.json"
       ] },
       "verification": { "tests": [
-        "../tests/combine/conventions.test.mjs",
-        "../tests/prompts/conventions.test.mjs"
-      ], "commands": [] }
+        "tests/combine/conventions.test.mjs",
+        "tests/prompts/conventions.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.7",
@@ -357,17 +353,17 @@
         "Do not claim redaction or AI inspection is a complete secret-removal boundary."
       ],
       "implementation": { "source": [
-        "../src/prompts",
-        "../src/prompt.mjs",
-        "../src/review/create-session.mjs",
-        "../src/review/request.mjs"
+        "src/prompts",
+        "src/prompt.mjs",
+        "src/review/create-session.mjs",
+        "src/review/request.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/prompts",
-        "../tests/prompt.test.mjs",
-        "../tests/review/create-session.test.mjs",
-        "../tests/review/request.test.mjs"
-      ], "commands": [] }
+        "tests/prompts",
+        "tests/prompt.test.mjs",
+        "tests/review/create-session.test.mjs",
+        "tests/review/request.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.8",
@@ -403,26 +399,33 @@
         "Do not treat a short explicit writer count as a successful complete write."
       ],
       "implementation": { "source": [
-        "../src/review/provider-request.mjs",
-        "../src/response/provider-text.mjs",
-        "../src/review/session-modes.mjs",
-        "../src/review/session-result.mjs",
-        "../src/review/run-session.mjs",
-        "../src/review/run-review-pipeline.mjs",
-        "../src/review/output.mjs",
-        "../src/review/response-diagnostic.mjs",
-        "../src/review/response-preservation.mjs"
+        "src/review/provider-request.mjs",
+        "src/response/provider-text.mjs",
+        "src/review/session/run-dry-session.mjs",
+        "src/review/session/run-provider-session.mjs",
+        "src/review/session-result.mjs",
+        "src/review/run-session.mjs",
+        "src/review/run-review-pipeline.mjs",
+        "src/review/output/write-fallback-output.mjs",
+        "src/review/output/write-provider-output.mjs",
+        "src/review/diagnostics/safe-response-summary.mjs",
+        "src/review/diagnostics/serialize-response-diagnostic.mjs",
+        "src/review/response-preservation.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/review/provider-request.test.mjs",
-        "../tests/review/session-modes.test.mjs",
-        "../tests/review/session-result.test.mjs",
-        "../tests/review/run-session.test.mjs",
-        "../tests/review/run-review-pipeline.test.mjs",
-        "../tests/review/output.test.mjs",
-        "../tests/review/response-diagnostic.test.mjs",
-        "../tests/review/response-preservation.test.mjs"
-      ], "commands": [] }
+        "tests/review/provider-request.test.mjs",
+        "tests/review/session/run-dry-session.test.mjs",
+        "tests/review/session/run-provider-session.test.mjs",
+        "tests/review/session-result.test.mjs",
+        "tests/review/run-session.test.mjs",
+        "tests/review/run-review-pipeline.test.mjs",
+        "tests/review/output/validate-write-result.test.mjs",
+        "tests/review/output/write-fallback-output.test.mjs",
+        "tests/review/output/write-provider-output.test.mjs",
+        "tests/review/diagnostics/safe-response-summary.test.mjs",
+        "tests/review/diagnostics/serialize-response-diagnostic.test.mjs",
+        "tests/review/response-preservation.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.9",
@@ -450,18 +453,18 @@
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [
-        "../src/review/environment.mjs",
-        "../src/review/environment-file.mjs",
-        "../src/review/environment-file-safety.mjs",
-        "../src/review/dotenv-parser.mjs",
-        "../src/review/config.mjs"
+        "src/review/environment.mjs",
+        "src/review/environment-file.mjs",
+        "src/review/environment-file-safety.mjs",
+        "src/review/dotenv-parser.mjs",
+        "src/review/env-file-path.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/review/environment.test.mjs",
-        "../tests/review/environment-file.test.mjs",
-        "../tests/review/dotenv-parser.test.mjs",
-        "../tests/review/config.test.mjs"
-      ], "commands": [] }
+        "tests/review/environment.test.mjs",
+        "tests/review/environment-file.test.mjs",
+        "tests/review/dotenv-parser.test.mjs",
+        "tests/review/environment.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.10",
@@ -489,18 +492,17 @@
         "Do not let usage or pricing metadata alter provider response text."
       ],
       "implementation": { "source": [
-        "../src/pricing",
-        "../src/review/dry-run.mjs",
-        "../src/review/request-phase.mjs",
-        "../src/cli/prompt-options.mjs"
+        "src/pricing",
+        "src/review/dry-run.mjs",
+        "src/review/request-phase.mjs",
+        "src/cli/prompt-options.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/pricing.test.mjs",
-        "../tests/pricing",
-        "../tests/review/dry-run.test.mjs",
-        "../tests/review/request-phase.test.mjs",
-        "../tests/cli/prompt-options.test.mjs"
-      ], "commands": [] }
+        "tests/pricing",
+        "tests/review/dry-run.test.mjs",
+        "tests/review/request-phase.test.mjs",
+        "tests/cli/prompt-options.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.11",
@@ -528,23 +530,23 @@
         "Do not hide the original provider or writer failure behind an unrelated cleanup error."
       ],
       "implementation": { "source": [
-        "../src/cli/error-handler.mjs",
-        "../src/cli/errors.mjs",
-        "../src/review/failure.mjs",
-        "../src/review/session-failure.mjs",
-        "../src/review/finalize-session.mjs",
-        "../src/review/cleanup.mjs",
-        "../src/review/signals.mjs"
+        "src/cli/error-handler.mjs",
+        "src/cli/errors.mjs",
+        "src/review/failure.mjs",
+        "src/review/session-failure.mjs",
+        "src/review/finalize-session.mjs",
+        "src/review/cleanup.mjs",
+        "src/review/signals.mjs"
       ] },
       "verification": { "tests": [
-        "../tests/cli/error-handler.test.mjs",
-        "../tests/cli/errors.test.mjs",
-        "../tests/review/failure.test.mjs",
-        "../tests/review/session-failure.test.mjs",
-        "../tests/review/finalize-session.test.mjs",
-        "../tests/review/cleanup.test.mjs",
-        "../tests/review/signals.test.mjs"
-      ], "commands": [] }
+        "tests/cli/error-handler.test.mjs",
+        "tests/cli/errors.test.mjs",
+        "tests/review/failure.test.mjs",
+        "tests/review/session-failure.test.mjs",
+        "tests/review/finalize-session.test.mjs",
+        "tests/review/cleanup.test.mjs",
+        "tests/review/signals.test.mjs"
+      ], "commands": ["specs/contracts.json"] }
     },
     {
       "id": "C-19.12",
@@ -575,15 +577,11 @@
         "Do not add shell-specific pipelines, platform-specific executable assumptions, or duplicate maintained-library functionality without a documented exception."
       ],
       "implementation": { "source": [
-        "../src",
-        "../package.json",
-        "../package-lock.json"
+        "src"
       ] },
       "verification": { "tests": [
-        "../tests",
-        "npm test",
-        "git diff --check"
-      ], "commands": [] }
+        "tests"
+      ], "commands": ["eliware-test", "git diff --check"] }
     }
   ]
 }

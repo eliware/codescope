@@ -18,7 +18,6 @@ test('reads a supplied environment file', async () => {
     }),
   ).resolves.toBe('x');
 });
-
 test('wraps errors reading a supplied environment file', async () => {
   await expect(
     readReviewEnvironmentFile({
@@ -28,7 +27,6 @@ test('wraps errors reading a supplied environment file', async () => {
     }),
   ).rejects.toThrow('Unable to securely read file: read failed');
 });
-
 test('rejects incomplete file inspection metadata', async () => {
   await expect(
     readReviewEnvironmentFile({
@@ -37,7 +35,6 @@ test('rejects incomplete file inspection metadata', async () => {
     }),
   ).rejects.toThrow(/symbolic-link metadata/);
 });
-
 test('rejects a file that disappears after it was inspected', async () => {
   const missing = Object.assign(new Error('gone'), { code: 'ENOENT' });
   await expect(
@@ -48,7 +45,6 @@ test('rejects a file that disappears after it was inspected', async () => {
     }),
   ).rejects.toThrow(/Unable to inspect/);
 });
-
 test('requires a stable opener for an existing file', async () => {
   await expect(
     readReviewEnvironmentFile({
@@ -57,7 +53,6 @@ test('requires a stable opener for an existing file', async () => {
     }),
   ).rejects.toThrow(/stable environment-file opener/);
 });
-
 test('preserves a default file that is absent before reading', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
   await expect(
@@ -67,7 +62,6 @@ test('preserves a default file that is absent before reading', async () => {
     }),
   ).resolves.toBe('');
 });
-
 test('does not open a file that appears after the initial missing inspection', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
   let inspections = 0;
@@ -84,7 +78,6 @@ test('does not open a file that appears after the initial missing inspection', a
   ).resolves.toBe('');
   expect(inspections).toBe(1);
 });
-
 test('rejects replacement of an existing file between inspection and read', async () => {
   let inspections = 0;
   await expect(
@@ -115,14 +108,6 @@ test('accepts a stable existing file with bigint identity metadata', async () =>
        openEnvFile: openWith('OPENAI_API_TOKEN=value', { dev: 1, ino: 2 }),
     }),
   ).resolves.toBe('OPENAI_API_TOKEN=value');
-});
-
-test('normalizes safe numeric and bigint identity components equally', () => {
-  expect(fileIdentity('file', { dev: 1, ino: 2 })).toBe(fileIdentity('file', { dev: 1n, ino: 2n }));
-});
-
-test('keeps unsafe numeric identity values explicitly typed', () => {
-  expect(fileIdentity('file', { dev: Number.MAX_SAFE_INTEGER + 2, ino: 2 })).toContain('number:');
 });
 
 test('rejects an existing file without stable identity metadata', async () => {

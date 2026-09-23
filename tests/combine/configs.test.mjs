@@ -25,7 +25,7 @@ test('labels byte-only configuration truncation accurately', async () => {
     inventory: ['.github/workflow.yml'],
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     readFileContents: async () => 'x'.repeat(100_001),
-  })).resolves.toContain('[truncated after the per-file byte limit; remaining config omitted]');
+  })).rejects.toThrow(/100000-byte sample boundary/);
 });
 
 test('accepts Windows separators in inventory configuration paths', async () => {

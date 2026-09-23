@@ -1,5 +1,7 @@
 # CodeScope directives
 
+[Back to the root README](../README.md)
+
 This directory contains CodeScope's v8 JSON directive records. Each directive
 has explicit `dos` and `donts`; these records are the only normative
 specification format for this repository.
@@ -16,3 +18,8 @@ specification format for this repository.
 Eliware Docs remains authoritative for shared documentation and the authority
 map. Eliware Conventions remains authoritative for repository requirements.
 Operations and Test8 behavior are outside CodeScope's authority.
+
+- [Requirements](requirements.md) describes how to read and implement these
+  specification records.
+- [Out of scope](out-of-scope.md) records behavior CodeScope deliberately does
+  not own.

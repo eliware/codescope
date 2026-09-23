@@ -1,5 +1,6 @@
-import { writeProviderResult } from './output.mjs';
-import { runDrySession, runProviderSession } from './session-modes.mjs';
+import { writeProviderResult } from './output/write-provider-output.mjs';
+import { runDrySession } from './session/run-dry-session.mjs';
+import { runProviderSession } from './session/run-provider-session.mjs';
 import { throwSessionFailure } from './session-failure.mjs';
 
 export async function runReviewSession({

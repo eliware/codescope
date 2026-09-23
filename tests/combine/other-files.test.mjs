@@ -1,7 +1,5 @@
 import { describeOtherFiles } from '../../src/combine/other-files.mjs';
-
 const inspectRegularFile = async () => ({ isSymbolicLink: () => false, isFile: () => true });
-
 test('describes unsupplied text and binary files while excluding supplied content', async () => {
   const files = new Map([
     ['notes.txt', 'a\nb'],
@@ -15,13 +13,11 @@ test('describes unsupplied text and binary files while excluding supplied conten
   });
   expect(result).toEqual(['image.dat | binary | 3 bytes', 'notes.txt | text | 2 lines | 3 bytes']);
 });
-
 test('returns no entries when all files are supplied elsewhere', async () => {
   await expect(
     describeOtherFiles('repo', ['package.json', 'README.md', '.github/ci.yml', 'src/app.mjs']),
   ).resolves.toEqual([]);
 });
-
 test('applies the metadata limit independently to each file', async () => {
   const result = await describeOtherFiles(
     'repo',
@@ -36,7 +32,6 @@ test('applies the metadata limit independently to each file', async () => {
     'large-two.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached',
   ]);
 });
-
 test('rejects injected results beyond the bounded sample', async () => {
   await expect(
     describeOtherFiles('repo', ['large.txt'], {
@@ -45,7 +40,6 @@ test('rejects injected results beyond the bounded sample', async () => {
     }),
   ).rejects.toThrow(/sample boundary/);
 });
-
 test('checks actual bytes after reading files', async () => {
   const reads = [];
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
@@ -61,14 +55,12 @@ test('checks actual bytes after reading files', async () => {
   expect(result).toContain('second.txt | text | 1 lines | 1 bytes');
   expect(reads).toHaveLength(2);
 });
-
 test('rejects oversized data without a truthful truncation flag', async () => {
   await expect(describeOtherFiles('repo', ['large.txt'], {
     inspectFile: inspectRegularFile,
     readOtherFileContents: async () => ({ data: Buffer.alloc(100_001, 'x'), truncated: false }),
   })).rejects.toThrow(/oversized data without truncated=true/);
 });
-
 test('omits a file that grows beyond the per-file metadata limit', async () => {
   const result = await describeOtherFiles('repo', ['growing.txt', 'later.txt'], {
     inspectFile: inspectRegularFile,
@@ -80,7 +72,6 @@ test('omits a file that grows beyond the per-file metadata limit', async () => {
   expect(result).toContain('growing.txt | omitted | at least 100001 sampled bytes | per-file metadata limit reached');
   expect(result).toContain('later.txt | text | 1 lines | 5 bytes');
 });
-
 test('allows multiple files when each is within the per-file limit', async () => {
   const result = await describeOtherFiles('repo', ['first.txt', 'second.txt'], {
     inspectFile: inspectRegularFile,
@@ -94,7 +85,6 @@ test('allows multiple files when each is within the per-file limit', async () =>
     'second.txt | text | 1 lines | 6 bytes',
   ]);
 });
-
 test('uses bounded metadata concurrency while preserving sorted output', async () => {
   let active = 0;
   let maximum = 0;
@@ -112,7 +102,6 @@ test('uses bounded metadata concurrency while preserving sorted output', async (
   expect(maximum).toBe(2);
   expect(result.map((entry) => entry.split(' | ')[0])).toEqual(['a.txt', 'b.txt', 'c.txt']);
 });
-
 test('keeps equal normalized inventory paths deterministic', async () => {
   const result = await describeOtherFiles('repo', ['same.txt', 'same.txt'], {
     inspectFile: inspectRegularFile,
@@ -120,7 +109,6 @@ test('keeps equal normalized inventory paths deterministic', async () => {
   });
   expect(result).toHaveLength(2);
 });
-
 test('uses explicit Windows path semantics for Windows inventory roots', async () => {
   const result = await describeOtherFiles('C:\\repo', ['notes.txt'], {
     platform: 'win32',
@@ -129,14 +117,12 @@ test('uses explicit Windows path semantics for Windows inventory roots', async (
   });
   expect(result[0]).toContain('notes.txt');
 });
-
 test('rejects inconsistent in-limit truncation metadata', async () => {
   await expect(describeOtherFiles('repo', ['notes.txt'], {
     inspectFile: inspectRegularFile,
     readOtherFileContents: async () => ({ data: 'notes', truncated: true }),
   })).rejects.toThrow(/in-limit/);
 });
-
 test('uses POSIX path semantics when explicitly selected', async () => {
   const result = await describeOtherFiles('repo', ['notes.txt'], {
     platform: 'linux',
@@ -145,24 +131,14 @@ test('uses POSIX path semantics when explicitly selected', async () => {
   });
   expect(result[0]).toContain('notes.txt');
 });
-
-test('rejects an invalid bounded-reader result', async () => {
-  await expect(
-    describeOtherFiles('repo', ['notes.txt'], { inspectFile: inspectRegularFile, readOtherFileContents: async () => 'notes' }),
-  ).rejects.toThrow('must return { data, truncated }');
-  await expect(
-    describeOtherFiles('repo', ['notes.txt'], {
-      inspectFile: inspectRegularFile,
-      readOtherFileContents: async () => ({ data: 'notes' }),
-    }),
-  ).rejects.toThrow('must return { data, truncated }');
+test('rejects an invalid bounded-reader result', async () => { const options = { inspectFile: inspectRegularFile };
+  await expect(describeOtherFiles('repo', ['notes.txt'], { ...options, readOtherFileContents: async () => 'notes' })).rejects.toThrow('must return { data, truncated }');
+  await expect(describeOtherFiles('repo', ['notes.txt'], { ...options, readOtherFileContents: async () => ({ data: 'notes' }) })).rejects.toThrow('must return { data, truncated }');
 });
-
 test('rejects invalid metadata concurrency values', async () => {
   for (const concurrency of [0, 1.5, Number.NaN, '2'])
     await expect(describeOtherFiles('repo', ['notes.txt'], { concurrency })).rejects.toThrow(/concurrency/);
 });
-
 test('rejects inventory paths that escape the review root', async () => {
   await expect(
     describeOtherFiles('repo', ['../outside.txt'], {
@@ -188,7 +164,6 @@ test('rejects inventory paths that escape the review root', async () => {
     }),
   ).rejects.toThrow(/escapes review root/);
 });
-
 test('normalizes inventory separators before resolving relative paths', async () => {
   const readPaths = [];
   await expect(
@@ -202,7 +177,6 @@ test('normalizes inventory separators before resolving relative paths', async ()
   ).resolves.toEqual(['nested/notes.txt | text | 1 lines | 5 bytes']);
   expect(readPaths[0]).toMatch(/[\\/]nested[\\/]notes\.txt$/u);
 });
-
 test('rejects symlinked inventory entries before reading them', async () => {
   let read = false;
   await expect(
@@ -216,7 +190,6 @@ test('rejects symlinked inventory entries before reading them', async () => {
   ).rejects.toThrow(/symlinked inventory files/);
   expect(read).toBe(false);
 });
-
 test('rejects non-file inventory entries before reading them', async () => {
   await expect(
     describeOtherFiles('repo', ['notes.txt'], {

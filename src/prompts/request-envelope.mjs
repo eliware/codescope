@@ -1,4 +1,4 @@
-import { reviewTool } from './tool-schemas.mjs';
+import { reviewTool } from './review-tool.mjs';
 
 export const baseRequest = {
   model: 'gpt-5.6-luna',

@@ -30,7 +30,7 @@ export async function main(
       model,
       usage,
       dryRun,
-      add = [],
+      add,
       promptText,
     } = parseArgs(args);
     if (dispatchMeta(command, option, output, add)) return EXIT_CODES.PASS;

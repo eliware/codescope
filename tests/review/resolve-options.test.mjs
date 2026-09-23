@@ -11,6 +11,15 @@ test('preserves an explicitly supplied file reader', () => {
   expect(resolveReviewOptions('repo', { readFile }).readFile).toBe(readFile);
 });
 
+test('preserves an explicitly supplied environment opener', () => {
+  const openEnvFile = async () => {};
+  expect(resolveReviewOptions('repo', { openEnvFile }).openEnvFile).toBe(openEnvFile);
+});
+
+test('resolves defaults when options are omitted', () => {
+  expect(resolveReviewOptions('repo')).toMatchObject({ openEnvFile: expect.any(Function) });
+});
+
 test('validates the resolved options before returning them', () => {
   expect(() => resolveReviewOptions('repo', { maxSourceChars: 0 })).toThrow(/positive/);
 });

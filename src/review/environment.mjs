@@ -1,6 +1,6 @@
 import process from 'node:process';
-import { loadEnv } from './config.mjs';
-import { readReviewEnvironmentFile } from './environment-file.mjs';
+import { loadEnvironmentFile } from './environment/load-environment-file.mjs';
+import { resolveTokenEnvironment } from './environment/resolve-token-environment.mjs';
 
 export async function loadReviewEnvironment({
   envFile,
@@ -8,20 +8,11 @@ export async function loadReviewEnvironment({
   inspectFile,
   environment = process.env,
 }) {
-  const envText = await readReviewEnvironmentFile({
+  const fileEnvironment = await loadEnvironmentFile({
     envFile,
     openEnvFile,
     inspectFile,
   });
-  const fileEnvironment = {};
-  loadEnv(envText, fileEnvironment);
   return resolveTokenEnvironment(fileEnvironment, environment);
 }
-
-function resolveTokenEnvironment(fileEnvironment, environment) {
-  const processToken = environment.OPENAI_API_TOKEN;
-  const fileToken = fileEnvironment.OPENAI_API_TOKEN;
-  if (processToken?.trim()) return { OPENAI_API_TOKEN: processToken.trim() };
-  if (fileToken?.trim()) return { OPENAI_API_TOKEN: fileToken.trim() };
-  return {};
-}
+export { resolveTokenEnvironment } from './environment/resolve-token-environment.mjs';

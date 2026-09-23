@@ -1,80 +1,27 @@
-import { collectReviewContext } from './collect-context.mjs';
-import { createReviewSession } from './create-session.mjs';
-import { finalizeReviewSession } from './finalize-session.mjs';
-import { prepareReview } from './prepare-review.mjs';
-import { runReviewSession } from './run-session.mjs';
-import { throwSessionFailure } from './session-failure.mjs';
 import { createSetupFailure } from './failure.mjs';
+import { collectAndPrepare } from './pipeline/collect-and-prepare.mjs';
+import { createRequest } from './pipeline/create-request.mjs';
+import { executeRequest } from './pipeline/execute-request.mjs';
+import { writePhaseFailure } from './pipeline/write-phase-failure.mjs';
 
 export async function runReviewPipeline(cwd, options) {
-  let combined;
-  let client;
+  let prepared;
   try {
-    ({ combined } = await collectReviewContext({
-      cwd,
-      combine: options.combine,
-      readDirectory: options.readDirectory,
-      readFile: options.readFile,
-      maxSourceChars: options.maxSourceChars,
-      platform: options.platform,
-    }));
-    ({ client } = await prepareReview({
-      envFile: options.envFile,
-      openEnvFile: options.openEnvFile,
-      inspectFile: options.inspectFile,
-      environment: options.environment,
-      createClient: options.createClient,
-    }));
+    prepared = await collectAndPrepare(cwd, options);
   } catch (cause) {
-    return throwSessionFailure({
-      cause,
-      providerResponse: cause.providerResponse,
-      providerResponseReceived: cause.providerResponse !== undefined,
-      write: options.write,
-      createFailure: createSetupFailure,
-      fallbackCause: new Error('Review setup failed'),
-    });
+    return writePhaseFailure({ cause, write: options.write, createFailure: createSetupFailure, fallbackCause: new Error('Review setup failed') });
   }
   let request;
   let controller;
   try {
-    ({ request, controller } = createReviewSession({
-      prompt: options.prompt,
-      combined,
-      model: options.model,
-      plainText: options.plainText,
-      add: options.add,
-    }));
+    ({ request, controller } = createRequest(options, prepared.combined));
   } catch (cause) {
-    return throwSessionFailure({
-      cause,
-      providerResponseReceived: false,
-      write: options.write,
-    });
+    return writePhaseFailure({ cause, write: options.write });
   }
   try {
-    const session = await finalizeReviewSession({
-      register: options.register,
-      controller,
-      execute: (signal) =>
-        runReviewSession({
-          client,
-          request,
-          signal,
-          write: options.write,
-          dryRun: options.dryRun,
-          usage: options.usage,
-          plainText: options.plainText,
-        }),
-    });
-    return session.output;
+    return await executeRequest({ client: prepared.client, request, controller, options });
   } catch (cause) {
     if (cause?.result) throw cause;
-    return throwSessionFailure({
-      cause,
-      providerResponse: cause.providerResponse,
-      providerResponseReceived: cause.providerResponse !== undefined,
-      write: options.write,
-    });
+    return writePhaseFailure({ cause, write: options.write });
   }
 }

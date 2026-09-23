@@ -1,19 +1,32 @@
 name: Publication
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
+  push:
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: read
 
+concurrency:
+  group: publication-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
   publish:
-    if: >-
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      startsWith(github.event.workflow_run.head_branch, 'v')
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,15 +34,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: 26
           registry-url: https://registry.npmjs.org
       - name: Verify release tag
         run: >-
-          node -e "const expected = 'v' + JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version; const tags = require('node:child_process').execFileSync('git', ['tag', '--points-at', 'HEAD'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean); if (!tags.includes(expected)) throw new Error('Release tag must match package.json version: ' + expected)"
+          node -e "const expected = 'v' + JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version;
+          const tags = require('node:child_process').execFileSync('git', ['tag', '--points-at', 'HEAD'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean);
+          if (tags.length !== 1 || tags[0] !== expected || !/^v\d+\.\d+\.\d+$/.test(tags[0])) throw new Error('Release tag must be the exact package version: ' + expected)"
+      - name: Verify package version
+        shell: bash
+        run: test "$(npm pkg get version --raw)" = "${GITHUB_REF_NAME#v}"
       - name: Publish to npm
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

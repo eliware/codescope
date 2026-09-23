@@ -1,5 +1,6 @@
 import { PROFILE_NAMES } from '../profiles/index.mjs';
-import { parseCommandOptions, parseOptionValues } from './option-values.mjs';
+import { parseCommandOptions } from './options/command-options.mjs';
+import { parseOptionValues } from './options/parse-values.mjs';
 
 export function parseGroupedArgs(mode, tokens) {
   const usage = 'Usage: codescope review|suggest <profile> [options]';

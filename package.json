@@ -17,25 +17,25 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eliware/codescope.git"
+    "url": "https://github.com/eliware/codescope"
   },
   "bugs": {
     "url": "https://github.com/eliware/codescope/issues"
   },
   "homepage": "https://github.com/eliware/codescope#readme",
   "type": "module",
+  "private": false,
   "bin": {
     "codescope": "bin/codescope.mjs"
   },
   "exports": {
-    ".": "./src/cli.mjs"
+    ".": "./src/cli/main.mjs"
   },
   "files": [
     "bin/",
     "src/",
     "README.md",
     "docs/",
-    "scripts/",
     "specs/",
     "KNOWN_ISSUES.md",
     "NEW_FEATURE_SUGGESTIONS.md",
@@ -48,13 +48,30 @@
     "audit": "eliware-test --audit",
     "pack": "eliware-test --pack",
     "format": "eliware-test --format",
-    "format:check": "eliware-test --format-check"
+    "format:check": "eliware-test --format-check",
+    "validate-test-dependency": "node -e \"import('@eliware/test')\""
   },
   "engines": {
-    "node": ">=26"
+    "node": ">=26 <27"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.mjs"
+    ],
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ]
+  },
+  "prettier": {
+    "singleQuote": false,
+    "trailingComma": "all",
+    "printWidth": 100,
+    "tabWidth": 2,
+    "semi": true
   },
   "devDependencies": {
-    "@eliware/test": "^2.3.1"
+    "@eliware/test": "^6.0.1"
   },
   "license": "MIT",
   "eliware": {

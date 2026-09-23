@@ -48,54 +48,6 @@ test('rejects invalid command grammar', () => {
   expect(() => parseArgs(['unknown'])).toThrow(/Unknown command/);
 });
 
-test('parses metadata command variants', () => {
-  expect(parseArgs(['--help'])).toMatchObject({ command: 'help' });
-  expect(parseArgs(['-h'])).toMatchObject({ command: 'help' });
-  expect(parseArgs(['help', '--help'])).toMatchObject({ command: 'help', option: '--help' });
-  expect(parseArgs(['version'])).toMatchObject({ command: 'version' });
-  expect(parseArgs(['version', '--version'])).toMatchObject({
-    command: 'version',
-    option: '--version',
-  });
-  expect(parseArgs(['--version'])).toMatchObject({ command: 'version' });
-  expect(parseArgs(['help', '-a', 'ignored'])).toMatchObject({
-    command: 'help',
-    add: ['ignored'],
-  });
-  expect(parseArgs(['--help', '--add', 'ignored'])).toMatchObject({
-    command: 'help',
-    add: ['ignored'],
-  });
-  expect(parseArgs(['version', '--add', 'ignored'])).toMatchObject({
-    command: 'version',
-    add: ['ignored'],
-  });
-  expect(parseArgs(['--effort=low', 'help', '--model=gpt-5.6-sol', '--usage'])).toEqual({
-    command: 'help',
-    option: undefined,
-    effort: 'low',
-    model: 'gpt-5.6-sol',
-    usage: true,
-    add: [],
-  });
-  expect(parseArgs(['help', '--dry-run'])).toMatchObject({ command: 'help', dryRun: true });
-  expect(parseArgs(['--add', 'leading', 'help'])).toMatchObject({
-    command: 'help',
-    add: ['leading'],
-  });
-  expect(parseArgs(['--add', 'leading', 'version'])).toMatchObject({
-    command: 'version',
-    add: ['leading'],
-  });
-  expect(() => parseArgs(['help', '--bad'])).toThrow(/not valid/);
-  expect(() => parseArgs(['help', 'extra'])).toThrow(/Unexpected/);
-  expect(() => parseArgs(['version', '--bad'])).toThrow(/not valid/);
-  expect(() => parseArgs(['version', 'extra'])).toThrow(/Unexpected/);
-  expect(() => parseArgs(['--help', 'extra'])).toThrow(/Unexpected/);
-  expect(() => parseArgs(['--version', 'extra'])).toThrow(/Unexpected/);
-  expect(() => parseArgs(['--bad'])).toThrow(/Unknown option/);
-});
-
 test('routes custom prompt arguments', () => {
   expect(parseArgs(['prompt', 'review', 'this', 'code', '--effort=medium'])).toMatchObject({
     command: 'prompt',

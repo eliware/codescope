@@ -1,25 +1,26 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { formatSourceSection } from './section-format.mjs';
+import { readSourceFile } from './read-file.mjs';
 
 export async function combinePackageJson(root, options = {}) {
     const readFileContents = options.readFileContents ?? readFile;
   const inspectFile = options.inspectFile ?? lstat;
   const pathApi = options.platform === 'win32' ? path.win32 : path.posix;
   const packagePath = pathApi.join(root, 'package.json');
-  let contents;
   try {
-    const metadata = await inspectFile(packagePath);
-    if (metadata.isSymbolicLink()) throw new Error('symlinked package.json is not supported');
-    if (!metadata.isFile()) throw new Error('package.json is not a regular file');
-    contents = await readFileContents(packagePath, 'utf8');
+    const contents = await readSourceFile('package.json', packagePath, {
+      readFileContents,
+      inspectFile,
+      validateSymlinks: true,
+    });
+    return formatSourceSection('package.json', contents);
   } catch (cause) {
+    if (cause?.message === 'Unable to read package.json: symlinked source files are not supported')
+      throw new Error('Unable to read package.json: symlinked package.json is not supported', { cause });
     throw new Error(
-      `Unable to read package.json: ${cause instanceof Error ? cause.message : String(cause)}`,
+      `Unable to read package.json: ${cause.message}`,
       { cause },
     );
   }
-  if (typeof contents !== 'string')
-    throw new Error('Unable to read package.json: file reader returned non-string content');
-  return formatSourceSection('package.json', contents);
 }

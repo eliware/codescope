@@ -1,4 +1,4 @@
-import { parseOptionValues } from './option-values.mjs';
+import { parseOptionValues } from './options/parse-values.mjs';
 import { parseAddOptions } from './add-option.mjs';
 import { partitionPromptArgs } from './prompt-partition.mjs';
 

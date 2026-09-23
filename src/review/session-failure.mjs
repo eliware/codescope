@@ -1,4 +1,4 @@
-import { writeFallbackResult } from './output.mjs';
+import { writeFallbackResult } from './output/write-fallback-output.mjs';
 import { createIncompleteResult, createProviderFailure } from './failure.mjs';
 
 export async function throwSessionFailure({
