@@ -1,6 +1,4 @@
-import {
-  profilePrompt,
-} from '../prompts/public/review-profiles.mjs';
+import { profilePrompt } from '../prompts/public/profile-prompt.mjs';
 import { combinedAllPrompt } from '../prompts/public/unified-review.mjs';
 import { releasePrompt } from '../prompts/public/release-review.mjs';
 import { createAnalysisPrompt } from '../prompts/public/analysis.mjs';

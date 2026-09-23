@@ -355,7 +355,7 @@
       "implementation": { "source": [
         "src/prompts",
         "src/prompts/policy/review-guidance.mjs",
-        "src/prompts/public/review-profiles.mjs",
+        "src/prompts/public/focused-review-profiles.mjs",
         "src/prompts/public/unified-review.mjs",
         "src/prompts/public/release-review.mjs",
         "src/prompts/public/convention-review.mjs",

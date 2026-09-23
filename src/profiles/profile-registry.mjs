@@ -1,4 +1,4 @@
-import { refactorPrompt } from '../prompts/public/review-profiles.mjs';
+import { refactorPrompt } from '../prompts/public/focused-review-profiles.mjs';
 import { allPrompt } from '../prompts/public/unified-review.mjs';
 import { releasePrompt } from '../prompts/public/release-review.mjs';
 import { conventionsPrompt } from '../prompts/public/convention-review.mjs';
