@@ -1,6 +1,5 @@
-import { writeProviderResult } from './output/write-provider-output.mjs';
 import { runDrySession } from './session/run-dry-session.mjs';
-import { runProviderSession } from './session/run-provider-session.mjs';
+import { runProviderAndWrite } from './session/run-provider-and-write.mjs';
 import { throwSessionFailure } from './session-failure.mjs';
 
 export async function runReviewSession({
@@ -18,16 +17,16 @@ export async function runReviewSession({
     if (dryRun) {
       return await runDrySession({ client, request, signal, write, usage });
     }
-    const session = await runProviderSession({
+    const session = await runProviderAndWrite({
       client,
       request,
       signal,
       usage,
       plainText,
+      write,
     });
     providerResponse = session.providerResponse;
     providerResponseReceived = true;
-    await writeProviderResult(write, session.output, session.kind);
     return session;
   } catch (cause) {
     providerResponse ??= cause.providerResponse;
