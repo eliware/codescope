@@ -335,8 +335,7 @@
       ],
       "implementation": { "source": [
         "src/combine/conventions.mjs",
-        "src/prompts/conventions.mjs",
-        "specs/conventions.json"
+        "src/prompts/conventions.mjs"
       ] },
       "verification": { "tests": [
         "tests/combine/conventions.test.mjs",
@@ -369,7 +368,6 @@
         "Do not claim redaction or AI inspection is a complete secret-removal boundary."
       ],
       "implementation": { "source": [
-        "src/prompts",
         "src/prompts/policy/review-guidance.mjs",
         "src/prompts/public/focused-review-profiles.mjs",
         "src/prompts/public/unified-review.mjs",
@@ -379,8 +377,6 @@
         "src/review/request.mjs"
       ] },
       "verification": { "tests": [
-        "tests/prompts",
-        "tests/prompts/public",
         "tests/review/create-session.test.mjs",
         "tests/review/request.test.mjs"
       ], "commands": ["specs/contracts.json"] }
@@ -423,6 +419,7 @@
         "src/response/provider-text.mjs",
         "src/review/session/run-dry-session.mjs",
         "src/review/session/run-provider-session.mjs",
+        "src/review/session/run-provider-and-write.mjs",
         "src/review/session-result.mjs",
         "src/review/run-session.mjs",
         "src/review/run-review-pipeline.mjs",
@@ -436,6 +433,7 @@
         "tests/review/provider-request.test.mjs",
         "tests/review/session/run-dry-session.test.mjs",
         "tests/review/session/run-provider-session.test.mjs",
+        "tests/review/session/run-provider-and-write.test.mjs",
         "tests/review/session-result.test.mjs",
         "tests/review/run-session.test.mjs",
         "tests/review/run-review-pipeline.test.mjs",
