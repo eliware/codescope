@@ -28,6 +28,8 @@ reviewed repository unchanged.
 
 ## Features
 
+Package metadata: description `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`; author `Eliware <eliware@eliware.org>`; license `MIT`.
+
 - Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
 - Comprehensive `all` reviews that combine implementation, tests, and Markdown into one provider review request.
 - Token and cost estimates, model selection, and reasoning-effort controls.
@@ -48,6 +50,12 @@ npm install -g @eliware/codescope
 npm install @eliware/codescope
 ```
 
+The `codescope` executable maps to `bin/codescope.mjs`; the package root
+export is `src/cli/main.mjs`. The package version is maintained in
+`package.json`; release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+Publication requires successful Ubuntu validation and an exact `v#.#.#` tag
+matching the package version.
+
 For repository development, install the checkout's dependencies first:
 
 ```text
@@ -64,6 +72,9 @@ node bin/codescope.mjs --version
 For this optional development-only setup, create a live global npm link from the already-installed checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed; package consumers should use the published-install commands above.
 
 ## Usage
+
+Run CodeScope from the repository root to review supplied evidence, request
+focused suggestions, or estimate review usage without modifying the repository.
 
 ```text
 codescope all

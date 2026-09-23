@@ -28,17 +28,6 @@ Maintain `README.md`, `AGENTS.md`,
 ## Development
 
 Use Node.js 26, npm, and native ESM modules in the required environment.
-The executable entrypoint is `bin/codescope.mjs`. Supported commands include
-`codescope all`, review and suggestion profiles, `codescope prompt <text>`,
-`--help`, and `--version`. Profile commands accept repeatable `-a|--add <text>`
-additions, model and effort options, usage reporting, and dry-run estimates.
-Prompt text beginning with `-` requires `--`, after which only effort and
-model options are accepted. The CLI uses the same Node.js command syntax on
-Windows and Ubuntu; CI currently validates Ubuntu only. Successful commands
-exit `0`; usage, configuration, input, provider, and response errors exit `2`,
-`3`, `4`, `5`, and `6`; timeout and termination exits are `124`, `130`, and
-`143`. Provider findings and verdicts do not affect the exit code. CodeScope
-is read-only and has no destructive review action.
 Read `README.md`, relevant `docs/`, and relevant `specs/` records before
 changing files. Read `eliware/docs` for authority mapping,
 `eliware/conventions` for applicable repository requirements, and
@@ -48,12 +37,13 @@ subdirectory instruction may add detail but may not weaken them.
 
 ## Validation
 
-Use the global `eliware-test` validator for `npm ci`, tests, lint, audit, pack,
-and formatting checks in the Node.js 26 validation environment; do not invoke
-Jest, Oxlint, Prettier, or audit tools directly. Maintain 100% statements,
-branches, functions, and lines for in-scope production logic. The Knit
-validation entrypoint is `.knit/validate.mjs`, and applicable application
-requirements are supplied by the selected Convention directives.
+Run only the global symlinked `eliware-test` v8.0.0 by invoking the bare
+`eliware-test` command. Do not use `npm test`, the repository-local
+`@eliware/test` 6.0.1 dependency, or Jest, Oxlint, Prettier, and audit tools
+directly. The global validator owns installation, tests, lint, audit, pack, and
+format checks. Maintain 100% statements, branches, functions, and lines for
+in-scope production logic. The Knit validation entrypoint is
+`.knit/validate.mjs`.
 
 ## Security
 
@@ -71,3 +61,53 @@ concerns include repeatable shutdown and signal cleanup.
 
 The temporary pre-release validator migration exception is recorded in
 `package.json.eliware.exempt` and expires on 2026-09-30.
+
+## Application
+
+The application entrypoint is `bin/codescope.mjs`, exposed as the `codescope`
+package command; the package root export is `src/cli/main.mjs`. Each invocation
+loads configuration, runs one review or suggestion request, writes the result,
+then aborts its controller and removes signal handlers. Runtime configuration
+uses only `OPENAI_API_TOKEN`: a nonblank process value takes precedence over a
+nonblank value in `~/.codescope`. The default model is `gpt-6-luna`; there are
+no other supported runtime environment settings. The CLI reviews supplied
+repository evidence without modifying the reviewed repository.
+
+## CLI
+
+The public commands are `codescope all`, `codescope review <profile>`,
+`codescope suggest <profile>`, `codescope prompt <text>`, supported direct
+profile shorthand, `codescope --help`, and `codescope --version`. Profile
+commands accept repeatable `-a|--add <text>`, model and effort selection,
+usage reporting, and dry-run estimates. Prompt text beginning with `-`
+requires `--`; after that delimiter only supported effort and model options
+are accepted. The executable is `bin/codescope.mjs`; the package command is
+`codescope`. Windows uses the same Node.js command syntax, but CI currently
+validates Ubuntu only.
+
+Successful commands exit `0`; usage, configuration, input, provider, and
+response errors exit `2`, `3`, `4`, `5`, and `6`; timeout and termination exits
+are `124`, `130` (SIGINT), and `143` (SIGTERM). Provider findings and verdicts
+do not affect the exit code. CodeScope is read-only and has no destructive
+review action.
+
+## npm publication
+
+The public package is `@eliware/codescope`; `package.json` is the source of its
+version, and the repository URL is `https://github.com/eliware/codescope`. Its
+package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `prompts/`,
+`specs/`, `KNOWN_ISSUES.md`, `NEW_FEATURE_SUGGESTIONS.md`, `LICENSE`, and
+`RELEASE_NOTES.md`. The package `pack` script is exactly
+`eliware-test --pack`; the global v8 validator's pack stage must pass.
+
+`publishConfig.provenance` is `true`; the separate
+`.github/workflows/publication.yml` publishes with npm provenance only after
+Ubuntu validation succeeds and the sole tag at `HEAD` exactly matches the
+`v#.#.#` form and `package.json` version. After publication, the authorized
+release operator verifies that the exact `@eliware/codescope@<version>` and
+release commit are visible in the npm registry; the current workflow does not
+perform this post-publication check itself.
+
+Publication requires Eli's explicit release instruction after passing
+TagIt preflight, followed by the DevOps release handoff. DevOps owns publication
+execution. This file and a passing workflow are not publication authorization.
