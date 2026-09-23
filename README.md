@@ -4,20 +4,9 @@
 
 Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
 
-A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
-
----
-
-## Purpose
-
-CodeScope reviews supplied repository evidence with focused OpenAI-backed review
-and suggestion profiles while leaving the reviewed repository unchanged.
-
-Description: OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
-Keywords: code-review, documentation, openai, cli, architecture, security, testing, release-readiness, static-analysis, developer-tools.
-Author: Eliware <eliware@eliware.org>.
-License: MIT.
-Repository: https://github.com/eliware/codescope.
+CodeScope is a structured OpenAI CLI for read-only reviews of supplied
+repository evidence, focused suggestions, and token estimates. It leaves the
+reviewed repository unchanged.
 
 ## Table of Contents
 
@@ -29,15 +18,13 @@ Repository: https://github.com/eliware/codescope.
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Security](#security)
-- [Support](#support)
-- [License](#license)
-- [Links](#links)
 - [Configuration](#configuration)
-- [Validation](#validation)
 - [Operations](#operations)
 - [Commands](#commands)
 - [Exit codes](#exit-codes)
-- [Examples](#examples)
+- [Support](#support)
+- [License](#license)
+- [Links](#links)
 
 ## Features
 
@@ -113,32 +100,6 @@ Do not place credentials, tokens, `.env` files, or runtime state in the reposito
 CodeScope reviews supplied repository files only; it does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
 Use `codescope review all` for release-readiness review.
 
-## Support
-
-[![Discord](https://eliware.org/logos/discord_96.png)](https://discord.gg/M6aTR9eTwN)
-
-**[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
-
-Use the [Eliware Discord community](https://discord.gg/M6aTR9eTwN),
-[GitHub issues](https://github.com/eliware/codescope/issues), or
-eliware@eliware.org. Include the command, Node.js version, and redacted
-diagnostics when requesting help.
-
-## License
-
-[license](LICENSE)
-
-## Links
-
-- [Documentation](docs/README.md)
-- [Specifications](specs/README.md)
-- [Home Page](https://eliware.org)
-- [GitHub Repo](https://github.com/eliware/codescope)
-- [GitHub Org](https://github.com/eliware)
-- [npm Package](https://www.npmjs.com/package/@eliware/codescope)
-- [Release Notes](RELEASE_NOTES.md)
-- [Discord](https://discord.gg/M6aTR9eTwN)
-
 ## Configuration
 
 The CLI starts with the process environment, then reads only
@@ -151,11 +112,6 @@ values. A missing or blank token causes a clear error and exit code `3`.
 Configuration evidence is root-bound, symlink-checked, and bounded to 100000
 bytes and 200 lines per configuration file. JSON evidence is root-bound and
 subject to the review aggregate character budget.
-
-## Validation
-
-Use the global `eliware-test` validator for repository checks. CodeScope does
-not run that validator or execute tests in a reviewed repository.
 
 ## Operations
 
@@ -186,6 +142,8 @@ codescope --version
 
 CI validates the CLI on Ubuntu. Windows uses the same Node.js command syntax,
 but is not currently covered by the supplied CI workflow.
+See [examples/README.md](examples/README.md) for additional end-user command
+examples.
 
 ## Exit codes
 
@@ -196,6 +154,28 @@ content. Timeout and termination exits are `124`, `130` (SIGINT), and `143`
 (SIGTERM). A successful provider response is written unchanged, and its
 findings or verdict text do not affect process exit status.
 
-## Examples
+## Support
 
-See [examples/README.md](examples/README.md) for end-user command examples.
+[![Discord](https://eliware.org/logos/discord_96.png)](https://discord.gg/M6aTR9eTwN)
+
+**[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
+
+Use the [Eliware Discord community](https://discord.gg/M6aTR9eTwN),
+[GitHub issues](https://github.com/eliware/codescope/issues), or
+eliware@eliware.org. Include the command, Node.js version, and redacted
+diagnostics when requesting help.
+
+## License
+
+[license](LICENSE)
+
+## Links
+
+- [Documentation](docs/README.md)
+- [Specifications](specs/README.md)
+- [Home Page](https://eliware.org)
+- [GitHub Repo](https://github.com/eliware/codescope)
+- [GitHub Org](https://github.com/eliware)
+- [npm Package](https://www.npmjs.com/package/@eliware/codescope)
+- [Release Notes](RELEASE_NOTES.md)
+- [Discord](https://discord.gg/M6aTR9eTwN)
