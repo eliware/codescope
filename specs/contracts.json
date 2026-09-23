@@ -608,10 +608,16 @@
         "Do not add shell-specific pipelines, platform-specific executable assumptions, or duplicate maintained-library functionality without a documented exception."
       ],
       "implementation": { "source": [
-        "src"
+        "src/profiles/profile-definitions.mjs",
+        "src/cli/options/scan-option-stream.mjs",
+        "src/combine/all-sections.mjs",
+        "src/review/client.mjs"
       ] },
       "verification": { "tests": [
-        "tests"
+        "tests/profiles/profile-definitions.test.mjs",
+        "tests/cli/options/scan-option-stream.test.mjs",
+        "tests/combine/all-sections.test.mjs",
+        "tests/review/client.test.mjs"
       ], "commands": ["eliware-test", "git diff --check"] }
     }
   ]
