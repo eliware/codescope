@@ -3,7 +3,7 @@ import { readConventionApplicability } from '../../../src/combine/convention/app
 test('resolves only package-selected directive records', async () => {
   await expect(readConventionApplicability('repo', {
     readPackageJson: async () => JSON.stringify({
-      eliware: { conventions: { apply: ['general', 'cli'] } },
+      eliware: { apply: ['general', 'cli'] },
     }),
   })).resolves.toMatchObject({
     profiles: new Set(['general', 'cli']),
@@ -15,14 +15,14 @@ test('marks eliware test as requiring all directive records', async () => {
   await expect(readConventionApplicability('repo', {
     readPackageJson: async () => JSON.stringify({
       name: '@eliware/test',
-      eliware: { conventions: { apply: ['general'] } },
+      eliware: { apply: ['general'] },
     }),
   })).resolves.toMatchObject({ includeAll: true });
 });
 
 test('returns unavailable for malformed applicability data', async () => {
   await expect(readConventionApplicability('repo', {
-    readPackageJson: async () => JSON.stringify({ eliware: { conventions: { apply: [1] } } }),
+    readPackageJson: async () => JSON.stringify({ eliware: { apply: [1] } }),
   })).resolves.toBeNull();
 });
 

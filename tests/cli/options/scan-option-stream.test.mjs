@@ -2,7 +2,7 @@ import { scanOptionStream } from '../../../src/cli/options/scan-option-stream.mj
 
 test('scans normal and leading option boundaries through one stream', () => {
   expect(scanOptionStream(['--effort=low', 'all', '--add', 'later'], { leadingOnly: true }))
-    .toMatchObject({ effort: ['--effort=low'], add: ['later'], remaining: ['all', '--add', 'later'] });
+    .toMatchObject({ effort: ['--effort=low'], add: [], remaining: ['all', '--add', 'later'] });
   expect(scanOptionStream(['--effort=low', '--usage'], { keepScalarOptions: true }))
     .toMatchObject({ effort: ['--effort=low'], usage: 1, remaining: ['--effort=low', '--usage'] });
 });
@@ -43,11 +43,12 @@ test('rejects missing option values', () => {
   expect(() => scanOptionStream(['--add', '   '])).toThrow(/requires/);
 });
 
-test('rejects missing trailing additions in leading mode', () => {
-  expect(() => scanOptionStream(['all', '--add'], { leadingOnly: true })).toThrow(/requires/);
-});
-
 test('consumes usage before the command in leading mode', () => {
   expect(scanOptionStream(['--usage', 'all'], { leadingOnly: true }))
     .toMatchObject({ usage: 1, remaining: ['all'] });
+});
+
+test('leaves command-suffix additions for command parsing in leading mode', () => {
+  expect(scanOptionStream(['--usage', 'all', '--add', 'note'], { leadingOnly: true }))
+    .toMatchObject({ add: [], remaining: ['all', '--add', 'note'] });
 });

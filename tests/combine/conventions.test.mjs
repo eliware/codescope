@@ -12,7 +12,7 @@ test('includes only package-selected directive records', async () => {
   await writeFile(path.join(specs, 'cli.json'), '{"cli":true}');
   await writeFile(path.join(specs, 'web.json'), '{"web":true}');
   await writeFile(path.join(root, 'project', 'package.json'), JSON.stringify({
-    eliware: { conventions: { apply: ['general', 'cli'] } },
+    eliware: { apply: ['general', 'cli'] },
   }));
   try {
     const result = await combineConventionFiles(path.join(root, 'project'), {
@@ -33,7 +33,7 @@ test('reports missing applied directive records', async () => {
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
   await writeFile(path.join(root, 'project', 'package.json'), JSON.stringify({
-    eliware: { conventions: { apply: ['general', 'cli'] } },
+    eliware: { apply: ['general', 'cli'] },
   }));
   try {
     const result = await combineConventionFiles(path.join(root, 'project'), { conventionsRoot: root });

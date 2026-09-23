@@ -45,13 +45,6 @@ export function scanOptionStream(
     }
 
     remaining.push(...tokens.slice(index));
-    for (let suffix = index; suffix < tokens.length; suffix += 1) {
-      if (tokens[suffix] === '-a' || tokens[suffix] === '--add') {
-        const addition = readAddition(tokens, suffix);
-        add.push(addition.value);
-        suffix = addition.nextIndex;
-      }
-    }
     break;
   }
 

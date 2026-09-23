@@ -5,7 +5,7 @@ the contract for this review. Apply only requirements whose declared
 applicability includes the repository. Do not import requirements from older
 convention versions, unrelated projects, or unsupplied external documents.
 Use only the Convention v8 directive records selected by the reviewed
-package's \`eliware.conventions.apply\` array; canonical requirements remain
+package's \`eliware.apply\` array; canonical requirements remain
 owned by Conventions. For \`@eliware/test\`, all canonical directive records
 may be supplied for validator cross-checking. Inline directive examples clarify the selected records
 but do not create a separate contract authority. Absent applied records are

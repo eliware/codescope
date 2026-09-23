@@ -22,7 +22,7 @@ function mergeLeadingOptions(parsed, values) {
     model: values.model ?? parsed.model,
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
     usage: values.usageCount > 0 || parsed.usage || undefined,
-    add: values.add,
+    add: [...values.add, ...parsed.add],
   };
 }
 

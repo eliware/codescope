@@ -36,4 +36,7 @@ test('preserves merged flags and additions from both sides', () => {
   expect(parseArgs(['--usage', '--add', 'leading', 'all', '--add', 'trailing']))
     .toMatchObject({ command: 'analyze-all', usage: true, add: ['leading', 'trailing'] });
   expect(parseArgs(['--effort=low', 'all', '--dry-run'])).toMatchObject({ command: 'analyze-all', dryRun: true });
+  expect(parseArgs(['--usage', 'all', '--add', 'note']))
+    .toMatchObject({ command: 'analyze-all', usage: true, add: ['note'] });
+  expect(() => parseArgs(['--usage', 'all', '--add'])).toThrow(/requires/);
 });
