@@ -2,8 +2,6 @@ import { getProfileFiles } from './metadata.mjs';
 import { getPromptRouting } from './prompt-routing.mjs';
 import { createProfileCombiner } from './source-selection.mjs';
 import { decorateProfilePrompt } from './tool-decoration.mjs';
-export { PROFILE_NAMES } from './metadata.mjs';
-
 export function getProfile(profile, mode = 'review') {
   const profileFiles = getProfileFiles(profile);
   if (!['review', 'suggest'].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);

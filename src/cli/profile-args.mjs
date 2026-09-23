@@ -1,4 +1,4 @@
-import { PROFILE_NAMES } from '../profiles/index.mjs';
+import { PROFILE_NAMES } from '../profiles/metadata.mjs';
 import { parseCommandOptions } from './options/command-options.mjs';
 
 const validOptions = new Set(['--help', '-h', '--version', '-v', '--usage']);
