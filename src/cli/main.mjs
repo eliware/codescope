@@ -4,18 +4,14 @@ import { parseArgs } from './args.mjs';
 import { dispatchMeta } from './dispatch-meta.mjs';
 import { runReviewCommand } from './review-command.mjs';
 import { runWithCliErrors } from './error-handler.mjs';
+import { createDefaultWriter } from './default-writer.mjs';
 
 export async function main(
   args,
   {
     output = console.log,
     error = console.error,
-    write = (value) => new Promise((resolve, reject) => {
-      process.stdout.write(value, (cause) => {
-        if (cause) reject(cause);
-        else resolve({ written: value.length });
-      });
-    }),
+      write = createDefaultWriter(),
     cwd = process.cwd(),
     review = runReview,
   } = {},

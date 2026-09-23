@@ -1,12 +1,10 @@
 import {
-  API_PRICING,
   calculateUsageCost,
   calculateUsageCostBreakdown,
-  LONG_CONTEXT_INPUT_THRESHOLD,
 } from '../../src/pricing/calculator.mjs';
+import { LONG_CONTEXT_INPUT_THRESHOLD } from '../../src/pricing/thresholds.mjs';
 
-test('exposes current model rates and calculates standard usage', () => {
-  expect(Object.keys(API_PRICING)).toEqual(['gpt-5.6-luna', 'gpt-5.6-terra', 'gpt-5.6-sol']);
+test('calculates standard usage', () => {
   expect(
     calculateUsageCost('gpt-5.6-luna', { input_tokens: 100_000, output_tokens: 1_000_000 }),
   ).toBe(1.22);

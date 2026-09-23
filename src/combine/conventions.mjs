@@ -6,7 +6,6 @@ import { formatSourceSection } from './section-format.mjs';
 import { readBatches } from './batches.mjs';
 import { readConventionApplicability } from './convention/applicability.mjs';
 import { conventionFilesForApplicability, normalizeConventionPath, resolveConventionPath } from './convention/paths.mjs';
-
 export async function combineConventionFiles(
   root,
   {
@@ -69,5 +68,3 @@ export async function combineConventionFiles(
   });
   return '===== Convention v8 JSON =====\n' + sections.join('\n') + '\n';
 }
-
-export { resolveConventionPath, normalizeConventionPath } from './convention/paths.mjs';

@@ -463,7 +463,7 @@
         "tests/review/environment.test.mjs",
         "tests/review/environment-file.test.mjs",
         "tests/review/dotenv-parser.test.mjs",
-        "tests/review/environment.test.mjs"
+        "tests/review/environment/resolve-token-environment.test.mjs"
       ], "commands": ["specs/contracts.json"] }
     },
     {
@@ -532,7 +532,9 @@
       "implementation": { "source": [
         "src/cli/error-handler.mjs",
         "src/cli/errors.mjs",
-        "src/review/failure.mjs",
+        "src/review/setup-failure.mjs",
+        "src/review/provider-failure.mjs",
+        "src/review/incomplete-result.mjs",
         "src/review/session-failure.mjs",
         "src/review/finalize-session.mjs",
         "src/review/cleanup.mjs",
@@ -541,7 +543,8 @@
       "verification": { "tests": [
         "tests/cli/error-handler.test.mjs",
         "tests/cli/errors.test.mjs",
-        "tests/review/failure.test.mjs",
+        "tests/review/setup-failure.test.mjs",
+        "tests/review/provider-failure.test.mjs",
         "tests/review/session-failure.test.mjs",
         "tests/review/finalize-session.test.mjs",
         "tests/review/cleanup.test.mjs",

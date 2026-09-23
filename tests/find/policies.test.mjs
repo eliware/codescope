@@ -1,4 +1,5 @@
-import { isCodeExtension, isIgnoredDirectory, matchesFile } from '../../src/find/policies.mjs';
+import { isIgnoredDirectory } from '../../src/find/policies.mjs';
+import { isCodeExtension, matchesFile } from '../../src/find/extensions.mjs';
 
 test('applies finder extension and test policies', () => {
   expect(isCodeExtension(['.js', '.mjs'])).toBe(true);

@@ -1,4 +1,5 @@
-import { findFiles, findMjsFiles, findMdFiles, findAllFiles } from '../../src/find/files.mjs';
+import { findFiles } from '../../src/find/files.mjs';
+import { findMjsFiles, findMdFiles, findAllFiles } from '../../src/find/file-aliases.mjs';
 import path from 'node:path';
 
 const file = (name) => ({ name, isFile: () => true });
@@ -180,3 +181,4 @@ test('findAllFiles exposes the unrestricted extension strategy', async () => {
     }),
   ).resolves.toEqual([]);
 });
+

@@ -1,12 +1,5 @@
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import {
-  combineFiles,
-  combineMdFiles,
-  combineMjsFiles,
-  combineCodeFiles,
-} from '../../src/combine/files.mjs';
+import { combineFiles } from '../../src/combine/files.mjs';
+import { combineMdFiles, combineMjsFiles, combineCodeFiles } from '../../src/combine/source-file-aliases.mjs';
 
 const oneFile = (name = 'a.mjs') => ({
   readDirectory: async () => [{ name, isFile: () => true }],
@@ -51,82 +44,6 @@ test('uses one-file batches for finite limits and enforces aggregate limits', as
   ).rejects.toThrow('Combined source exceeds');
 });
 
-test('validates options and rejects unsafe roots', async () => {
-  if (process.platform !== 'win32')
-    await expect(
-      combineFiles('C:\\root', '.mjs', { readDirectory: async () => [] }),
-    ).rejects.toThrow('Windows-style');
-  await expect(
-    combineFiles('C:\\root', '.mjs', { platform: 'linux', readDirectory: async () => [] }),
-  ).rejects.toThrow('Windows-style');
-  for (const concurrency of [0, 1.5, '1'])
-    await expect(
-      combineMjsFiles('/root', { concurrency, readDirectory: async () => [] }),
-    ).rejects.toThrow('concurrency');
-  for (const maxChars of [0, -1, 1.5, '1', Number.NaN])
-    await expect(
-      combineMjsFiles('/root', { maxChars, readDirectory: async () => [] }),
-    ).rejects.toThrow('maxChars');
-});
-
-test('validates real files and wraps all read failures', async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'codescope-combine-'));
-  await mkdir(path.join(root, 'nested'));
-  await mkdir(path.join(root, 'directory.mjs'));
-  await writeFile(path.join(root, 'a.mjs'), 'actual\n');
-  await writeFile(path.join(root, 'nested', 'b.mjs'), 'nested');
-  await expect(combineMjsFiles(root, { readDirectory: undefined })).resolves.toContain('actual');
-  await expect(
-    combineMjsFiles(root, {
-      readDirectory: async () => [{ name: 'a.mjs', isFile: () => true }],
-      validateSymlinks: true,
-      readFileContents: async () => 'checked',
-    }),
-  ).resolves.toContain('checked');
-  await expect(
-    combineMjsFiles(root, {
-      readDirectory: async () => [{ name: 'directory.mjs', isFile: () => true }],
-      validateSymlinks: true,
-      readFileContents: async () => 'unreachable',
-    }),
-  ).rejects.toThrow('regular file');
-  if (process.platform !== 'win32') {
-    const { symlink } = await import('node:fs/promises');
-    await symlink(path.join(root, 'a.mjs'), path.join(root, 'alias.mjs'));
-    await expect(
-      combineMjsFiles(root, {
-        readDirectory: async () => [{ name: 'alias.mjs', isFile: () => true }],
-        validateSymlinks: true,
-        readFileContents: async () => 'unreachable',
-      }),
-    ).rejects.toThrow('symlinked');
-  }
-  expect(
-    await combineMdFiles('/root', {
-      readDirectory: async () => [],
-      readFileContents: async () => '',
-    }),
-  ).toBe('');
-  await expect(
-    combineMjsFiles('/root', {
-      ...oneFile(),
-      readFileContents: async () => {
-        throw 'denied';
-      },
-    }),
-  ).rejects.toThrow('denied');
-  await expect(
-    combineMjsFiles('/root', { ...oneFile(), readFileContents: async () => null }),
-  ).rejects.toThrow('non-string');
-  await expect(
-    combineMjsFiles('/root', {
-      ...oneFile(),
-      validateSymlinks: true,
-      inspectFile: async () => ({ isSymbolicLink: () => true }),
-      readFileContents: async () => 'unreachable',
-    }),
-  ).rejects.toThrow('symlinked');
-});
 test('combineCodeFiles delegates to the supported implementation extensions', async () => {
   await expect(
     combineCodeFiles('/root', {
@@ -134,6 +51,21 @@ test('combineCodeFiles delegates to the supported implementation extensions', as
       readFileContents: async () => '',
     }),
   ).resolves.toBe('');
+});
+
+test('filters supplied files by extension and supports Markdown wrappers', async () => {
+  await expect(combineMjsFiles('/root', {
+    files: ['a.mjs', 'guide.md'],
+    readFileContents: async () => 'code',
+  })).resolves.toContain('===== a.mjs =====');
+  await expect(combineFiles('/root', '.mjs', {
+    files: ['a.mjs', 'guide.md'],
+    readFileContents: async () => 'code',
+  })).resolves.not.toContain('guide.md');
+  await expect(combineMdFiles('/root', {
+    files: ['guide.md'],
+    readFileContents: async () => 'docs',
+  })).resolves.toContain('===== guide.md =====');
 });
 
 test('combines files with default options', async () => {

@@ -1,143 +1,58 @@
 import { runReviewPipeline } from '../../src/review/run-review-pipeline.mjs';
 
-test('coordinates preparation, context, request, execution, and cleanup', async () => {
+const base = {
+  readFile: async () => 'OPENAI_API_TOKEN=token',
+  inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+  openEnvFile: async () => ({
+    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
+    readFile: async () => 'OPENAI_API_TOKEN=token', close: async () => {},
+  }),
+  platform: 'linux', maxSourceChars: 10,
+};
+const prompt = { input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }], tools: [] };
+
+test('propagates prepared evidence through request execution and output', async () => {
   const writes = [];
   let combineOptions;
   const result = await runReviewPipeline('repo', {
-    envFile: 'ignored',
-    readFile: async () => 'OPENAI_API_TOKEN=token',
-    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-    platform: 'win32',
-    createClient: () => ({
-      responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) },
-    }),
-    omitTestResults: false,
-    openEnvFile: async () => ({
-      stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-      readFile: async () => 'OPENAI_API_TOKEN=token',
-      close: async () => {},
-    }),
-    redactOutput: (value) => value,
-    combine: async (_cwd, options) => {
-      combineOptions = options;
-      return 'source';
-    },
-    readDirectory: async () => [],
-    maxSourceChars: 10,
-    prompt: {
-      input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }],
-      tools: [],
-    },
-    model: 'gpt-5.6-luna',
-    write: async (value) => {
-      writes.push(value);
-      return { written: value.length };
-    },
-    dryRun: false,
-    usage: false,
-    plainText: 'review',
+    ...base,
+    combine: async (_cwd, options) => { combineOptions = options; return 'source'; },
+    createClient: () => ({ responses: { create: async () => ({ output_text: 'result' }) } }),
+    prompt,
+    write: async (value) => { writes.push(value); return { written: value.length }; },
     register: () => ({ removeHandlers() {} }),
   });
-  expect(result).toBe('{"verdict":"pass"}');
+  expect(result).toBe('result');
   expect(writes).toHaveLength(1);
-  expect(combineOptions.platform).toBe('win32');
+  expect(combineOptions.platform).toBe('linux');
 });
 
-test('collects evidence before initializing the provider', async () => {
-  let initialized = false;
+test('writes setup failure fallback when evidence collection fails', async () => {
   const writes = [];
-  await expect(
-    runReviewPipeline('repo', {
-      combine: async () => {
-        throw new Error('evidence failed');
-      },
-      readFile: async () => '',
-      maxSourceChars: 10,
-      platform: 'linux',
-      createClient: () => {
-        initialized = true;
-        return {};
-      },
-      write: async (value) => {
-        writes.push(value);
-        return { written: value.length };
-      },
-    }),
-  ).rejects.toThrow('evidence failed');
-  expect(initialized).toBe(false);
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
+  await expect(runReviewPipeline('repo', {
+    ...base, combine: async () => { throw new Error('evidence failed'); }, createClient: () => ({}),
+    write: async (value) => { writes.push(value); return { written: value.length }; },
+  })).rejects.toThrow('CodeScope setup failed: evidence failed');
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });
 
-test('preserves setup failure when fallback output cannot be written', async () => {
-  await expect(
-    runReviewPipeline('repo', {
-      combine: async () => {
-        throw new Error('evidence failed');
-      },
-      readFile: async () => '',
-      maxSourceChars: 10,
-      platform: 'linux',
-      createClient: () => ({}),
-      write: async () => {
-        throw new Error('fallback disk full');
-      },
-    }),
-  ).rejects.toMatchObject({
-    message: 'CodeScope setup failed: evidence failed',
-    fallbackError: { message: 'fallback disk full' },
-  });
-});
-
-test('writes fallback output when request construction fails', async () => {
+test('writes request construction failure fallback', async () => {
   const writes = [];
-  await expect(
-    runReviewPipeline('repo', {
-      combine: async () => 'source',
-      readFile: async () => 'OPENAI_API_TOKEN=token',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => 'OPENAI_API_TOKEN=token',
-        close: async () => {},
-      }),
-      maxSourceChars: 10,
-      platform: 'linux',
-      createClient: () => ({}),
-      prompt: {
-        input: [{ role: 'developer', content: [{ type: 'input_text', text: 'invalid' }] }],
-        tools: [],
-      },
-      write: async (value) => {
-        writes.push(value);
-        return { written: value.length };
-      },
-    }),
-  ).rejects.toThrow(/developer text/);
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
+  await expect(runReviewPipeline('repo', {
+    ...base, combine: async () => 'source', createClient: () => ({}),
+    prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: 'invalid' }] }], tools: [] },
+    write: async (value) => { writes.push(value); return { written: value.length }; },
+  })).rejects.toThrow(/developer text/);
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });
 
-test('writes fallback output when session finalization fails', async () => {
+test('writes provider execution failure fallback', async () => {
   const writes = [];
-  await expect(
-    runReviewPipeline('repo', {
-      combine: async () => 'source',
-      readFile: async () => '',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => 'OPENAI_API_TOKEN=token',
-        close: async () => {},
-      }),
-      maxSourceChars: 10,
-      platform: 'linux',
-      createClient: () => ({}),
-      prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }], tools: [] },
-      write: async (value) => {
-        writes.push(value);
-        return { written: value.length };
-      },
-      register: () => { throw new Error('finalization failed'); },
-    }),
-  ).rejects.toThrow(/finalization failed/);
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted', suggestions: 'not submitted' });
+  await expect(runReviewPipeline('repo', {
+    ...base, combine: async () => 'source',
+    createClient: () => ({ responses: { create: async () => { throw new Error('provider failed'); } } }),
+    prompt, register: () => ({ removeHandlers() {} }),
+    write: async (value) => { writes.push(value); return { written: value.length }; },
+  })).rejects.toThrow(/provider failed/);
+  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });

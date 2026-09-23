@@ -1,177 +1,39 @@
 import { runReviewSession } from '../../src/review/run-session.mjs';
 
-test('runs a plain-text provider session and writes the result', async () => {
-  const writes = [];
-  const result = await runReviewSession({
-    client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
-    request: { model: 'gpt-5.6-luna' },
+const request = { model: 'gpt-5.6-luna', tool_choice: { name: 'submit_review' } };
+const write = async (value) => ({ written: value.length });
+
+test('routes a provider session through the output boundary', async () => {
+  await expect(runReviewSession({
+    client: { responses: { create: async () => ({
+      output: [{ type: 'function_call', name: 'submit_review', arguments: '{}' }],
+    }) } },
+    request,
     signal: new AbortController().signal,
-    write: async (value) => {
-      writes.push(value);
-      return { written: value.length };
-    },
+    write,
     dryRun: false,
     usage: false,
-    plainText: 'review',
-  });
-  expect(result.output).toBe('{"verdict":"pass"}');
-  expect(writes[0]).toBe('{"verdict":"pass"}');
-  expect(writes).toHaveLength(1);
+  })).resolves.toMatchObject({ kind: 'review', output: '{}' });
 });
 
-const reviewRequest = { model: 'gpt-5.6-luna', tools: [], tool_choice: undefined };
-
-test('parses a normal review tool response', async () => {
-  const requests = [];
-  const result = await runReviewSession({
-    client: {
-      responses: {
-        create: async (request) => {
-          requests.push(request);
-          return {
-          output: [
-            {
-              type: 'function_call',
-              name: 'submit_review',
-              arguments: '{"verdict":"pass","issues":{}}',
-            },
-          ],
-          };
-        },
-      },
-    },
-    request: { model: 'gpt-5.6-luna', tool_choice: { name: 'submit_review' } },
+test('routes dry-run requests to the dry session', async () => {
+  await expect(runReviewSession({
+    client: { responses: { create: async () => ({ output_text: 'unused' }), inputTokens: { count: async () => ({ input_tokens: 1 }) } } },
+    request,
     signal: new AbortController().signal,
-    write: async (value) => {
-      expect(JSON.parse(value)).toEqual({ verdict: 'pass', issues: {} });
-      return { written: value.length };
-    },
+    write,
+    dryRun: true,
+    usage: false,
+  })).resolves.toMatchObject({ kind: 'dry-run' });
+});
+
+test('converts provider failures through the session failure boundary', async () => {
+  await expect(runReviewSession({
+    client: { responses: { create: async () => { throw new Error('provider failed'); } } },
+    request,
+    signal: new AbortController().signal,
+    write,
     dryRun: false,
     usage: false,
-  });
-  expect(result.output).toBe('{"verdict":"pass","issues":{}}');
-  expect(requests[0].tool_choice).toEqual({ name: 'submit_review' });
-});
-
-test('preserves malformed tool arguments as a blocked raw response', async () => {
-  const result = await runReviewSession({
-    client: {
-      responses: {
-        create: async () => ({
-          output: [{ type: 'function_call', name: 'submit_review', arguments: '{' }],
-        }),
-      },
-    },
-    request: reviewRequest,
-    signal: new AbortController().signal,
-    write: async (value) => ({ written: value.length }),
-    dryRun: false,
-    usage: false,
-  });
-  expect(result.output).toBe('{');
-});
-
-test('preserves an existing blocked verdict', async () => {
-  const result = await runReviewSession({
-    client: {
-      responses: {
-        create: async () => ({
-          output: [
-            {
-              type: 'function_call',
-              name: 'submit_review',
-              arguments: '{"verdict":"block","issues":{}}',
-            },
-          ],
-        }),
-      },
-    },
-    request: reviewRequest,
-    signal: new AbortController().signal,
-    write: async (value) => ({ written: value.length }),
-    dryRun: false,
-    usage: false,
-  });
-  expect(result.output).toBe('{"verdict":"block","issues":{}}');
-});
-
-test('returns plain JSON without usage when usage output is disabled', async () => {
-  await expect(
-    runReviewSession({
-      client: { responses: { create: async () => ({ output_text: '{"ok":true}' }) } },
-      request: reviewRequest,
-      signal: new AbortController().signal,
-      write: async (value) => ({ written: value.length }),
-      dryRun: false,
-      usage: false,
-      plainText: 'summarize',
-    }),
-  ).resolves.toMatchObject({ kind: 'prompt', output: '{"ok":true}' });
-});
-
-test('preserves an untyped output write failure', async () => {
-  await expect(
-    runReviewSession({
-      client: {
-        responses: {
-          create: async () => ({ output_text: '{"verdict":"pass"}' }),
-        },
-      },
-      request: reviewRequest,
-      signal: new AbortController().signal,
-      write: async () => {
-        throw new Error('output failed');
-      },
-      dryRun: false,
-      usage: false,
-      plainText: 'summarize',
-    }),
-  ).rejects.toThrow(/output failed/);
-});
-
-test('preserves a received response when response selection fails', async () => {
-  const response = { output: [{ type: 'function_call', name: 'other', arguments: '{}' }] };
-  await expect(
-    runReviewSession({
-      client: { responses: { create: async () => response } },
-      request: { model: 'gpt-5.6-luna', tool_choice: { name: 'review' } },
-      signal: new AbortController().signal,
-      write: async (value) => ({ written: value.length }),
-      dryRun: false,
-      usage: false,
-    }),
-  ).rejects.toMatchObject({ result: { response: { response_error: expect.any(String) } } });
-});
-
-test('includes usage without test execution evidence', async () => {
-  const base = {
-    client: {
-      responses: {
-        create: async () => ({ output_text: '{"verdict":"pass"}', usage: { input_tokens: 1 } }),
-      },
-    },
-    request: { model: 'gpt-5.6-luna' },
-    signal: new AbortController().signal,
-    write: async (value) => ({ written: value.length }),
-    dryRun: false,
-    plainText: 'review',
-    usage: true,
-  };
-  await expect(runReviewSession(base)).resolves.toMatchObject({
-    kind: 'prompt',
-    output: '{"verdict":"pass"}',
-  });
-  await expect(
-    runReviewSession({
-      ...base,
-      client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
-    }),
-  ).resolves.toMatchObject({ kind: 'prompt', output: '{"verdict":"pass"}' });
-  await expect(
-    runReviewSession({
-      ...base,
-      client: { responses: { create: async () => ({ output_text: '{"verdict":"pass"}' }) } },
-      usage: false,
-    }),
-  ).resolves.toMatchObject({ kind: 'prompt', output: '{"verdict":"pass"}' });
+  })).rejects.toMatchObject({ message: 'OpenAI request failed: provider failed' });
 });

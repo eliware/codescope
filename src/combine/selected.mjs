@@ -1,7 +1,7 @@
-import { combineCodeFiles, combineMdFiles } from './files.mjs';
+import { combineCodeFiles, combineMdFiles } from './source-file-aliases.mjs';
 import { collectMetadataSections } from './metadata-sections.mjs';
 import { collectInventorySection } from './inventory-section.mjs';
-import { findAllFiles } from '../find/files.mjs';
+import { findAllFiles } from '../find/file-aliases.mjs';
 import { joinCombinedSections } from './combined-source.mjs';
 import { validateCombineOptions } from './policies.mjs';
 

@@ -2,7 +2,6 @@ import { addBatchLength, assertWithinLimit, getBatchSize } from '../../src/combi
 
 test('keeps reads bounded by configured concurrency for every limit mode', () => {
   expect(getBatchSize(4)).toBe(4);
-  expect(getBatchSize(4)).toBe(4);
 });
 
 test('accounts for separators between sections and batches', () => {

@@ -14,3 +14,16 @@ test('normalizes safe numeric and bigint identity components equally', () => {
 test('keeps unsafe numeric identity values explicitly typed', () => {
   expect(fileIdentity('file', { dev: Number.MAX_SAFE_INTEGER + 2, ino: 2 })).toContain('number:');
 });
+
+test('rejects missing and unsafe symbolic-link metadata', () => {
+  expect(() => assertNotSymbolicLink('.env', {})).toThrow(/symbolic-link metadata/);
+  expect(() => assertNotSymbolicLink('.env', { isSymbolicLink: () => true })).toThrow(/symbolic link/);
+  expect(() => assertRegularFile('.env', {})).toThrow(/regular-file metadata/);
+  expect(() => assertRegularFile('.env', { isFile: () => false })).toThrow(/regular file/);
+});
+
+test('rejects missing or invalid file identity', () => {
+  expect(() => fileIdentity('file')).toThrow(/stable file identity/);
+  expect(() => fileIdentity('file', {})).toThrow(/stable file identity/);
+  expect(() => fileIdentity('file', { dev: 1, ino: '2' })).toThrow(/stable file identity/);
+});

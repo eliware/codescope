@@ -6,3 +6,7 @@ test('normalizes scalar and repeatable options', () => {
     add: ['note'],
   });
 });
+
+test('rejects duplicate dry-run options', () => {
+  expect(() => parseOptionValues(['--dry-run', '--dry-run'])).toThrow(/Only one --dry-run/);
+});

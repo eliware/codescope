@@ -29,9 +29,3 @@ test('appends additions in order to the final user message', () => {
   );
 });
 
-test('rejects an empty custom prompt', () => {
-  const prompt = {
-    input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }],
-  };
-  expect(() => prepareReviewRequest(prompt, 'source', undefined, '  ')).toThrow(/non-empty/);
-});

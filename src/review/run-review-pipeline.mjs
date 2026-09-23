@@ -1,4 +1,4 @@
-import { createSetupFailure } from './failure.mjs';
+import { createSetupFailure } from './setup-failure.mjs';
 import { collectAndPrepare } from './pipeline/collect-and-prepare.mjs';
 import { createRequest } from './pipeline/create-request.mjs';
 import { executeRequest } from './pipeline/execute-request.mjs';
@@ -21,7 +21,6 @@ export async function runReviewPipeline(cwd, options) {
   try {
     return await executeRequest({ client: prepared.client, request, controller, options });
   } catch (cause) {
-    if (cause?.result) throw cause;
     return writePhaseFailure({ cause, write: options.write });
   }
 }

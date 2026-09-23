@@ -49,6 +49,10 @@ test('preserves an explicitly empty raw output text', () => {
   expect(responseText({ output_text: '' }, {})).toBe('');
 });
 
+test('rejects a response without usable output', () => {
+  expect(() => responseText({ output: [] }, {})).toThrow(/usable output/);
+});
+
 test('propagates a throwing provider output accessor for safe fallback handling', () => {
   const response = {};
   Object.defineProperty(response, 'output', {

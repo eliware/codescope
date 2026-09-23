@@ -1,4 +1,4 @@
-import { combineCodeFiles, combineMdFiles } from './files.mjs';
+import { combineCodeFiles, combineMdFiles } from './source-file-aliases.mjs';
 
 export async function collectSourceSections(root, options, inventory) {
   return {

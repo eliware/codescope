@@ -1,7 +1,8 @@
-import { findAllFiles } from '../find/files.mjs';
+import { findAllFiles } from '../find/file-aliases.mjs';
 import { collectMetadataSections } from './metadata-sections.mjs';
 import { collectSourceSections } from './source-sections.mjs';
 import { collectInventorySection } from './inventory-section.mjs';
+import { createReadCache } from './read-cache.mjs';
 
 export async function collectAllSections(root, options = {}) {
   const inventory = await findAllFiles(root, options);
@@ -17,19 +18,3 @@ export async function collectAllSections(root, options = {}) {
   };
 }
 
-export function createReadCache(readFileContents) {
-  if (!readFileContents) return undefined;
-  const cache = new Map();
-  return async (filePath, encoding) => {
-    const key = `${filePath}\u0000${encoding ?? ''}`;
-    if (cache.has(key)) return cache.get(key);
-    const pending = Promise.resolve(readFileContents(filePath, encoding));
-    cache.set(key, pending);
-    try {
-      return await pending;
-    } catch (cause) {
-      cache.delete(key);
-      throw cause;
-    }
-  };
-}

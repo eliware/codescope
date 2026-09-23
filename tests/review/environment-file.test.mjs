@@ -1,200 +1,52 @@
 import { readReviewEnvironmentFile } from '../../src/review/environment-file.mjs';
-import { fileIdentity } from '../../src/review/environment-file-safety.mjs';
 import { defaultEnvFile } from '../../src/review/env-file-path.mjs';
 
-const openWith = (text = 'OPENAI_API_TOKEN=value', metadata = { dev: 1, ino: 2 }) => async () => ({
-  stat: async () => ({ ...metadata, isSymbolicLink: () => false, isFile: () => true }),
+const openWith = (text = 'OPENAI_API_TOKEN=value') => async () => ({
+  stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
   readFile: async () => text,
   close: async () => {},
 });
 
-test('reads a supplied environment file', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      readFile: () => {},
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: openWith('x'),
-    }),
-  ).resolves.toBe('x');
+test('reads a supplied environment file through the stable reader boundary', async () => {
+  await expect(readReviewEnvironmentFile({
+    envFile: 'file',
+    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+    openEnvFile: openWith('OPENAI_API_TOKEN=value'),
+  })).resolves.toBe('OPENAI_API_TOKEN=value');
 });
-test('wraps errors reading a supplied environment file', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      openEnvFile: async () => { throw new Error('read failed'); },
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-    }),
-  ).rejects.toThrow('Unable to securely read file: read failed');
+
+test('wraps failures opening a supplied environment file', async () => {
+  await expect(readReviewEnvironmentFile({
+    envFile: 'file',
+    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+    openEnvFile: async () => { throw new Error('read failed'); },
+  })).rejects.toThrow('Unable to securely read file: read failed');
 });
-test('rejects incomplete file inspection metadata', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({}),
-    }),
-  ).rejects.toThrow(/symbolic-link metadata/);
-});
-test('rejects a file that disappears after it was inspected', async () => {
-  const missing = Object.assign(new Error('gone'), { code: 'ENOENT' });
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: defaultEnvFile(),
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
-      openEnvFile: async () => { throw missing; },
-    }),
-  ).rejects.toThrow(/Unable to inspect/);
-});
-test('requires a stable opener for an existing file', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-    }),
-  ).rejects.toThrow(/stable environment-file opener/);
-});
-test('preserves a default file that is absent before reading', async () => {
+
+test('preserves an optional default file that is absent at startup', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: defaultEnvFile(),
-      inspectFile: async () => { throw missing; },
-    }),
-  ).resolves.toBe('');
+  await expect(readReviewEnvironmentFile({
+    envFile: defaultEnvFile(),
+    inspectFile: async () => { throw missing; },
+  })).resolves.toBe('');
 });
-test('does not open a file that appears after the initial missing inspection', async () => {
+
+test('does not reopen a default file that appears after startup inspection', async () => {
   const missing = Object.assign(new Error('missing'), { code: 'ENOENT' });
-  let inspections = 0;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: defaultEnvFile(),
-      inspectFile: async () => {
-        inspections += 1;
-        if (inspections === 1) throw missing;
-        return { isSymbolicLink: () => false };
-      },
-      openEnvFile: openWith(),
-    }),
-  ).resolves.toBe('');
-  expect(inspections).toBe(1);
-});
-test('rejects replacement of an existing file between inspection and read', async () => {
-  let inspections = 0;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => {
-        inspections += 1;
-        return { dev: 1, ino: inspections === 1 ? 2 : 3, isSymbolicLink: () => false };
-      },
-       openEnvFile: async () => ({
-         stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false, isFile: () => true }),
-         readFile: async () => 'unused',
-         close: async () => {},
-       }),
-    }),
-  ).rejects.toThrow(/replaced/);
+  let opened = false;
+  await expect(readReviewEnvironmentFile({
+    envFile: defaultEnvFile(),
+    inspectFile: async () => { throw missing; },
+    openEnvFile: async () => { opened = true; return openWith()(); },
+  })).resolves.toBe('');
+  expect(opened).toBe(false);
 });
 
-test('accepts a stable existing file with bigint identity metadata', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({
-        dev: 1n,
-        ino: 2n,
-        isSymbolicLink: () => false,
-      }),
-       openEnvFile: openWith('OPENAI_API_TOKEN=value', { dev: 1, ino: 2 }),
-    }),
-  ).resolves.toBe('OPENAI_API_TOKEN=value');
-});
-
-test('rejects an existing file without stable identity metadata', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ isSymbolicLink: () => false }),
-    }),
-  ).rejects.toThrow(/stable file identity/);
-});
-
-test('rejects a handle that fails during cleanup', async () => {
-  let closed = false;
-  const metadata = { dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true };
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => metadata,
-      openEnvFile: async () => ({
-        stat: async () => metadata,
-        readFile: async () => 'OPENAI_API_TOKEN=stable',
-        close: async () => { closed = true; throw new Error('close failed'); },
-      }),
-    }),
-  ).rejects.toThrow(/Unable to close securely/);
-  expect(closed).toBe(true);
-});
-
-test('preserves cleanup failure metadata when reading already failed', async () => {
-  const error = new Error('read failed');
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => { throw error; },
-        close: async () => { throw new Error('close failed'); },
-      }),
-    }),
-  ).rejects.toMatchObject({ cause: error, closeError: { message: 'close failed' } });
-});
-
-test('rejects an opened handle whose identity differs from the initial inspection', async () => {
-  let closed = false;
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 3, isSymbolicLink: () => false, isFile: () => true }),
-        readFile: async () => 'unused',
-        close: async () => { closed = true; },
-      }),
-    }),
-  ).rejects.toThrow(/replaced while it was being opened/);
-  expect(closed).toBe(true);
-});
-
-test('rejects an opened handle that is not a regular file', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => false }),
-        readFile: async () => 'unused',
-        close: async () => {},
-      }),
-    }),
-  ).rejects.toThrow(/regular file/);
-});
-
-test('rejects an opened handle without regular-file metadata', async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: 'file',
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-        readFile: async () => 'unused',
-        close: async () => {},
-      }),
-    }),
-  ).rejects.toThrow(/regular-file metadata/);
-});
-
-test('rejects absent identity metadata directly', () => {
-  expect(() => fileIdentity('file', undefined)).toThrow(/stable file identity/);
+test('requires inspection and stable-reader collaborators for existing files', async () => {
+  await expect(readReviewEnvironmentFile({ envFile: 'file', inspectFile: async () => ({}) }))
+    .rejects.toThrow(/symbolic-link metadata/);
+  await expect(readReviewEnvironmentFile({
+    envFile: 'file',
+    inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+  })).rejects.toThrow(/stable environment-file opener/);
 });

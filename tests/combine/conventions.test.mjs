@@ -36,19 +36,14 @@ test('reports unavailable sibling checkout', async () => {
   });
   expect(result).toContain('Convention checkout not supplied');
 });
-test('uses default convention options when omitted', async () => { const root = await fsTemp('codescope-conventions-defaults-'); try { await expect(combineConventionFiles(root)).resolves.toContain('Convention checkout not supplied'); } finally { await rm(root, { recursive: true, force: true }); } });
-test('rejects invalid read concurrency before discovery', async () => { await expect(combineConventionFiles('repo', { concurrency: 0 })).rejects.toThrow(/positive integer/); });
-test('uses Windows path semantics when requested', async () => {
-  await expect(combineConventionFiles('C:\\project', {
-    conventionsRoot: 'C:\\missing-conventions',
-    platform: 'win32',
-  })).resolves.toContain('Convention checkout not supplied');
-});
 test('uses POSIX path semantics when requested', async () => {
   await expect(combineConventionFiles('/project', {
-    conventionsRoot: '/missing-conventions',
-    platform: 'linux',
+    conventionsRoot: '/missing-conventions', platform: 'linux',
   })).resolves.toContain('Convention checkout not supplied');
+  await expect(combineConventionFiles('/project')).resolves.toContain('Convention checkout not supplied');
+});
+test('rejects invalid read concurrency before discovery', async () => {
+  await expect(combineConventionFiles('repo', { concurrency: 0 })).rejects.toThrow(/positive integer/);
 });
 test('reports unavailable applicability metadata', async () => {
   const root = await fsTemp('codescope-conventions-');
@@ -196,4 +191,6 @@ test('uses the injected convention manifest reader for virtual roots', async () 
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }
-async function writeManifest(specs, repositoryTypes) { await writeFile(path.join(specs, 'conventions.json'), JSON.stringify({ repositoryTypes })); }
+async function writeManifest(specs, repositoryTypes) {
+  await writeFile(path.join(specs, 'conventions.json'), JSON.stringify({ repositoryTypes }));
+}
