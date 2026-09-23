@@ -4,7 +4,7 @@ import { formatSourceSection } from './section-format.mjs';
 import { readSourceFile } from './read-file.mjs';
 
 export async function combinePackageJson(root, options = {}) {
-    const readFileContents = options.readFileContents ?? readFile;
+  const readFileContents = options.readFileContents ?? readFile;
   const inspectFile = options.inspectFile ?? lstat;
   const pathApi = options.platform === 'win32' ? path.win32 : path.posix;
   const packagePath = pathApi.join(root, 'package.json');

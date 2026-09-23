@@ -21,7 +21,7 @@ The current release notes below document user-visible changes for CodeScope.
   focused coverage for the new file-selection behavior.
 - Clarified one-shot evidence boundaries: CodeScope reviews supplied material
   but does not run commands or infer unsupplied CI, release, or registry state.
-- Updated the development test dependency to `@eliware/test` 4.0.0 and
+- Updated the development test dependency to `@eliware/test` 6.0.1 and
   restored 100×4 validation with the compatible project test configuration.
 
 ### Fixed

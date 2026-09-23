@@ -43,7 +43,7 @@ Repository: https://github.com/eliware/codescope.
 
 ## Requirements
 
-- Node.js 26 or newer
+- Node.js 26.x
 - npm
 
 ## Setup
