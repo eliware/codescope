@@ -140,10 +140,8 @@
         "src/cli/profile-args.mjs",
         "src/cli/prompt-args.mjs",
         "src/cli/prompt-partition.mjs",
-        "src/cli/dispatch-meta.mjs",
         "src/cli/options/prompt-values.mjs",
-        "src/cli/prompt-options.mjs",
-        "src/prompts/append-user-message.mjs"
+        "src/cli/prompt-options.mjs"
       ] },
       "verification": { "tests": [
         "tests/cli/args/command.test.mjs",
@@ -151,8 +149,7 @@
         "tests/cli/profile-args.test.mjs",
         "tests/cli/prompt-args.test.mjs",
         "tests/cli/prompt-partition.test.mjs",
-        "tests/cli/options/prompt-values.test.mjs",
-        "tests/prompts/append-user-message.test.mjs"
+        "tests/cli/options/prompt-values.test.mjs"
       ], "commands": ["specs/contracts.json"] }
     },
     {
@@ -186,6 +183,7 @@
         "src/profiles/profile-definitions.mjs",
         "src/profiles/index.mjs",
         "src/profiles/prompt-routing.mjs",
+        "src/profiles/prompt-sources.mjs",
         "src/profiles/source-selection.mjs",
         "src/profiles/tool-decoration.mjs"
       ] },
@@ -193,6 +191,7 @@
         "tests/profiles/profile-definitions.test.mjs",
         "tests/profiles/index.test.mjs",
         "tests/profiles/prompt-routing.test.mjs",
+        "tests/profiles/prompt-sources.test.mjs",
         "tests/profiles/source-selection.test.mjs",
         "tests/profiles/tool-decoration.test.mjs"
       ], "commands": ["specs/contracts.json"] }
@@ -580,47 +579,6 @@
         "tests/review/cleanup.test.mjs",
         "tests/review/signals.test.mjs"
       ], "commands": ["specs/contracts.json"] }
-    },
-    {
-      "id": "C-19.12",
-      "title": "Representative module and verification boundaries",
-      "scope": "Representative evidence for cohesive module responsibilities, shared dependencies, mirrored tests, and verification boundaries.",
-      "directiveIds": ["E-19", "A-19.7"],
-      "contract": {
-        "purpose": "Define representative CodeScope module boundaries and the evidence used to verify those boundaries.",
-        "inputs": "Production modules, package metadata, and verification tooling.",
-        "outputs": "Maintainable native ESM modules with traceable, comprehensive verification.",
-        "errors": ["Coverage, lint, formatting, and diff failures remain verification failures rather than contract redefinitions."],
-        "ordering": ["Implement contract behavior before relying on verification evidence."],
-        "invariants": ["Implementation and tests are evidence only; normative contract changes occur in specs."],
-        "boundaries": { "owns": ["CodeScope contract references"], "doesNotOwn": ["Conventions or operations contracts"] }
-      },
-      "dos": [
-        "Keep production modules cohesive with one meaningful responsibility and explicit orchestration at composition boundaries.",
-        "Use native ESM and Node process APIs with argument arrays rather than shell-specific command construction.",
-        "Use the maintained shared Eliware packages for their owned capabilities and keep public exports and package metadata synchronized.",
-    "Mirror source modules with tests under tests/ and use tests as evidence that the normative contracts are fulfilled.",
-    "Assume the full repository test suite passes unless concrete failing-test evidence is supplied; review test files for contract coverage without requiring execution output.",
-        "Maintain full in-scope statement, branch, function, and line coverage without Istanbul ignores outside pure barrels."
-      ],
-      "donts": [
-    "Do not make tests the source of contract truth.",
-    "Do not report missing test execution output or infer a test failure that was not supplied.",
-        "Do not hide independent responsibilities in monolithic modules or comments.",
-        "Do not add shell-specific pipelines, platform-specific executable assumptions, or duplicate maintained-library functionality without a documented exception."
-      ],
-      "implementation": { "source": [
-        "src/profiles/profile-definitions.mjs",
-        "src/cli/options/scan-option-stream.mjs",
-        "src/combine/all-sections.mjs",
-        "src/review/client.mjs"
-      ] },
-      "verification": { "tests": [
-        "tests/profiles/profile-definitions.test.mjs",
-        "tests/cli/options/scan-option-stream.test.mjs",
-        "tests/combine/all-sections.test.mjs",
-        "tests/review/client.test.mjs"
-      ], "commands": ["eliware-test", "git diff --check"] }
     }
   ]
 }

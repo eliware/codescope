@@ -10,3 +10,11 @@ export function writePhaseFailure({ cause, write, createFailure, fallbackCause, 
     fallbackCause,
   });
 }
+
+export async function runReviewPhase(action, failureOptions) {
+  try {
+    return await action();
+  } catch (cause) {
+    return writePhaseFailure({ ...failureOptions, cause });
+  }
+}
