@@ -45,7 +45,7 @@
   "scripts": {
     "test": "eliware-test",
     "lint": "eliware-test --lint",
-    "audit": "eliware-test --audit",
+    "audit": "npm audit",
     "pack": "eliware-test --pack",
     "format": "eliware-test --format",
     "format:check": "eliware-test --format-check",

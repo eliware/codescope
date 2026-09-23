@@ -18,7 +18,7 @@ export async function combineJsonFiles(
     platform = process.platform,
   } = {},
 ) {
-  const files = (await findFiles(root, '.json', { readDirectory })).filter(isIncludedJson);
+  const files = (await findFiles(root, '.json', { readDirectory, platform })).filter(isIncludedJson);
   const pathApi = platform === 'win32' ? path.win32 : path.posix;
   const rootPath = pathApi.resolve(root);
   const sections = await readBatches(files, {

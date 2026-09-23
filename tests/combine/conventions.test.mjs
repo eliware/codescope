@@ -196,6 +196,4 @@ test('uses the injected convention manifest reader for virtual roots', async () 
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }
-async function writeManifest(specs, repositoryTypes) {
-  await writeFile(path.join(specs, 'conventions.json'), JSON.stringify({ repositoryTypes }));
-}
+async function writeManifest(specs, repositoryTypes) { await writeFile(path.join(specs, 'conventions.json'), JSON.stringify({ repositoryTypes })); }
