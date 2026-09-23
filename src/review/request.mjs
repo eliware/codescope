@@ -1,4 +1,4 @@
-import { defaultDeveloperText } from '../prompt.mjs';
+import { defaultDeveloperText } from '../prompts/guidance.mjs';
 import { validatePromptShape } from './prompt-shape.mjs';
 
 const PLACEHOLDER = '<combine-mjs here>';

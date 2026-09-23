@@ -1,26 +1,19 @@
 import {
-  createAnalysisPrompt,
   profilePrompt,
   allPrompt,
   combinedAllPrompt,
   refactorPrompt,
-  architecturePrompt,
   releasePrompt,
   conventionsPrompt,
-  newFeaturesPrompt,
-  securityPrompt,
-  performancePrompt,
-  reliabilityPrompt,
-  apiDesignPrompt,
-  dependenciesPrompt,
-  observabilityPrompt,
-  accessibilityPrompt,
-  quickWinsPrompt,
-  prioritizePrompt,
-  priorityPrompt,
-  createSuggestionTool,
-  REVIEW_CATEGORIES,
-} from '../prompt.mjs';
+} from '../prompts/public/review.mjs';
+import { createAnalysisPrompt, priorityPrompt } from '../prompts/public/analysis.mjs';
+import {
+  architecturePrompt, newFeaturesPrompt, securityPrompt, performancePrompt,
+  reliabilityPrompt, apiDesignPrompt, dependenciesPrompt, observabilityPrompt,
+  accessibilityPrompt, quickWinsPrompt, prioritizePrompt,
+} from '../prompts/public/suggestions.mjs';
+import { createSuggestionTool } from '../prompts/suggestion-tool.mjs';
+import { REVIEW_CATEGORIES } from '../prompts/categories.mjs';
 
 const prompts = {
   conventions: conventionsPrompt,

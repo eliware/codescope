@@ -1,5 +1,5 @@
 import { prepareRequest } from '../../src/review/request.mjs';
-import { defaultDeveloperText } from '../../src/prompt.mjs';
+import { defaultDeveloperText } from '../../src/prompts/guidance.mjs';
 
 const message = (content = [{ type: 'input_text', text: '<combine-mjs here>' }]) => ({
   role: 'developer',

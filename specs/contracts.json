@@ -354,13 +354,13 @@
       ],
       "implementation": { "source": [
         "src/prompts",
-        "src/prompt.mjs",
+        "src/prompts/public/review.mjs",
         "src/review/create-session.mjs",
         "src/review/request.mjs"
       ] },
       "verification": { "tests": [
         "tests/prompts",
-        "tests/prompt.test.mjs",
+        "tests/prompts/public",
         "tests/review/create-session.test.mjs",
         "tests/review/request.test.mjs"
       ], "commands": ["specs/contracts.json"] }

@@ -1,4 +1,6 @@
-import { createReviewTool, createSuggestionTool, SUGGESTION_CATEGORIES } from '../prompt.mjs';
+import { createReviewTool } from '../prompts/review-tool.mjs';
+import { createSuggestionTool } from '../prompts/suggestion-tool.mjs';
+import { SUGGESTION_CATEGORIES } from '../prompts/categories.mjs';
 
 export function decorateProfilePrompt(promptSource, mode, suggestionCategories) {
   const prompt = structuredClone(promptSource);
