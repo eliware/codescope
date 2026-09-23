@@ -6,6 +6,7 @@ import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './
 import { classifyEntry } from './entry-types.mjs';
 import { readDirectoryEntries } from './read-entries.mjs';
 import { walkDirectories } from './walk.mjs';
+import { relativeResultPath, sortResultPaths } from './result-paths.mjs';
 
 export async function findFiles(
   root,
@@ -43,11 +44,9 @@ export async function findFiles(
     resolveChild: (directory, name) => pathApi.resolve(directory, name),
     onFile: (name, directory, scanRoot) => {
       if (matchesFile(name, extension, testsOnly, noTests))
-        results.push(
-          pathApi.relative(scanRoot, pathApi.join(directory, name)).split(/[\\/]/u).join('/'),
-        );
+        results.push(relativeResultPath(pathApi, scanRoot, directory, name));
     },
   });
-  return results.sort();
+  return sortResultPaths(results);
 }
 

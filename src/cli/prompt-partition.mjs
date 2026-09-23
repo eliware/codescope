@@ -1,15 +1,10 @@
-import { validateEffort, validateModel } from './option-validation.mjs';
+import { isPromptScalarOption } from './options/prompt-values.mjs';
 
 export function partitionPromptArgs(args) {
   const delimiter = args.indexOf('--');
   const isOption = (value) => {
     if (['--dry-run', '--usage'].includes(value)) return true;
-    if (value.startsWith('--effort=')) {
-      try { validateEffort(value.slice('--effort='.length)); return true; } catch { return false; }
-    }
-    if (value.startsWith('--model=')) {
-      try { validateModel(value.slice('--model='.length)); return true; } catch { return false; }
-    }
+    if (isPromptScalarOption(value)) return true;
     return false;
   };
   const optionArgs = delimiter < 0 ? args.filter(isOption) : normalizeTrailingOptions(args.slice(delimiter + 1));
