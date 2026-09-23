@@ -1,9 +1,9 @@
-import { combineCodeFiles, combineMdFiles } from './source-file-aliases.mjs';
+import { combineFiles } from './files.mjs';
 
 export async function collectSourceSections(root, options, inventory) {
   return {
-    md: await combineMdFiles(root, { ...options, files: inventory }),
-    implementation: await combineCodeFiles(root, { ...options, files: inventory, noTests: true }),
-    tests: await combineCodeFiles(root, { ...options, files: inventory, testsOnly: true }),
+    md: await combineFiles(root, '.md', { ...options, files: inventory }),
+    implementation: await combineFiles(root, ['.js', '.mjs', '.cjs', '.ts'], { ...options, files: inventory, noTests: true }),
+    tests: await combineFiles(root, ['.js', '.mjs', '.cjs', '.ts'], { ...options, files: inventory, testsOnly: true }),
   };
 }

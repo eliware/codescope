@@ -1,5 +1,4 @@
 import { findFiles } from '../../src/find/files.mjs';
-import { findMjsFiles, findMdFiles, findAllFiles } from '../../src/find/file-aliases.mjs';
 import path from 'node:path';
 
 const file = (name) => ({ name, isFile: () => true });
@@ -23,19 +22,19 @@ test('walks directories, ignores infrastructure, and sorts results', async () =>
     [path.join(root, 'src', 'coverage')]: [file('legitimate.mjs')],
   };
   const readDirectory = async (root) => tree[root] ?? [];
-  expect(await findMjsFiles(root, { readDirectory })).toEqual([
+  expect(await findFiles(root, '.mjs', { readDirectory })).toEqual([
     'a.mjs',
     'src/coverage/legitimate.mjs',
     'z/deep.mjs',
     'z/deep.test.mjs',
   ]);
-  expect(await findMjsFiles(root, { readDirectory, noTests: true })).toEqual([
+  expect(await findFiles(root, '.mjs', { readDirectory, noTests: true })).toEqual([
     'a.mjs',
     'src/coverage/legitimate.mjs',
     'z/deep.mjs',
   ]);
-  expect(await findMjsFiles(root, { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);
-  expect(await findMdFiles(root, { readDirectory })).toEqual(['guide.md']);
+  expect(await findFiles(root, '.mjs', { readDirectory, testsOnly: true })).toEqual(['z/deep.test.mjs']);
+  expect(await findFiles(root, '.md', { readDirectory })).toEqual(['guide.md']);
 });
 
 test('uses explicit POSIX path semantics when requested', async () => {
@@ -157,11 +156,11 @@ test('skips symlinks and nonmatching files', async () => {
     file('a.test.mjs'),
     file('readme.md'),
   ];
-  expect(await findMjsFiles('/root', { readDirectory: async () => entries })).toEqual([
+  expect(await findFiles('/root', '.mjs', { readDirectory: async () => entries })).toEqual([
     'a.test.mjs',
   ]);
   expect(
-    await findMjsFiles('/root', {
+    await findFiles('/root', '.mjs', {
       readDirectory: async () => [{ name: 'NODE_MODULES', isDirectory: () => true }],
     }),
   ).toEqual([]);
@@ -173,9 +172,9 @@ test('rejects contradictory test filters', async () => {
   );
 });
 
-test('findAllFiles exposes the unrestricted extension strategy', async () => {
+test('findFiles supports unrestricted extension matching', async () => {
   await expect(
-    findAllFiles('/root', {
+    findFiles('/root', '', {
       readDirectory: async () => [],
       inspectRoot: async () => ({ isSymbolicLink: () => false, isDirectory: () => true }),
     }),

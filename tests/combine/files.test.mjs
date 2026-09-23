@@ -1,5 +1,4 @@
 import { combineFiles } from '../../src/combine/files.mjs';
-import { combineMdFiles, combineMjsFiles, combineCodeFiles } from '../../src/combine/source-file-aliases.mjs';
 
 const oneFile = (name = 'a.mjs') => ({
   readDirectory: async () => [{ name, isFile: () => true }],
@@ -7,7 +6,7 @@ const oneFile = (name = 'a.mjs') => ({
 
 test('combines, trims, numbers, and batches source files', async () => {
   const files = { '/root/a.mjs': 'one\ntwo\n', '/root/b.mjs': '' };
-  const result = await combineMjsFiles('/root', {
+  const result = await combineFiles('/root', '.mjs', {
     ...oneFile(),
     readDirectory: async () => [
       { name: 'b.mjs', isFile: () => true },
@@ -23,7 +22,7 @@ test('combines, trims, numbers, and batches source files', async () => {
 test('uses one-file batches for finite limits and enforces aggregate limits', async () => {
   const calls = [];
   await expect(
-    combineMjsFiles('/root', {
+    combineFiles('/root', '.mjs', {
       readDirectory: async () => [
         { name: 'a.mjs', isFile: () => true },
         { name: 'b.mjs', isFile: () => true },
@@ -37,16 +36,16 @@ test('uses one-file batches for finite limits and enforces aggregate limits', as
   ).resolves.toContain('===== b.mjs =====');
   expect(calls).toHaveLength(2);
   await expect(
-    combineMjsFiles('/root', { ...oneFile(), maxChars: 20, readFileContents: async () => 'long' }),
+    combineFiles('/root', '.mjs', { ...oneFile(), maxChars: 20, readFileContents: async () => 'long' }),
   ).rejects.toThrow('Combined source exceeds');
   await expect(
-    combineMjsFiles('/root', { ...oneFile(), maxChars: 1, readFileContents: async () => 'xx' }),
+    combineFiles('/root', '.mjs', { ...oneFile(), maxChars: 1, readFileContents: async () => 'xx' }),
   ).rejects.toThrow('Combined source exceeds');
 });
 
-test('combineCodeFiles delegates to the supported implementation extensions', async () => {
+test('combineFiles supports the implementation extensions', async () => {
   await expect(
-    combineCodeFiles('/root', {
+    combineFiles('/root', ['.js', '.mjs', '.cjs', '.ts'], {
       readDirectory: async () => [],
       readFileContents: async () => '',
     }),
@@ -54,7 +53,7 @@ test('combineCodeFiles delegates to the supported implementation extensions', as
 });
 
 test('filters supplied files by extension and supports Markdown wrappers', async () => {
-  await expect(combineMjsFiles('/root', {
+  await expect(combineFiles('/root', '.mjs', {
     files: ['a.mjs', 'guide.md'],
     readFileContents: async () => 'code',
   })).resolves.toContain('===== a.mjs =====');
@@ -62,7 +61,7 @@ test('filters supplied files by extension and supports Markdown wrappers', async
     files: ['a.mjs', 'guide.md'],
     readFileContents: async () => 'code',
   })).resolves.not.toContain('guide.md');
-  await expect(combineMdFiles('/root', {
+  await expect(combineFiles('/root', '.md', {
     files: ['guide.md'],
     readFileContents: async () => 'docs',
   })).resolves.toContain('===== guide.md =====');

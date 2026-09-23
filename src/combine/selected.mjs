@@ -1,7 +1,7 @@
-import { combineCodeFiles, combineMdFiles } from './source-file-aliases.mjs';
+import { combineFiles } from './files.mjs';
 import { collectMetadataSections } from './metadata-sections.mjs';
 import { collectInventorySection } from './inventory-section.mjs';
-import { findAllFiles } from '../find/file-aliases.mjs';
+import { findFiles } from '../find/files.mjs';
 import { joinCombinedSections } from './combined-source.mjs';
 import { validateCombineOptions } from './policies.mjs';
 import { createSectionBudget } from './section-budget.mjs';
@@ -18,7 +18,7 @@ export async function combineSelectedFiles(
 ) {
   const normalizedOptions = { ...DEFAULT_SELECTED_OPTIONS, ...options };
   validateCombineOptions(root, normalizedOptions);
-  const inventory = normalizedOptions.inventory ?? (await findAllFiles(root, normalizedOptions));
+  const inventory = normalizedOptions.inventory ?? (await findFiles(root, '', normalizedOptions));
   const metadata = await collectMetadataSections(root, normalizedOptions, inventory);
   const parts = [
     metadata.packageJson,
@@ -34,13 +34,13 @@ export async function combineSelectedFiles(
   const selected = [];
   if (implementation)
     selected.push(await budget.read((maxChars) =>
-      combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, noTests: true })));
+      combineFiles(root, ['.js', '.mjs', '.cjs', '.ts'], { ...normalizedOptions, maxChars, files: inventory, noTests: true })));
   if (tests)
     selected.push(await budget.read((maxChars) =>
-      combineCodeFiles(root, { ...normalizedOptions, maxChars, files: inventory, testsOnly: true })));
+      combineFiles(root, ['.js', '.mjs', '.cjs', '.ts'], { ...normalizedOptions, maxChars, files: inventory, testsOnly: true })));
   if (docs)
     selected.push(await budget.read((maxChars) =>
-      combineMdFiles(root, { ...normalizedOptions, maxChars, files: inventory })));
+      combineFiles(root, '.md', { ...normalizedOptions, maxChars, files: inventory })));
   parts.push(...selected);
   return joinCombinedSections(parts, normalizedOptions.maxChars);
 }

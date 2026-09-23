@@ -1,10 +1,10 @@
 import { fs } from '@eliware/common';
-import { combineMjsFiles } from '../../combine/source-file-aliases.mjs';
+import { combineFiles } from '../../combine/files.mjs';
 import { lstat } from 'node:fs/promises';
 
 export function createEvidenceDefaults() {
   return {
-    combine: combineMjsFiles,
+    combine: (root, options) => combineFiles(root, '.mjs', options),
     maxSourceChars: 2_000_000,
     inspectFile: lstat,
     readFile: fs.promises.readFile,
