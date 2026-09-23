@@ -3,7 +3,9 @@ export function registerReviewSignals(register, controller) {
     return register({
       exit: false,
       signal: controller.signal,
-      shutdownHook: () => controller.abort(),
+      shutdownHook: (receivedSignal) => controller.abort(
+        Object.assign(new Error(`Received ${receivedSignal}`), { code: receivedSignal }),
+      ),
     });
   } catch (cause) {
     throw new Error(

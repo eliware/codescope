@@ -8,8 +8,20 @@ test('registers a shutdown hook that aborts the controller', () => {
     return {};
   }, controller);
   expect(options.exit).toBe(false);
-  options.shutdownHook();
+  options.shutdownHook('SIGINT');
   expect(controller.signal.aborted).toBe(true);
+  expect(controller.signal.reason.code).toBe('SIGINT');
+});
+
+test('records termination signal identity on the abort reason', () => {
+  const controller = new AbortController();
+  let options;
+  registerReviewSignals((value) => {
+    options = value;
+    return {};
+  }, controller);
+  options.shutdownHook('SIGTERM');
+  expect(controller.signal.reason.code).toBe('SIGTERM');
 });
 
 test('wraps signal registration failures', () => {

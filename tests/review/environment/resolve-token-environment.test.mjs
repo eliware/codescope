@@ -12,6 +12,17 @@ test('falls back to a file token when the process token is missing or blank', ()
     .toEqual({ OPENAI_API_TOKEN: 'file' });
 });
 
+test('falls back to a file token when the process token is not a string', () => {
+  expect(resolveTokenEnvironment(
+    { OPENAI_API_TOKEN: 'file' },
+    { OPENAI_API_TOKEN: 42 },
+  )).toEqual({ OPENAI_API_TOKEN: 'file' });
+  expect(resolveTokenEnvironment(
+    { OPENAI_API_TOKEN: 'file' },
+    { OPENAI_API_TOKEN: { trim: 'not a function' } },
+  )).toEqual({ OPENAI_API_TOKEN: 'file' });
+});
+
 test('returns no token when both sources are missing or blank', () => {
   expect(resolveTokenEnvironment({}, {})).toEqual({});
   expect(resolveTokenEnvironment({ OPENAI_API_TOKEN: '  ' }, { OPENAI_API_TOKEN: '\t' }))

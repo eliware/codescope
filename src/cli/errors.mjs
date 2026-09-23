@@ -19,12 +19,18 @@ const errorText = (cause) => {
   return messages.join(' ');
 };
 
+const hasErrorCode = (cause, code) => {
+  for (let current = cause; current; current = current.cause)
+    if (current.code === code) return true;
+  return false;
+};
+
 export function errorExitCode(cause) {
   const text = errorText(cause);
+  if (hasErrorCode(cause, 'SIGINT')) return EXIT_CODES.SIGINT;
+  if (hasErrorCode(cause, 'SIGTERM')) return EXIT_CODES.SIGTERM;
   if (cause?.code === 'API') return EXIT_CODES.API;
   if (cause?.code === 'INVALID_RESPONSE') return EXIT_CODES.RESPONSE;
-  if (/SIGINT|signal interrupt|AbortError/u.test(text)) return EXIT_CODES.SIGINT;
-  if (/SIGTERM|signal termination/u.test(text)) return EXIT_CODES.SIGTERM;
   if (cause?.code === 'ETIMEDOUT' || /timed out/u.test(text)) return EXIT_CODES.TEST_TIMEOUT;
   if (
     /Usage:|Unknown command|Unknown option|Unexpected arguments|requires a value|Effort must be|not valid for/u.test(

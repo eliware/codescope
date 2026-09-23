@@ -7,6 +7,7 @@ test('accepts valid scalar review options', () => {
 test('rejects invalid source, additions, and prompt combinations', () => {
   expect(() => validateReviewScalars({ maxSourceChars: 0 })).toThrow(/positive/);
   expect(() => validateReviewScalars({ maxSourceChars: 1, add: ['ok', 1] })).toThrow(/add/);
+  expect(() => validateReviewScalars({ maxSourceChars: 1, add: [' \t'] })).toThrow(/add/);
   expect(() => validateReviewScalars({ maxSourceChars: 1, plainText: 'prompt', dryRun: true })).toThrow(/cannot be combined/);
 });
 

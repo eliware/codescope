@@ -11,8 +11,10 @@ test('maps lifecycle and configuration errors', () => {
   expect(errorExitCode(Object.assign(new Error('API failure'), { code: 'API' }))).toBe(
     EXIT_CODES.API,
   );
-  expect(errorExitCode(new Error('SIGINT received'))).toBe(EXIT_CODES.SIGINT);
-  expect(errorExitCode(new Error('signal termination'))).toBe(EXIT_CODES.SIGTERM);
+  expect(errorExitCode(Object.assign(new Error('Received SIGINT'), { code: 'SIGINT' })))
+    .toBe(EXIT_CODES.SIGINT);
+  expect(errorExitCode(Object.assign(new Error('Received SIGTERM'), { code: 'SIGTERM' })))
+    .toBe(EXIT_CODES.SIGTERM);
   expect(errorExitCode(Object.assign(new Error('timed out'), { code: 'ETIMEDOUT' }))).toBe(
     EXIT_CODES.TEST_TIMEOUT,
   );
@@ -22,6 +24,11 @@ test('maps lifecycle and configuration errors', () => {
   expect(errorExitCode(new Error('Invalid review response'))).toBe(EXIT_CODES.RESPONSE);
   expect(errorExitCode(new Error('initialize OpenAI failed'))).toBe(EXIT_CODES.API);
   expect(errorExitCode(new Error('unclassified'))).toBe(EXIT_CODES.INPUT);
+  expect(errorExitCode(new Error('Provider returned an AbortError diagnostic')))
+    .toBe(EXIT_CODES.INPUT);
+  expect(errorExitCode(Object.assign(new Error('wrapped'), {
+    cause: Object.assign(new Error('interrupt'), { code: 'SIGINT' }),
+  }))).toBe(EXIT_CODES.SIGINT);
   expect(errorExitCode({ message: 'OPENAI_API_TOKEN missing' })).toBe(EXIT_CODES.CONFIGURATION);
   expect(errorExitCode({ cause: { message: 'unclassified' } })).toBe(EXIT_CODES.INPUT);
 });
