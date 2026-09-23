@@ -142,7 +142,7 @@ Review profiles use package metadata, implementation files, test files, and Mark
 Evidence and request-construction failures also emit a safe incomplete result when possible.
 
 Use `--effort=none|low|medium|high|xhigh|max` or the equivalent separated form `--effort <value>` before or after a direct or grouped profile command to override the default reasoning effort (`none`). The same forms are supported for `--model`. For prompt commands, place free-form text before `--`; trailing effort and model options may use either equals or separated forms.
-Use `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` or `--model gpt-5.6-luna` to override the default model.
+CodeScope defaults to `gpt-6-luna`. Use `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol` or `--model gpt-6-luna` to override it.
 
 
 ## Security

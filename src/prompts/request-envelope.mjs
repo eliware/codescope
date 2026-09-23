@@ -1,7 +1,7 @@
 import { reviewTool } from './review-tool.mjs';
 
 export const baseRequest = {
-  model: 'gpt-5.6-luna',
+  model: 'gpt-6-luna',
   service_tier: 'default',
   text: { format: { type: 'text' }, verbosity: 'low' },
   reasoning: { effort: 'none', mode: 'standard', summary: null },

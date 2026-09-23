@@ -32,6 +32,6 @@ Review: `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architec
 
 Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`. `suggest all` is one non-blocking generic suggestion pass across every review category plus `new-features`.
 
-Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. Use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `--usage` when needed.
+Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. CodeScope defaults to `gpt-6-luna`; use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `--usage` when needed.
 
 Custom prompt: `codescope prompt "your question"` sends the complete `all` context without tools and returns the provider response unchanged. Use `--` to end prompt text before supported trailing options if the prompt begins with `-`; trailing `--effort` and `--model` options may use either equals or separated forms, otherwise CodeScope reports the delimiter grammar error.

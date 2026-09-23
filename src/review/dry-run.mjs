@@ -23,7 +23,7 @@ export async function runDryRun({ client, request, signal, model, usage }) {
   if (usage) {
     output.usage = {
       input_tokens: tokenResponse.input_tokens,
-      estimated_cost_usd: calculateUsageCost(model ?? 'gpt-5.6-luna', {
+      estimated_cost_usd: calculateUsageCost(model ?? 'gpt-6-luna', {
         input_tokens: tokenResponse.input_tokens,
       }),
     };
