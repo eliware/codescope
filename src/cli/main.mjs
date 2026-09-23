@@ -4,18 +4,20 @@ import { parseArgs } from './args.mjs';
 import { dispatchMeta } from './dispatch-meta.mjs';
 import { runReviewCommand } from './review-command.mjs';
 import { runWithCliErrors } from './error-handler.mjs';
-import { createDefaultWriter } from './default-writer.mjs';
+import { createCliRuntimeDefaults } from './runtime-defaults.mjs';
 
 export async function main(
   args,
-  {
-    output = console.log,
-    error = console.error,
-      write = createDefaultWriter(),
+  options = {},
+) {
+  const defaults = createCliRuntimeDefaults();
+  const {
+    output = defaults.output,
+    error = defaults.error,
+    write = defaults.write,
     cwd = process.cwd(),
     review = runReview,
-  } = {},
-) {
+  } = options;
   return runWithCliErrors(async () => {
     const {
       command,
