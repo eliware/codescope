@@ -136,6 +136,7 @@
       ],
       "implementation": { "source": [
         "src/cli/args.mjs",
+        "src/cli/options/scan-option-stream.mjs",
         "src/cli/add-option.mjs",
         "src/cli/profile-args.mjs",
         "src/cli/prompt-args.mjs",
@@ -145,6 +146,7 @@
       ] },
       "verification": { "tests": [
         "tests/cli/args.test.mjs",
+        "tests/cli/options/scan-option-stream.test.mjs",
         "tests/cli/add-option.test.mjs",
         "tests/cli/profile-args.test.mjs",
         "tests/cli/prompt-args.test.mjs",
