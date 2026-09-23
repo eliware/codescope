@@ -181,6 +181,7 @@
         "Do not make profile selection alter the read-only repository boundary."
       ],
       "implementation": { "source": [
+        "src/profiles/profile-definitions.mjs",
         "src/profiles/metadata.mjs",
         "src/profiles/index.mjs",
         "src/profiles/prompt-routing.mjs",
@@ -188,6 +189,7 @@
         "src/profiles/tool-decoration.mjs"
       ] },
       "verification": { "tests": [
+        "tests/profiles/profile-definitions.test.mjs",
         "tests/profiles/metadata.test.mjs",
         "tests/profiles/index.test.mjs",
         "tests/profiles/prompt-routing.test.mjs",
