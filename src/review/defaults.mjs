@@ -1,27 +1,18 @@
-import { fs, registerSignals } from '@eliware/common';
-import { createOpenAI } from '@eliware/openai';
-import { combineMjsFiles } from '../combine/source-file-aliases.mjs';
 import { prompt as defaultPrompt } from '../prompts/public/review-profiles.mjs';
-import { defaultEnvFile } from './env-file-path.mjs';
-import { lstat, open } from 'node:fs/promises';
-import { createDefaultWriter } from '../cli/default-writer.mjs';
+import { createOutputDefaults } from './defaults/output.mjs';
+import { createEnvironmentDefaults } from './defaults/environment.mjs';
+import { createProviderDefaults } from './defaults/provider.mjs';
+import { createEvidenceDefaults } from './defaults/evidence.mjs';
+import { createLifecycleDefaults } from './defaults/lifecycle.mjs';
 
 export function createReviewDefaults({ platform = process.platform } = {}) {
   return {
-    write: createDefaultWriter(),
-    readFile: fs.promises.readFile,
-    openEnvFile: open,
-    envFile: defaultEnvFile(),
-    environment: process.env,
+    ...createOutputDefaults(),
+    ...createEnvironmentDefaults(),
+    ...createProviderDefaults(),
+    ...createEvidenceDefaults(),
+    ...createLifecycleDefaults(),
     prompt: defaultPrompt,
-    combine: combineMjsFiles,
-    maxSourceChars: 2_000_000,
-    usage: false,
-    dryRun: false,
-    model: undefined,
-    createClient: createOpenAI,
-    register: registerSignals,
-    inspectFile: lstat,
     platform,
   };
 }
