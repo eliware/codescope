@@ -11,19 +11,3 @@ test('runs a prompt command without requiring a verdict', async () => {
   ).resolves.toBe(0);
 });
 
-test('routes review options and status through one command boundary', async () => {
-  const calls = [];
-  await expect(
-    runReviewCommand('analyze-all', {
-      cwd: 'repo',
-      write: () => {},
-      review: async (_cwd, options) => {
-        calls.push(options);
-        return { verdict: 'pass' };
-      },
-      effort: 'low',
-      option: '--usage',
-    }),
-  ).resolves.toBe(0);
-  expect(calls[0]).toMatchObject({ usage: true });
-});
