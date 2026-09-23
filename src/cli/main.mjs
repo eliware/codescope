@@ -31,7 +31,7 @@ export async function main(
       add,
       promptText,
     } = parseArgs(args);
-    if (dispatchMeta(command, option, output, add)) return EXIT_CODES.PASS;
+    if (dispatchMeta(command, option, output)) return EXIT_CODES.PASS;
     return await runReviewCommand(command, {
       mode,
       option,
