@@ -10,6 +10,20 @@ test('reports a convention discovery failure with context', async () => {
   })).rejects.toThrow(/Unable to discover convention evidence/);
 });
 
+test('rethrows unexpected convention discovery failures', async () => {
+  await expect(discoverConventionFiles('C:\\broken', {
+    readDirectory: async () => { throw Object.assign(new Error('denied'), { code: 'EACCES' }); },
+    platform: 'win32',
+  })).rejects.toThrow(/Unable to discover convention evidence/);
+});
+
+test('uses POSIX convention paths when requested', async () => {
+  await expect(discoverConventionFiles('/missing', {
+    readDirectory: async () => [],
+    platform: 'linux',
+  })).resolves.toMatchObject({ specsRoot: '/missing/specs', files: [] });
+});
+
 test('discovers convention JSON files on the host platform', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'codescope-conventions-'));
   try {

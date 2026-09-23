@@ -23,11 +23,12 @@ Repository: https://github.com/eliware/codescope.
 
 - [Features](#features)
 - [Requirements](#requirements)
-- [Installation](#installation)
+- [Setup](#setup)
 - [Usage](#usage)
+- [Development](#development)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
 - [Configuration](#configuration)
-- [Validation](#validation)
-- [Operations](#operations)
 - [Security](#security)
 - [Support](#support)
 - [License](#license)
@@ -83,20 +84,40 @@ See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow a
 See [specs/](specs/) for the detailed behavior specifications.
 See [NEW_FEATURE_SUGGESTIONS.md](NEW_FEATURE_SUGGESTIONS.md) for optional future ideas.
 
-## Configuration
+## Development
 
-The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank process token takes precedence over the file. A missing or whitespace-only process token is treated as absent, so a nonblank file token may be used. Its dotenv parser accepts optional `export`, comments, and quoted values. Configuration files discovered by review, including internally injected configuration paths, must not be symbolic links. A missing or blank token causes a clear error and exit code `3`.
+CodeScope uses Node.js 26 native ESM. Keep runtime implementation in `src/`,
+the CLI entrypoint in `bin/`, end-user guidance in `docs/`, and CodeScope
+directives in `specs/`.
 
-## Operations
+### Configuration
+
+The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN`
+from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank
+process token takes precedence over the file.
+
+## Testing
+
+Use the global `eliware-test` validator for installation, tests, lint, audit,
+pack, and formatting checks. CodeScope itself never runs commands in a
+reviewed repository.
+
+## Troubleshooting
+
+If convention evidence is unavailable, verify that the adjacent
+`eliware/conventions` checkout exists and that `package.json.eliware.apply`
+names valid directive files under its `specs/` directory.
+
+### Operations
 
 CodeScope is read-only against reviewed repositories. Publication and deployment
 are handled by release and Knit workflows; this CLI does not deploy or publish
 reviewed code.
 
-## Validation
+### Validation
 
 ```text
-npm test
+eliware-test
 git diff --check
 ```
 
@@ -157,3 +178,23 @@ diagnostics when requesting help.
 - [npm Package](https://www.npmjs.com/package/@eliware/codescope)
 - [Release Notes](RELEASE_NOTES.md)
 - [Discord](https://discord.gg/M6aTR9eTwN)
+
+## Configuration
+
+See the configuration guidance above.
+
+## Operations
+
+See the operations guidance above.
+
+## Validation
+
+Use the global `eliware-test` validator for repository validation.
+
+### Configuration
+
+The CLI starts with the process environment, then reads only `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are ignored. A nonblank process token takes precedence over the file. A missing or whitespace-only process token is treated as absent, so a nonblank file token may be used. Its dotenv parser accepts optional `export`, comments, and quoted values. A missing or blank token causes a clear error and exit code `3`.
+
+## Validation
+
+Use the global `eliware-test` validator for the repository validation suite.

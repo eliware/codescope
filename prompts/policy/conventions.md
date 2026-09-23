@@ -1,17 +1,13 @@
-## Convention v8 structured-convention review
+## Convention v8 directive review
 
-When repository convention records are supplied, treat their structured JSON
-records as the authority. Inspect each record's `version`, `authority`,
-`crosslinks`, and `directives`, and apply only the directives whose declared
-applicability includes this repository. Do not infer applicability from a
-directory name, package contents, or a legacy convention that was not supplied.
-When \`specs/conventions.json\` is supplied, use its \`repositoryTypes\` and
-\`reviewContract\` to select the applicable records; canonical requirements
-remain authoritative in Eliware Conventions and the records named by the
-manifest remain authoritative for their directive text.
-The complete Convention v8 JSON evidence is expected from the sibling
-conventions/specs checkout. If it is marked unavailable, do not invent
-requirements or claim alignment; identify convention compliance as unverified.
+When Convention v8 directive records are supplied, treat their inline directive
+content and examples as the authority. Apply only the directive records named
+by the reviewed package's `eliware.conventions.apply` array. Do not infer
+applicability from a directory name, package contents, or a legacy convention
+that was not supplied. Canonical requirements remain authoritative in Eliware
+Conventions; CodeScope supplies only the selected records and repository
+evidence. If the conventions checkout or an applied record is unavailable,
+identify convention compliance as unverified rather than inventing requirements.
 
 Review the supplied README, AGENTS.md, documentation indexes, specs, examples,
 environment templates, package metadata, workflows, Knit configuration, source,

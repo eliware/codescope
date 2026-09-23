@@ -36,16 +36,10 @@
       "authoritativeFor": "Public npm package requirements."
     }
   ],
-  "repositoryTypes": {
-    "general": "../../conventions/specs/general.json",
-    "application": "../../conventions/specs/application.json",
-    "cli": "../../conventions/specs/cli.json",
-    "npm-published": "../../conventions/specs/npm-published.json"
-  },
-  "reviewContract": {
-    "applicability": "Always include conventions/specs/contracts.json. For ordinary packages, read only the other repository types declared by package.json eliware.conventions.apply. When package.json name is exactly @eliware/test, ignore eliware.conventions.apply and discover every JSON record directly under the supplied conventions checkout's specs directory.",
+  "conventionEvidence": {
+    "applicability": "Read only the Convention directive records named by package.json eliware.conventions.apply. For the @eliware/test package, supply every canonical Convention directive record so its validator can verify complete coverage. Directive examples are inline explanatory evidence and do not create a separate contract record.",
     "authority": "Treat the linked Conventions records as the sole authority for repository requirements and directive text.",
-    "missingEvidence": "If the canonical Conventions checkout, contracts.json, or an applicable record is unavailable, report convention alignment as unverified; for @eliware/test, unavailable discovered specs records are incomplete evidence. Do not infer or import requirements.",
+    "missingEvidence": "If the canonical Conventions checkout or an applied directive record is unavailable, report convention alignment as unverified. Do not infer or import requirements.",
     "scope": "Supply the selected canonical records as review evidence. Do not redefine, duplicate, or extend their requirements."
   }
 }

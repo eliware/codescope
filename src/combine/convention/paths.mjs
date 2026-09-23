@@ -14,13 +14,18 @@ export function resolveConventionPath(specsRoot, relativePath, platform = proces
 }
 
 export function conventionFilesForApplicability(discoveredFiles, applicability) {
-  const { profiles, canonicalPaths, includeAll } = applicability;
-  const contractsPath = discoveredFiles.find((file) => normalizeConventionPath(file) === 'contracts.json');
-  const files = (includeAll ? discoveredFiles : discoveredFiles.filter((file) => {
+  const { includeAll = false, profiles, canonicalPaths } = applicability;
+  if (includeAll) {
+    return {
+      files: [...discoveredFiles].sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' })),
+      missing: [],
+    };
+  }
+  const files = discoveredFiles.filter((file) => {
     const normalized = normalizeConventionPath(file);
-    return normalized === 'contracts.json' || [...canonicalPaths.values()].some((candidate) => normalizeConventionPath(candidate) === normalized);
-  })).sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' }));
+    return [...canonicalPaths.values()].some((candidate) => normalizeConventionPath(candidate) === normalized);
+  }).sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' }));
   const supplied = new Set(files.map(normalizeConventionPath));
-  const missingProfiles = includeAll ? [] : [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
-  return { files, missing: [...missingProfiles, ...(contractsPath === undefined ? ['contracts.json'] : [])] };
+  const missingProfiles = [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
+  return { files, missing: missingProfiles };
 }

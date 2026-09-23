@@ -1,14 +1,14 @@
 export const contractPolicy = `## Eliware Convention v8 review boundaries
 
-Use the supplied Convention v8 structured records and repository evidence as
+Use the supplied Convention v8 directive records and repository evidence as
 the contract for this review. Apply only requirements whose declared
 applicability includes the repository. Do not import requirements from older
 convention versions, unrelated projects, or unsupplied external documents.
-When the supplied repository includes \`specs/conventions.json\`, use its
-applicability and \`reviewContract\` to select the repository's convention
-records; canonical requirements remain owned by Conventions.
-The full Convention v8 JSON records must be supplied from the sibling
-conventions/specs checkout for detailed alignment review; absent records are
+Use only the Convention v8 directive records selected by the reviewed
+package's \`eliware.conventions.apply\` array; canonical requirements remain
+owned by Conventions. For \`@eliware/test\`, all canonical directive records
+may be supplied for validator cross-checking. Inline directive examples clarify the selected records
+but do not create a separate contract authority. Absent applied records are
 unknown evidence, not permission to apply legacy requirements.
 
 Review whether supplied implementation, tests, documentation, configuration,

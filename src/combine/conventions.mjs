@@ -11,7 +11,6 @@ export async function combineConventionFiles(
     readDirectory,
     readFileContents = readFile,
     readPackageJson = readFileContents,
-    readConventionManifest,
     inspectFile = lstat,
     concurrency = 8,
     maxChars = Number.POSITIVE_INFINITY,
@@ -26,7 +25,6 @@ export async function combineConventionFiles(
     conventionsRoot,
     readPackageJson,
     readFileContents,
-    readConventionManifest,
     platform,
   });
   if (!applicability) return '===== Convention v8 JSON =====\nConvention applicability unavailable.\n';

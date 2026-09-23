@@ -32,18 +32,6 @@
       "evidence": [],
       "notAuthoritativeFor": ["canonical Convention v8 requirements"],
       "status": "active"
-    },
-    {
-      "id": "codescope.contracts",
-      "kind": "contract-reference",
-      "authority": { "path": "./contracts.json" },
-      "directives": [{ "path": "./directives.json", "ids": ["E-19"] }],
-      "implementation": [{ "path": "./contracts.json", "role": "normative-codescope-contracts" }],
-      "consumers": ["CodeScope users and reviewers"],
-      "reviewers": ["eliware/docs", "eliware/conventions"],
-      "evidence": [{ "path": "./README.md", "kind": "index" }],
-      "notAuthoritativeFor": ["repository requirements", "Operations procedures"],
-      "status": "active"
     }
   ]
 }
