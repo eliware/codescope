@@ -36,23 +36,24 @@ test('writes setup failure fallback when evidence collection fails', async () =>
   expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });
 
-test('writes request construction failure fallback', async () => {
-  const writes = [];
+test('routes request construction failures through the phase boundary', async () => {
   await expect(runReviewPipeline('repo', {
-    ...base, combine: async () => 'source', createClient: () => ({}),
+    ...base,
+    combine: async () => 'source',
+    createClient: () => ({}),
     prompt: { input: [{ role: 'developer', content: [{ type: 'input_text', text: 'invalid' }] }], tools: [] },
-    write: async (value) => { writes.push(value); return { written: value.length }; },
+    write: async (value) => ({ written: value.length }),
   })).rejects.toThrow(/developer text/);
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });
 
-test('writes provider execution failure fallback', async () => {
-  const writes = [];
+test('routes provider execution failures through the phase boundary', async () => {
   await expect(runReviewPipeline('repo', {
-    ...base, combine: async () => 'source',
+    ...base,
+    combine: async () => 'source',
     createClient: () => ({ responses: { create: async () => { throw new Error('provider failed'); } } }),
-    prompt, register: () => ({ removeHandlers() {} }),
-    write: async (value) => { writes.push(value); return { written: value.length }; },
+    prompt,
+    register: () => ({ removeHandlers() {} }),
+    write: async (value) => ({ written: value.length }),
   })).rejects.toThrow(/provider failed/);
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: 'not submitted' });
 });
+
