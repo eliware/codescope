@@ -288,6 +288,7 @@
       ],
       "implementation": { "source": [
         "src/combine/all.mjs",
+        "src/combine/all-read-options.mjs",
         "src/combine/all-sections.mjs",
         "src/combine/selected.mjs",
         "src/combine/combined-source.mjs",
@@ -297,6 +298,7 @@
       ] },
       "verification": { "tests": [
         "tests/combine/all.test.mjs",
+        "tests/combine/all-read-options.test.mjs",
         "tests/combine/all-sections.test.mjs",
         "tests/combine/selected.test.mjs",
         "tests/combine/combined-source.test.mjs",
