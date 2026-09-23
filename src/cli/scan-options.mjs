@@ -16,18 +16,22 @@ export function scanOptionTokens(tokens, { keepScalarOptions = false, leadingOnl
       const addition = readAddition(tokens, index);
       add.push(addition.value);
       index = addition.nextIndex;
-    } else if (readScalar(tokens, index)) {
+    } else {
       const scalar = readScalar(tokens, index);
-      (scalar.kind === 'effort' ? effort : model).push(scalar.normalized);
-      if (keepScalarOptions) remaining.push(scalar.normalized);
-      index = scalar.nextIndex;
-    } else if (token === '--dry-run') {
-      dryRun += 1;
-      if (keepScalarOptions) remaining.push(token);
-    } else if (token === '--usage') {
-      usage += 1;
-      remaining.push(token);
-    } else remaining.push(token);
+      if (scalar) {
+        (scalar.kind === 'effort' ? effort : model).push(scalar.normalized);
+        if (keepScalarOptions) remaining.push(scalar.normalized);
+        index = scalar.nextIndex;
+      } else if (token === '--dry-run') {
+        dryRun += 1;
+        if (keepScalarOptions) remaining.push(token);
+      } else if (token === '--usage') {
+        usage += 1;
+        remaining.push(token);
+      } else {
+        remaining.push(token);
+      }
+    }
   }
   return { add, effort, model, dryRun, usage, remaining, consumed: tokens.length - remaining.length };
 }

@@ -15,24 +15,26 @@ export function parseLeadingOptions(tokens) {
       const addition = readAddition(tokens, index);
       add.push(addition.value);
       index = addition.nextIndex;
-    } else if (readScalar(tokens, index)) {
-      const scalar = readScalar(tokens, index);
-      (scalar.kind === 'effort' ? effort : model).push(scalar.normalized);
-      index = scalar.nextIndex;
-    } else if (token === '--dry-run') {
-      dryRun += 1;
-    } else if (token === '--usage') {
-      usage += 1;
     } else {
-      remaining.push(...tokens.slice(index));
-      for (let suffix = index; suffix < tokens.length; suffix += 1) {
-        if (tokens[suffix] === '-a' || tokens[suffix] === '--add') {
-          const addition = readAddition(tokens, suffix);
-          add.push(addition.value);
-          suffix = addition.nextIndex;
+      const scalar = readScalar(tokens, index);
+      if (scalar) {
+        (scalar.kind === 'effort' ? effort : model).push(scalar.normalized);
+        index = scalar.nextIndex;
+      } else if (token === '--dry-run') {
+        dryRun += 1;
+      } else if (token === '--usage') {
+        usage += 1;
+      } else {
+        remaining.push(...tokens.slice(index));
+        for (let suffix = index; suffix < tokens.length; suffix += 1) {
+          if (tokens[suffix] === '-a' || tokens[suffix] === '--add') {
+            const addition = readAddition(tokens, suffix);
+            add.push(addition.value);
+            suffix = addition.nextIndex;
+          }
         }
+        break;
       }
-      break;
     }
   }
 
