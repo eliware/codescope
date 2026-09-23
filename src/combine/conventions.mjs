@@ -27,7 +27,7 @@ export async function combineConventionFiles(
   const specsRoot = pathApi.join(conventionsRoot, 'specs');
   let discoveredFiles;
   try {
-    discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory });
+    discoveredFiles = await findFiles(specsRoot, '.json', { readDirectory, platform });
   } catch (cause) {
     if (cause?.code === 'ENOENT' || cause?.code === 'ENOTDIR')
       return '===== Convention v8 JSON =====\nConvention checkout not supplied.\n';
