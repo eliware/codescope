@@ -1,4 +1,4 @@
-import { PROFILE_NAMES } from '../profiles/metadata.mjs';
+import { PROFILE_NAMES } from '../profiles/profile-definitions.mjs';
 import { parseCommandOptions } from './options/command-options.mjs';
 import { parseOptionValues } from './options/parse-values.mjs';
 

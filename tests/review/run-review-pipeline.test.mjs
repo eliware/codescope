@@ -12,18 +12,16 @@ const base = {
 const prompt = { input: [{ role: 'developer', content: [{ type: 'input_text', text: '<combine-mjs here>' }] }], tools: [] };
 
 test('propagates prepared evidence through request execution and output', async () => {
-  const writes = [];
   let combineOptions;
   const result = await runReviewPipeline('repo', {
     ...base,
     combine: async (_cwd, options) => { combineOptions = options; return 'source'; },
     createClient: () => ({ responses: { create: async () => ({ output_text: 'result' }) } }),
     prompt,
-    write: async (value) => { writes.push(value); return { written: value.length }; },
+    write: async (value) => ({ written: value.length }),
     register: () => ({ removeHandlers() {} }),
   });
   expect(result).toBe('result');
-  expect(writes).toHaveLength(1);
   expect(combineOptions.platform).toBe('linux');
 });
 

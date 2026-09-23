@@ -12,3 +12,11 @@ export function summarizeProviderResponse(response) {
     ...(functionCallArguments ? { function_call_arguments: functionCallArguments } : {}),
   };
 }
+
+export function safeResponseSummary(response) {
+  try {
+    return summarizeProviderResponse(response);
+  } catch {
+    return {};
+  }
+}

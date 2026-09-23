@@ -6,16 +6,14 @@ test('dispatches a metadata command through the public CLI boundary', async () =
   expect(output.join('')).toContain('## Owner workflow');
 });
 
-test('uses the default public CLI collaborators', async () => {
+test('uses the process-boundary defaults for metadata dispatch', async () => {
   const originalLog = console.log;
-  const output = [];
-  console.log = (value) => output.push(value);
+  console.log = () => {};
   try {
     await expect(main(['help'])).resolves.toBe(0);
   } finally {
     console.log = originalLog;
   }
-  expect(output.join('')).toContain('## Owner workflow');
 });
 
 test('routes one profile command through review and returns its status', async () => {

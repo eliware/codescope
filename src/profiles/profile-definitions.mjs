@@ -23,6 +23,18 @@ export const PROFILE_DEFINITIONS = Object.freeze({
   'p0-3': { files: [true, false, false] },
 });
 
+export const PROFILE_FILES = Object.freeze(
+  Object.fromEntries(Object.entries(PROFILE_DEFINITIONS).map(([name, definition]) => [name, definition.files])),
+);
+
+export const PROFILE_NAMES = Object.freeze(Object.keys(PROFILE_FILES));
+
+export function getProfileFiles(profile) {
+  if (!Object.hasOwn(PROFILE_FILES, profile))
+    throw new Error(`Unknown analysis profile: ${profile}`);
+  return PROFILE_FILES[profile];
+}
+
 export function getSuggestionCategories(profile) {
   return PROFILE_DEFINITIONS[profile]?.suggestions;
 }

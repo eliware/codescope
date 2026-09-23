@@ -4,6 +4,7 @@ import { parseGroupedArgs } from '../grouped-args.mjs';
 import { parseProfileArgs } from '../profile-args.mjs';
 import { parseMetaCommand } from '../meta-args.mjs';
 import { normalizeCommand } from './normalize-command.mjs';
+import { mergeLeadingOptions } from './merge-leading-options.mjs';
 
 export function parseCommandArgs(args) {
   const [first = 'help', ...rest] = args;
@@ -15,4 +16,11 @@ export function parseCommandArgs(args) {
   if (meta) return normalizeCommand(meta, values);
   if (first.startsWith('-')) throw new Error(`Unknown option: ${first}`);
   return normalizeCommand(parseProfileArgs(first, values.remaining), values);
+}
+
+export function parseArgs(args) {
+  const values = parseOptionValues(args, { leadingOnly: true });
+  return values.consumed > 0
+    ? mergeLeadingOptions(parseCommandArgs(values.remaining), values)
+    : parseCommandArgs(args);
 }

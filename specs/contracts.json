@@ -135,21 +135,23 @@
         "Do not treat an added prompt as a replacement for the profile prompt."
       ],
       "implementation": { "source": [
-        "src/cli/args.mjs",
+        "src/cli/args/command.mjs",
         "src/cli/options/scan-option-stream.mjs",
         "src/cli/profile-args.mjs",
         "src/cli/prompt-args.mjs",
         "src/cli/prompt-partition.mjs",
         "src/cli/dispatch-meta.mjs",
+        "src/cli/options/prompt-values.mjs",
+        "src/cli/prompt-options.mjs",
         "src/prompts/append-user-message.mjs"
       ] },
       "verification": { "tests": [
-        "tests/cli/args.test.mjs",
+        "tests/cli/args/command.test.mjs",
         "tests/cli/options/scan-option-stream.test.mjs",
         "tests/cli/profile-args.test.mjs",
         "tests/cli/prompt-args.test.mjs",
         "tests/cli/prompt-partition.test.mjs",
-        "tests/cli/main.test.mjs",
+        "tests/cli/options/prompt-values.test.mjs",
         "tests/prompts/append-user-message.test.mjs"
       ], "commands": ["specs/contracts.json"] }
     },
@@ -182,7 +184,6 @@
       ],
       "implementation": { "source": [
         "src/profiles/profile-definitions.mjs",
-        "src/profiles/metadata.mjs",
         "src/profiles/index.mjs",
         "src/profiles/prompt-routing.mjs",
         "src/profiles/source-selection.mjs",
@@ -190,7 +191,6 @@
       ] },
       "verification": { "tests": [
         "tests/profiles/profile-definitions.test.mjs",
-        "tests/profiles/metadata.test.mjs",
         "tests/profiles/index.test.mjs",
         "tests/profiles/prompt-routing.test.mjs",
         "tests/profiles/source-selection.test.mjs",
@@ -377,11 +377,14 @@
         "src/prompts/public/unified-review.mjs",
         "src/prompts/public/release-review.mjs",
         "src/prompts/public/convention-review.mjs",
-        "src/review/create-session.mjs",
-        "src/review/request.mjs"
+        "src/prompts/combined.mjs",
+        "src/prompts/builders.mjs"
       ] },
       "verification": { "tests": [
-        "tests/review/create-session.test.mjs",
+        "tests/prompts/combined.test.mjs",
+        "tests/prompts/builders.test.mjs",
+        "tests/prompts/review-profiles.test.mjs",
+        "tests/prompts/suggestion-profiles.test.mjs",
         "tests/review/request.test.mjs"
       ], "commands": ["specs/contracts.json"] }
     },
@@ -425,11 +428,9 @@
         "src/review/session/run-provider-session.mjs",
         "src/review/session/run-provider-and-write.mjs",
         "src/review/session-result.mjs",
-        "src/review/run-session.mjs",
-        "src/review/run-review-pipeline.mjs",
         "src/review/output/write-fallback-output.mjs",
         "src/review/output/write-provider-output.mjs",
-        "src/review/diagnostics/safe-response-summary.mjs",
+        "src/review/response-summary.mjs",
         "src/review/diagnostics/serialize-response-diagnostic.mjs",
         "src/review/response-preservation.mjs"
       ] },
@@ -439,12 +440,10 @@
         "tests/review/session/run-provider-session.test.mjs",
         "tests/review/session/run-provider-and-write.test.mjs",
         "tests/review/session-result.test.mjs",
-        "tests/review/run-session.test.mjs",
-        "tests/review/run-review-pipeline.test.mjs",
         "tests/review/output/validate-write-result.test.mjs",
         "tests/review/output/write-fallback-output.test.mjs",
         "tests/review/output/write-provider-output.test.mjs",
-        "tests/review/diagnostics/safe-response-summary.test.mjs",
+        "tests/review/response-summary.test.mjs",
         "tests/review/diagnostics/serialize-response-diagnostic.test.mjs",
         "tests/review/response-preservation.test.mjs"
       ], "commands": ["specs/contracts.json"] }
@@ -475,6 +474,7 @@
         "Do not place credentials, tokens, environment files, or runtime state in the repository."
       ],
       "implementation": { "source": [
+        "src/review/resolve-options.mjs",
         "src/review/environment.mjs",
         "src/review/environment-file.mjs",
         "src/review/environment-file-safety.mjs",
@@ -519,8 +519,7 @@
         "src/pricing/thresholds.mjs",
         "src/pricing/usage-normalizer.mjs",
         "src/review/dry-run.mjs",
-        "src/review/request-phase.mjs",
-        "src/cli/prompt-options.mjs"
+        "src/review/request-phase.mjs"
       ] },
       "verification": { "tests": [
         "tests/pricing/calculator.test.mjs",
@@ -528,8 +527,7 @@
         "tests/pricing/thresholds.test.mjs",
         "tests/pricing/usage-normalizer.test.mjs",
         "tests/review/dry-run.test.mjs",
-        "tests/review/request-phase.test.mjs",
-        "tests/cli/prompt-options.test.mjs"
+        "tests/review/request-phase.test.mjs"
       ], "commands": ["specs/contracts.json"] }
     },
     {
@@ -564,6 +562,8 @@
         "src/review/provider-failure.mjs",
         "src/review/incomplete-result.mjs",
         "src/review/session-failure.mjs",
+        "src/review/run-session.mjs",
+        "src/review/run-review-pipeline.mjs",
         "src/review/finalize-session.mjs",
         "src/review/cleanup.mjs",
         "src/review/signals.mjs"
@@ -574,6 +574,8 @@
         "tests/review/setup-failure.test.mjs",
         "tests/review/provider-failure.test.mjs",
         "tests/review/session-failure.test.mjs",
+        "tests/review/run-session.test.mjs",
+        "tests/review/run-review-pipeline.test.mjs",
         "tests/review/finalize-session.test.mjs",
         "tests/review/cleanup.test.mjs",
         "tests/review/signals.test.mjs"
@@ -581,11 +583,11 @@
     },
     {
       "id": "C-19.12",
-      "title": "Module, dependency, and verification boundaries",
-      "scope": "Cohesive module responsibilities, shared dependencies, mirrored tests, and verification boundaries.",
+      "title": "Representative module and verification boundaries",
+      "scope": "Representative evidence for cohesive module responsibilities, shared dependencies, mirrored tests, and verification boundaries.",
       "directiveIds": ["E-19", "A-19.7"],
       "contract": {
-        "purpose": "Define CodeScope module boundaries and the evidence used to verify them.",
+        "purpose": "Define representative CodeScope module boundaries and the evidence used to verify those boundaries.",
         "inputs": "Production modules, package metadata, and verification tooling.",
         "outputs": "Maintainable native ESM modules with traceable, comprehensive verification.",
         "errors": ["Coverage, lint, formatting, and diff failures remain verification failures rather than contract redefinitions."],

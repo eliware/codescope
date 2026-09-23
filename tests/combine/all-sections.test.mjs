@@ -11,6 +11,7 @@ test('collects all ordered section inputs through injected collaborators', async
   expect(result.other).toContain('other files');
 });
 
-test('collects sections with default options', async () => {
-  await expect(collectAllSections(process.cwd())).resolves.toHaveProperty('packageJson');
+test('uses the default composition options at the orchestration boundary', async () => {
+  const result = await collectAllSections(process.cwd());
+  expect(Object.keys(result)).toEqual(expect.arrayContaining(['packageJson', 'other']));
 });

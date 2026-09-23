@@ -1,6 +1,6 @@
 import { runReview } from '../review/lifecycle.mjs';
 import { EXIT_CODES } from './errors.mjs';
-import { parseArgs } from './args.mjs';
+import { parseArgs } from './args/command.mjs';
 import { dispatchMeta } from './dispatch-meta.mjs';
 import { runReviewCommand } from './review-command.mjs';
 import { runWithCliErrors } from './error-handler.mjs';

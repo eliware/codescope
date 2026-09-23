@@ -1,4 +1,5 @@
-import { validateEffort, validateModel } from '../option-validation.mjs';
+import { validateEffort } from '../option-validation.mjs';
+import { validateModel } from '../../model-policy.mjs';
 import { scanOptionStream } from './scan-option-stream.mjs';
 
 export function parseOptionValues(tokens, options) {
