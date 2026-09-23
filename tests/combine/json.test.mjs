@@ -1,16 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { combineJsonFiles, resolveJsonPath } from '../../src/combine/json.mjs';
-
-test('rejects JSON paths outside the review root', () => {
-  expect(() => resolveJsonPath('/repo', '../outside.json', path.posix)).toThrow(/escapes review root/);
-  expect(() => resolveJsonPath('/repo', 'C:\\outside.json', path.win32)).toThrow(/escapes review root/);
-});
-
-test('uses the default path API for safe JSON paths', () => {
-  expect(resolveJsonPath('/repo', 'nested/file.json')).toContain('repo');
-});
+import { combineJsonFiles } from '../../src/combine/json.mjs';
 
 test('includes scoped JSON while excluding package locks and unrelated JSON', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'codescope-json-'));

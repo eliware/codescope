@@ -5,7 +5,8 @@ import { formatSourceSection } from './section-format.mjs';
 import { readSourceFile } from './read-file.mjs';
 import { assertWithinLimit, getBatchSize } from './limits.mjs';
 import { readBatches } from './batches.mjs';
-
+import { isIncludedJson } from './json/policy.mjs';
+import { resolveJsonPath } from './json/paths.mjs';
 export async function combineJsonFiles(
   root,
   {
@@ -38,25 +39,3 @@ export async function combineJsonFiles(
   return sections.join('\n');
 }
 
-export function resolveJsonPath(rootPath, relativePath, pathApi = path) {
-  const portablePath = String(relativePath).replaceAll('\\', '/');
-  if (
-    path.posix.isAbsolute(portablePath) ||
-    path.win32.isAbsolute(portablePath) ||
-    /^(?:\\\\|\/\/)/u.test(portablePath)
-  )
-    throw new Error(`JSON path escapes review root: ${relativePath}`);
-  const normalizedPath = pathApi.normalize(portablePath).replaceAll('\\', '/');
-  if (normalizedPath === '..' || normalizedPath.startsWith('../'))
-    throw new Error(`JSON path escapes review root: ${relativePath}`);
-  return pathApi.resolve(rootPath, ...normalizedPath.split('/'));
-}
-
-function isIncludedJson(relativePath) {
-  const normalized = relativePath.replaceAll('\\', '/');
-  const lower = normalized.toLowerCase();
-  if (!lower.endsWith('.json') || lower === 'package.json' || lower === 'package-lock.json')
-    return false;
-  if (!normalized.includes('/')) return true;
-  return ['docs/', 'specs/'].some((directory) => lower.startsWith(directory));
-}
