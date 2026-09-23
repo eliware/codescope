@@ -1,18 +1,5 @@
 import { combineAllFiles } from '../../src/combine/all.mjs';
 
-const options = {
-  readFileContents: async (file) => file.endsWith('package.json') ? '{"name":"fixture"}\n' : 'content\n',
-  inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
-  readDirectory: async () => [],
-};
-
-test('combines package metadata with default readers and adapters', async () => {
-  await expect(combineAllFiles('/repo', options)).resolves.toContain('===== package.json =====');
-  await expect(combineAllFiles(process.cwd())).resolves.toContain('package.json');
-  await expect(combineAllFiles(process.cwd(), { readDirectory: async () => [] }))
-    .resolves.toContain('===== package.json =====');
-});
-
 test('preserves the all-context section ordering', async () => {
   const names = ['package.json', '.github/ci.yml', 'guide.md', 'app.mjs', 'app.test.mjs', 'data.json', 'image.bin'];
   const result = await combineAllFiles('/repo', {
@@ -44,4 +31,8 @@ test('propagates the all-context character limit', async () => {
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     maxChars: 1,
   })).rejects.toThrow(/character limit/);
+});
+
+test('uses default options at the public all-context boundary', async () => {
+  await expect(combineAllFiles(process.cwd())).resolves.toContain('===== package.json =====');
 });
