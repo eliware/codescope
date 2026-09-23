@@ -11,8 +11,7 @@ import {
 import { refactorPrompt } from '../prompts/public/focused-review-profiles.mjs';
 import { conventionsPrompt } from '../prompts/public/convention-review.mjs';
 import { priorityPrompt } from '../prompts/public/analysis.mjs';
-import { PROFILE_DEFINITIONS } from './profile-definitions.mjs';
-import { suggestionCategories } from './suggestion-registry.mjs';
+import { PROFILE_DEFINITIONS, getSuggestionCategories } from './profile-definitions.mjs';
 
 const promptSources = {
   conventions: conventionsPrompt,
@@ -37,7 +36,7 @@ const promptSources = {
 export function getPromptRouting(profile, mode) {
   if (!Object.hasOwn(PROFILE_DEFINITIONS, profile))
     throw new Error(`Unknown analysis profile: ${profile}`);
-  const categories = suggestionCategories[profile];
+  const categories = getSuggestionCategories(profile);
   const promptSource =
     profile === 'all' && mode === 'review'
       ? combinedAllPrompt
