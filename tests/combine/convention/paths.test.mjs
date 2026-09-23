@@ -19,6 +19,13 @@ test('selects only applied directive records and reports missing records', () =>
   })).toEqual({ files: ['general.json'], missing: ['cli'] });
 });
 
+test('reports unsupported and unmapped profile names as missing', () => {
+  expect(conventionFilesForApplicability(['general.json'], {
+    profiles: new Set(['unsupported', 'unmapped']),
+    canonicalPaths: new Map([['unsupported', 'unsupported.json']]),
+  })).toEqual({ files: [], missing: ['unsupported', 'unmapped'] });
+});
+
 test('selects every discovered convention file for eliware test', () => {
   expect(conventionFilesForApplicability(['cli.json', 'general.json', 'web.json'], {
     includeAll: true,

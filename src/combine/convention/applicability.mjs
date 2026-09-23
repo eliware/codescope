@@ -18,8 +18,14 @@ export async function readConventionApplicability(root, { readPackageJson = read
     return { kind: 'invalid', reason: 'package.json must contain an object' };
 
   const apply = packageJson.eliware?.apply;
-  if (!Array.isArray(apply) || !apply.every((name) => typeof name === 'string'))
-    return { kind: 'invalid', reason: 'package.json eliware.apply must be an array of strings' };
+  if (
+    !Array.isArray(apply) ||
+    !apply.every((name) => typeof name === 'string' && name.trim() === name && name.length > 0)
+  )
+    return {
+      kind: 'invalid',
+      reason: 'package.json eliware.apply must be an array of non-empty, trimmed profile names',
+    };
   return {
     kind: 'available',
     includeAll: packageJson.name === '@eliware/test',

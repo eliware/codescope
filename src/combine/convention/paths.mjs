@@ -21,11 +21,17 @@ export function conventionFilesForApplicability(discoveredFiles, applicability) 
       missing: [],
     };
   }
+  const selectedPaths = [...profiles]
+    .map((profile) => canonicalPaths.get(profile))
+    .filter((candidate) => typeof candidate === 'string');
   const files = discoveredFiles.filter((file) => {
     const normalized = normalizeConventionPath(file);
-    return [...canonicalPaths.values()].some((candidate) => normalizeConventionPath(candidate) === normalized);
+    return selectedPaths.some((candidate) => normalizeConventionPath(candidate) === normalized);
   }).sort((left, right) => normalizeConventionPath(left).localeCompare(normalizeConventionPath(right), 'en', { sensitivity: 'variant' }));
   const supplied = new Set(files.map(normalizeConventionPath));
-  const missingProfiles = [...profiles].filter((profile) => !supplied.has(normalizeConventionPath(canonicalPaths.get(profile))));
+  const missingProfiles = [...profiles].filter((profile) => {
+    const candidate = canonicalPaths.get(profile);
+    return typeof candidate !== 'string' || !supplied.has(normalizeConventionPath(candidate));
+  });
   return { files, missing: missingProfiles };
 }

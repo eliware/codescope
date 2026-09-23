@@ -27,18 +27,18 @@ test('includes only package-selected directive records', async () => {
   }
 });
 
-test('reports missing applied directive records', async () => {
+test('reports unknown applied directive profiles as missing evidence', async () => {
   const root = await fsTemp('codescope-conventions-');
   await mkdir(path.join(root, 'specs'), { recursive: true });
   await mkdir(path.join(root, 'project'));
   await writeFile(path.join(root, 'specs', 'general.json'), '{}');
   await writeFile(path.join(root, 'project', 'package.json'), JSON.stringify({
-    eliware: { apply: ['general', 'cli'] },
+    eliware: { apply: ['general', 'unsupported'] },
   }));
   try {
     const result = await combineConventionFiles(path.join(root, 'project'), { conventionsRoot: root });
     expect(result).toContain('Convention evidence incomplete');
-    expect(result).toContain('cli');
+    expect(result).toContain('unsupported');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

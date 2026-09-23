@@ -25,8 +25,17 @@ test('reports malformed applicability data as invalid', async () => {
     readPackageJson: async () => JSON.stringify({ eliware: { apply: [1] } }),
   })).resolves.toMatchObject({
     kind: 'invalid',
-    reason: 'package.json eliware.apply must be an array of strings',
+    reason: 'package.json eliware.apply must be an array of non-empty, trimmed profile names',
   });
+  await expect(readConventionApplicability('repo', {
+    readPackageJson: async () => JSON.stringify({ eliware: { apply: [''] } }),
+  })).resolves.toMatchObject({
+    kind: 'invalid',
+    reason: 'package.json eliware.apply must be an array of non-empty, trimmed profile names',
+  });
+  await expect(readConventionApplicability('repo', {
+    readPackageJson: async () => JSON.stringify({ eliware: { apply: ['  cli  '] } }),
+  })).resolves.toMatchObject({ kind: 'invalid' });
 });
 
 test('reports malformed package JSON and unexpected read failures as invalid', async () => {
