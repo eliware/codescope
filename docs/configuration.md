@@ -19,6 +19,10 @@ read. Internally supplied configuration inventory paths are normalized and must
 remain inside the review root. CodeScope does not enforce Unix permission bits
 or Windows DACL policy.
 
+Only `OPENAI_API_TOKEN` is interpreted from `~/.codescope`. Unrelated lines,
+including malformed ones, are ignored; a malformed `OPENAI_API_TOKEN`
+assignment or quoted value is rejected.
+
 ## Optional command settings
 
 Use the documented command options for model, reasoning effort, usage reporting,

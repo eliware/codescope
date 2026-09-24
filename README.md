@@ -121,7 +121,8 @@ Use `codescope review all` for release-readiness review.
 
 The CLI starts with the process environment, then reads only
 `OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are
-ignored. A nonblank process token takes precedence over the file. A missing or
+ignored, including malformed unrelated lines. Malformed token assignments or
+quoted token values are rejected. A nonblank process token takes precedence over the file. A missing or
 whitespace-only process token is treated as absent, so a nonblank file token
 may be used. The dotenv parser accepts optional `export`, comments, and quoted
 values. A missing or blank token causes a clear error and exit code `3`.

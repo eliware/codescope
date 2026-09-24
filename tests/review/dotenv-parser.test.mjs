@@ -15,6 +15,12 @@ test("ignores comments, blanks, and already-populated values", () => {
   expect(environment).toEqual({ OPENAI_API_TOKEN: "existing" });
 });
 
+test("ignores malformed lines unrelated to the supported token", () => {
+  const environment = {};
+  loadEnv("not dotenv\nOTHER VALUE\nOPENAI_API_TOKEN=file-token", environment);
+  expect(environment).toEqual({ OPENAI_API_TOKEN: "file-token" });
+});
+
 test("decodes quoted values and inline comments", () => {
   const environment = {};
   loadEnv('OPENAI_API_TOKEN="line\\nnext\\tvalue"', environment);
@@ -23,8 +29,8 @@ test("decodes quoted values and inline comments", () => {
   loadEnv("OPENAI_API_TOKEN=secret # ignored", {});
 });
 
-test("rejects malformed dotenv input", () => {
-  expect(() => loadEnv("not dotenv", {})).toThrow(/Invalid \.env line/);
+test("rejects malformed token assignments and quoted token values", () => {
+  expect(() => loadEnv("OPENAI_API_TOKEN without equals", {})).toThrow(/Invalid \.env line/);
   expect(() => loadEnv('OPENAI_API_TOKEN="unterminated', {})).toThrow(/Invalid quoted/);
   expect(() => loadEnv("OPENAI_API_TOKEN='unterminated", {})).toThrow(/Invalid quoted/);
 });

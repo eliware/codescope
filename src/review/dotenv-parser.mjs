@@ -4,7 +4,7 @@ export function loadEnv(text = "", environment) {
   for (const line of text.split(/\r?\n/u)) {
     const match = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/u);
     if (!match) {
-      if (line.trim() && !line.trim().startsWith("#")) throw new Error("Invalid .env line");
+      if (/^\s*(?:export\s+)?OPENAI_API_TOKEN\b/u.test(line)) throw new Error("Invalid .env line");
       continue;
     }
     if (match[1] !== "OPENAI_API_TOKEN" || environment[match[1]]?.trim()) continue;
