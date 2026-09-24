@@ -8,10 +8,10 @@ export async function combineAllFiles(root, options = {}) {
       sections.conventions,
       sections.json,
       sections.configs,
-      sections.other,
       sections.md,
       sections.implementation,
       sections.tests,
+      sections.other,
     ],
     options.maxChars,
   );

@@ -3,6 +3,7 @@ name: Publication
 on:
   push:
     tags:
+      # The exact-version preflight gates validation and publication below.
       - "v*.*.*"
 
 permissions:

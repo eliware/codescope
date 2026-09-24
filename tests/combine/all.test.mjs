@@ -43,6 +43,7 @@ test("preserves the all-context section ordering", async () => {
   expect(result.indexOf("===== app.mjs =====")).toBeLessThan(
     result.indexOf("===== app.test.mjs ====="),
   );
+  expect(result.indexOf("===== app.test.mjs =====")).toBeLessThan(result.indexOf("image.bin |"));
 });
 
 test("propagates the all-context character limit", async () => {
