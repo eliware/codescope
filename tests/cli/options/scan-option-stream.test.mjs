@@ -23,6 +23,13 @@ test("scans repeatable additions and scalar options", () => {
   });
 });
 
+test("scans repeatable equals-form additions", () => {
+  expect(scanOptionStream(["--add=one", "-a=two", "--add=three=four"])).toMatchObject({
+    add: ["one", "two", "three=four"],
+    remaining: [],
+  });
+});
+
 test("drops scalar options from remaining tokens unless requested", () => {
   expect(
     scanOptionStream([
@@ -79,6 +86,7 @@ test("rejects missing option values", () => {
   expect(() => scanOptionStream(["--effort"])).toThrow(/requires/);
   expect(() => scanOptionStream(["--model", "--dry-run"])).toThrow(/requires/);
   expect(() => scanOptionStream(["--add", "   "])).toThrow(/requires/);
+  expect(() => scanOptionStream(["--add="])).toThrow(/requires/);
 });
 
 test("consumes usage before the command in leading mode", () => {

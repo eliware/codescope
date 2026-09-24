@@ -11,7 +11,7 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
-    if (token === "-a" || token === "--add") {
+    if (token === "-a" || token === "--add" || /^(--add|-a)=/u.test(token)) {
       const addition = readAddition(tokens, index);
       add.push(addition.value);
       index = addition.nextIndex;

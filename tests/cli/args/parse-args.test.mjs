@@ -14,6 +14,11 @@ test("accepts shared options before or after the command", () => {
     effort: "medium",
     add: ["first", "second"],
   });
+  expect(parseArgs(["--usage", "all", "--add=note"])).toMatchObject({
+    command: "analyze-all",
+    usage: true,
+    add: ["note"],
+  });
   expect(parseArgs(["--effort=low", "all"])).toMatchObject({ effort: "low" });
   expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({ dryRun: true });
 });
