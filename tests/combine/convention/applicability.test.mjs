@@ -36,7 +36,7 @@ test("reports malformed applicability data as invalid", async () => {
     }),
   ).resolves.toMatchObject({
     kind: "invalid",
-    reason: "package.json eliware.apply must be an array of non-empty, trimmed profile names",
+    reason: "package.json eliware.apply must contain safe, single-segment profile names",
   });
   await expect(
     readConventionApplicability("repo", {
@@ -44,13 +44,20 @@ test("reports malformed applicability data as invalid", async () => {
     }),
   ).resolves.toMatchObject({
     kind: "invalid",
-    reason: "package.json eliware.apply must be an array of non-empty, trimmed profile names",
+    reason: "package.json eliware.apply must contain safe, single-segment profile names",
   });
   await expect(
     readConventionApplicability("repo", {
       readPackageJson: async () => JSON.stringify({ eliware: { apply: ["  cli  "] } }),
     }),
   ).resolves.toMatchObject({ kind: "invalid" });
+  for (const name of ["../outside", "nested/cli", "nested\\cli", "C:outside"]) {
+    await expect(
+      readConventionApplicability("repo", {
+        readPackageJson: async () => JSON.stringify({ eliware: { apply: [name] } }),
+      }),
+    ).resolves.toMatchObject({ kind: "invalid" });
+  }
 });
 
 test("reports malformed package JSON and unexpected read failures as invalid", async () => {

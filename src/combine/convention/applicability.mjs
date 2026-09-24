@@ -20,11 +20,11 @@ export async function readConventionApplicability(root, { readPackageJson = read
   const apply = packageJson.eliware?.apply;
   if (
     !Array.isArray(apply) ||
-    !apply.every((name) => typeof name === "string" && name.trim() === name && name.length > 0)
+    !apply.every((name) => typeof name === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(name))
   )
     return {
       kind: "invalid",
-      reason: "package.json eliware.apply must be an array of non-empty, trimmed profile names",
+      reason: "package.json eliware.apply must contain safe, single-segment profile names",
     };
   return {
     kind: "available",

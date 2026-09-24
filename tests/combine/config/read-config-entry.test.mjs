@@ -114,6 +114,42 @@ test("rejects a non-file opened after configuration path inspection", async () =
   expect(closed).toBe(true);
 });
 
+test("rejects an in-place configuration change during the bounded read", async () => {
+  let statCalls = 0;
+  let closed = false;
+  const before = {
+    isSymbolicLink: () => false,
+    isFile: () => true,
+    dev: 1n,
+    ino: 2n,
+    size: 7n,
+    mtimeNs: 10n,
+    ctimeNs: 11n,
+  };
+  const after = { ...before, size: 8n, mtimeNs: 12n, ctimeNs: 13n };
+  await expect(
+    readConfigEntry("repo", ".github/ci.yml", {
+      inspectFile: async () => before,
+      openFile: async () => ({
+        stat: async () => {
+          statCalls += 1;
+          return statCalls === 1 ? before : after;
+        },
+        read: async (buffer) => {
+          buffer.write("changed");
+          return { bytesRead: 7 };
+        },
+        close: async () => {
+          closed = true;
+        },
+      }),
+      platform: "posix",
+    }),
+  ).rejects.toThrow(/changed during read/);
+  expect(statCalls).toBe(2);
+  expect(closed).toBe(true);
+});
+
 test("rejects readers that exceed the extra-byte boundary", async () => {
   await expect(
     readConfigEntry("repo", ".github/ci.yml", {

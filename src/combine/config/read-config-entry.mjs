@@ -70,7 +70,17 @@ async function readInspectedConfigFile(filePath, inspectedMetadata, openFile) {
       BigInt(inspectedMetadata.ino) !== openedMetadata.ino
     )
       throw new Error("configuration file changed while opening");
-    return await readHandleUpToLimit(handle, MAX_CONFIG_BYTES);
+    const bounded = await readHandleUpToLimit(handle, MAX_CONFIG_BYTES);
+    const readMetadata = await handle.stat({ bigint: true });
+    if (
+      openedMetadata.dev !== readMetadata.dev ||
+      openedMetadata.ino !== readMetadata.ino ||
+      openedMetadata.size !== readMetadata.size ||
+      openedMetadata.mtimeNs !== readMetadata.mtimeNs ||
+      openedMetadata.ctimeNs !== readMetadata.ctimeNs
+    )
+      throw new Error("configuration file changed during read");
+    return bounded;
   } finally {
     await handle.close();
   }
