@@ -13,6 +13,10 @@ test("accepts native roots and rejects foreign Windows roots", () => {
   expect(() => validateScanRoot(null, "linux")).toThrow(/path string/);
 });
 
+test("rejects invalid roots and incompatible scan modes", () => {
+  expect(() => validateScanMode(true, true)).toThrow(/both/);
+});
+
 test("rejects contradictory scan modes and symlink roots", () => {
   expect(() => validateScanMode(false, false)).not.toThrow();
   expect(() => validateScanMode(true, true)).toThrow(/both/);

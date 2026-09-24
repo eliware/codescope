@@ -8,6 +8,6 @@ test("formats a portable relative result path", () => {
 });
 
 test("sorts result paths in place", () => {
-  const results = ["b.mjs", "a.mjs"];
-  expect(sortResultPaths(results)).toEqual(["a.mjs", "b.mjs"]);
+  const results = ["b.mjs", "a.mjs", "a.mjs"];
+  expect(sortResultPaths(results)).toEqual(["a.mjs", "a.mjs", "b.mjs"]);
 });

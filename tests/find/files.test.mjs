@@ -4,7 +4,7 @@ import path from "node:path";
 const file = (name) => ({ name, isFile: () => true });
 const directory = (name) => ({ name, isDirectory: () => true });
 
-test("walks directories, ignores infrastructure, and sorts results", async () => {
+test("walks eligible directories and applies file filters", async () => {
   const root = path.resolve("fixture-root");
   const tree = {
     [root]: [
@@ -12,63 +12,41 @@ test("walks directories, ignores infrastructure, and sorts results", async () =>
       directory(".git"),
       directory("node_modules"),
       directory("coverage"),
-      directory(".nyc_output"),
+      directory("src"),
       file("a.mjs"),
       file("guide.md"),
-      directory("src"),
     ],
     [path.join(root, "z")]: [file("deep.mjs"), file("deep.test.mjs")],
     [path.join(root, "src")]: [directory("coverage")],
     [path.join(root, "src", "coverage")]: [file("legitimate.mjs")],
   };
-  const readDirectory = async (root) => tree[root] ?? [];
-  expect(await findFiles(root, ".mjs", { readDirectory })).toEqual([
+  const readDirectory = async (directoryPath) => tree[directoryPath] ?? [];
+
+  await expect(findFiles(root, ".mjs", { readDirectory })).resolves.toEqual([
     "a.mjs",
     "src/coverage/legitimate.mjs",
     "z/deep.mjs",
     "z/deep.test.mjs",
   ]);
-  expect(await findFiles(root, ".mjs", { readDirectory, noTests: true })).toEqual([
+  await expect(findFiles(root, ".mjs", { readDirectory, noTests: true })).resolves.toEqual([
     "a.mjs",
     "src/coverage/legitimate.mjs",
     "z/deep.mjs",
   ]);
-  expect(await findFiles(root, ".mjs", { readDirectory, testsOnly: true })).toEqual([
+  await expect(findFiles(root, ".mjs", { readDirectory, testsOnly: true })).resolves.toEqual([
     "z/deep.test.mjs",
   ]);
-  expect(await findFiles(root, ".md", { readDirectory })).toEqual(["guide.md"]);
+  await expect(findFiles(root, ".md", { readDirectory })).resolves.toEqual(["guide.md"]);
 });
 
-test("uses explicit POSIX path semantics when requested", async () => {
+test("uses injected readers for virtual roots and defaults for real roots", async () => {
   await expect(
-    findFiles("/virtual-root", ".mjs", {
-      platform: "linux",
-      readDirectory: async () => [],
-    }),
+    findFiles("/virtual-root", ".mjs", { platform: "linux", readDirectory: async () => [] }),
   ).resolves.toEqual([]);
-});
-
-test("keeps duplicate discovered paths deterministically ordered", async () => {
-  await expect(
-    findFiles("/virtual-root", ".mjs", {
-      readDirectory: async () => [file("same.mjs"), file("same.mjs")],
-    }),
-  ).resolves.toEqual(["same.mjs", "same.mjs"]);
-});
-
-test("finds files with default options", async () => {
   await expect(findFiles(process.cwd(), ".mjs")).resolves.toContain("src/cli/main.mjs");
 });
-test("rejects a symlinked scan root", async () => {
-  await expect(
-    findFiles("fixture-root", ".mjs", {
-      readDirectory: async () => [],
-      inspectRoot: async () => ({ isSymbolicLink: () => true, isDirectory: () => true }),
-    }),
-  ).rejects.toThrow("symlinked scan roots");
-});
 
-test("inspects the scan root even with an injected directory reader", async () => {
+test("inspects and rejects symlinked roots", async () => {
   const inspected = [];
   const inspectRoot = async (root) => {
     inspected.push(root);
@@ -76,113 +54,11 @@ test("inspects the scan root even with an injected directory reader", async () =
   };
   await findFiles("/virtual-root", ".mjs", { readDirectory: async () => [], inspectRoot });
   expect(inspected).toEqual([path.resolve("/virtual-root")]);
-});
 
-test("rejects invalid roots, entries, and directory results", async () => {
-  await expect(findFiles(null, ".mjs", { readDirectory: async () => [] })).rejects.toThrow(
-    "path string",
-  );
-  if (process.platform !== "win32")
-    await expect(findFiles("C:\\root", ".mjs", { readDirectory: async () => [] })).rejects.toThrow(
-      "Windows-style",
-    );
   await expect(
-    findFiles("C:\\root", ".mjs", { platform: "linux", readDirectory: async () => [] }),
-  ).rejects.toThrow("Windows-style");
-  await expect(
-    findFiles("C:\\root", ".mjs", { platform: "win32", readDirectory: async () => [] }),
-  ).resolves.toEqual([]);
-  for (const entry of [
-    { name: "" },
-    { name: "." },
-    { name: ".." },
-    { name: "a/b" },
-    { name: "a\\b" },
-  ])
-    await expect(
-      findFiles("/root", ".mjs", { readDirectory: async () => [entry] }),
-    ).rejects.toThrow("Invalid directory entry name");
-  await expect(findFiles("/root", ".mjs", { readDirectory: async () => null })).rejects.toThrow(
-    "non-array",
-  );
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => {
-        throw new Error("denied");
-      },
-    }),
-  ).rejects.toThrow("denied");
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => {
-        throw "string failure";
-      },
-    }),
-  ).rejects.toThrow("string failure");
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => [
-        {
-          name: "bad",
-          isFile: () => {
-            throw new Error("adapter");
-          },
-        },
-      ],
-    }),
-  ).rejects.toThrow("adapter");
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => [
-        {
-          name: "bad",
-          isFile: () => {
-            throw "string adapter";
-          },
-        },
-      ],
-    }),
-  ).rejects.toThrow("string adapter");
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => [{ name: "bad", isFile: () => true, isDirectory: () => true }],
-    }),
-  ).rejects.toThrow("Invalid directory entry");
-  await expect(
-    findFiles("/root", ".mjs", {
-      readDirectory: async () => [{ name: "bad", isFile: () => false, isDirectory: () => false }],
-    }),
-  ).rejects.toThrow("Invalid directory entry");
-});
-
-test("skips symlinks and nonmatching files", async () => {
-  const entries = [
-    { name: "link.mjs", isSymbolicLink: () => true, isFile: () => true },
-    file("a.js"),
-    file("a.test.mjs"),
-    file("readme.md"),
-  ];
-  expect(await findFiles("/root", ".mjs", { readDirectory: async () => entries })).toEqual([
-    "a.test.mjs",
-  ]);
-  expect(
-    await findFiles("/root", ".mjs", {
-      readDirectory: async () => [{ name: "NODE_MODULES", isDirectory: () => true }],
-    }),
-  ).toEqual([]);
-});
-
-test("rejects contradictory test filters", async () => {
-  await expect(findFiles("/root", ".mjs", { noTests: true, testsOnly: true })).rejects.toThrow(
-    "cannot both be enabled",
-  );
-});
-
-test("findFiles supports unrestricted extension matching", async () => {
-  await expect(
-    findFiles("/root", "", {
+    findFiles("fixture-root", ".mjs", {
       readDirectory: async () => [],
-      inspectRoot: async () => ({ isSymbolicLink: () => false, isDirectory: () => true }),
+      inspectRoot: async () => ({ isSymbolicLink: () => true, isDirectory: () => true }),
     }),
-  ).resolves.toEqual([]);
+  ).rejects.toThrow("symlinked scan roots");
 });

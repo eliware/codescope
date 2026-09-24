@@ -29,3 +29,21 @@ test("wraps directory read failures and rejects invalid results", async () => {
     readDirectoryEntries(async () => [{ name: "../escape" }], "repo", "repo", path),
   ).rejects.toThrow("Invalid directory entry name");
 });
+
+test("reports thrown non-Error values and malformed entry names", async () => {
+  await expect(
+    readDirectoryEntries(
+      async () => {
+        throw "denied";
+      },
+      "repo",
+      "repo",
+      path,
+    ),
+  ).rejects.toThrow("Unable to scan .: denied");
+
+  for (const name of ["", ".", "..", "a/b", "a\\b"])
+    await expect(
+      readDirectoryEntries(async () => [{ name }], "repo", "repo", path),
+    ).rejects.toThrow("Invalid directory entry name");
+});

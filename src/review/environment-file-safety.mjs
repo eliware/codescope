@@ -9,17 +9,3 @@ export function assertRegularFile(envFile, metadata) {
     throw new Error(`${envFile} inspection did not provide regular-file metadata`);
   if (!metadata.isFile()) throw new Error(`${envFile} must be a regular file`);
 }
-
-export function fileIdentity(envFile, metadata) {
-  const { dev, ino } = metadata ?? {};
-  const valid = (value) => typeof value === "number" || typeof value === "bigint";
-  if (!valid(dev) || !valid(ino))
-    throw new Error(`${envFile} inspection did not provide stable file identity`);
-  const normalize = (value) =>
-    typeof value === "bigint"
-      ? value.toString()
-      : Number.isSafeInteger(value)
-        ? BigInt(value).toString()
-        : `number:${value}`;
-  return `${normalize(dev)}:${normalize(ino)}`;
-}

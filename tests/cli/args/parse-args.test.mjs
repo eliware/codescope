@@ -1,0 +1,27 @@
+import { parseArgs } from "../../../src/cli/args/parse-args.mjs";
+
+test("merges leading and command options while preserving addition order", () => {
+  expect(parseArgs(["--usage", "--add", "first", "all", "--add", "last"])).toMatchObject({
+    command: "analyze-all",
+    usage: true,
+    add: ["first", "last"],
+  });
+});
+
+test("accepts shared options before or after the command", () => {
+  expect(parseArgs(["all"])).toMatchObject({ command: "analyze-all" });
+  expect(parseArgs(["all", "--add", "first", "--effort=medium", "-a", "second"])).toMatchObject({
+    effort: "medium",
+    add: ["first", "second"],
+  });
+  expect(parseArgs(["--effort=low", "all"])).toMatchObject({ effort: "low" });
+  expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({ dryRun: true });
+});
+
+test("parses a command with options on both sides of its name", () => {
+  expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({
+    command: "analyze-all",
+    effort: "low",
+    dryRun: true,
+  });
+});

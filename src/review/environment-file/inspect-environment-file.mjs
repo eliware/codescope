@@ -1,4 +1,5 @@
-import { assertNotSymbolicLink, fileIdentity } from "../environment-file-safety.mjs";
+import { assertNotSymbolicLink } from "../environment-file-safety.mjs";
+import { fileIdentity } from "../environment-file-identity.mjs";
 
 export async function inspectEnvironmentFile(envFile, inspectFile) {
   try {

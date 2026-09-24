@@ -1,11 +1,12 @@
-import { PROFILE_DEFINITIONS, getSuggestionCategories } from "./profile-definitions.mjs";
+import { PROFILE_DEFINITIONS } from "./profile-definitions.mjs";
+import { getSuggestionCategories } from "./profile-selection.mjs";
 import {
   combinedAllPrompt,
   createAnalysisPrompt,
-  createGenericSuggestionPrompt,
   getPromptSource,
   releasePrompt,
 } from "./prompt-sources.mjs";
+import { createGenericSuggestionPrompt } from "./generic-suggestion-prompt.mjs";
 
 export function getPromptRouting(profile, mode) {
   if (!Object.hasOwn(PROFILE_DEFINITIONS, profile))

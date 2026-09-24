@@ -1,10 +1,11 @@
 import { lstat, readFile } from "node:fs/promises";
 import path from "node:path";
 import { readConventionApplicability } from "./convention/applicability.mjs";
-import { conventionFilesForApplicability } from "./convention/paths.mjs";
 import { discoverConventionFiles } from "./convention/discover.mjs";
-import { readCanonicalDirectiveIndex } from "./convention/canonical-index.mjs";
+import { resolveConventionSelection } from "./convention/resolve-selection.mjs";
 import { readConventionRecords } from "./convention/read-records.mjs";
+import { formatConventionEvidence } from "./convention/evidence-output.mjs";
+
 export async function combineConventionFiles(
   root,
   {
@@ -21,44 +22,38 @@ export async function combineConventionFiles(
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error("Convention read concurrency must be a positive integer");
   const discovery = await discoverConventionFiles(conventionsRoot, { readDirectory, platform });
-  if (!discovery) return "===== Convention v8 JSON =====\nConvention checkout not supplied.\n";
+  if (!discovery) {
+    return formatConventionEvidence({ status: "checkout-unavailable" });
+  }
   const applicability = await readConventionApplicability(root, {
     conventionsRoot,
     readPackageJson,
     readFileContents,
     platform,
   });
-  if (!applicability)
-    return "===== Convention v8 JSON =====\nConvention applicability unavailable.\n";
+  if (!applicability) {
+    return formatConventionEvidence({ status: "applicability-unavailable" });
+  }
   if (applicability.kind === "invalid") {
-    return `===== Convention v8 JSON =====\nConvention applicability invalid: ${applicability.reason}.\n`;
+    return formatConventionEvidence({
+      status: "applicability-invalid",
+      reason: applicability.reason,
+    });
   }
-  const canonicalRecords = applicability.includeAll
-    ? await readCanonicalDirectiveIndex(discovery.specsRoot, {
-        readFileContents,
-        inspectFile,
-        platform,
-      })
-    : undefined;
-  const { files, missing } = conventionFilesForApplicability(
-    discovery.files,
-    applicability,
-    canonicalRecords,
-  );
-  if (missing.length > 0) {
-    return (
-      "===== Convention v8 JSON =====\n" +
-      "Convention evidence incomplete; missing records: " +
-      missing.join(", ") +
-      ".\n"
-    );
+  const selection = await resolveConventionSelection(discovery, applicability, {
+    readFileContents,
+    inspectFile,
+    platform,
+  });
+  if (selection.missing.length > 0) {
+    return formatConventionEvidence({ status: "records-missing", missing: selection.missing });
   }
-  const sections = await readConventionRecords(discovery.specsRoot, files, {
+  const sections = await readConventionRecords(discovery.specsRoot, selection.files, {
     concurrency,
     maxChars,
     readFileContents,
     inspectFile,
     platform,
   });
-  return "===== Convention v8 JSON =====\n" + sections.join("\n") + "\n";
+  return formatConventionEvidence({ status: "ready", sections });
 }

@@ -1,4 +1,4 @@
-import { getProfileFiles } from "./profile-definitions.mjs";
+import { getProfileFiles } from "./profile-selection.mjs";
 import { getPromptRouting } from "./prompt-routing.mjs";
 import { createProfileCombiner } from "./source-selection.mjs";
 import { decorateProfilePrompt } from "./tool-decoration.mjs";

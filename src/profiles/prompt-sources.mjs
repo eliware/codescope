@@ -63,11 +63,4 @@ export function getPromptSource(profile) {
   return promptSources[profile];
 }
 
-export function createGenericSuggestionPrompt(profile) {
-  return profilePrompt(
-    `suggest actionable improvements across all supplied source categories for the ${profile} profile. Do not report existing issues; return suggestions only.`,
-    createSuggestionTool(),
-  );
-}
-
 export { createAnalysisPrompt, releasePrompt, combinedAllPrompt, defaultPrompt };

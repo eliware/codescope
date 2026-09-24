@@ -18,4 +18,6 @@ test("matches code and exact test extensions", () => {
   expect(matchesFile("app.test.ts", [".js", ".mjs", ".cjs", ".ts"], true, false)).toBe(true);
   expect(matchesFile("app.ts", [".js", ".cjs", ".mjs", ".ts"], true, false)).toBe(false);
   expect(TEST_FILE_PATTERN.test("app.test.cjs")).toBe(true);
+  expect(matchesFile("app.mjs", "", false, false)).toBe(true);
+  expect(matchesFile("app.test.mjs", ".mjs", false, false)).toBe(true);
 });

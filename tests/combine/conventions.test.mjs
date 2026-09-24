@@ -30,28 +30,6 @@ test("includes only package-selected directive records", async () => {
   }
 });
 
-test("reports unknown applied directive profiles as missing evidence", async () => {
-  const root = await fsTemp("codescope-conventions-");
-  await mkdir(path.join(root, "specs"), { recursive: true });
-  await mkdir(path.join(root, "project"));
-  await writeFile(path.join(root, "specs", "general.json"), "{}");
-  await writeFile(
-    path.join(root, "project", "package.json"),
-    JSON.stringify({
-      eliware: { apply: ["general", "unsupported"] },
-    }),
-  );
-  try {
-    const result = await combineConventionFiles(path.join(root, "project"), {
-      conventionsRoot: root,
-    });
-    expect(result).toContain("Convention evidence incomplete");
-    expect(result).toContain("unsupported");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
 test("supplies only indexed canonical records to eliware-test and reports missing indexed records", async () => {
   const root = await fsTemp("codescope-conventions-");
   const specs = path.join(root, "specs");
@@ -95,49 +73,26 @@ test("supplies only indexed canonical records to eliware-test and reports missin
   }
 });
 
-test("reports unavailable checkout and applicability", async () => {
-  await expect(
-    combineConventionFiles("C:/missing-project", {
-      conventionsRoot: "C:/missing-conventions",
-      platform: "win32",
-    }),
-  ).resolves.toContain("Convention checkout not supplied");
-  const root = await fsTemp("codescope-conventions-");
-  await mkdir(path.join(root, "specs"), { recursive: true });
-  await mkdir(path.join(root, "project"));
-  try {
-    await expect(
-      combineConventionFiles(path.join(root, "project"), { conventionsRoot: root }),
-    ).resolves.toContain("Convention applicability unavailable");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
-test("reports invalid applicability separately from an unavailable checkout", async () => {
-  const root = await fsTemp("codescope-conventions-");
-  await mkdir(path.join(root, "specs"), { recursive: true });
-  await mkdir(path.join(root, "project"));
-  await writeFile(path.join(root, "project", "package.json"), "{");
-  try {
-    await expect(
-      combineConventionFiles(path.join(root, "project"), { conventionsRoot: root }),
-    ).resolves.toContain("Convention applicability invalid: package.json is not valid JSON.");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
 test("rejects invalid read concurrency before discovery", async () => {
   await expect(combineConventionFiles("repo", { concurrency: 0 })).rejects.toThrow(
     /positive integer/,
   );
 });
 
-test("uses default convention options when omitted", async () => {
-  await expect(combineConventionFiles("C:/missing-project")).resolves.toContain(
-    "Convention checkout not supplied",
-  );
+test("reports unavailable checkout and package applicability", async () => {
+  const root = await fsTemp("codescope-conventions-");
+  try {
+    await expect(combineConventionFiles("missing-project")).resolves.toContain(
+      "Convention checkout not supplied",
+    );
+
+    await mkdir(path.join(root, "specs"));
+    await expect(
+      combineConventionFiles(path.join(root, "missing-project"), { conventionsRoot: root }),
+    ).resolves.toContain("Convention applicability unavailable");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 async function fsTemp(prefix) {

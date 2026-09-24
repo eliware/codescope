@@ -1,10 +1,10 @@
-import { combineFiles } from "./files.mjs";
 import { collectMetadataSections } from "./metadata-sections.mjs";
 import { collectInventorySection } from "./inventory-section.mjs";
 import { findFiles } from "../find/files.mjs";
 import { joinCombinedSections } from "./combined-source.mjs";
 import { validateCombineOptions } from "./policies.mjs";
 import { createSectionBudget } from "./section-budget.mjs";
+import { readSelectedSections } from "./selected/read-sections.mjs";
 
 const DEFAULT_SELECTED_OPTIONS = {
   concurrency: 16,
@@ -31,35 +31,14 @@ export async function combineSelectedFiles(
     joinCombinedSections(parts, normalizedOptions.maxChars).length,
     normalizedOptions.maxChars,
   );
-  const selected = [];
-  if (implementation)
-    selected.push(
-      await budget.read((maxChars) =>
-        combineFiles(root, [".js", ".mjs", ".cjs", ".ts"], {
-          ...normalizedOptions,
-          maxChars,
-          files: inventory,
-          noTests: true,
-        }),
-      ),
-    );
-  if (tests)
-    selected.push(
-      await budget.read((maxChars) =>
-        combineFiles(root, [".js", ".mjs", ".cjs", ".ts"], {
-          ...normalizedOptions,
-          maxChars,
-          files: inventory,
-          testsOnly: true,
-        }),
-      ),
-    );
-  if (docs)
-    selected.push(
-      await budget.read((maxChars) =>
-        combineFiles(root, ".md", { ...normalizedOptions, maxChars, files: inventory }),
-      ),
-    );
-  parts.push(...selected);
+  parts.push(
+    ...(await readSelectedSections({
+      root,
+      selection: { implementation, tests, docs },
+      options: normalizedOptions,
+      inventory,
+      budget,
+    })),
+  );
   return joinCombinedSections(parts, normalizedOptions.maxChars);
 }

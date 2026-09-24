@@ -32,4 +32,14 @@ test("rejects ambiguous, unknown, and throwing entries", () => {
       "src",
     ),
   ).toThrow("Unable to scan");
+  expect(() =>
+    classifyEntry(
+      {
+        isDirectory: () => {
+          throw "bad metadata";
+        },
+      },
+      "src",
+    ),
+  ).toThrow("Unable to scan src: bad metadata");
 });

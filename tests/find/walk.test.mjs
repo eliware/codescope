@@ -9,6 +9,7 @@ test("walks directories, skips entries, and reports files", async () => {
             { name: "nested", kind: "directory" },
             { name: "skip", skip: true },
             { name: "a.mjs", kind: "file" },
+            { name: "a.mjs", kind: "file" },
           ]
         : [{ name: "b.mjs", kind: "file" }],
     classify: (entry) => ({
@@ -20,7 +21,7 @@ test("walks directories, skips entries, and reports files", async () => {
     resolveChild: (directory, name) => `${directory}/${name}`,
     onFile: (name, directory) => files.push(`${directory}/${name}`),
   });
-  expect(files).toEqual(["root/a.mjs", "root/nested/b.mjs"]);
+  expect(files).toEqual(["root/a.mjs", "root/a.mjs", "root/nested/b.mjs"]);
 });
 
 test("reads directories with bounded concurrency and deterministic file order", async () => {
