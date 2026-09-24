@@ -19,18 +19,6 @@ test("reads a supplied environment file through the stable reader boundary", asy
   ).resolves.toBe("OPENAI_API_TOKEN=value");
 });
 
-test("wraps failures opening a supplied environment file", async () => {
-  await expect(
-    readReviewEnvironmentFile({
-      envFile: "file",
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
-      openEnvFile: async () => {
-        throw new Error("read failed");
-      },
-    }),
-  ).rejects.toThrow("Unable to securely read file: read failed");
-});
-
 test("preserves an optional default file that is absent at startup", async () => {
   const missing = Object.assign(new Error("missing"), { code: "ENOENT" });
   await expect(

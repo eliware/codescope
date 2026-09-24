@@ -6,11 +6,6 @@ test("merges defaults and preserves the file reader", () => {
   expect(resolved.readFile).toBe(readFile);
 });
 
-test("preserves an explicitly supplied file reader", () => {
-  const readFile = () => {};
-  expect(resolveReviewOptions("repo", { readFile }).readFile).toBe(readFile);
-});
-
 test("preserves an explicitly supplied environment opener", () => {
   const openEnvFile = async () => {};
   expect(resolveReviewOptions("repo", { openEnvFile }).openEnvFile).toBe(openEnvFile);

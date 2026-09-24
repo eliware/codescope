@@ -1,4 +1,4 @@
-import { conventionFilesForApplicability } from "./paths.mjs";
+import { selectConventionFiles } from "./selection.mjs";
 import { readCanonicalDirectiveIndex } from "./canonical-index.mjs";
 
 export async function resolveConventionSelection(discovery, applicability, options = {}) {
@@ -10,5 +10,5 @@ export async function resolveConventionSelection(discovery, applicability, optio
         platform,
       })
     : undefined;
-  return conventionFilesForApplicability(discovery.files, applicability, canonicalRecords);
+  return selectConventionFiles(discovery.files, applicability, canonicalRecords);
 }
