@@ -58,9 +58,6 @@ the current task. Keep changes scoped, preserve unrelated work, and do not
 copy shared Convention requirements into local directives. Runtime workflow
 concerns include repeatable shutdown and signal cleanup.
 
-The temporary pre-release validator migration exception is recorded in
-`package.json.eliware.exempt` and expires on 2026-09-30.
-
 ## Application
 
 The application entrypoint is `bin/codescope.mjs`, exposed as the `codescope`
