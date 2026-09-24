@@ -36,6 +36,7 @@
     "src/",
     "README.md",
     "docs/",
+    "examples/",
     "prompts/",
     "specs/",
     "KNOWN_ISSUES.md",

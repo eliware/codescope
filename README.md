@@ -155,20 +155,27 @@ change the CLI exit code.
 Add one or more `-a <text>` or `--add <text>` options to profile commands to
 append custom guidance to the final user message. Bare `codescope`, help, and
 version output do not apply additions. Use `codescope --help` for the complete
-command and option reference, including supported review/suggestion profiles,
-model and effort options, usage reporting, and dry-run estimates. CodeScope
-defaults to `gpt-6-luna`.
+command and option reference. Supported commands include `codescope all`,
+`codescope release`, `codescope review <profile>`, `codescope suggest <profile>`,
+`codescope prompt <text>`, `codescope --help`, and `codescope --version`.
+Profile commands accept repeatable additions, model and effort options, usage
+reporting, and dry-run estimates. CodeScope defaults to `gpt-6-luna`.
+
+The examples below are safe to copy from a repository root:
 
 ```text
 codescope all --add "Focus on reliability risks in recently changed code"
+codescope release
+codescope review architecture
+codescope suggest new-features
+codescope prompt "Explain the main reliability risks"
 codescope --help
 codescope --version
 ```
 
 CI validates the CLI on Ubuntu. Windows uses the same Node.js command syntax,
-but is not currently covered by the supplied CI workflow.
-See [examples/README.md](examples/README.md) for additional end-user command
-examples.
+but is not currently covered by the supplied CI workflow. Review commands are
+read-only and have no destructive actions.
 
 ## Exit codes
 

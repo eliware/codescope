@@ -4,7 +4,7 @@ import { lstat } from "node:fs/promises";
 
 export function createEvidenceDefaults() {
   return {
-    combine: (root, options) => combineFiles(root, ".mjs", options),
+    combine: (root, options) => combineFiles(root, [".js", ".mjs", ".cjs", ".ts"], options),
     maxSourceChars: 2_000_000,
     inspectFile: lstat,
     readFile: fs.promises.readFile,

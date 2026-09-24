@@ -35,3 +35,15 @@ test("marks malformed numeric usage fields in safe diagnostics", () => {
     invalid_fields: true,
   });
 });
+
+test("marks unsafe integer usage counters invalid", () => {
+  const unsafe = Number.MAX_SAFE_INTEGER + 1;
+  expect(readNumericUsage({ usage: { input_tokens: unsafe, output_tokens: 2 } })).toEqual({
+    output_tokens: 2,
+    invalid_fields: true,
+  });
+  expect(readNumericUsage({ usage: { input_tokens: 2, output_tokens: unsafe } })).toEqual({
+    input_tokens: 2,
+    invalid_fields: true,
+  });
+});

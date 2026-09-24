@@ -25,6 +25,7 @@ export async function combineSelectedFiles(
     metadata.conventions,
     metadata.json,
     metadata.configs,
+    // codescope ignore: A-19.3 requires the inventory for every profile before selected evidence.
     await collectInventorySection(root, inventory, normalizedOptions),
   ];
   const budget = createSectionBudget(

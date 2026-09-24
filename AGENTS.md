@@ -97,9 +97,9 @@ review action.
 
 The public package is `@eliware/codescope`; `package.json` is the source of its
 version, and the repository URL is `https://github.com/eliware/codescope`. Its
-package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `prompts/`,
-`specs/`, `KNOWN_ISSUES.md`, `NEW_FEATURE_SUGGESTIONS.md`, `LICENSE`, and
-`RELEASE_NOTES.md`. The package `pack` script is `eliware-test --pack`, and
+package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `examples/`,
+`prompts/`, `specs/`, `KNOWN_ISSUES.md`, `NEW_FEATURE_SUGGESTIONS.md`,
+`LICENSE`, and `RELEASE_NOTES.md`. The package `pack` script is `eliware-test --pack`, and
 package-artifact validation must pass before publication.
 
 `publishConfig.provenance` is `true`; the separate

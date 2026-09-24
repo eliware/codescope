@@ -1,3 +1,4 @@
+import path from "node:path";
 import { createEvidenceDefaults } from "../../../src/review/defaults/evidence.mjs";
 
 test("creates evidence defaults", () => {
@@ -7,7 +8,20 @@ test("creates evidence defaults", () => {
   });
 });
 
-test("default evidence combiner selects JavaScript modules", async () => {
+test("default evidence combiner selects every supported implementation extension", async () => {
   const { combine } = createEvidenceDefaults();
-  await expect(combine("/repo", { readDirectory: async () => [] })).resolves.toBe("");
+  const readFiles = [];
+  const combined = await combine("/repo", {
+    files: ["src/app.js", "src/app.cjs", "src/app.mjs", "src/app.ts", "README.md"],
+    readFileContents: async (filePath) => {
+      readFiles.push(filePath);
+      return "source";
+    },
+  });
+  expect(readFiles).toEqual(
+    ["src/app.js", "src/app.cjs", "src/app.mjs", "src/app.ts"].map((file) =>
+      path.resolve("/repo", file),
+    ),
+  );
+  expect(combined).toContain("===== src/app.ts =====");
 });
