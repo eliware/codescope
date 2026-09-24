@@ -1,18 +1,14 @@
 import path from "node:path";
-import { isIncludedContent, MAX_OTHER_FILE_BYTES } from "./other-policy.mjs";
-import { readFileUpToLimit } from "./read-file-up-to-limit.mjs";
+import { isIncludedContent } from "./other-policy.mjs";
 import { readBatches } from "./batches.mjs";
 import { readInventoryEntry } from "./inventory/read-entry.mjs";
 import { selectInventoryFiles } from "./inventory/paths.mjs";
-
-const defaultReadOtherFileContents = (filePath) =>
-  readFileUpToLimit(filePath, MAX_OTHER_FILE_BYTES);
 
 export async function describeOtherFiles(
   root,
   inventory,
   {
-    readOtherFileContents = defaultReadOtherFileContents,
+    readOtherFileContents,
     inspectFile,
     concurrency = 8,
     platform = process.platform,

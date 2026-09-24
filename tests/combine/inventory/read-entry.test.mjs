@@ -83,11 +83,68 @@ test("uses the default file inspector when no inspector is injected", async () =
     await writeFile(path.join(root, "notes.txt"), "notes");
     await expect(
       readInventoryEntry(root, "notes.txt", {
-        pathApi: path.win32,
-        readOtherFileContents: async () => ({ data: "notes", truncated: false }),
+        pathApi: path.posix,
       }),
     ).resolves.toContain("notes.txt");
   } finally {
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("rejects an inventory path replaced between inspection and opening", async () => {
+  let readAttempted = false;
+  let closed = false;
+  await expect(
+    readInventoryEntry("repo", "notes.txt", {
+      pathApi: path.posix,
+      inspectFile: async () => fileMetadata(2n),
+      openFile: async () => ({
+        stat: async () => fileMetadata(3n),
+        read: async () => {
+          readAttempted = true;
+          return { bytesRead: 0 };
+        },
+        close: async () => {
+          closed = true;
+        },
+      }),
+    }),
+  ).rejects.toThrow(/changed while opening/);
+  expect(readAttempted).toBe(false);
+  expect(closed).toBe(true);
+});
+
+test("rejects inventory content changed during the opened-handle read", async () => {
+  let statCalls = 0;
+  let readCalls = 0;
+  await expect(
+    readInventoryEntry("repo", "notes.txt", {
+      pathApi: path.posix,
+      inspectFile: async () => fileMetadata(2n),
+      openFile: async () => ({
+        stat: async () =>
+          statCalls++ === 0 ? fileMetadata(2n) : fileMetadata(2n, { size: 9n }),
+        read: async (buffer) => {
+          if (readCalls++ > 0) return { bytesRead: 0 };
+          buffer.write("notes");
+          return { bytesRead: 5 };
+        },
+        close: async () => {},
+      }),
+    }),
+  ).rejects.toThrow(/changed while reading/);
+  expect(statCalls).toBe(2);
+});
+
+function fileMetadata(inode, overrides = {}) {
+  return {
+    isSymbolicLink: () => false,
+    isFile: () => true,
+    dev: 1n,
+    ino: inode,
+    size: 5n,
+    mtimeNs: 10n,
+    ctimeNs: 11n,
+    ...overrides,
+  };
+}

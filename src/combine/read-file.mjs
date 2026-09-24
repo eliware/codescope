@@ -36,13 +36,27 @@ async function readInspectedSourceFile(rootPath, inspectedMetadata, openFile) {
   try {
     const openedMetadata = await handle.stat({ bigint: true });
     if (!openedMetadata.isFile()) throw new Error("source path is not a regular file");
-    if (
-      BigInt(inspectedMetadata.dev) !== openedMetadata.dev ||
-      BigInt(inspectedMetadata.ino) !== openedMetadata.ino
-    )
-      throw new Error("source file changed while opening");
-    return await handle.readFile("utf8");
+    assertSameSourceIdentity(inspectedMetadata, openedMetadata);
+    const contents = await handle.readFile("utf8");
+    assertStableSourceSnapshot(openedMetadata, await handle.stat({ bigint: true }));
+    return contents;
   } finally {
     await handle.close();
   }
+}
+
+function assertSameSourceIdentity(expected, actual) {
+  if (BigInt(expected.dev) !== actual.dev || BigInt(expected.ino) !== actual.ino)
+    throw new Error("source file changed while opening");
+}
+
+function assertStableSourceSnapshot(before, after) {
+  if (
+    before.dev !== after.dev ||
+    before.ino !== after.ino ||
+    before.size !== after.size ||
+    before.mtimeNs !== after.mtimeNs ||
+    before.ctimeNs !== after.ctimeNs
+  )
+    throw new Error("source file changed while reading");
 }

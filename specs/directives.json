@@ -96,6 +96,7 @@
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Before reading selected repository files, confirm the opened handle is a regular file with the same identity as the pre-open inspection; reject replacement before reading through the handle.",
+            "Read selected source and inventory files through their verified open handles, and reject a file whose identity, size, or modification/change timestamps differ between the beginning and end of the read.",
             "For selected configuration files, validate the opened file handle as a regular file and confirm it identifies the same file inspected before opening, so a path replacement cannot redirect the read to a symbolic-link target.",
             "Frame each untrusted repository-evidence or additional-user-context block with a boundary token that does not occur in that block's content.",
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."

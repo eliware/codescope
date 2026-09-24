@@ -43,6 +43,34 @@ test("rejects a source path replaced between inspection and opening", async () =
   expect(closed).toBe(true);
 });
 
+test("rejects source content changed during the opened-handle read", async () => {
+  let statCalls = 0;
+  await expect(
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      inspectFile: async () => sourceMetadata(),
+      openFile: async () => ({
+        stat: async () => (statCalls++ === 0 ? sourceMetadata() : { ...sourceMetadata(), size: 9n }),
+        readFile: async () => "changed",
+        close: async () => {},
+      }),
+    }),
+  ).rejects.toThrow(/changed while reading/);
+  expect(statCalls).toBe(2);
+});
+
+function sourceMetadata(overrides = {}) {
+  return {
+    isSymbolicLink: () => false,
+    isFile: () => true,
+    dev: 1n,
+    ino: 2n,
+    size: 7n,
+    mtimeNs: 10n,
+    ctimeNs: 11n,
+    ...overrides,
+  };
+}
+
 test("rejects a non-file opened after source inspection", async () => {
   let closed = false;
   await expect(
