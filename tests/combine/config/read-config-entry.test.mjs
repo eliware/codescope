@@ -95,6 +95,16 @@ test("reports line truncation separately from byte truncation", async () => {
   ).resolves.toContain("truncated after 200 lines");
 });
 
+test("does not truncate exactly 200 lines ending with a newline", async () => {
+  const text = `${Array.from({ length: 200 }, (_, index) => `line-${index}`).join("\n")}\n`;
+  const result = await readConfigEntry("repo", ".github/ci.yml", {
+    inspectFile: async () => regular,
+    readFileContents: async () => text,
+  });
+  expect(result).toContain("200 line-199");
+  expect(result).not.toContain("truncated");
+});
+
 test("reports byte truncation when the bounded reader marks a short file", async () => {
   await expect(
     readConfigEntry("repo", ".github/ci.yml", {

@@ -43,6 +43,7 @@ export async function readConfigEntry(
     .subarray(0, MAX_CONFIG_BYTES)
     .toString("utf8")
     .split(/\r\n|\r|\n/u);
+  // codescope ignore: remove the final-newline split artifact before applying the line limit.
   while (lines.at(-1) === "") lines.pop();
   const lineTruncated = lines.length > MAX_CONFIG_LINES;
   const visibleLines = lines.slice(0, MAX_CONFIG_LINES);
