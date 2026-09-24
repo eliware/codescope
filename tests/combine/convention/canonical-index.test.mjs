@@ -12,13 +12,23 @@ test("parses unannotated JSON links as canonical directive records only", () => 
     "## Files",
     "- [general.json](general.json)",
     "- [nested/cli.json](nested/cli.json)",
+    "- [./profile/application.json](./profile/application.json)",
     "- [authority.json](authority.json) — Local authority registry.",
     "- [authority-map.json](authority-map.json) — Canonical schema.",
     "- [label.json](different-target.json)",
     '- [title.json](title.json "annotated link")',
+    "- [https://example.org/external.json](https://example.org/external.json)",
+    "- [/absolute.json](/absolute.json)",
+    "- [C:/drive.json](C:/drive.json)",
+    "- [folder\\backslash.json](folder\\backslash.json)",
+    "- [../outside.json](../outside.json)",
     "- [notes](notes.md)",
   ].join("\n");
-  expect(parseCanonicalDirectiveIndex(index)).toEqual(["general.json", "nested/cli.json"]);
+  expect(parseCanonicalDirectiveIndex(index)).toEqual([
+    "general.json",
+    "nested/cli.json",
+    "profile/application.json",
+  ]);
 });
 
 test("returns no canonical records for an index without directive links", () => {
@@ -78,4 +88,32 @@ test("preserves useful details when the canonical index cannot be read", async (
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).rejects.toThrow("Unable to read conventions/specs/README.md: read denied");
+});
+
+test("recognizes nested ENOENT causes as a missing index", async () => {
+  const missing = Object.assign(new Error("missing"), { code: "ENOENT" });
+  const wrapped = new Error("outer wrapper", {
+    cause: new Error("inner wrapper", { cause: missing }),
+  });
+  await expect(
+    readCanonicalDirectiveIndex("/conventions/specs", {
+      readFileContents: async () => {
+        throw wrapped;
+      },
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
+  ).resolves.toBeUndefined();
+});
+
+test("stops safely on cyclic errors without hiding their diagnostic", async () => {
+  const cyclic = new Error("cyclic read failure");
+  cyclic.cause = cyclic;
+  await expect(
+    readCanonicalDirectiveIndex("/conventions/specs", {
+      readFileContents: async () => {
+        throw cyclic;
+      },
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
+  ).rejects.toThrow("Unable to read conventions/specs/README.md: cyclic read failure");
 });

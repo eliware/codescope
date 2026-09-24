@@ -41,7 +41,7 @@ test("supplies only indexed canonical records to eliware-test and reports missin
     [
       "# Convention specifications",
       "## Files",
-      "- [general.json](general.json)",
+      "- [./general.json](./general.json)",
       "- [cli.json](cli.json)",
       "- [authority.json](authority.json) — Local authority registry.",
     ].join("\n"),
