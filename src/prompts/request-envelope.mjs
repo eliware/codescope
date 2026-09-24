@@ -1,14 +1,14 @@
-import { reviewTool } from './review-tool.mjs';
+import { reviewTool } from "./review-tool.mjs";
 
 export const baseRequest = {
-  model: 'gpt-6-luna',
-  service_tier: 'default',
-  text: { format: { type: 'text' }, verbosity: 'low' },
-  reasoning: { effort: 'none', mode: 'standard', summary: null },
+  model: "gpt-6-luna",
+  service_tier: "default",
+  text: { format: { type: "text" }, verbosity: "low" },
+  reasoning: { effort: "none", mode: "standard", summary: null },
   tools: [reviewTool],
-  tool_choice: { type: 'function', name: 'submit_review' },
+  tool_choice: { type: "function", name: "submit_review" },
   parallel_tool_calls: false,
   store: false,
-  prompt_cache_options: { mode: 'explicit' },
-  include: ['reasoning.encrypted_content', 'web_search_call.action.sources'],
+  prompt_cache_options: { mode: "explicit" },
+  include: ["reasoning.encrypted_content", "web_search_call.action.sources"],
 };

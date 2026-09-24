@@ -2,15 +2,15 @@ export const TEST_FILE_PATTERN = /\.test\.(?:js|cjs|mjs|ts)$/iu;
 
 export function isCodeExtension(extension) {
   return (
-    ['.js', '.cjs', '.mjs', '.ts'].includes(extension) ||
+    [".js", ".cjs", ".mjs", ".ts"].includes(extension) ||
     (Array.isArray(extension) &&
-      extension.some((value) => ['.js', '.cjs', '.mjs', '.ts'].includes(value.toLowerCase())))
+      extension.some((value) => [".js", ".cjs", ".mjs", ".ts"].includes(value.toLowerCase())))
   );
 }
 
 export function matchesFile(name, extension, testsOnly, noTests) {
   const extensionMatches =
-    extension === '' ||
+    extension === "" ||
     (Array.isArray(extension)
       ? extension.some((value) => name.toLowerCase().endsWith(value.toLowerCase()))
       : name.toLowerCase().endsWith(extension.toLowerCase()));

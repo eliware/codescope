@@ -1,8 +1,8 @@
-import { combineSelectedFiles } from '../combine/selected.mjs';
+import { combineSelectedFiles } from "../combine/selected.mjs";
 
 export function createProfileCombiner(profileFiles, mode) {
   const [implementation, tests, docs] = profileFiles;
-  const reviewSources = mode === 'review';
+  const reviewSources = mode === "review";
   return (root, options) =>
     combineSelectedFiles(root, {
       ...options,

@@ -1,10 +1,10 @@
-import { getProfile } from '../profiles/index.mjs';
-import { applyEffort } from './prompt-options.mjs';
+import { getProfile } from "../profiles/index.mjs";
+import { applyEffort } from "./prompt-options.mjs";
 
 export async function runProfileCommand(command, options) {
-  const target = command.slice('analyze-'.length);
+  const target = command.slice("analyze-".length);
   const {
-    mode = 'review',
+    mode = "review",
     option,
     options: rawOptions = [],
     effort,
@@ -16,13 +16,13 @@ export async function runProfileCommand(command, options) {
     review,
     add = [],
   } = options;
-  const effectiveMode = target === 'new-features' && mode === 'review' ? 'suggest' : mode;
+  const effectiveMode = target === "new-features" && mode === "review" ? "suggest" : mode;
   const { combine, prompt: profilePrompt } = getProfile(target, effectiveMode);
   const prompt = applyEffort(profilePrompt, effort);
   await review(cwd, {
     write,
     combine,
-    usage: usage || option === '--usage' || rawOptions.includes('--usage'),
+    usage: usage || option === "--usage" || rawOptions.includes("--usage"),
     prompt,
     model,
     dryRun,

@@ -1,6 +1,6 @@
-import os from 'node:os';
-import path from 'node:path';
+import os from "node:os";
+import path from "node:path";
 
 export function defaultEnvFile() {
-  return path.join(os.homedir(), '.codescope');
+  return path.join(os.homedir(), ".codescope");
 }

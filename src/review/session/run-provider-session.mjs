@@ -1,6 +1,6 @@
-import { requestProviderResponse } from '../provider-request.mjs';
-import { responseText } from '../../response/provider-text.mjs';
-import { createSessionResult } from '../session-result.mjs';
+import { requestProviderResponse } from "../provider-request.mjs";
+import { responseText } from "../../response/provider-text.mjs";
+import { createSessionResult } from "../session-result.mjs";
 
 export async function runProviderSession({ client, request, signal, plainText }) {
   const providerResponse = await requestProviderResponse(client, request, signal);
@@ -12,7 +12,7 @@ export async function runProviderSession({ client, request, signal, plainText })
     throw cause;
   }
   return createSessionResult(
-    plainText === undefined ? 'review' : 'prompt',
+    plainText === undefined ? "review" : "prompt",
     output,
     providerResponse,
   );

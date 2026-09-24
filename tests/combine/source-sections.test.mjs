@@ -1,10 +1,10 @@
-import { collectSourceSections } from '../../src/combine/source-sections.mjs';
+import { collectSourceSections } from "../../src/combine/source-sections.mjs";
 
-test('collects source sections', async () => {
-  const result = await collectSourceSections('repo', {
+test("collects source sections", async () => {
+  const result = await collectSourceSections("repo", {
     readDirectory: async () => [],
-    readFileContents: async () => '',
+    readFileContents: async () => "",
   });
-  expect(result).toHaveProperty('implementation');
-  expect(result).toHaveProperty('tests');
+  expect(result).toHaveProperty("implementation");
+  expect(result).toHaveProperty("tests");
 });

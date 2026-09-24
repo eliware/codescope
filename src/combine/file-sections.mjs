@@ -1,8 +1,8 @@
-import path from 'node:path';
-import { formatSourceSection } from './section-format.mjs';
-import { readSourceFile } from './read-file.mjs';
-import { assertWithinLimit } from './limits.mjs';
-import { readBatches } from './batches.mjs';
+import path from "node:path";
+import { formatSourceSection } from "./section-format.mjs";
+import { readSourceFile } from "./read-file.mjs";
+import { assertWithinLimit } from "./limits.mjs";
+import { readBatches } from "./batches.mjs";
 
 export async function combineFileSections(root, files, options) {
   const { maxChars, readFileContents, inspectFile, validateSymlinks } = options;
@@ -21,5 +21,5 @@ export async function combineFileSections(root, files, options) {
       return formatSourceSection(relativePath, contents);
     },
   });
-  return sections.join('\n');
+  return sections.join("\n");
 }

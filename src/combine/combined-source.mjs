@@ -8,5 +8,5 @@ export function joinCombinedSections(sections, maxChars = Number.POSITIVE_INFINI
       throw new Error(`Combined source exceeds the ${maxChars}-character limit`);
     included.push(section);
   }
-  return included.join('\n');
+  return included.join("\n");
 }

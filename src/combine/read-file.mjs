@@ -1,4 +1,4 @@
-import { lstat, readFile } from 'node:fs/promises';
+import { lstat, readFile } from "node:fs/promises";
 
 export async function readSourceFile(
   relativePath,
@@ -8,11 +8,11 @@ export async function readSourceFile(
   try {
     if (readFileContents === readFile || validateSymlinks) {
       const metadata = await inspectFile(rootPath);
-      if (metadata.isSymbolicLink()) throw new Error('symlinked source files are not supported');
-      if (!metadata.isFile()) throw new Error('source path is not a regular file');
+      if (metadata.isSymbolicLink()) throw new Error("symlinked source files are not supported");
+      if (!metadata.isFile()) throw new Error("source path is not a regular file");
     }
-    const contents = await readFileContents(rootPath, 'utf8');
-    if (typeof contents !== 'string') throw new Error('file reader returned non-string content');
+    const contents = await readFileContents(rootPath, "utf8");
+    if (typeof contents !== "string") throw new Error("file reader returned non-string content");
     return contents;
   } catch (cause) {
     throw new Error(

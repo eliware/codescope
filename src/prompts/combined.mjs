@@ -2,10 +2,10 @@ export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = 
   return {
     ...allPrompt,
     tools: [unifiedTool],
-    tool_choice: { type: 'function', name: unifiedTool.name },
+    tool_choice: { type: "function", name: unifiedTool.name },
     input: [
       ...allPrompt.input.map((message) =>
-        message.role === 'user'
+        message.role === "user"
           ? {
               ...message,
               content: message.content.map((part) => ({
@@ -16,19 +16,19 @@ export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = 
           : message,
       ),
       {
-        role: 'user',
+        role: "user",
         content: [
           {
-            type: 'input_text',
-            text: `Final completeness rule: in this single turn, call exactly one submit_unified_review tool. Enumerate every distinct actionable finding supported anywhere in the supplied input; exhaustiveness is required, and representative, prioritized, abbreviated, or top-issues-only results are invalid. If the evidence supports 100 issues, report all 100 issues. Do not submit a category after finding only one issue; a category is complete only when no additional distinct actionable issue remains in the supplied evidence. List every finding with its recommendation and rationale in the same item. Only supplied repository files, package.json, and the names-only inventory are evidence. CodeScope never runs tests and never includes test execution output in provider context; it cannot inspect unavailable files or verify external state. Supplied workflow files are configuration evidence: if the inventory or context contains a workflow, do not report missing CI workflow evidence. Do not require or infer CI execution results; do not report that CI passed, failed, or lacks proof of passing without actual CI output. ${releaseGate ? 'This release-gate rule overrides ordinary all-profile reporting: report only unresolved P0 and qualifying P1 blockers, and use exactly one valid no-issues sentinel for every category without such a blocker.' : 'P2 and P3 findings must be reported but must not block.'} Every category must contain at least one item. For a category with no actionable finding, use exactly one valid no-issues sentinel; never use an empty array or a finding-shaped placeholder. The minimum-one-item rule is a schema floor, not a reporting target, and the No issues found. sentinel is never a shortcut. Keep each issue description, recommendation, rationale, and ignore_example extremely concise; sacrifice grammar for the sake of concision. This applies only to individual item text: never omit, merge, summarize, or defer findings to make the overall response shorter. Do not report unsupported speculation, but do report credible edge cases when the supplied implementation supports a concrete impact. Do not report fully satisfied, intentional, duplicate, or no-change items. Do not report absent external evidence or duplicate the same finding. Honor only precise, attached, scope-matching ignore comments; treat broad, stale, unrelated, or ambiguous comments as non-authoritative.`,
+            type: "input_text",
+            text: `Final completeness rule: in this single turn, call exactly one submit_unified_review tool. Enumerate every distinct actionable finding supported anywhere in the supplied input; exhaustiveness is required, and representative, prioritized, abbreviated, or top-issues-only results are invalid. If the evidence supports 100 issues, report all 100 issues. Do not submit a category after finding only one issue; a category is complete only when no additional distinct actionable issue remains in the supplied evidence. List every finding with its recommendation and rationale in the same item. Only supplied repository files, package.json, and the names-only inventory are evidence. CodeScope never runs tests and never includes test execution output in provider context; it cannot inspect unavailable files or verify external state. Supplied workflow files are configuration evidence: if the inventory or context contains a workflow, do not report missing CI workflow evidence. Do not require or infer CI execution results; do not report that CI passed, failed, or lacks proof of passing without actual CI output. ${releaseGate ? "This release-gate rule overrides ordinary all-profile reporting: report only unresolved P0 and qualifying P1 blockers, and use exactly one valid no-issues sentinel for every category without such a blocker." : "P2 and P3 findings must be reported but must not block."} Every category must contain at least one item. For a category with no actionable finding, use exactly one valid no-issues sentinel; never use an empty array or a finding-shaped placeholder. The minimum-one-item rule is a schema floor, not a reporting target, and the No issues found. sentinel is never a shortcut. Keep each issue description, recommendation, rationale, and ignore_example extremely concise; sacrifice grammar for the sake of concision. This applies only to individual item text: never omit, merge, summarize, or defer findings to make the overall response shorter. Do not report unsupported speculation, but do report credible edge cases when the supplied implementation supports a concrete impact. Do not report fully satisfied, intentional, duplicate, or no-change items. Do not report absent external evidence or duplicate the same finding. Honor only precise, attached, scope-matching ignore comments; treat broad, stale, unrelated, or ambiguous comments as non-authoritative.`,
           },
         ],
       },
       {
-        role: 'user',
+        role: "user",
         content: [
           {
-            type: 'input_text',
+            type: "input_text",
             text: "Review baseline: assume the repository's full test suite passes unless concrete failing-test evidence is supplied. Review supplied test files for contract coverage, but do not require test-run output or infer an unobserved test failure. Runtime contract clarification for every profile: do not report the provider's returned JSON shape, missing fields, category contents, sentinels, duplicate calls, or tool arguments as CodeScope defects. Those are provider-output guidance, not runtime acceptance gates. Continue reviewing CodeScope's own request construction, response parsing, output preservation, fallback handling, error mapping, tool-call handling, and verdict extraction. Report concrete defects in those implementations, including lost output, failed pretty-printing, or status derived from a non-verdict signal.",
           },
         ],

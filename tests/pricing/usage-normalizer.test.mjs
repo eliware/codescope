@@ -1,10 +1,10 @@
-import { normalizeUsage } from '../../src/pricing/usage-normalizer.mjs';
+import { normalizeUsage } from "../../src/pricing/usage-normalizer.mjs";
 
-test('normalizes omitted usage fields to zero', () => {
+test("normalizes omitted usage fields to zero", () => {
   expect(normalizeUsage()).toEqual({ input: 0, cachedInput: 0, cacheWrite: 0, output: 0 });
 });
 
-test('rejects invalid and contradictory usage', () => {
+test("rejects invalid and contradictory usage", () => {
   expect(() => normalizeUsage(null)).toThrow(/Usage/);
   expect(() => normalizeUsage({ input_tokens: -1 })).toThrow(/input_tokens/);
   expect(() =>

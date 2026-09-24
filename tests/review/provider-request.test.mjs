@@ -1,6 +1,6 @@
-import { requestProviderResponse } from '../../src/review/provider-request.mjs';
+import { requestProviderResponse } from "../../src/review/provider-request.mjs";
 
-test('passes the prepared request to Responses', async () => {
+test("passes the prepared request to Responses", async () => {
   let received;
   const response = { output: [] };
   const client = {
@@ -15,31 +15,31 @@ test('passes the prepared request to Responses', async () => {
     requestProviderResponse(
       client,
       {
-        model: 'gpt-5.6-luna',
-        input: ['input'],
-        tool_choice: 'auto',
-        tools: ['tool'],
-        reasoning: { effort: 'low' },
+        model: "gpt-5.6-luna",
+        input: ["input"],
+        tool_choice: "auto",
+        tools: ["tool"],
+        reasoning: { effort: "low" },
         usage: { include: true },
         store: false,
-        include: ['item'],
-        service_tier: 'default',
-        prompt_cache_options: { retention: '24h' },
+        include: ["item"],
+        service_tier: "default",
+        prompt_cache_options: { retention: "24h" },
       },
-      'signal',
+      "signal",
     ),
   ).resolves.toBe(response);
   expect(received[0]).toMatchObject({
-    model: 'gpt-5.6-luna',
-    input: ['input'],
-    tool_choice: 'auto',
-    tools: ['tool'],
-    reasoning: { effort: 'low' },
+    model: "gpt-5.6-luna",
+    input: ["input"],
+    tool_choice: "auto",
+    tools: ["tool"],
+    reasoning: { effort: "low" },
     usage: { include: true },
     store: false,
-    include: ['item'],
-    service_tier: 'default',
-    prompt_cache_options: { retention: '24h' },
+    include: ["item"],
+    service_tier: "default",
+    prompt_cache_options: { retention: "24h" },
   });
-  expect(received[1]).toEqual({ signal: 'signal' });
+  expect(received[1]).toEqual({ signal: "signal" });
 });

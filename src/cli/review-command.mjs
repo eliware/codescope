@@ -1,10 +1,10 @@
-import { runPromptCommand } from './prompt-command.mjs';
-import { runProfileCommand } from './profile-command.mjs';
+import { runPromptCommand } from "./prompt-command.mjs";
+import { runProfileCommand } from "./profile-command.mjs";
 
 export async function runReviewCommand(
   command,
   {
-    mode = 'review',
+    mode = "review",
     option,
     options = [],
     effort,
@@ -18,7 +18,7 @@ export async function runReviewCommand(
     review,
   },
 ) {
-  if (command === 'prompt')
+  if (command === "prompt")
     return runPromptCommand({ cwd, write, review, promptText, model, effort, add });
   return runProfileCommand(command, {
     mode,

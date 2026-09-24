@@ -14,9 +14,9 @@ export const EXIT_CODES = Object.freeze({
 const errorText = (cause) => {
   const messages = [];
   for (let current = cause; current; current = current.cause)
-    if (current instanceof Error || typeof current?.message === 'string')
+    if (current instanceof Error || typeof current?.message === "string")
       messages.push(current.message);
-  return messages.join(' ');
+  return messages.join(" ");
 };
 
 const hasErrorCode = (cause, code) => {
@@ -27,11 +27,11 @@ const hasErrorCode = (cause, code) => {
 
 export function errorExitCode(cause) {
   const text = errorText(cause);
-  if (hasErrorCode(cause, 'SIGINT')) return EXIT_CODES.SIGINT;
-  if (hasErrorCode(cause, 'SIGTERM')) return EXIT_CODES.SIGTERM;
-  if (cause?.code === 'API') return EXIT_CODES.API;
-  if (cause?.code === 'INVALID_RESPONSE') return EXIT_CODES.RESPONSE;
-  if (cause?.code === 'ETIMEDOUT' || /timed out/u.test(text)) return EXIT_CODES.TEST_TIMEOUT;
+  if (hasErrorCode(cause, "SIGINT")) return EXIT_CODES.SIGINT;
+  if (hasErrorCode(cause, "SIGTERM")) return EXIT_CODES.SIGTERM;
+  if (cause?.code === "API") return EXIT_CODES.API;
+  if (cause?.code === "INVALID_RESPONSE") return EXIT_CODES.RESPONSE;
+  if (cause?.code === "ETIMEDOUT" || /timed out/u.test(text)) return EXIT_CODES.TEST_TIMEOUT;
   if (
     /Usage:|Unknown command|Unknown option|Unexpected arguments|requires a value|Effort must be|not valid for/u.test(
       text,

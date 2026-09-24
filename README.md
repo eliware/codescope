@@ -101,9 +101,9 @@ directives in `specs/`.
 
 ## Testing
 
-Use the global `eliware-test` validator for installation, tests, lint, audit,
-pack, and formatting checks. CodeScope itself never runs commands in a
-reviewed repository.
+Run `npm ci`, `npm test`, `npm run lint`, `npm run audit`, `npm run pack`, and
+`npm run format:check` to validate the repository. CodeScope itself never runs
+commands in a reviewed repository.
 
 ## Troubleshooting
 

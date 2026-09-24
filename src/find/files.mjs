@@ -1,12 +1,12 @@
-import { lstat, readdir } from 'node:fs/promises';
-import path from 'node:path';
-import { isIgnoredDirectory } from './policies.mjs';
-import { matchesFile } from './extensions.mjs';
-import { validateScanMode, validateScanRoot, validateScanRootMetadata } from './root-policy.mjs';
-import { classifyEntry } from './entry-types.mjs';
-import { readDirectoryEntries } from './read-entries.mjs';
-import { walkDirectories } from './walk.mjs';
-import { relativeResultPath, sortResultPaths } from './result-paths.mjs';
+import { lstat, readdir } from "node:fs/promises";
+import path from "node:path";
+import { isIgnoredDirectory } from "./policies.mjs";
+import { matchesFile } from "./extensions.mjs";
+import { validateScanMode, validateScanRoot, validateScanRootMetadata } from "./root-policy.mjs";
+import { classifyEntry } from "./entry-types.mjs";
+import { readDirectoryEntries } from "./read-entries.mjs";
+import { walkDirectories } from "./walk.mjs";
+import { relativeResultPath, sortResultPaths } from "./result-paths.mjs";
 
 export async function findFiles(
   root,
@@ -22,7 +22,7 @@ export async function findFiles(
   validateScanRoot(root, platform);
   validateScanMode(noTests, testsOnly);
 
-  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  const pathApi = platform === "win32" ? path.win32 : path.posix;
   root = pathApi.resolve(root);
 
   try {
@@ -30,7 +30,7 @@ export async function findFiles(
     validateScanRootMetadata(metadata);
   } catch (cause) {
     // Injected directory adapters may model virtual roots that do not exist on disk.
-    if (readDirectory === readdir || cause?.code !== 'ENOENT') throw cause;
+    if (readDirectory === readdir || cause?.code !== "ENOENT") throw cause;
   }
 
   const results = [];
@@ -49,4 +49,3 @@ export async function findFiles(
   });
   return sortResultPaths(results);
 }
-

@@ -37,13 +37,12 @@ subdirectory instruction may add detail but may not weaken them.
 
 ## Validation
 
-Run only the global symlinked `eliware-test` v8.0.0 by invoking the bare
-`eliware-test` command. Do not use `npm test`, the repository-local
-`@eliware/test` 6.0.1 dependency, or Jest, Oxlint, Prettier, and audit tools
-directly. The global validator owns installation, tests, lint, audit, pack, and
-format checks. Maintain 100% statements, branches, functions, and lines for
-in-scope production logic. The Knit validation entrypoint is
-`.knit/validate.mjs`.
+Use Node.js 26 with npm and native ESM. Run `npm ci`, `npm test`,
+`npm run lint`, `npm run audit`, `npm run pack`, and `npm run format:check` for
+repository validation. Use the package scripts rather than invoking their
+underlying test, lint, audit, or formatting tools directly. Maintain 100%
+statements, branches, functions, and lines for in-scope production logic. The
+Knit validation entrypoint is `.knit/validate.mjs`.
 
 ## Security
 
@@ -102,8 +101,8 @@ The public package is `@eliware/codescope`; `package.json` is the source of its
 version, and the repository URL is `https://github.com/eliware/codescope`. Its
 package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `prompts/`,
 `specs/`, `KNOWN_ISSUES.md`, `NEW_FEATURE_SUGGESTIONS.md`, `LICENSE`, and
-`RELEASE_NOTES.md`. The package `pack` script is exactly
-`eliware-test --pack`; the global v8 validator's pack stage must pass.
+`RELEASE_NOTES.md`. The package `pack` script is `eliware-test --pack`, and
+package-artifact validation must pass before publication.
 
 `publishConfig.provenance` is `true`; the separate
 `.github/workflows/publication.yml` publishes with npm provenance only after

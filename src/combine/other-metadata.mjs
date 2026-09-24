@@ -2,7 +2,7 @@ export function formatOtherFile(relativePath, bytes) {
   if (bytes.includes(0)) return `${relativePath} | binary | ${bytes.byteLength} bytes`;
   let text;
   try {
-    text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch {
     return `${relativePath} | binary | ${bytes.byteLength} bytes`;
   }

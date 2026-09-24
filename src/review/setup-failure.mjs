@@ -3,7 +3,7 @@ export function createSetupFailure(cause) {
   try {
     message = cause instanceof Error ? cause.message : String(cause);
   } catch {
-    message = 'failure details unavailable';
+    message = "failure details unavailable";
   }
   return new Error(`CodeScope setup failed: ${message}`, { cause });
 }

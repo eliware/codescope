@@ -1,44 +1,44 @@
-import { readSourceFile } from '../../src/combine/read-file.mjs';
-import path from 'node:path';
+import { readSourceFile } from "../../src/combine/read-file.mjs";
+import path from "node:path";
 
-test('reads regular source content', async () => {
+test("reads regular source content", async () => {
   await expect(
-    readSourceFile('src/a.mjs', 'repo/src/a.mjs', {
-      readFileContents: async () => 'export {}',
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      readFileContents: async () => "export {}",
       validateSymlinks: true,
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
-  ).resolves.toBe('export {}');
+  ).resolves.toBe("export {}");
 });
 
-test('reads a file with default options', async () => {
+test("reads a file with default options", async () => {
   await expect(
-    readSourceFile('README.md', path.join(process.cwd(), 'README.md')),
-  ).resolves.toContain('codescope');
+    readSourceFile("README.md", path.join(process.cwd(), "README.md")),
+  ).resolves.toContain("codescope");
 });
 
-test('rejects symlinks and non-files with contextual errors', async () => {
+test("rejects symlinks and non-files with contextual errors", async () => {
   const inspect = async () => ({ isSymbolicLink: () => true, isFile: () => false });
   await expect(
-    readSourceFile('src/a.mjs', 'repo/src/a.mjs', { validateSymlinks: true, inspectFile: inspect }),
-  ).rejects.toThrow('src/a.mjs: symlinked');
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", { validateSymlinks: true, inspectFile: inspect }),
+  ).rejects.toThrow("src/a.mjs: symlinked");
   await expect(
-    readSourceFile('src/a.mjs', 'repo/src/a.mjs', {
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
       validateSymlinks: true,
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => false }),
     }),
-  ).rejects.toThrow('regular file');
+  ).rejects.toThrow("regular file");
 });
 
-test('reports reader failures and invalid reader values', async () => {
+test("reports reader failures and invalid reader values", async () => {
   await expect(
-    readSourceFile('src/a.mjs', 'repo/src/a.mjs', {
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
       readFileContents: async () => {
-        throw new Error('denied');
+        throw new Error("denied");
       },
     }),
-  ).rejects.toThrow('src/a.mjs: denied');
+  ).rejects.toThrow("src/a.mjs: denied");
   await expect(
-    readSourceFile('src/a.mjs', 'repo/src/a.mjs', { readFileContents: async () => 42 }),
-  ).rejects.toThrow('non-string');
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", { readFileContents: async () => 42 }),
+  ).rejects.toThrow("non-string");
 });

@@ -1,6 +1,6 @@
-import { readFunctionCallArguments } from './diagnostics/function-call-summary.mjs';
-import { readOutputTextSummary } from './diagnostics/output-text-summary.mjs';
-import { readUsageSummary } from './diagnostics/usage-summary.mjs';
+import { readFunctionCallArguments } from "./diagnostics/function-call-summary.mjs";
+import { readOutputTextSummary } from "./diagnostics/output-text-summary.mjs";
+import { readUsageSummary } from "./diagnostics/usage-summary.mjs";
 
 export function summarizeProviderResponse(response) {
   const functionCallArguments = readFunctionCallArguments(response);

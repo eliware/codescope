@@ -1,15 +1,12 @@
-import { runReview } from '../review/lifecycle.mjs';
-import { EXIT_CODES } from './errors.mjs';
-import { parseArgs } from './args/command.mjs';
-import { dispatchMeta } from './dispatch-meta.mjs';
-import { runReviewCommand } from './review-command.mjs';
-import { runWithCliErrors } from './error-handler.mjs';
-import { createCliRuntimeDefaults } from './runtime-defaults.mjs';
+import { runReview } from "../review/lifecycle.mjs";
+import { EXIT_CODES } from "./errors.mjs";
+import { parseArgs } from "./args/command.mjs";
+import { dispatchMeta } from "./dispatch-meta.mjs";
+import { runReviewCommand } from "./review-command.mjs";
+import { runWithCliErrors } from "./error-handler.mjs";
+import { createCliRuntimeDefaults } from "./runtime-defaults.mjs";
 
-export async function main(
-  args,
-  options = {},
-) {
+export async function main(args, options = {}) {
   const defaults = createCliRuntimeDefaults();
   const {
     output = defaults.output,
@@ -21,7 +18,7 @@ export async function main(
   return runWithCliErrors(async () => {
     const {
       command,
-      mode = 'review',
+      mode = "review",
       option,
       options = [],
       effort,

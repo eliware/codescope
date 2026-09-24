@@ -1,4 +1,4 @@
-import { conventionPolicy } from './policy/conventions.mjs';
+import { conventionPolicy } from "./policy/conventions.mjs";
 
 export function createConventionPrompt(profilePrompt) {
   return profilePrompt(

@@ -2,9 +2,7 @@
   "version": "8.0",
   "description": "CodeScope-local specification for selecting and supplying Eliware Convention v8 records to reviews.",
   "authority": {
-    "authoritativeFor": [
-      "CodeScope convention-evidence selection and review-input boundaries."
-    ],
+    "authoritativeFor": ["CodeScope convention-evidence selection and review-input boundaries."],
     "notAuthoritativeFor": [
       "Repository requirements, convention wording, exemptions, operational procedures, publication, deployment, or project behavior."
     ]

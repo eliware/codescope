@@ -1,4 +1,4 @@
-import { loadReviewEnvironment } from './environment.mjs';
+import { loadReviewEnvironment } from "./environment.mjs";
 
 export async function resolveReviewSetup({
   envFile,
@@ -13,6 +13,6 @@ export async function resolveReviewSetup({
     environment: processEnvironment,
   });
   const token = environment.OPENAI_API_TOKEN?.trim();
-  if (!token) throw new Error('OPENAI_API_TOKEN is missing from ~/.codescope or the environment');
+  if (!token) throw new Error("OPENAI_API_TOKEN is missing from ~/.codescope or the environment");
   return { token };
 }

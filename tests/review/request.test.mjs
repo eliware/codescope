@@ -1,62 +1,62 @@
-import { prepareRequest } from '../../src/review/request.mjs';
-import { defaultDeveloperText } from '../../src/prompts/guidance.mjs';
+import { prepareRequest } from "../../src/review/request.mjs";
+import { defaultDeveloperText } from "../../src/prompts/guidance.mjs";
 
-const message = (content = [{ type: 'input_text', text: '<combine-mjs here>' }]) => ({
-  role: 'developer',
+const message = (content = [{ type: "input_text", text: "<combine-mjs here>" }]) => ({
+  role: "developer",
   content,
 });
 
-test('prepares placeholder and default prompts', () => {
+test("prepares placeholder and default prompts", () => {
   const request = prepareRequest(
-    { model: 'x', tools: [], store: false, input: [message()] },
-    'SOURCE',
+    { model: "x", tools: [], store: false, input: [message()] },
+    "SOURCE",
   );
-  expect(request.input[0].content[0].text).toContain('SOURCE');
+  expect(request.input[0].content[0].text).toContain("SOURCE");
   const defaultRequest = prepareRequest(
     {
       input: [
-        message([{ type: 'input_text', text: defaultDeveloperText }]),
-        { role: 'user', content: [{ type: 'input_text', text: 'review' }] },
+        message([{ type: "input_text", text: defaultDeveloperText }]),
+        { role: "user", content: [{ type: "input_text", text: "review" }] },
       ],
     },
-    'SOURCE',
+    "SOURCE",
   );
-  expect(defaultRequest.input[1].content[0].text).toContain('SOURCE');
+  expect(defaultRequest.input[1].content[0].text).toContain("SOURCE");
 });
 
-test('rejects invalid prompt structures', () => {
+test("rejects invalid prompt structures", () => {
   for (const prompt of [
     null,
     [],
-    { input: 'bad' },
+    { input: "bad" },
     { extra: true, input: [message()] },
     { model: 1, input: [message()] },
-    { tools: 'bad', input: [message()] },
-    { store: 'bad', input: [message()] },
+    { tools: "bad", input: [message()] },
+    { store: "bad", input: [message()] },
     { input: [null] },
-    { input: [{ role: 'developer', content: 'bad' }] },
+    { input: [{ role: "developer", content: "bad" }] },
     {
       input: [
         message([
-          { type: 'input_text', text: 'a' },
-          { type: 'input_text', text: 'b' },
+          { type: "input_text", text: "a" },
+          { type: "input_text", text: "b" },
         ]),
       ],
     },
-    { input: [message([{ type: 'text', text: 'a' }])] },
-    { input: [message([{ type: 'input_text', text: 1 }])] },
+    { input: [message([{ type: "text", text: "a" }])] },
+    { input: [message([{ type: "input_text", text: 1 }])] },
   ])
-    expect(() => prepareRequest(prompt, 'SOURCE')).toThrow();
+    expect(() => prepareRequest(prompt, "SOURCE")).toThrow();
   expect(() =>
     prepareRequest(
-      { input: [message([{ type: 'input_text', text: defaultDeveloperText }])] },
-      'SOURCE',
+      { input: [message([{ type: "input_text", text: defaultDeveloperText }])] },
+      "SOURCE",
     ),
-  ).toThrow('user input_text');
-  expect(() => prepareRequest({ input: [message(), message()] }, 'SOURCE')).toThrow(
-    'exactly one developer',
+  ).toThrow("user input_text");
+  expect(() => prepareRequest({ input: [message(), message()] }, "SOURCE")).toThrow(
+    "exactly one developer",
   );
   expect(() =>
-    prepareRequest({ input: [message([{ type: 'input_text', text: 'custom' }])] }, 'SOURCE'),
-  ).toThrow('developer text must contain');
+    prepareRequest({ input: [message([{ type: "input_text", text: "custom" }])] }, "SOURCE"),
+  ).toThrow("developer text must contain");
 });

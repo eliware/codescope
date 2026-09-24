@@ -1,23 +1,22 @@
-import { combineSelectedFiles } from '../../src/combine/selected.mjs';
+import { combineSelectedFiles } from "../../src/combine/selected.mjs";
 
-test('combines selected implementation, tests, and docs in order', async () => {
+test("combines selected implementation, tests, and docs in order", async () => {
   const options = {
     readDirectory: async () => [],
-    readFileContents: async () => '',
+    readFileContents: async () => "",
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     combinePackageJson: undefined,
   };
-  const result = await combineSelectedFiles('/repo', {
+  const result = await combineSelectedFiles("/repo", {
     ...options,
     implementation: true,
     tests: true,
     docs: true,
   });
-  expect(result).toContain('package.json');
-  expect(result).toContain('===== other files (names and sizes only) =====');
+  expect(result).toContain("package.json");
+  expect(result).toContain("===== other files (names and sizes only) =====");
 });
 
-test('uses default options for selected package metadata', async () => {
-  await expect(combineSelectedFiles(process.cwd())).resolves.toContain('package.json');
+test("uses default options for selected package metadata", async () => {
+  await expect(combineSelectedFiles(process.cwd())).resolves.toContain("package.json");
 });
-

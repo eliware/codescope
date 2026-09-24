@@ -1,12 +1,7 @@
-import { initializeReviewClient } from './client.mjs';
-import { resolveReviewSetup } from './setup.mjs';
+import { initializeReviewClient } from "./client.mjs";
+import { resolveReviewSetup } from "./setup.mjs";
 
-export async function prepareReview({
-  envFile,
-  openEnvFile,
-  inspectFile,
-  createClient,
-}) {
+export async function prepareReview({ envFile, openEnvFile, inspectFile, createClient }) {
   const { token } = await resolveReviewSetup({
     envFile,
     openEnvFile,

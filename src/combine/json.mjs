@@ -1,12 +1,12 @@
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { findFiles } from '../find/files.mjs';
-import { formatSourceSection } from './section-format.mjs';
-import { readSourceFile } from './read-file.mjs';
-import { assertWithinLimit, getBatchSize } from './limits.mjs';
-import { readBatches } from './batches.mjs';
-import { isIncludedJson } from './json/policy.mjs';
-import { resolveJsonPath } from './json/paths.mjs';
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { findFiles } from "../find/files.mjs";
+import { formatSourceSection } from "./section-format.mjs";
+import { readSourceFile } from "./read-file.mjs";
+import { assertWithinLimit, getBatchSize } from "./limits.mjs";
+import { readBatches } from "./batches.mjs";
+import { isIncludedJson } from "./json/policy.mjs";
+import { resolveJsonPath } from "./json/paths.mjs";
 export async function combineJsonFiles(
   root,
   {
@@ -19,8 +19,10 @@ export async function combineJsonFiles(
     platform = process.platform,
   } = {},
 ) {
-  const files = (await findFiles(root, '.json', { readDirectory, platform })).filter(isIncludedJson);
-  const pathApi = platform === 'win32' ? path.win32 : path.posix;
+  const files = (await findFiles(root, ".json", { readDirectory, platform })).filter(
+    isIncludedJson,
+  );
+  const pathApi = platform === "win32" ? path.win32 : path.posix;
   const rootPath = pathApi.resolve(root);
   const sections = await readBatches(files, {
     batchSize: getBatchSize(concurrency),
@@ -36,6 +38,5 @@ export async function combineJsonFiles(
       return formatSourceSection(relativePath, contents);
     },
   });
-  return sections.join('\n');
+  return sections.join("\n");
 }
-

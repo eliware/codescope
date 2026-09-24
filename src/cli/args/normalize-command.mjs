@@ -7,8 +7,8 @@ export function normalizeCommand(command, values, extras = {}) {
   return {
     ...command,
     ...extras,
-    effort: normalizeScalar(values.effort, '--effort='),
-    model: normalizeScalar(values.model, '--model='),
+    effort: normalizeScalar(values.effort, "--effort="),
+    model: normalizeScalar(values.model, "--model="),
     ...(values.dryRun ? { dryRun: true } : {}),
     ...(values.usage ? { usage: true } : {}),
     add: values.add,

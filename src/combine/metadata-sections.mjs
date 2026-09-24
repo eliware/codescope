@@ -1,7 +1,7 @@
-import { combinePackageJson } from './package-json.mjs';
-import { combineJsonFiles } from './json.mjs';
-import { combineConventionFiles } from './conventions.mjs';
-import { combineConfigFiles } from './configs.mjs';
+import { combinePackageJson } from "./package-json.mjs";
+import { combineJsonFiles } from "./json.mjs";
+import { combineConventionFiles } from "./conventions.mjs";
+import { combineConfigFiles } from "./configs.mjs";
 
 export async function collectMetadataSections(root, options, inventory) {
   return {

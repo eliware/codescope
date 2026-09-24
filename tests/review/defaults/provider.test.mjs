@@ -1,5 +1,5 @@
-import { createProviderDefaults } from '../../../src/review/defaults/provider.mjs';
+import { createProviderDefaults } from "../../../src/review/defaults/provider.mjs";
 
-test('creates provider defaults', () => {
+test("creates provider defaults", () => {
   expect(createProviderDefaults().createClient).toEqual(expect.any(Function));
 });

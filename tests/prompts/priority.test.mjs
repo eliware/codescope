@@ -1,18 +1,18 @@
-import { createAnalysisPrompt, createPriorityPrompt } from '../../src/prompts/priority.mjs';
+import { createAnalysisPrompt, createPriorityPrompt } from "../../src/prompts/priority.mjs";
 
-test('builds a priority prompt through the supplied prompt and tool factories', () => {
+test("builds a priority prompt through the supplied prompt and tool factories", () => {
   const prompt = createPriorityPrompt(1, {
     profilePrompt: (focus, tool) => ({ focus, tool }),
-    createReviewTool: () => ({ name: 'submit_review' }),
+    createReviewTool: () => ({ name: "submit_review" }),
   });
-  expect(prompt.tool).toEqual({ name: 'submit_review' });
-  expect(prompt.focus).toContain('from P0 through P1');
+  expect(prompt.tool).toEqual({ name: "submit_review" });
+  expect(prompt.focus).toContain("from P0 through P1");
 });
 
-test('builds an analysis prompt through the supplied prompt factory', () => {
-  const prompt = createAnalysisPrompt('Review APIs.', {
+test("builds an analysis prompt through the supplied prompt factory", () => {
+  const prompt = createAnalysisPrompt("Review APIs.", {
     profilePrompt: (focus) => ({ focus }),
   });
-  expect(prompt.focus).toContain('Review APIs.');
-  expect(prompt.focus).toContain('line number');
+  expect(prompt.focus).toContain("Review APIs.");
+  expect(prompt.focus).toContain("line number");
 });

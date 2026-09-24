@@ -1,9 +1,9 @@
-import { open } from 'node:fs/promises';
+import { open } from "node:fs/promises";
 
 const READ_CHUNK_BYTES = 64 * 1024;
 
 export async function readFileUpToLimit(filePath, maxBytes) {
-  const handle = await open(filePath, 'r');
+  const handle = await open(filePath, "r");
   const chunks = [];
   const targetBytes = maxBytes + 1;
   let length = 0;

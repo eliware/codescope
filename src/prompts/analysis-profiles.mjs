@@ -1,4 +1,4 @@
-import { createAnalysisPrompt, createPriorityPrompt } from './priority.mjs';
+import { createAnalysisPrompt, createPriorityPrompt } from "./priority.mjs";
 
 export function createAnalysisProfiles({ profilePrompt, createReviewTool }) {
   return {
