@@ -3,6 +3,9 @@ import { readVerifiedEnvironmentContent } from "../../../src/review/environment-
 const metadata = (overrides = {}) => ({
   dev: 1,
   ino: 2,
+  size: 20n,
+  mtimeNs: 3n,
+  ctimeNs: 4n,
   isSymbolicLink: () => false,
   isFile: () => true,
   ...overrides,
@@ -52,4 +55,16 @@ test("rejects unsafe, replaced, and unreadable files", async () => {
       "1:2",
     ),
   ).rejects.toThrow("read failed");
+});
+
+test("rejects an in-place change while reading the open file", async () => {
+  const versions = [metadata(), metadata({ ctimeNs: 5n })];
+  const handle = {
+    stat: async () => versions.shift(),
+    readFile: async () => "OPENAI_API_TOKEN=changed",
+  };
+
+  await expect(readVerifiedEnvironmentContent(".env", handle, "1:2")).rejects.toThrow(
+    /changed while it was being read/,
+  );
 });

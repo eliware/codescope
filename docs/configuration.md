@@ -15,7 +15,8 @@ whitespace-only process value is treated as absent, so a nonblank value from
 `~/.codescope` may be used. A missing or blank token stops the request before
 any provider call. CodeScope rejects symbolic-link configuration files and
 rejects replacement or disappearance of an existing file while it is being
-read. Internally supplied configuration inventory paths are normalized and must
+read, and rejects changes to the opened file while its contents are read.
+Internally supplied configuration inventory paths are normalized and must
 remain inside the review root. CodeScope does not enforce Unix permission bits
 or Windows DACL policy.
 
