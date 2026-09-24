@@ -2,9 +2,6 @@
 
 ## Purpose
 
-This directory contains end-user guidance for installing, configuring, and
-using CodeScope.
-
 This folder contains end-user documentation for installing, configuring, and
 using CodeScope. Start with the quick-start workflow, then use the supporting
 guides when you need a deeper explanation.

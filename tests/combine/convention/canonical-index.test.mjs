@@ -14,6 +14,8 @@ test("parses unannotated JSON links as canonical directive records only", () => 
     "- [nested/cli.json](nested/cli.json)",
     "- [authority.json](authority.json) — Local authority registry.",
     "- [authority-map.json](authority-map.json) — Canonical schema.",
+    "- [label.json](different-target.json)",
+    '- [title.json](title.json "annotated link")',
     "- [notes](notes.md)",
   ].join("\n");
   expect(parseCanonicalDirectiveIndex(index)).toEqual(["general.json", "nested/cli.json"]);
@@ -67,7 +69,7 @@ test("uses POSIX path rules when requested", async () => {
   expect(result).toEqual(["general.json"]);
 });
 
-test("treats index read failures as unavailable canonical evidence", async () => {
+test("preserves useful details when the canonical index cannot be read", async () => {
   await expect(
     readCanonicalDirectiveIndex("/conventions/specs", {
       readFileContents: async () => {
@@ -75,5 +77,5 @@ test("treats index read failures as unavailable canonical evidence", async () =>
       },
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
-  ).resolves.toBeUndefined();
+  ).rejects.toThrow("Unable to read conventions/specs/README.md: read denied");
 });

@@ -40,11 +40,16 @@ export async function combineConventionFiles(
       reason: applicability.reason,
     });
   }
-  const selection = await resolveConventionSelection(discovery, applicability, {
-    readFileContents,
-    inspectFile,
-    platform,
-  });
+  let selection;
+  try {
+    selection = await resolveConventionSelection(discovery, applicability, {
+      readFileContents,
+      inspectFile,
+      platform,
+    });
+  } catch (cause) {
+    return formatConventionEvidence({ status: "index-unavailable", reason: cause.message });
+  }
   if (selection.missing.length > 0) {
     return formatConventionEvidence({ status: "records-missing", missing: selection.missing });
   }

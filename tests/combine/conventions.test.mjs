@@ -95,6 +95,37 @@ test("reports unavailable checkout and package applicability", async () => {
   }
 });
 
+test("reports why the canonical directive index could not be read", async () => {
+  const root = await fsTemp("codescope-conventions-");
+  const specs = path.join(root, "specs");
+  const project = path.join(root, "project");
+  await mkdir(specs, { recursive: true });
+  await mkdir(project);
+  await writeFile(path.join(specs, "README.md"), "- [general.json](general.json)\n");
+  await writeFile(path.join(specs, "general.json"), "{}");
+  await writeFile(
+    path.join(project, "package.json"),
+    JSON.stringify({
+      name: "@eliware/test",
+      eliware: { apply: ["general"] },
+    }),
+  );
+  try {
+    const result = await combineConventionFiles(project, {
+      conventionsRoot: root,
+      readFileContents: async (filePath, encoding) => {
+        if (filePath === path.join(specs, "README.md")) throw new Error("index read denied");
+        return readFile(filePath, encoding);
+      },
+    });
+    expect(result).toContain(
+      "Convention directive index unavailable: Unable to read conventions/specs/README.md: index read denied",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 async function fsTemp(prefix) {
   return mkdtemp(path.join(os.tmpdir(), prefix));
 }

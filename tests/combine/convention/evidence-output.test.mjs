@@ -10,6 +10,9 @@ test("formats unavailable and invalid convention outcomes", () => {
   expect(
     formatConventionEvidence({ status: "applicability-invalid", reason: "bad package" }),
   ).toContain("Convention applicability invalid: bad package.");
+  expect(
+    formatConventionEvidence({ status: "index-unavailable", reason: "read denied" }),
+  ).toContain("Convention directive index unavailable: read denied.");
 });
 
 test("formats missing-record and supplied-record outcomes", () => {
