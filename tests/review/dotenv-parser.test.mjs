@@ -35,6 +35,10 @@ test("rejects malformed token assignments and quoted token values", () => {
   expect(() => loadEnv("OPENAI_API_TOKEN='unterminated", {})).toThrow(/Invalid quoted/);
 });
 
+test("rejects non-comment text after a quoted token value", () => {
+  expect(() => loadEnv('OPENAI_API_TOKEN="secret"junk', {})).toThrow(/Invalid quoted/);
+});
+
 test("rejects immutable environment shapes and ignores empty values", () => {
   expect(() => loadEnv(undefined, {})).not.toThrow();
   expect(() => loadEnv("", null)).toThrow(/mutable object/);
