@@ -11,7 +11,7 @@ export async function readConfigEntry(
   { readFileContents, inspectFile, openFile = open, platform = process.platform } = {},
 ) {
   const filePath = resolveConfigPath(root, relativePath, platform);
-  const metadata = await (inspectFile ?? lstat)(filePath);
+  const metadata = await (inspectFile ?? lstat)(filePath, { bigint: true });
   if (metadata.isSymbolicLink())
     throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
   if (!metadata.isFile())

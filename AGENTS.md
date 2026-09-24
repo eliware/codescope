@@ -62,9 +62,10 @@ No intentional deviations from shared Conventions are currently approved.
 ## Application
 
 The application entrypoint is `bin/codescope.mjs`, exposed as the `codescope`
-package command; the package root export is `src/cli/main.mjs`. Each invocation
-loads configuration, runs one review or suggestion request, writes the result,
-then aborts its controller and removes signal handlers. Runtime configuration
+package command; the package root export is `src/cli/main.mjs`. Provider-backed
+review and suggestion commands load configuration, run one request, write the
+result, then abort their controller and remove signal handlers. Help and version
+commands exit before review configuration or provider setup. Runtime configuration
 uses only `OPENAI_API_TOKEN`: a nonblank process value takes precedence over a
 nonblank value in `~/.codescope`. The default model is `gpt-6-luna`; there are
 no other supported runtime environment settings. The CLI reviews supplied

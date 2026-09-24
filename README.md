@@ -133,11 +133,12 @@ subject to the review aggregate character budget.
 
 ## Operations
 
-Each invocation parses and validates its command and configuration before
-creating the provider client, executes one review or suggestion request, writes
-the result, then aborts its request controller and removes signal handlers as
-part of its startup and shutdown workflow. Timeouts and termination signals
-trigger the same cleanup path.
+Provider-backed review and suggestion commands parse and validate their
+configuration before creating the provider client, execute one request, write
+the result, then abort their request controller and remove signal handlers as
+part of startup and shutdown. Help and version commands exit before review
+configuration or provider setup. Timeouts and termination signals trigger the
+same cleanup path.
 
 CodeScope is read-only against reviewed repositories: it reads supplied
 evidence and writes its own output, but does not modify the reviewed

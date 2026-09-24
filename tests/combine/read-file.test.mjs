@@ -17,6 +17,54 @@ test("reads a file with default options", async () => {
   ).resolves.toContain("codescope");
 });
 
+test("rejects a source path replaced between inspection and opening", async () => {
+  let readAttempted = false;
+  let closed = false;
+  await expect(
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      inspectFile: async () => ({
+        isSymbolicLink: () => false,
+        isFile: () => true,
+        dev: 1n,
+        ino: 2n,
+      }),
+      openFile: async () => ({
+        stat: async () => ({ isFile: () => true, dev: 1n, ino: 3n }),
+        readFile: async () => {
+          readAttempted = true;
+        },
+        close: async () => {
+          closed = true;
+        },
+      }),
+    }),
+  ).rejects.toThrow(/changed while opening/);
+  expect(readAttempted).toBe(false);
+  expect(closed).toBe(true);
+});
+
+test("rejects a non-file opened after source inspection", async () => {
+  let closed = false;
+  await expect(
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      inspectFile: async () => ({
+        isSymbolicLink: () => false,
+        isFile: () => true,
+        dev: 1n,
+        ino: 2n,
+      }),
+      openFile: async () => ({
+        stat: async () => ({ isFile: () => false, dev: 1n, ino: 2n }),
+        readFile: async () => "",
+        close: async () => {
+          closed = true;
+        },
+      }),
+    }),
+  ).rejects.toThrow(/not a regular file/);
+  expect(closed).toBe(true);
+});
+
 test("rejects symlinks and non-files with contextual errors", async () => {
   const inspect = async () => ({ isSymbolicLink: () => true, isFile: () => false });
   await expect(

@@ -14,8 +14,10 @@ precedence over the user-level file. A missing or
 whitespace-only process value is treated as absent, so a nonblank value from
 `~/.codescope` may be used. A missing or blank token stops the request before
 any provider call. CodeScope rejects symbolic-link configuration files and
-rejects replacement or disappearance of an existing file while it is being
-read, and rejects changes to the opened file while its contents are read.
+rejects a replacement detected between the initial inspection and opening.
+After opening, reads stay bound to that verified handle; CodeScope rejects
+changes to the opened file while its contents are read. Replacing or removing
+the pathname afterward does not redirect that handle.
 Internally supplied configuration inventory paths are normalized and must
 remain inside the review root. CodeScope does not enforce Unix permission bits
 or Windows DACL policy.
