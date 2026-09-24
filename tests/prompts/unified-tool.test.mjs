@@ -4,4 +4,8 @@ test("creates strict unified tools with required categories", () => {
   const tool = createUnifiedTool(["documentation"]);
   expect(tool.name).toBe("submit_unified_review");
   expect(tool.parameters.properties.findings.required).toEqual(["documentation"]);
+  expect(tool.parameters.$defs.finding.properties.rationale).toMatchObject({
+    type: "array",
+    items: { type: "string" },
+  });
 });

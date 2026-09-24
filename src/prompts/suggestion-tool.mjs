@@ -30,7 +30,12 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
           properties: {
             location: { type: "string" },
             suggestion: { type: "string" },
-            rationale: { type: "string" },
+            rationale: {
+              type: "array",
+              items: { type: "string" },
+              description:
+                'An ordered why-chain: each concise step starts with "Because" and answers why the previous point matters, ending at why the suggested change is useful.',
+            },
             ignore_example: {
               type: "string",
               description:

@@ -7,12 +7,7 @@ import { selectInventoryFiles } from "./inventory/paths.mjs";
 export async function describeOtherFiles(
   root,
   inventory,
-  {
-    readOtherFileContents,
-    inspectFile,
-    concurrency = 8,
-    platform = process.platform,
-  } = {},
+  { readOtherFileContents, inspectFile, concurrency = 8, platform = process.platform } = {},
 ) {
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error("Other-file read concurrency must be a positive integer");

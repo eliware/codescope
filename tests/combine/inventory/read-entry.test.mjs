@@ -83,7 +83,7 @@ test("uses the default file inspector when no inspector is injected", async () =
     await writeFile(path.join(root, "notes.txt"), "notes");
     await expect(
       readInventoryEntry(root, "notes.txt", {
-        pathApi: path.posix,
+        pathApi: path,
       }),
     ).resolves.toContain("notes.txt");
   } finally {
@@ -114,16 +114,33 @@ test("rejects an inventory path replaced between inspection and opening", async 
   expect(closed).toBe(true);
 });
 
-test("rejects inventory content changed during the opened-handle read", async () => {
-  let statCalls = 0;
-  let readCalls = 0;
+test("rejects a non-file opened after inventory inspection", async () => {
+  let closed = false;
   await expect(
     readInventoryEntry("repo", "notes.txt", {
       pathApi: path.posix,
       inspectFile: async () => fileMetadata(2n),
       openFile: async () => ({
-        stat: async () =>
-          statCalls++ === 0 ? fileMetadata(2n) : fileMetadata(2n, { size: 9n }),
+        stat: async () => ({ isFile: () => false }),
+        close: async () => {
+          closed = true;
+        },
+      }),
+    }),
+  ).rejects.toThrow(/not a regular file/);
+  expect(closed).toBe(true);
+});
+
+test("rejects inventory content changed during the opened-handle read", async () => {
+  let statCalls = 0;
+  let readCalls = 0;
+  const statSnapshots = [fileMetadata(2n), fileMetadata(2n, { size: 9n })];
+  await expect(
+    readInventoryEntry("repo", "notes.txt", {
+      pathApi: path.posix,
+      inspectFile: async () => fileMetadata(2n),
+      openFile: async () => ({
+        stat: async () => statSnapshots[statCalls++],
         read: async (buffer) => {
           if (readCalls++ > 0) return { bytesRead: 0 };
           buffer.write("notes");

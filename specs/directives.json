@@ -143,6 +143,7 @@
           "dos": [
             "Write the exact successful provider response unchanged.",
             "Keep provider tool schemas and prompt instructions as requested-output guidance rather than CodeScope acceptance requirements.",
+            "Request each real issue or suggestion rationale as an ordered array of one or more concise steps; begin every step with 'Because', have each step answer why the previous point matters, and stop when the evidence-supported concrete impact or suggestion value is clear. Use an empty rationale array for sentinels.",
             "Allow review, suggestion, and custom-prompt responses to be provider-defined and not machine-readable.",
             "Report provider transport, setup, and output-write failures as errors, preserving safe fallback output and fallback error metadata where available.",
             "Require output writers to report an exact written character count; do not treat an absent result as successful completion."

@@ -7,5 +7,6 @@ test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).toContain("Do not recommend changes that are already present");
   expect(defaultDeveloperText).toContain("one-shot reviewer");
   expect(defaultDeveloperText).toContain("partial");
+  expect(defaultDeveloperText).toContain('each rationale step starts with "Because"');
   expect(profileReviewRules).toContain("category sentinel");
 });

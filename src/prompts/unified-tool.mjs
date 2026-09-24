@@ -40,7 +40,12 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
             location: { type: "string" },
             finding: { type: "string" },
             recommendation: { type: "string" },
-            rationale: { type: "string" },
+            rationale: {
+              type: "array",
+              items: { type: "string" },
+              description:
+                'An ordered why-chain: each concise step starts with "Because" and answers why the previous point matters, ending at a concrete evidence-supported impact.',
+            },
             ignore_example: {
               type: "string",
               description: "A complete copy-pasteable // codescope ignore: ... comment.",

@@ -49,7 +49,8 @@ test("rejects source content changed during the opened-handle read", async () =>
     readSourceFile("src/a.mjs", "repo/src/a.mjs", {
       inspectFile: async () => sourceMetadata(),
       openFile: async () => ({
-        stat: async () => (statCalls++ === 0 ? sourceMetadata() : { ...sourceMetadata(), size: 9n }),
+        stat: async () =>
+          statCalls++ === 0 ? sourceMetadata() : { ...sourceMetadata(), size: 9n },
         readFile: async () => "changed",
         close: async () => {},
       }),
