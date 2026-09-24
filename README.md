@@ -2,12 +2,6 @@
 
 ## @eliware/codescope [![npm version](https://img.shields.io/npm/v/@eliware/codescope.svg)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/github/license/eliware/codescope.svg)](LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/codescope/actions)
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
-
-CodeScope is a structured OpenAI CLI for read-only reviews of supplied
-repository evidence, focused suggestions, and token estimates. It leaves the
-reviewed repository unchanged.
-
 ## Table of Contents
 
 - [Features](#features)
@@ -28,6 +22,12 @@ reviewed repository unchanged.
 
 ## Features
 
+CodeScope is a structured OpenAI CLI for read-only reviews of supplied
+repository evidence, focused suggestions, and token estimates. It leaves the
+reviewed repository unchanged.
+
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
+
 Package metadata: description `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`; author `Eliware <eliware@eliware.org>`; license `MIT`.
 
 - Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
@@ -43,18 +43,13 @@ Package metadata: description `A structured OpenAI CLI for focused codebase revi
 
 ## Setup
 
-For package consumers, install the published CLI globally or add it to a project. The published package uses registry dependencies and does not require a sibling checkout:
+Install the public package globally or in a project; it uses registry
+dependencies and does not require a sibling checkout:
 
 ```text
 npm install -g @eliware/codescope
 npm install @eliware/codescope
 ```
-
-The `codescope` executable maps to `bin/codescope.mjs`; the package root
-export is `src/cli/main.mjs`. The package version is maintained in
-`package.json`; release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
-Publication requires successful Ubuntu validation and an exact `v#.#.#` tag
-matching the package version.
 
 For repository development, install the checkout's dependencies first:
 
@@ -72,6 +67,17 @@ node bin/codescope.mjs --version
 For this optional development-only setup, create a live global npm link from the already-installed checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed; package consumers should use the published-install commands above.
 
 ## Usage
+
+After installing the published CLI globally or in a project, use the
+[`@eliware/codescope` npm package](https://www.npmjs.com/package/@eliware/codescope)
+from your repository root. It uses registry dependencies and does not require
+a sibling checkout.
+
+The `codescope` command maps to `bin/codescope.mjs`, and the package root
+export is `src/cli/main.mjs`. The package version is maintained in
+`package.json`; release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+Publication requires successful Ubuntu validation and an exact `v#.#.#` tag
+matching the package version.
 
 Run CodeScope from the repository root to review supplied evidence, request
 focused suggestions, or estimate review usage without modifying the repository.
@@ -126,9 +132,16 @@ subject to the review aggregate character budget.
 
 ## Operations
 
-CodeScope is read-only against reviewed repositories. It does not deploy or
-publish reviewed code; publication and deployment are handled by separate
-release workflows.
+Each invocation parses and validates its command and configuration before
+creating the provider client, executes one review or suggestion request, writes
+the result, then aborts its request controller and removes signal handlers as
+part of its startup and shutdown workflow. Timeouts and termination signals
+trigger the same cleanup path.
+
+CodeScope is read-only against reviewed repositories: it reads supplied
+evidence and writes its own output, but does not modify the reviewed
+repository, execute its commands or tests, publish reviewed code, or deploy it.
+Publication and deployment are handled by separate authorized release workflows.
 
 ## Commands
 

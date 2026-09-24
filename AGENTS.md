@@ -85,6 +85,11 @@ are accepted. The executable is `bin/codescope.mjs`; the package command is
 `codescope`. Windows uses the same Node.js command syntax, but CI currently
 validates Ubuntu only.
 
+Profile commands default to `gpt-6-luna`, the selected model's default
+reasoning effort, a live request, no usage report, and no added prompt text.
+Invoking `codescope` without a command displays help; `codescope all` selects
+the comprehensive review profile.
+
 Successful commands exit `0`; usage, configuration, input, provider, and
 response errors exit `2`, `3`, `4`, `5`, and `6`; timeout and termination exits
 are `124`, `130` (SIGINT), and `143` (SIGTERM). Provider findings and verdicts

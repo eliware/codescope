@@ -40,6 +40,17 @@ test('waits for drain after a backpressured write callback completes', async () 
   await expect(pending).resolves.toEqual({ written: 17 });
 });
 
+test('completes when drain fires synchronously during a backpressured write', async () => {
+  const stdout = new EventEmitter();
+  stdout.write = (_value, callback) => {
+    stdout.emit('drain');
+    callback();
+    return false;
+  };
+
+  await expect(createDefaultWriter(stdout)('provider response')).resolves.toEqual({ written: 17 });
+});
+
 test('rejects stream errors while waiting for backpressure to drain', async () => {
   const stdout = new EventEmitter();
   let callback;
