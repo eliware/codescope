@@ -57,6 +57,7 @@ Do not commit, publish, deploy, tag, or push without explicit authorization for
 the current task. Keep changes scoped, preserve unrelated work, and do not
 copy shared Convention requirements into local directives. Runtime workflow
 concerns include repeatable shutdown and signal cleanup.
+No intentional deviations from shared Conventions are currently approved.
 
 ## Application
 

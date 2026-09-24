@@ -36,3 +36,27 @@ test("preserves source order while workers complete out of order", async () => {
   });
   expect(result).toEqual(["slow", "fast"]);
 });
+
+test("rejects promptly when a failed read races with a stalled read", async () => {
+  const stalledRead = new Promise(() => {});
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error("batch failure was delayed")), 100);
+  });
+
+  try {
+    await expect(
+      Promise.race([
+        readBatches(["failed", "stalled"], {
+          batchSize: 2,
+          maxChars: 100,
+          read: (file) =>
+            file === "failed" ? Promise.reject(new Error("read failed")) : stalledRead,
+        }),
+        timeout,
+      ]),
+    ).rejects.toThrow("read failed");
+  } finally {
+    clearTimeout(timeoutId);
+  }
+});

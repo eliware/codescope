@@ -22,6 +22,17 @@ test("reads records with the host path policy", async () => {
   ).resolves.toHaveLength(1);
 });
 
+test("includes complete convention records regardless of size", async () => {
+  const contents = JSON.stringify({ rules: "x".repeat(1_000_001) });
+  const sections = await readConventionRecords("C:\\conventions\\specs", ["general.json"], {
+    platform: "win32",
+    readFileContents: async () => contents,
+    inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),
+  });
+
+  expect(sections[0]).toContain(contents);
+});
+
 test("uses default reader options for a real convention record", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "codescope-records-"));
   try {

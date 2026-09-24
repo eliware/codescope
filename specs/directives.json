@@ -88,12 +88,14 @@
             "Assemble comprehensive context in this order: package.json; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
             "Read only the Convention directive records named by the reviewed package's eliware.apply array from the adjacent conventions checkout; preserve each selected record's inline examples as supplied evidence. For @eliware/test, take the canonical directive-record paths from unannotated JSON links in conventions/specs/README.md, include only those records, and report any indexed record that is missing; do not treat every discovered JSON file as canonical.",
+            "Read and include the complete contents of each selected canonical Convention JSON record, regardless of record size.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."
           ],
           "donts": [
             "Do not include package-lock.json as JSON context or include conventions package metadata and lockfiles.",
+            "Do not impose per-record byte or character limits, truncate, summarize, or omit content from selected canonical Convention JSON records.",
             "Do not treat files excluded by a profile, absent files, symbolic-link targets, or unsupplied systems as reviewed evidence."
           ]
         },

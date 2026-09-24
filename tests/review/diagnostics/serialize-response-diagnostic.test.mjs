@@ -4,6 +4,13 @@ test("serializes a provider diagnostic", () => {
   expect(serializeResponseDiagnostic({ error: "ok" })).toEqual({ response: '{"error":"ok"}' });
 });
 
+test("redacts secret-like values from serialized provider diagnostics", () => {
+  const diagnostic = serializeResponseDiagnostic({ credential: "TOKEN=secret-value" });
+
+  expect(diagnostic.response).toContain("TOKEN=[REDACTED]");
+  expect(diagnostic.response).not.toContain("secret-value");
+});
+
 test("returns no diagnostic when serialization fails", () => {
   expect(serializeResponseDiagnostic({ value: 1n })).toBeUndefined();
 });
