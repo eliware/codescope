@@ -104,7 +104,7 @@ package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `examples/`,
 package-artifact validation must pass before publication.
 
 `publishConfig.provenance` is `true`; the separate
-`.github/workflows/publication.yml` publishes with npm provenance only after
+`.github/workflows/publish.yml` publishes with npm provenance only after
 Ubuntu validation succeeds and the sole tag at `HEAD` exactly matches the
 `v#.#.#` form and `package.json` version. After publication, the authorized
 release operator verifies that the exact `@eliware/codescope@<version>` and
