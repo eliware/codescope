@@ -14,16 +14,6 @@
       "path": "../../docs/authority-map.json",
       "relation": "relatedAuthority",
       "authoritativeFor": "Cross-repository authority and ownership boundaries."
-    },
-    {
-      "path": "../../conventions/specs/general.json",
-      "relation": "relatedAuthority",
-      "authoritativeFor": "Repository requirements consumed as supplied evidence."
-    },
-    {
-      "path": "../../conventions/specs/cli.json",
-      "relation": "relatedAuthority",
-      "authoritativeFor": "CLI repository requirements consumed as supplied evidence."
     }
   ],
   "directives": [
@@ -34,7 +24,7 @@
         "Keep CLI behavior, review profiles, and supplied-evidence conventions explicit in these directives."
       ],
       "donts": [
-        "Do not define or enforce Eliware repository requirements owned by Conventions.",
+        "Do not define or enforce Eliware Test repository requirements.",
         "Do not define Operations procedures, publication or deployment behavior, or Test8 harness behavior."
       ],
       "directives": [
@@ -89,10 +79,11 @@
         {
           "id": "A-19.3",
           "dos": [
-            "Assemble comprehensive context in this order: package.json; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts.",
+            "Assemble comprehensive context in this order: package.json; selected Eliware Test profile records for reviewed packages other than @eliware/test; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts. For @eliware/test, include its specs through the normal JSON and Markdown context positions instead of a separate profile-record section.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
-            "Read only the Convention directive records named by the reviewed package's eliware.apply array from the adjacent conventions checkout; accept only safe single-segment lowercase profile names containing letters, digits, and single hyphens, then resolve each to its canonical <profile>.json record. Preserve each selected record's inline examples as supplied evidence. For @eliware/test, take canonical paths only from standalone Markdown list links in conventions/specs/README.md whose label exactly matches a relative .json target; normalize ./ prefixes, ignore trailing annotations, link titles, and mismatched labels and targets, and reject absolute targets and any target containing a '..' path segment. Include only those records and report any indexed record that is missing; do not treat every discovered JSON file as canonical.",
-            "Read and include the complete contents of each selected canonical Convention JSON record, regardless of record size.",
+            "For reviewed packages other than @eliware/test, read only the Eliware Test v8 specification records named by package.json eliware.apply from the adjacent test/specs directory. Accept only safe single-segment lowercase profile names containing letters, digits, and single hyphens, then resolve each name to its canonical <profile>.json record; preserve the complete selected record as supplied evidence.",
+            "For the @eliware/test package, do not separately load or inject specification records; its own specs are supplied through the normal repository-context collection.",
+            "Read and include the complete contents of each selected canonical Eliware Test JSON specification record, regardless of record size.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Before reading selected repository files, confirm the opened handle is a regular file with the same identity as the pre-open inspection; reject replacement before reading through the handle.",
@@ -102,8 +93,8 @@
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."
           ],
           "donts": [
-            "Do not include package-lock.json as JSON context or include conventions package metadata and lockfiles.",
-            "Do not impose per-record byte or character limits, truncate, summarize, or omit content from selected canonical Convention JSON records.",
+            "Do not include package-lock.json as JSON context or include eliware/test package metadata and lockfiles from the adjacent checkout.",
+            "Do not impose per-record byte or character limits, truncate, summarize, or omit content from selected Eliware Test JSON specification records.",
             "Do not treat files excluded by a profile, absent files, symbolic-link targets, or unsupplied systems as reviewed evidence."
           ]
         },
@@ -125,7 +116,7 @@
             "Keep review profiles focused on actionable issues in their declared areas.",
             "Keep suggestion profiles focused on recommendations and exclude them from blocking-verdict policy.",
             "Use the all operation for a comprehensive review of implementation, tests, documentation, package metadata, and the remaining-file inventory, producing one unified review result.",
-            "Keep the conventions profile focused on supplied repository documentation, package metadata, specifications, environment documentation, and cross-artifact consistency.",
+            "Keep the conventions review profile focused on supplied repository documentation, package metadata, specifications, environment documentation, and cross-artifact consistency.",
             "Treat missing or unsupplied artifacts as unknown rather than defects.",
             "Use P0 for immediate emergencies or supplied failing-test evidence, P1 for concrete high-priority defects, P2 for actionable non-blocking issues, and P3 for polish or low-risk follow-up.",
             "Assume the repository's full test suite passes unless concrete failing-test evidence is supplied; use source, specifications, and supplied test files to review contract coverage without requiring test-run output.",

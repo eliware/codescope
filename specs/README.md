@@ -9,9 +9,9 @@ specification format for this repository.
 - [directives.json](directives.json) defines CodeScope's authority over CLI
   behavior, review profiles, and supplied-evidence conventions.
 - [authority.json](authority.json) records the ownership distribution.
-- [conventions.json](conventions.json) defines how canonical Eliware
-  Convention v8 records are selected as review evidence.
+- [test-context.json](test-context.json) defines how Eliware Test v8 profile
+  records are selected as review evidence.
 
 Eliware Docs remains authoritative for shared documentation and the authority
-map. Eliware Conventions remains authoritative for repository requirements.
-Operations and Test8 behavior are outside CodeScope's authority.
+map. Eliware Test is authoritative for repository requirements and validation.
+Operations behavior is outside CodeScope's authority.

@@ -2,9 +2,9 @@ import { readFile } from "node:fs/promises";
 import { readBatches } from "../batches.mjs";
 import { readSourceFile } from "../read-file.mjs";
 import { formatSourceSection } from "../section-format.mjs";
-import { normalizeConventionPath, resolveConventionPath } from "./paths.mjs";
+import { normalizeTestSpecPath, resolveTestSpecPath } from "./paths.mjs";
 
-export function readConventionRecords(
+export function readTestSpecRecords(
   specsRoot,
   files,
   {
@@ -19,14 +19,14 @@ export function readConventionRecords(
     batchSize: concurrency,
     maxChars,
     read: async (relativePath) => {
-      const portablePath = resolveConventionPath(specsRoot, relativePath, platform);
-      const contents = await readSourceFile("conventions/specs/" + relativePath, portablePath, {
+      const portablePath = resolveTestSpecPath(specsRoot, relativePath, platform);
+      const contents = await readSourceFile("test/specs/" + relativePath, portablePath, {
         readFileContents,
         inspectFile,
         validateSymlinks: true,
       });
-      const normalizedPath = normalizeConventionPath(relativePath);
-      return formatSourceSection("conventions/specs/" + normalizedPath, contents);
+      const normalizedPath = normalizeTestSpecPath(relativePath);
+      return formatSourceSection("test/specs/" + normalizedPath, contents);
     },
   });
 }

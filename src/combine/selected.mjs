@@ -22,7 +22,7 @@ export async function combineSelectedFiles(
   const metadata = await collectMetadataSections(root, normalizedOptions, inventory);
   const parts = [
     metadata.packageJson,
-    metadata.conventions,
+    metadata.testSpecs,
     metadata.json,
     metadata.configs,
     // codescope ignore: A-19.3 requires the inventory for every profile before selected evidence.

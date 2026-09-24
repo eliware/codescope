@@ -1,4 +1,7 @@
 import { combineAllFiles } from "../../src/combine/all.mjs";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 test("preserves the all-context section ordering", async () => {
   const names = [
@@ -59,4 +62,22 @@ test("propagates the all-context character limit", async () => {
 
 test("uses default options at the public all-context boundary", async () => {
   await expect(combineAllFiles(process.cwd())).resolves.toContain("===== package.json =====");
+});
+
+test("includes eliware-test specs normally without separately injecting profiles", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-self-review-"));
+  try {
+    await mkdir(path.join(root, "specs"));
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify({ name: "@eliware/test", eliware: { apply: ["general"] } }),
+    );
+    await writeFile(path.join(root, "specs", "general.json"), '{"directive":"included"}');
+    const result = await combineAllFiles(root);
+    expect(result).toContain("===== specs/general.json =====");
+    expect(result).toContain('{"directive":"included"}');
+    expect(result).not.toContain("Eliware Test v8 specifications");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

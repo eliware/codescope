@@ -1,12 +1,12 @@
 import path from "node:path";
 import { findFiles } from "../../find/files.mjs";
 
-export async function discoverConventionFiles(
-  conventionsRoot,
+export async function discoverTestSpecFiles(
+  testRoot,
   { readDirectory, platform = process.platform } = {},
 ) {
   const pathApi = platform === "win32" ? path.win32 : path.posix;
-  const specsRoot = pathApi.join(conventionsRoot, "specs");
+  const specsRoot = pathApi.join(testRoot, "specs");
   try {
     return {
       specsRoot,
@@ -14,6 +14,6 @@ export async function discoverConventionFiles(
     };
   } catch (cause) {
     if (cause?.code === "ENOENT" || cause?.code === "ENOTDIR") return undefined;
-    throw new Error(`Unable to discover convention evidence: ${String(cause)}`, { cause });
+    throw new Error(`Unable to discover Test specification evidence: ${String(cause)}`, { cause });
   }
 }

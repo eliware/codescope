@@ -112,9 +112,9 @@
     },
     "crosslinks": [
       {
-        "path": "specs/conventions.json",
+        "path": "specs/test-context.json",
         "relation": "relatedAuthority",
-        "authoritativeFor": "Convention v8 applicability and directive references."
+        "authoritativeFor": "Eliware Test v8 applicability and specification references."
       }
     ]
   },

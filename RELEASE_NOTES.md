@@ -11,7 +11,7 @@
 
 ## 8.0.0 — 2026-09-10
 
-### User-visible changes
+### Changed
 
 - Strengthened one-shot review completeness instructions and unified-tool
   descriptions to require exhaustive issue enumeration without expanding

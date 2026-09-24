@@ -107,9 +107,10 @@ commands in a reviewed repository.
 
 ## Troubleshooting
 
-If convention evidence is unavailable, verify that the adjacent
-`eliware/conventions` checkout exists and that `package.json.eliware.apply`
-names valid directive files under its `specs/` directory.
+If shared requirement evidence is unavailable, verify that the adjacent
+`eliware/test` checkout exists and that `package.json.eliware.apply` names
+profile records under its `specs/` directory. When reviewing `@eliware/test`
+itself, its specifications are included through normal repository context.
 
 ## Security
 

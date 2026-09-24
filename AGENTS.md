@@ -12,7 +12,7 @@ CodeScope owns its CLI, profiles, supplied-evidence conventions, specifications,
 tests, and package metadata. It does not own reviewed-repository
 implementation, Operations procedures, deployment, publication, or Test8
 behavior. Shared repository requirements remain authoritative in
-`eliware/conventions`.
+`eliware/test`.
 
 These instructions apply repository-wide. Subdirectory instructions may add
 specific guidance but may not weaken these requirements.
@@ -30,7 +30,7 @@ Maintain `README.md`, `AGENTS.md`,
 Use Node.js 26, npm, and native ESM modules in the required environment.
 Read `README.md`, relevant `docs/`, and relevant `specs/` records before
 changing files. Read `eliware/docs` for authority mapping,
-`eliware/conventions` for applicable repository requirements, and
+`eliware/test` for applicable repository requirements, and
 `eliware/operations` for operational procedures. These repository-wide
 instructions are actionable, current, concise, and project-specific. A
 subdirectory instruction may add detail but may not weaken them.
@@ -55,9 +55,9 @@ configuration, shutdown, signal cleanup, and externally observable workflows.
 
 Do not commit, publish, deploy, tag, or push without explicit authorization for
 the current task. Keep changes scoped, preserve unrelated work, and do not
-copy shared Convention requirements into local directives. Runtime workflow
+copy shared Eliware Test requirements into local directives. Runtime workflow
 concerns include repeatable shutdown and signal cleanup.
-No intentional deviations from shared Conventions are currently approved.
+No intentional deviations from shared Eliware Test requirements are currently approved.
 
 ## Application
 

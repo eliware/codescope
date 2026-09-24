@@ -1,5 +1,9 @@
 import { readFile } from "node:fs/promises";
-export async function readConventionApplicability(root, { readPackageJson = readFile } = {}) {
+
+const isSafeProfileName = (name) =>
+  typeof name === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(name);
+
+export async function readTestSpecApplicability(root, { readPackageJson = readFile } = {}) {
   let contents;
   try {
     contents = await readPackageJson(`${root}/package.json`, "utf8");
@@ -17,18 +21,17 @@ export async function readConventionApplicability(root, { readPackageJson = read
   if (!packageJson || typeof packageJson !== "object" || Array.isArray(packageJson))
     return { kind: "invalid", reason: "package.json must contain an object" };
 
+  if (packageJson.name === "@eliware/test") return { kind: "available", skipSeparateRecords: true };
+
   const apply = packageJson.eliware?.apply;
-  if (
-    !Array.isArray(apply) ||
-    !apply.every((name) => typeof name === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(name))
-  )
+  if (!Array.isArray(apply) || !apply.every(isSafeProfileName))
     return {
       kind: "invalid",
       reason: "package.json eliware.apply must contain safe, single-segment profile names",
     };
   return {
     kind: "available",
-    includeAll: packageJson.name === "@eliware/test",
+    skipSeparateRecords: false,
     profiles: new Set(apply),
     canonicalPaths: new Map(apply.map((name) => [name, `${name}.json`])),
   };

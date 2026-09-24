@@ -11,9 +11,9 @@ test("covers the supplied v8 convention contract", () => {
   expect(conventionPolicy).toContain("P1 for a proven defect");
   expect(conventionPolicy).toContain("P2 or P3");
   expect(conventionPolicy).toContain("Do not duplicate");
-  expect(conventionPolicy).toContain("Convention v8");
-  expect(conventionPolicy).toContain("inline directive");
+  expect(conventionPolicy).toContain("Eliware Test v8");
+  expect(conventionPolicy).toContain("inline");
   expect(conventionPolicy).toContain("Do not infer");
-  expect(conventionPolicy).toContain("Convention v8 directive records");
-  expect(conventionPolicy).toContain("remain authoritative");
+  expect(conventionPolicy).toContain("Eliware Test v8 specification records");
+  expect(conventionPolicy).toContain("Eliware Test is the sole authority");
 });

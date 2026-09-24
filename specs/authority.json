@@ -11,7 +11,7 @@
       "directives": [{ "path": "./directives.json", "ids": ["E-19"] }],
       "implementation": [{ "path": "../src", "role": "CLI implementation" }],
       "consumers": ["CodeScope users and reviewers"],
-      "reviewers": ["eliware/docs", "eliware/conventions"],
+      "reviewers": ["eliware/docs", "eliware/test"],
       "evidence": [],
       "notAuthoritativeFor": [
         "repository requirements",
@@ -19,18 +19,6 @@
         "publication or deployment",
         "Test8 harness behavior"
       ],
-      "status": "active"
-    },
-    {
-      "id": "codescope.supplied-evidence",
-      "kind": "boundary",
-      "authority": { "path": "./directives.json" },
-      "directives": [{ "path": "./directives.json", "ids": ["E-19"] }],
-      "implementation": [{ "path": "../src/combine", "role": "evidence assembly" }],
-      "consumers": ["CodeScope review profiles"],
-      "reviewers": ["eliware/docs", "eliware/conventions"],
-      "evidence": [],
-      "notAuthoritativeFor": ["canonical Convention v8 requirements"],
       "status": "active"
     }
   ]

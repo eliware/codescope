@@ -5,7 +5,7 @@ export async function combineAllFiles(root, options = {}) {
   return joinCombinedSections(
     [
       sections.packageJson,
-      sections.conventions,
+      sections.testSpecs,
       sections.json,
       sections.configs,
       sections.md,
