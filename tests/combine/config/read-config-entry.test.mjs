@@ -196,3 +196,22 @@ test("reports byte truncation when the bounded reader marks a short file", async
     }),
   ).resolves.toContain("truncated after the per-file byte limit");
 });
+
+test("omits an incomplete UTF-8 character at the byte boundary", async () => {
+  const bytes = Buffer.concat([Buffer.alloc(99_999, "x"), Buffer.from("€")]);
+  const result = await readConfigEntry("repo", ".github/ci.yml", {
+    inspectFile: async () => regular,
+    readFileContents: async () => ({ data: bytes.subarray(0, 100_000), truncated: true }),
+  });
+  expect(result).not.toContain("\uFFFD");
+  expect(result).toContain(`${"x".repeat(99_999)}\n[truncated after the per-file byte limit`);
+});
+
+test("rejects malformed UTF-8 instead of supplying replacement characters", async () => {
+  await expect(
+    readConfigEntry("repo", ".github/ci.yml", {
+      inspectFile: async () => regular,
+      readFileContents: async () => Buffer.from([0x61, 0xc3, 0x28]),
+    }),
+  ).rejects.toThrow(/not valid UTF-8/);
+});

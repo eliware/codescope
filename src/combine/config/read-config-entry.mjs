@@ -39,10 +39,7 @@ export async function readConfigEntry(
     );
   if (bytes.includes(0)) return "";
   const byteTruncated = bytes.byteLength > MAX_CONFIG_BYTES || bounded?.truncated === true;
-  const lines = bytes
-    .subarray(0, MAX_CONFIG_BYTES)
-    .toString("utf8")
-    .split(/\r\n|\r|\n/u);
+  const lines = decodeConfigText(bytes, byteTruncated, relativePath).split(/\r\n|\r|\n/u);
   // codescope ignore: remove the final-newline split artifact before applying the line limit.
   while (lines.at(-1) === "") lines.pop();
   const lineTruncated = lines.length > MAX_CONFIG_LINES;
@@ -58,6 +55,17 @@ export async function readConfigEntry(
         : `[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`,
     );
   return `===== ${relativePath} =====\n${body.join("\n")}\n`;
+}
+
+function decodeConfigText(bytes, truncated, relativePath) {
+  try {
+    return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(
+      bytes.subarray(0, MAX_CONFIG_BYTES),
+      { stream: truncated },
+    );
+  } catch (error) {
+    throw new Error(`configuration file is not valid UTF-8: ${relativePath}`, { cause: error });
+  }
 }
 
 async function readInspectedConfigFile(filePath, inspectedMetadata, openFile) {
