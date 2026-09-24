@@ -14,7 +14,7 @@ export async function runDryRun({ client, request, signal, model, usage }) {
     throw error;
   }
   const tokenResponse = await client.responses.inputTokens.count(tokenRequest, { signal });
-  if (!Number.isInteger(tokenResponse?.input_tokens) || tokenResponse.input_tokens < 0) {
+  if (!Number.isSafeInteger(tokenResponse?.input_tokens) || tokenResponse.input_tokens < 0) {
     const error = new Error("Invalid input-token count response");
     error.code = "INVALID_RESPONSE";
     throw error;

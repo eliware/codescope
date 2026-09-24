@@ -56,6 +56,7 @@
             "Use gpt-6-luna as the default model and support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, --model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and -a|--add <string>.",
             "Use the normal repository context for custom prompts while disabling review and suggestion tools.",
             "Use --usage with --dry-run to include estimated token and calculated cost data; use --dry-run to estimate input-token cost without running a model review.",
+            "Accept dry-run input-token counts only as non-negative safe integers and report other counts as invalid provider responses.",
             "When -a or --add is supplied one or more times to any codescope profile command, including all, release, review profiles, suggestion profiles, and prompt, append each string verbatim inside an explicitly delimited untrusted-data section at the end of the final user message in command-line order.",
             "Accept -a or --add on the bare codescope command and on codescope help or codescope --help without applying it to output or help text.",
             "Treat non-option tokens as free-form prompt text; require -- when prompt text itself begins with a dash.",
