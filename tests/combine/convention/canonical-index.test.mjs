@@ -22,6 +22,7 @@ test("parses unannotated JSON links as canonical directive records only", () => 
     "- [C:/drive.json](C:/drive.json)",
     "- [folder\\backslash.json](folder\\backslash.json)",
     "- [../outside.json](../outside.json)",
+    "- [sub/../general.json](sub/../general.json)",
     "- [notes](notes.md)",
   ].join("\n");
   expect(parseCanonicalDirectiveIndex(index)).toEqual([
@@ -29,6 +30,10 @@ test("parses unannotated JSON links as canonical directive records only", () => 
     "nested/cli.json",
     "profile/application.json",
   ]);
+});
+
+test("rejects every parent-directory segment, including targets that normalize inside specs", () => {
+  expect(parseCanonicalDirectiveIndex("- [sub/../general.json](sub/../general.json)")).toEqual([]);
 });
 
 test("returns no canonical records for an index without directive links", () => {

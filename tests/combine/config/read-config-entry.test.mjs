@@ -67,6 +67,53 @@ test("rejects non-file configuration entries", async () => {
   ).rejects.toThrow(/not a regular file/);
 });
 
+test("rejects a configuration path replaced between inspection and opening", async () => {
+  let readAttempted = false;
+  let closed = false;
+  const result = { isSymbolicLink: () => false, isFile: () => true, dev: 1n, ino: 2n };
+  const replaced = {
+    isSymbolicLink: () => false,
+    isFile: () => true,
+    dev: 1n,
+    ino: 3n,
+  };
+  await expect(
+    readConfigEntry("repo", ".github/ci.yml", {
+      inspectFile: async () => result,
+      openFile: async () => ({
+        stat: async () => replaced,
+        read: async () => {
+          readAttempted = true;
+        },
+        close: async () => {
+          closed = true;
+        },
+      }),
+      platform: "posix",
+    }),
+  ).rejects.toThrow(/changed while opening/);
+  expect(readAttempted).toBe(false);
+  expect(closed).toBe(true);
+});
+
+test("rejects a non-file opened after configuration path inspection", async () => {
+  let closed = false;
+  await expect(
+    readConfigEntry("repo", ".github/ci.yml", {
+      inspectFile: async () => ({ ...regular, dev: 1n, ino: 2n }),
+      openFile: async () => ({
+        stat: async () => ({ isFile: () => false, dev: 1n, ino: 2n }),
+        read: async () => ({ bytesRead: 0 }),
+        close: async () => {
+          closed = true;
+        },
+      }),
+      platform: "posix",
+    }),
+  ).rejects.toThrow(/not a regular file/);
+  expect(closed).toBe(true);
+});
+
 test("rejects readers that exceed the extra-byte boundary", async () => {
   await expect(
     readConfigEntry("repo", ".github/ci.yml", {

@@ -1,5 +1,5 @@
-import { lstat } from "node:fs/promises";
-import { readFileUpToLimit } from "../read-file-up-to-limit.mjs";
+import { lstat, open } from "node:fs/promises";
+import { readHandleUpToLimit } from "../read-file-up-to-limit.mjs";
 import { resolveConfigPath } from "./paths.mjs";
 
 const MAX_CONFIG_LINES = 200;
@@ -8,7 +8,7 @@ const MAX_CONFIG_BYTES = 100_000;
 export async function readConfigEntry(
   root,
   relativePath,
-  { readFileContents, inspectFile, platform = process.platform } = {},
+  { readFileContents, inspectFile, openFile = open, platform = process.platform } = {},
 ) {
   const filePath = resolveConfigPath(root, relativePath, platform);
   const metadata = await (inspectFile ?? lstat)(filePath);
@@ -18,7 +18,7 @@ export async function readConfigEntry(
     throw new Error(`configuration path is not a regular file: ${relativePath}`);
   const bounded = readFileContents
     ? await readFileContents(filePath)
-    : await readFileUpToLimit(filePath, MAX_CONFIG_BYTES);
+    : await readInspectedConfigFile(filePath, metadata, openFile);
   if (
     bounded &&
     typeof bounded === "object" &&
@@ -58,6 +58,22 @@ export async function readConfigEntry(
         : `[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`,
     );
   return `===== ${relativePath} =====\n${body.join("\n")}\n`;
+}
+
+async function readInspectedConfigFile(filePath, inspectedMetadata, openFile) {
+  const handle = await openFile(filePath, "r");
+  try {
+    const openedMetadata = await handle.stat({ bigint: true });
+    if (!openedMetadata.isFile()) throw new Error("configuration path is not a regular file");
+    if (
+      BigInt(inspectedMetadata.dev) !== openedMetadata.dev ||
+      BigInt(inspectedMetadata.ino) !== openedMetadata.ino
+    )
+      throw new Error("configuration file changed while opening");
+    return await readHandleUpToLimit(handle, MAX_CONFIG_BYTES);
+  } finally {
+    await handle.close();
+  }
 }
 
 export { MAX_CONFIG_BYTES, MAX_CONFIG_LINES };

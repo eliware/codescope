@@ -38,15 +38,8 @@ export async function readCanonicalDirectiveIndex(
 function normalizeRelativeJsonTarget(target) {
   if (target.includes("\\") || target.startsWith("/") || /^[a-z][a-z\d+.-]*:/iu.test(target))
     return undefined;
-  const normalized = path.posix.normalize(target);
-  if (
-    normalized === "." ||
-    normalized === ".." ||
-    normalized.startsWith("../") ||
-    !normalized.toLowerCase().endsWith(".json")
-  )
-    return undefined;
-  return normalized;
+  if (target.split("/").includes("..")) return undefined;
+  return path.posix.normalize(target);
 }
 
 function hasErrorCode(error, code) {
