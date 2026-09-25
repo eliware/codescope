@@ -6,7 +6,7 @@ export async function discoverTestSpecFiles(
   { readDirectory, platform = process.platform } = {},
 ) {
   const pathApi = platform === "win32" ? path.win32 : path.posix;
-  const specsRoot = pathApi.join(testRoot, "specs");
+  const specsRoot = pathApi.join(testRoot, "specs", "conventions");
   try {
     return {
       specsRoot,

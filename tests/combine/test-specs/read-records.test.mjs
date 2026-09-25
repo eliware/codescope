@@ -5,17 +5,17 @@ import path from "node:path";
 
 test("reads and formats selected Test specification records", async () => {
   await expect(
-    readTestSpecRecords("C:\\test\\specs", ["general.json"], {
+    readTestSpecRecords("C:\\test\\specs\\conventions", ["general.json"], {
       platform: "win32",
       readFileContents: async () => '{"id":"general"}',
       inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),
     }),
-  ).resolves.toEqual(['===== test/specs/general.json =====\n1 {"id":"general"}\n']);
+  ).resolves.toEqual(['===== test/specs/conventions/general.json =====\n1 {"id":"general"}\n']);
 });
 
 test("reads records with the host path policy", async () => {
   await expect(
-    readTestSpecRecords("/test/specs", ["nested/general.json"], {
+    readTestSpecRecords("/test/specs/conventions", ["nested/general.json"], {
       readFileContents: async () => "{}",
       inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),
     }),
@@ -24,7 +24,7 @@ test("reads records with the host path policy", async () => {
 
 test("includes complete Test spec records regardless of size", async () => {
   const contents = JSON.stringify({ rules: "x".repeat(1_000_001) });
-  const sections = await readTestSpecRecords("C:\\test\\specs", ["general.json"], {
+  const sections = await readTestSpecRecords("C:\\test\\specs\\conventions", ["general.json"], {
     platform: "win32",
     readFileContents: async () => contents,
     inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),

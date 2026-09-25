@@ -20,13 +20,14 @@ export function readTestSpecRecords(
     maxChars,
     read: async (relativePath) => {
       const portablePath = resolveTestSpecPath(specsRoot, relativePath, platform);
-      const contents = await readSourceFile("test/specs/" + relativePath, portablePath, {
+      const evidencePath = "test/specs/conventions/" + relativePath;
+      const contents = await readSourceFile(evidencePath, portablePath, {
         readFileContents,
         inspectFile,
         validateSymlinks: true,
       });
       const normalizedPath = normalizeTestSpecPath(relativePath);
-      return formatSourceSection("test/specs/" + normalizedPath, contents);
+      return formatSourceSection("test/specs/conventions/" + normalizedPath, contents);
     },
   });
 }

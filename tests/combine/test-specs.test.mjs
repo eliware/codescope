@@ -7,19 +7,19 @@ test("includes only package-selected records from the adjacent Test specs", asyn
   const root = await fsTemp("codescope-test-specs-");
   const testRoot = path.join(root, "test");
   const project = path.join(root, "project");
-  await mkdir(path.join(testRoot, "specs"), { recursive: true });
+  await mkdir(path.join(testRoot, "specs", "conventions"), { recursive: true });
   await mkdir(project);
-  await writeFile(path.join(testRoot, "specs", "general.json"), '{"version":"8.0"}');
-  await writeFile(path.join(testRoot, "specs", "cli.json"), '{"cli":true}');
-  await writeFile(path.join(testRoot, "specs", "web.json"), '{"web":true}');
+  await writeFile(path.join(testRoot, "specs", "conventions", "general.json"), '{"version":"8.0"}');
+  await writeFile(path.join(testRoot, "specs", "conventions", "cli.json"), '{"cli":true}');
+  await writeFile(path.join(testRoot, "specs", "conventions", "web.json"), '{"web":true}');
   await writeFile(
     path.join(project, "package.json"),
     JSON.stringify({ eliware: { apply: ["general", "cli"] } }),
   );
   try {
     const result = await combineTestSpecs(project, { readFileContents: readFile });
-    expect(result).toContain("test/specs/general.json");
-    expect(result).toContain("test/specs/cli.json");
+    expect(result).toContain("test/specs/conventions/general.json");
+    expect(result).toContain("test/specs/conventions/cli.json");
     expect(result).not.toContain("web.json");
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -30,7 +30,7 @@ test("reports selected profiles missing from the adjacent Test specs", async () 
   const root = await fsTemp("codescope-missing-test-spec-");
   const testRoot = path.join(root, "test");
   const project = path.join(root, "project");
-  await mkdir(path.join(testRoot, "specs"), { recursive: true });
+  await mkdir(path.join(testRoot, "specs", "conventions"), { recursive: true });
   await mkdir(project);
   await writeFile(
     path.join(project, "package.json"),

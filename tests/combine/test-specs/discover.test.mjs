@@ -31,14 +31,14 @@ test("uses POSIX Test-spec paths when requested", async () => {
       readDirectory: async () => [],
       platform: "linux",
     }),
-  ).resolves.toMatchObject({ specsRoot: "/missing/specs", files: [] });
+  ).resolves.toMatchObject({ specsRoot: "/missing/specs/conventions", files: [] });
 });
 
 test("discovers Test-spec JSON files on the host platform", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
   try {
-    await mkdir(path.join(root, "specs"));
-    await writeFile(path.join(root, "specs", "general.json"), "{}");
+    await mkdir(path.join(root, "specs", "conventions"), { recursive: true });
+    await writeFile(path.join(root, "specs", "conventions", "general.json"), "{}");
     await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({ files: ["general.json"] });
   } finally {
     await rm(root, { recursive: true, force: true });
