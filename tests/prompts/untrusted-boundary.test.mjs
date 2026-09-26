@@ -8,10 +8,22 @@ test("frames data with a boundary token absent from its contents", () => {
   );
 });
 
-test("changes the boundary token until it cannot occur in the content", () => {
-  const content =
-    "prefix CODESCOPE_REPOSITORY_SOURCE_BOUNDARY CODESCOPE_REPOSITORY_SOURCE_BOUNDARY_ suffix";
+test.each(["1", "x", "!"])("changes the boundary when the token is followed by %s", (suffix) => {
+  const base = "CODESCOPE_REPOSITORY_SOURCE_BOUNDARY";
+  const content = `prefix ${base}${suffix} suffix`;
   const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
-  expect(framed).toContain("BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY__)");
+
+  expect(framed).toContain(`BOUNDARY: ${base}_)`);
+  expect(content).not.toContain(`${base}_`);
+  expect(framed).toContain(content);
+});
+
+test("keeps extending the boundary until the complete token is absent", () => {
+  const base = "CODESCOPE_REPOSITORY_SOURCE_BOUNDARY";
+  const content = `prefix ${base}1 ${base}_ suffix`;
+  const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
+
+  expect(framed).toContain(`BOUNDARY: ${base}__)`);
+  expect(content).not.toContain(`${base}__`);
   expect(framed).toContain(content);
 });

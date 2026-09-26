@@ -81,6 +81,16 @@ test("reports unavailable Test checkout and package applicability", async () => 
     await expect(combineTestSpecs(path.join(root, "missing-project"))).resolves.toContain(
       "Test-spec applicability unavailable",
     );
+    await expect(
+      combineTestSpecs(root, {
+        readPackageJson: async () => {
+          throw Object.assign(new Error("permission denied"), { code: "EACCES" });
+        },
+      }),
+    ).resolves.toContain("Test-spec applicability unavailable: package.json could not be read");
+    await expect(combineTestSpecs(root, { readPackageJson: async () => "{}" })).resolves.toContain(
+      "Test-spec applicability invalid:",
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

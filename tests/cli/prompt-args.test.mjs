@@ -20,6 +20,16 @@ test("supports a delimiter for dash-leading prompt text", () => {
   });
 });
 
+test("accepts prompt additions before the delimiter", () => {
+  expect(
+    parsePromptArgs(["--summarize", "this", "--add", "focus on risks", "--", "--effort=low"]),
+  ).toMatchObject({
+    promptText: "--summarize this",
+    add: ["focus on risks"],
+    effort: "low",
+  });
+});
+
 test("rejects additions after the prompt delimiter", () => {
   expect(() => parsePromptArgs(["question", "--", "--add", "note"])).toThrow(
     "Only --effort=... or --model=... may follow --",

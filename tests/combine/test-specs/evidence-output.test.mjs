@@ -8,6 +8,12 @@ test("formats unavailable and invalid Test-spec outcomes", () => {
     "Test-spec applicability unavailable",
   );
   expect(
+    formatTestSpecEvidence({
+      status: "applicability-unavailable",
+      reason: "package.json could not be read",
+    }),
+  ).toContain("Test-spec applicability unavailable: package.json could not be read.");
+  expect(
     formatTestSpecEvidence({ status: "applicability-invalid", reason: "bad package" }),
   ).toContain("Test-spec applicability invalid: bad package.");
 });

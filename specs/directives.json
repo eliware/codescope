@@ -79,7 +79,7 @@
         {
           "id": "A-19.3",
           "dos": [
-            "Assemble comprehensive context in this order: package.json; selected Eliware Test profile records for reviewed packages other than @eliware/test; eligible root, docs, and specs JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts. For @eliware/test, include its specs through the normal JSON and Markdown context positions instead of a separate profile-record section.",
+            "Assemble comprehensive context in this order: package.json; selected Eliware Test profile records for reviewed packages other than @eliware/test; eligible root, docs, specs, and examples JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts. For @eliware/test, include its specs through the normal JSON and Markdown context positions instead of a separate profile-record section.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
             "For reviewed packages other than @eliware/test, read only the Eliware Test v8 specification records named by package.json eliware.apply from the adjacent test/specs/conventions directory. Accept only safe single-segment lowercase profile names containing letters, digits, and single hyphens, then resolve each name to its canonical <profile>.json record; preserve the complete selected record as supplied evidence.",
             "For the @eliware/test package, do not separately load or inject specification records; its own specs are supplied through the normal repository-context collection.",
@@ -137,6 +137,7 @@
             "Request each real issue or suggestion rationale as an ordered array of one or more concise steps; begin every step with 'Because', have each step answer why the previous point matters, and stop when the evidence-supported concrete impact or suggestion value is clear. Use an empty rationale array for sentinels.",
             "Allow review, suggestion, and custom-prompt responses to be provider-defined and not machine-readable.",
             "Report provider transport, setup, and output-write failures as errors, preserving safe fallback output and fallback error metadata where available.",
+            "When failure diagnostics include provider usage, preserve every non-negative integer counter accepted by pricing without imposing a stricter safe-integer limit.",
             "Require output writers to report an exact written character count; do not treat an absent result as successful completion."
           ],
           "donts": [

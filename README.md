@@ -155,12 +155,15 @@ Publication and deployment are handled by separate authorized release workflows.
 to a prompt is written unchanged; provider findings and verdict text never
 change the CLI exit code.
 
-Add one or more `-a <text>` or `--add <text>` options to profile commands to
-append custom guidance to the final user message. Bare `codescope`, help, and
-version output do not apply additions. Use `codescope --help` for the complete
-command and option reference. Supported commands include `codescope all`,
-`codescope release`, `codescope review <profile>`, `codescope suggest <profile>`,
-`codescope prompt <text>`, `codescope --help`, and `codescope --version`.
+Add one or more `-a <text>` or `--add <text>` options (also `-a=<text>` or
+`--add=<text>`) to profile commands and custom prompts to append custom guidance
+to the final user message. For `codescope prompt`, put additions before an
+optional `--` delimiter; only effort and model options may follow it. Bare
+`codescope`, help, and version output do not apply additions. Use
+`codescope --help` for the complete command and option reference. Supported
+commands include `codescope all`, `codescope release`,
+`codescope review <profile>`, `codescope suggest <profile>`, `codescope prompt <text>`,
+`codescope --help`, and `codescope --version`.
 Profile commands accept repeatable additions, model and effort options, usage
 reporting, and dry-run estimates. CodeScope defaults to `gpt-6-luna`.
 
@@ -172,6 +175,7 @@ codescope release
 codescope review architecture
 codescope suggest new-features
 codescope prompt "Explain the main reliability risks"
+codescope prompt "Explain the risks" --add "Focus on changed files"
 codescope --help
 codescope --version
 ```

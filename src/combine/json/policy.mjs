@@ -4,5 +4,5 @@ export function isIncludedJson(relativePath) {
   if (!lower.endsWith(".json") || lower === "package.json" || lower === "package-lock.json")
     return false;
   if (!normalized.includes("/")) return true;
-  return ["docs/", "specs/"].some((directory) => lower.startsWith(directory));
+  return ["docs/", "specs/", "examples/"].some((directory) => lower.startsWith(directory));
 }

@@ -3,8 +3,10 @@ const HEADER = "===== Eliware Test v8 specifications =====\n";
 export function formatTestSpecEvidence(result) {
   if (result.status === "checkout-unavailable")
     return `${HEADER}Adjacent eliware/test checkout not supplied.\n`;
-  if (result.status === "applicability-unavailable")
-    return `${HEADER}Test-spec applicability unavailable.\n`;
+  if (result.status === "applicability-unavailable") {
+    const reason = result.reason ? `: ${result.reason}` : "";
+    return `${HEADER}Test-spec applicability unavailable${reason}.\n`;
+  }
   if (result.status === "applicability-invalid")
     return `${HEADER}Test-spec applicability invalid: ${result.reason}.\n`;
   if (result.status === "records-missing")

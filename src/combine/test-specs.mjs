@@ -1,4 +1,4 @@
-import { lstat, readFile } from "node:fs/promises";
+import { lstat, open, readFile } from "node:fs/promises";
 import path from "node:path";
 import { readTestSpecApplicability } from "./test-specs/applicability.mjs";
 import { discoverTestSpecFiles } from "./test-specs/discover.mjs";
@@ -12,8 +12,9 @@ export async function combineTestSpecs(
     testRoot = path.resolve(root, "..", "test"),
     readDirectory,
     readFileContents = readFile,
-    readPackageJson = readFileContents,
+    readPackageJson,
     inspectFile = lstat,
+    openFile = open,
     concurrency = 8,
     maxChars = Number.POSITIVE_INFINITY,
     platform = process.platform,
@@ -23,9 +24,17 @@ export async function combineTestSpecs(
     throw new Error("Test-spec read concurrency must be a positive integer");
   const applicability = await readTestSpecApplicability(root, {
     readPackageJson,
+    inspectFile,
+    openFile,
   });
   if (!applicability) {
     return formatTestSpecEvidence({ status: "applicability-unavailable" });
+  }
+  if (applicability.kind === "unavailable") {
+    return formatTestSpecEvidence({
+      status: "applicability-unavailable",
+      reason: applicability.reason,
+    });
   }
   if (applicability.kind === "invalid") {
     return formatTestSpecEvidence({
