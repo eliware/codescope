@@ -1,97 +1,12 @@
-import { lstat, open } from "node:fs/promises";
-import { readHandleUpToLimit } from "../read-file-up-to-limit.mjs";
-import { resolveConfigPath } from "./paths.mjs";
+import { readConfigSource } from "./read-config-source.mjs";
+import { readConfigSample } from "./read-config-sample.mjs";
+import { formatConfigSection } from "./format-config-section.mjs";
 
-const MAX_CONFIG_LINES = 200;
-const MAX_CONFIG_BYTES = 100_000;
-
-export async function readConfigEntry(
-  root,
-  relativePath,
-  { readFileContents, inspectFile, openFile = open, platform = process.platform } = {},
-) {
-  const filePath = resolveConfigPath(root, relativePath, platform);
-  const metadata = await (inspectFile ?? lstat)(filePath, { bigint: true });
-  if (metadata.isSymbolicLink())
-    throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
-  if (!metadata.isFile())
-    throw new Error(`configuration path is not a regular file: ${relativePath}`);
-  const bounded = readFileContents
-    ? await readFileContents(filePath)
-    : await readInspectedConfigFile(filePath, metadata, openFile);
-  if (
-    bounded &&
-    typeof bounded === "object" &&
-    !Buffer.isBuffer(bounded) &&
-    (!Object.hasOwn(bounded, "data") || typeof bounded.truncated !== "boolean")
-  )
-    throw new Error("Configuration reader must return text, bytes, or { data, truncated }");
-  const source =
-    bounded && typeof bounded === "object" && "data" in bounded ? bounded.data : bounded;
-  if (typeof source !== "string" && !Buffer.isBuffer(source))
-    throw new Error("Configuration reader data must be text or bytes");
-  const bytes = Buffer.isBuffer(source) ? source : Buffer.from(String(source));
-  if (readFileContents && bytes.byteLength > MAX_CONFIG_BYTES && bounded?.truncated !== true)
-    throw new Error(`Configuration reader exceeded the ${MAX_CONFIG_BYTES}-byte sample boundary`);
-  if (bytes.byteLength > MAX_CONFIG_BYTES + 1)
-    throw new Error(
-      `Configuration reader exceeded the ${MAX_CONFIG_BYTES + 1}-byte sample boundary`,
-    );
-  if (bytes.includes(0)) return "";
-  const byteTruncated = bytes.byteLength > MAX_CONFIG_BYTES || bounded?.truncated === true;
-  const lines = decodeConfigText(bytes, byteTruncated, relativePath).split(/\r\n|\r|\n/u);
-  // codescope ignore: remove the final-newline split artifact before applying the line limit.
-  while (lines.at(-1) === "") lines.pop();
-  const lineTruncated = lines.length > MAX_CONFIG_LINES;
-  const visibleLines = lines.slice(0, MAX_CONFIG_LINES);
-  const width = String(visibleLines.length).length;
-  const body = visibleLines.map(
-    (line, index) => `${String(index + 1).padStart(width, " ")} ${line}`,
-  );
-  if (byteTruncated || lineTruncated)
-    body.push(
-      byteTruncated && !lineTruncated
-        ? "[truncated after the per-file byte limit; remaining config omitted]"
-        : `[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`,
-    );
-  return `===== ${relativePath} =====\n${body.join("\n")}\n`;
+export async function readConfigEntry(root, relativePath, options = {}) {
+  const source = await readConfigSource(root, relativePath, options);
+  const sample = readConfigSample(source, {
+    readerProvided: Boolean(options.readFileContents),
+    relativePath,
+  });
+  return sample.binary ? "" : formatConfigSection(relativePath, sample);
 }
-
-function decodeConfigText(bytes, truncated, relativePath) {
-  try {
-    return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(
-      bytes.subarray(0, MAX_CONFIG_BYTES),
-      { stream: truncated },
-    );
-  } catch (error) {
-    throw new Error(`configuration file is not valid UTF-8: ${relativePath}`, { cause: error });
-  }
-}
-
-async function readInspectedConfigFile(filePath, inspectedMetadata, openFile) {
-  const handle = await openFile(filePath, "r");
-  try {
-    const openedMetadata = await handle.stat({ bigint: true });
-    if (!openedMetadata.isFile()) throw new Error("configuration path is not a regular file");
-    if (
-      BigInt(inspectedMetadata.dev) !== openedMetadata.dev ||
-      BigInt(inspectedMetadata.ino) !== openedMetadata.ino
-    )
-      throw new Error("configuration file changed while opening");
-    const bounded = await readHandleUpToLimit(handle, MAX_CONFIG_BYTES);
-    const readMetadata = await handle.stat({ bigint: true });
-    if (
-      openedMetadata.dev !== readMetadata.dev ||
-      openedMetadata.ino !== readMetadata.ino ||
-      openedMetadata.size !== readMetadata.size ||
-      openedMetadata.mtimeNs !== readMetadata.mtimeNs ||
-      openedMetadata.ctimeNs !== readMetadata.ctimeNs
-    )
-      throw new Error("configuration file changed during read");
-    return bounded;
-  } finally {
-    await handle.close();
-  }
-}
-
-export { MAX_CONFIG_BYTES, MAX_CONFIG_LINES };

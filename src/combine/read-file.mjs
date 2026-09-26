@@ -1,4 +1,5 @@
 import { lstat, open, readFile } from "node:fs/promises";
+import { readVerifiedFile } from "./read-verified-file.mjs";
 
 export async function readSourceFile(
   relativePath,
@@ -32,31 +33,9 @@ export async function readSourceFile(
 }
 
 async function readInspectedSourceFile(rootPath, inspectedMetadata, openFile) {
-  const handle = await openFile(rootPath, "r");
-  try {
-    const openedMetadata = await handle.stat({ bigint: true });
-    if (!openedMetadata.isFile()) throw new Error("source path is not a regular file");
-    assertSameSourceIdentity(inspectedMetadata, openedMetadata);
-    const contents = await handle.readFile("utf8");
-    assertStableSourceSnapshot(openedMetadata, await handle.stat({ bigint: true }));
-    return contents;
-  } finally {
-    await handle.close();
-  }
-}
-
-function assertSameSourceIdentity(expected, actual) {
-  if (BigInt(expected.dev) !== actual.dev || BigInt(expected.ino) !== actual.ino)
-    throw new Error("source file changed while opening");
-}
-
-function assertStableSourceSnapshot(before, after) {
-  if (
-    before.dev !== after.dev ||
-    before.ino !== after.ino ||
-    before.size !== after.size ||
-    before.mtimeNs !== after.mtimeNs ||
-    before.ctimeNs !== after.ctimeNs
-  )
-    throw new Error("source file changed while reading");
+  return readVerifiedFile(rootPath, inspectedMetadata, {
+    openFile,
+    label: "source",
+    readHandle: (handle) => handle.readFile("utf8"),
+  });
 }
