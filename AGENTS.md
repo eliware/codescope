@@ -35,6 +35,18 @@ changing files. Read `eliware/docs` for authority mapping,
 instructions are actionable, current, concise, and project-specific. A
 subdirectory instruction may add detail but may not weaken them.
 
+Design source modules and tests with single responsibility: each has one
+cohesive purpose and one reason to change. A module and its mirrored test
+should each have one distinct responsibility. Business-logic modules and
+coordinators, including coordinators of coordinators, are valid when each does
+only its own responsibility. Put every distinct new responsibility into a
+focused submodule wired through its owner. Do not add the new responsibility to
+an existing module for convenience. Refactor them during ordinary review when
+you notice mixed responsibilities. Line counts do not establish single
+responsibility or permit mixing responsibilities below any applicable
+blocking maxima. Do not permit mixed responsibilities below those limits.
+The limits are 100 source lines and 200 test lines; passing them does not prove single responsibility.
+
 ## Validation
 
 Use Node.js 26 with npm and native ESM. Run `npm ci`, `npm test`,
