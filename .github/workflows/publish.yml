@@ -3,7 +3,7 @@ name: Publication
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]*.[0-9]*.[0-9]*"
 
 permissions:
   contents: read
@@ -13,21 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify-tag:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 26
-      - name: Verify release tag
-        run: >-
-          node -e "const expected = 'v' + JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version;
-          const tags = require('node:child_process').execFileSync('git', ['tag', '--points-at', 'HEAD'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean);
-          if (tags.length !== 1 || tags[0] !== expected || !/^v\d+\.\d+\.\d+$/.test(tags[0])) throw new Error('Release tag must be the exact package version: ' + expected)"
-
   validate:
-    needs: verify-tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -39,7 +25,7 @@ jobs:
       - run: npm test
 
   publish:
-    needs: [verify-tag, validate]
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -50,13 +36,8 @@ jobs:
         with:
           node-version: 26
           registry-url: https://registry.npmjs.org
-      - name: Verify release tag
-        run: >-
-          node -e "const expected = 'v' + JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version;
-          const tags = require('node:child_process').execFileSync('git', ['tag', '--points-at', 'HEAD'], {encoding: 'utf8'}).split(/\r?\n/).filter(Boolean);
-          if (tags.length !== 1 || tags[0] !== expected || !/^v\d+\.\d+\.\d+$/.test(tags[0])) throw new Error('Release tag must be the exact package version: ' + expected)"
-      - name: Verify package version
+      - name: Verify release tag and package version
         shell: bash
-        run: test "$(npm pkg get version --raw)" = "${GITHUB_REF_NAME#v}"
+        run: '[[ "${GITHUB_REF_NAME}" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] && test "$(npm pkg get version --raw)" = "${GITHUB_REF_NAME#v}"'
       - name: Publish to npm
         run: npm publish --access public --provenance

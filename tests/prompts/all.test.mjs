@@ -7,4 +7,8 @@ test("creates the comprehensive all-profile focus", () => {
   expect(result.focus).toContain("Every category must contain at least one item.");
   expect(result.focus).toContain("package metadata");
   expect(result.focus).toContain("rationale: []");
+  expect(result.focus).toContain(
+    "Before submission, verify that every real finding's recommendation calls for a change",
+  );
+  expect(result.focus).toContain("never mix a sentinel and findings");
 });

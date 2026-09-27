@@ -1,4 +1,4 @@
-import { createReviewSession } from "../create-session.mjs";
+import { createReviewSession } from "../create-review-context.mjs";
 
 export function createRequest(options, combined) {
   return createReviewSession({

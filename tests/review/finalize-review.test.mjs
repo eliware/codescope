@@ -1,4 +1,4 @@
-import { finalizeReviewSession } from "../../src/review/finalize-session.mjs";
+import { finalizeReviewSession } from "../../src/review/finalize-review.mjs";
 
 test("executes with registered signals and always finalizes them", async () => {
   const controller = new AbortController();

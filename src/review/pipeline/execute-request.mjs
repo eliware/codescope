@@ -1,5 +1,5 @@
-import { finalizeReviewSession } from "../finalize-session.mjs";
-import { runReviewSession } from "../run-session.mjs";
+import { finalizeReviewSession } from "../finalize-review.mjs";
+import { runReviewSession } from "../run-review.mjs";
 
 export async function executeRequest({ client, request, controller, options }) {
   const session = await finalizeReviewSession({

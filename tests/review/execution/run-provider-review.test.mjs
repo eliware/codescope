@@ -1,4 +1,4 @@
-import { runProviderSession } from "../../../src/review/session/run-provider-session.mjs";
+import { runProviderSession } from "../../../src/review/execution/run-provider-review.mjs";
 
 test("runs a provider session and preserves its response", async () => {
   await expect(

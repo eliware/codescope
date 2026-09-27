@@ -1,4 +1,4 @@
-import { createReviewSession } from "../../src/review/create-session.mjs";
+import { createReviewSession } from "../../src/review/create-review-context.mjs";
 
 test("creates a provider request and an abort controller", () => {
   const result = createReviewSession({

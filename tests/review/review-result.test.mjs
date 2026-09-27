@@ -1,4 +1,4 @@
-import { createSessionResult } from "../../src/review/session-result.mjs";
+import { createSessionResult } from "../../src/review/review-result.mjs";
 
 test("creates a common dry-run session result shape", () => {
   expect(createSessionResult("dry-run", { estimated_input_tokens: 1 })).toEqual({

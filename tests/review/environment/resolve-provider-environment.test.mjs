@@ -1,4 +1,4 @@
-import { resolveTokenEnvironment } from "../../../src/review/environment/resolve-token-environment.mjs";
+import { resolveTokenEnvironment } from "../../../src/review/environment/resolve-provider-environment.mjs";
 
 test("prefers a nonblank process token", () => {
   expect(

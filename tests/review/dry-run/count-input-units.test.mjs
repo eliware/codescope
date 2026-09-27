@@ -1,4 +1,4 @@
-import { countInputTokens } from "../../../src/review/dry-run/count-input-tokens.mjs";
+import { countInputTokens } from "../../../src/review/dry-run/count-input-units.mjs";
 
 test("counts a request without state and presentation-only fields", async () => {
   let call;

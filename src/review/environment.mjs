@@ -1,6 +1,6 @@
 import process from "node:process";
 import { loadEnvironmentFile } from "./environment/load-environment-file.mjs";
-import { resolveTokenEnvironment } from "./environment/resolve-token-environment.mjs";
+import { resolveTokenEnvironment } from "./environment/resolve-provider-environment.mjs";
 
 export async function loadReviewEnvironment({
   envFile,
@@ -15,4 +15,4 @@ export async function loadReviewEnvironment({
   });
   return resolveTokenEnvironment(fileEnvironment, environment);
 }
-export { resolveTokenEnvironment } from "./environment/resolve-token-environment.mjs";
+export { resolveTokenEnvironment } from "./environment/resolve-provider-environment.mjs";

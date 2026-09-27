@@ -1,4 +1,4 @@
-import { runDrySession } from "../../../src/review/session/run-dry-session.mjs";
+import { runDrySession } from "../../../src/review/execution/run-dry-review.mjs";
 
 test("runs and writes a dry session", async () => {
   await expect(

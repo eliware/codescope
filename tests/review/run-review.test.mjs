@@ -1,4 +1,4 @@
-import { runReviewSession } from "../../src/review/run-session.mjs";
+import { runReviewSession } from "../../src/review/run-review.mjs";
 
 const request = { model: "gpt-5.6-luna", tool_choice: { name: "submit_review" } };
 const write = async (value) => ({ written: value.length });

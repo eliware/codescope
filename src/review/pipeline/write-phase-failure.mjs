@@ -1,4 +1,4 @@
-import { throwSessionFailure } from "../session-failure.mjs";
+import { throwSessionFailure } from "../review-failure.mjs";
 
 export function writePhaseFailure({
   cause,

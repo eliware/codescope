@@ -1,4 +1,4 @@
-import { throwSessionFailure } from "../../src/review/session-failure.mjs";
+import { throwSessionFailure } from "../../src/review/review-failure.mjs";
 test("preserves provider failures and fallback metadata", async () => {
   const writes = [];
   await expect(

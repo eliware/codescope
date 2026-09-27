@@ -1,4 +1,4 @@
-import { runProviderAndWrite } from "../../../src/review/session/run-provider-and-write.mjs";
+import { runProviderAndWrite } from "../../../src/review/execution/run-provider-and-write.mjs";
 
 test("runs a provider session and writes its result", async () => {
   const output = [];

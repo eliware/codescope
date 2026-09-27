@@ -50,8 +50,7 @@
     "audit": "eliware-test --audit",
     "pack": "eliware-test --pack",
     "format": "eliware-test --format",
-    "format:check": "eliware-test --format-check",
-    "validate-test-dependency": "node -e \"import('@eliware/test')\""
+    "format:check": "eliware-test --format-check"
   },
   "engines": {
     "node": ">=26 <27"
@@ -79,9 +78,6 @@
     "arrowParens": "always",
     "proseWrap": "preserve",
     "endOfLine": "lf"
-  },
-  "devDependencies": {
-    "@eliware/test": "^6.0.1"
   },
   "license": "MIT",
   "eliware": {

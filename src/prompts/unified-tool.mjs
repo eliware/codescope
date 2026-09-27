@@ -5,7 +5,7 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
     type: "function",
     name: "submit_unified_review",
     description:
-      "Return one exhaustive consolidated CodeScope review. Enumerate every distinct actionable finding supported by the supplied evidence; never return a representative sample, shortlist, or only the highest-priority findings. Keep each item concise without reducing the total number of findings.",
+      "Return one exhaustive consolidated CodeScope review. Enumerate every distinct actionable finding supported by the supplied evidence; never return a representative sample, shortlist, or only the highest-priority findings. Keep each item concise without reducing the total number of findings. Before submission, remove any item whose recommendation says no change, confirms correct or intentional behavior, or provides no practical action; use only the category sentinel when no actionable finding remains.",
     strict: true,
     parameters: {
       type: "object",
@@ -38,8 +38,16 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
           properties: {
             severity: { type: "string", enum: ["P0", "P1", "P2", "P3", "none"] },
             location: { type: "string" },
-            finding: { type: "string" },
-            recommendation: { type: "string" },
+            finding: {
+              type: "string",
+              description:
+                "A concrete, evidence-supported issue requiring action; never a no-issue or already-correct statement.",
+            },
+            recommendation: {
+              type: "string",
+              description:
+                "For a real finding, specify a practical change. Never say no change is needed or confirm correct/intentional behavior.",
+            },
             rationale: {
               type: "array",
               items: { type: "string" },
