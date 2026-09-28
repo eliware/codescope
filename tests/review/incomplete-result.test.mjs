@@ -19,3 +19,16 @@ test("omits the response when none was received", () => {
 test("formats non-error causes", () => {
   expect(createIncompleteResult("down")).toMatchObject({ error: "down" });
 });
+
+test("uses a safe minimal result when failure details cannot be read", () => {
+  const cause = {
+    [Symbol.toPrimitive]: () => {
+      throw new Error("hostile");
+    },
+  };
+  expect(createIncompleteResult(cause)).toEqual({
+    issues: "not submitted",
+    suggestions: "not submitted",
+    error: "Failure details unavailable",
+  });
+});

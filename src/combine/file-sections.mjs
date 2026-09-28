@@ -1,7 +1,7 @@
 import path from "node:path";
 import { formatSourceSection } from "./section-format.mjs";
 import { readSourceFile } from "./read-file.mjs";
-import { assertWithinLimit } from "./limits.mjs";
+import { assertWithinLimit } from "./assert-within-limit.mjs";
 import { readBatches } from "./batches.mjs";
 
 export async function combineFileSections(root, files, options) {

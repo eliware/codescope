@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import { findFiles } from "../find/files.mjs";
-import { getBatchSize } from "./limits.mjs";
 import { readBatches } from "./batches.mjs";
 import { isIncludedJson } from "./json/policy.mjs";
 import { createJsonSectionReader } from "./json/read-section.mjs";
@@ -20,7 +19,7 @@ export async function combineJsonFiles(
     isIncludedJson,
   );
   const sections = await readBatches(files, {
-    batchSize: getBatchSize(concurrency),
+    batchSize: concurrency,
     maxChars,
     read: createJsonSectionReader(root, {
       readFileContents,

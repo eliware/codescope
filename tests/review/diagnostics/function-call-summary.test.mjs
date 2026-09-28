@@ -20,6 +20,12 @@ test("returns no calls when output has no function calls", () => {
   expect(readFunctionCallArguments({ output: [{ type: "message" }] })).toBeUndefined();
 });
 
+test("returns no calls when the response or output is missing or invalid", () => {
+  expect(readFunctionCallArguments(undefined)).toBeUndefined();
+  expect(readFunctionCallArguments({})).toBeUndefined();
+  expect(readFunctionCallArguments({ output: "invalid" })).toBeUndefined();
+});
+
 test("skips calls with unusable names or arguments", () => {
   const hostileName = {};
   Object.defineProperty(hostileName, "toJSON", {

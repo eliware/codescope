@@ -1,6 +1,7 @@
 import { writeFallbackResult } from "./output/write-fallback-output.mjs";
 import { createIncompleteResult } from "./incomplete-result.mjs";
 import { createProviderFailure } from "./provider-failure.mjs";
+import { attachProviderFailureDetails } from "./failure/attach-provider-failure-details.mjs";
 
 export async function throwSessionFailure({
   cause,
@@ -10,23 +11,15 @@ export async function throwSessionFailure({
   createFailure = createProviderFailure,
   fallbackCause = cause,
 }) {
-  let incomplete;
-  try {
-    incomplete = createIncompleteResult(
-      fallbackCause,
-      providerResponseReceived ? providerResponse : undefined,
-    );
-  } catch {
-    incomplete = {
-      issues: "not submitted",
-      suggestions: "not submitted",
-      error: "Failure details unavailable",
-    };
-  }
+  const incomplete = createIncompleteResult(
+    fallbackCause,
+    providerResponseReceived ? providerResponse : undefined,
+  );
   const fallbackError = await writeFallbackResult(write, incomplete);
-  const failure = createFailure(cause);
-  if (cause?.code) failure.code = cause.code;
-  failure.result = incomplete;
-  if (fallbackError) failure.fallbackError = fallbackError;
+  const failure = attachProviderFailureDetails(createFailure(cause), {
+    cause,
+    result: incomplete,
+    fallbackError,
+  });
   throw failure;
 }

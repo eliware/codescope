@@ -84,6 +84,7 @@
             "For reviewed packages other than @eliware/test, read only the Eliware Test v8 specification records named by package.json eliware.apply from the adjacent test/specs/conventions directory. Accept only safe single-segment lowercase profile names containing letters, digits, and single hyphens, then resolve each name to its canonical <profile>.json record; preserve the complete selected record as supplied evidence.",
             "For the @eliware/test package, do not separately load or inject specification records; its own specs are supplied through the normal repository-context collection.",
             "Read and include the complete contents of each selected canonical Eliware Test JSON specification record, regardless of record size.",
+            "Set the default maximum combined source evidence size to 3,000,000 characters.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
             "Before reading selected repository files, confirm the opened handle is a regular file with the same identity as the pre-open inspection; reject replacement before reading through the handle.",

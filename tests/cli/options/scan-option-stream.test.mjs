@@ -81,14 +81,6 @@ test("preserves scalar options when requested", () => {
   });
 });
 
-test("rejects missing option values", () => {
-  expect(() => scanOptionStream(["--add"])).toThrow(/requires/);
-  expect(() => scanOptionStream(["--effort"])).toThrow(/requires/);
-  expect(() => scanOptionStream(["--model", "--dry-run"])).toThrow(/requires/);
-  expect(() => scanOptionStream(["--add", "   "])).toThrow(/requires/);
-  expect(() => scanOptionStream(["--add="])).toThrow(/requires/);
-});
-
 test("consumes usage before the command in leading mode", () => {
   expect(scanOptionStream(["--usage", "all"], { leadingOnly: true })).toMatchObject({
     usage: 1,

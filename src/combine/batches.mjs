@@ -1,4 +1,5 @@
-import { addBatchLength, assertWithinLimit } from "./limits.mjs";
+import { addBatchLength } from "./add-batch-length.mjs";
+import { assertWithinLimit } from "./assert-within-limit.mjs";
 
 export async function readBatches(files, { batchSize, maxChars, read }) {
   if (!Number.isInteger(batchSize) || batchSize < 1)

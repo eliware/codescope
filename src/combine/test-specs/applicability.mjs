@@ -1,52 +1,13 @@
-import { lstat, open } from "node:fs/promises";
-import path from "node:path";
-import { readVerifiedFile } from "../read-verified-file.mjs";
+import { readPackageJsonContent } from "./read-package-json-content.mjs";
+import { parsePackageJson } from "./parse-package-json.mjs";
+import { isSafeProfileName } from "./is-safe-profile-name.mjs";
 
-const isSafeProfileName = (name) =>
-  typeof name === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(name);
-
-export async function readTestSpecApplicability(
-  root,
-  { readPackageJson, inspectFile = lstat, openFile = open } = {},
-) {
-  const packagePath = path.join(root, "package.json");
-  let contents;
-  if (readPackageJson) {
-    try {
-      contents = await readPackageJson(packagePath, "utf8");
-    } catch (error) {
-      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return null;
-      return { kind: "unavailable", reason: "package.json could not be read" };
-    }
-  } else {
-    let metadata;
-    try {
-      metadata = await inspectFile(packagePath, { bigint: true });
-    } catch (error) {
-      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return null;
-      return { kind: "unavailable", reason: "package.json could not be read" };
-    }
-    if (metadata.isSymbolicLink() || !metadata.isFile())
-      return { kind: "unavailable", reason: "package.json is not a regular file" };
-    try {
-      contents = await readVerifiedFile(packagePath, metadata, {
-        openFile,
-        label: "package.json",
-        readHandle: (handle) => handle.readFile({ encoding: "utf8" }),
-      });
-    } catch {
-      return { kind: "unavailable", reason: "package.json could not be read" };
-    }
-  }
-
-  let packageJson;
-  try {
-    packageJson = JSON.parse(contents);
-  } catch {
-    return { kind: "invalid", reason: "package.json is not valid JSON" };
-  }
-  if (!packageJson || typeof packageJson !== "object" || Array.isArray(packageJson))
-    return { kind: "invalid", reason: "package.json must contain an object" };
+export async function readTestSpecApplicability(root, options = {}) {
+  const source = await readPackageJsonContent(root, options);
+  if (source === null || source.kind !== "available") return source;
+  const parsed = parsePackageJson(source.contents);
+  if (parsed.kind !== "available") return parsed;
+  const { packageJson } = parsed;
 
   if (packageJson.name === "@eliware/test") return { kind: "available", skipSeparateRecords: true };
 

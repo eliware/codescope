@@ -12,3 +12,8 @@ test("reads equals-form additions without changing their text", () => {
 test("rejects blank equals-form additions", () => {
   expect(() => readAddition(["--add=  "], 0)).toThrow("--add requires a value");
 });
+
+test("rejects missing and blank separated additions", () => {
+  expect(() => readAddition(["--add"], 0)).toThrow("--add requires a value");
+  expect(() => readAddition(["-a", "   "], 0)).toThrow("-a requires a value");
+});

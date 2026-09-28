@@ -4,6 +4,7 @@ import { createEvidenceDefaults } from "../../../src/review/defaults/evidence.mj
 test("creates evidence defaults", () => {
   expect(createEvidenceDefaults()).toMatchObject({
     combine: expect.any(Function),
+    maxSourceChars: 3_000_000,
     inspectFile: expect.any(Function),
   });
 });

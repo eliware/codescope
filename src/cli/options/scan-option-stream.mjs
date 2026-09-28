@@ -1,5 +1,4 @@
-import { readAddition } from "./read-addition.mjs";
-import { readScalar } from "./read-scalar.mjs";
+import { readOptionEntry } from "./read-option-entry.mjs";
 
 export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnly = false } = {}) {
   const add = [];
@@ -11,27 +10,24 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
-    if (token === "-a" || token === "--add" || /^(--add|-a)=/u.test(token)) {
-      const addition = readAddition(tokens, index);
-      add.push(addition.value);
-      index = addition.nextIndex;
+    const option = readOptionEntry(tokens, index);
+    if (option?.kind === "addition") {
+      add.push(option.value);
+      index = option.nextIndex;
       continue;
     }
-
-    const scalar = readScalar(tokens, index);
-    if (scalar) {
-      (scalar.kind === "effort" ? effort : model).push(scalar.normalized);
-      if (keepScalarOptions) remaining.push(scalar.normalized);
-      index = scalar.nextIndex;
+    if (option?.kind === "scalar") {
+      (option.scalarKind === "effort" ? effort : model).push(option.normalized);
+      if (keepScalarOptions) remaining.push(option.normalized);
+      index = option.nextIndex;
       continue;
     }
-
-    if (token === "--dry-run") {
+    if (option?.kind === "dry-run") {
       dryRun += 1;
       if (keepScalarOptions) remaining.push(token);
       continue;
     }
-    if (token === "--usage") {
+    if (option?.kind === "usage") {
       usage += 1;
       if (!leadingOnly) remaining.push(token);
       continue;

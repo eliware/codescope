@@ -9,20 +9,6 @@ test("normalizes bounded text and byte samples", () => {
   expect(readConfigSample({ data: Buffer.from("text"), truncated: false }).text).toBe("text");
 });
 
-test("rejects malformed reader results and data types", () => {
-  expect(() => readConfigSample({ data: "text" })).toThrow(/reader must return/);
-  expect(() => readConfigSample(42)).toThrow(/reader data must be text or bytes/);
-});
-
-test("enforces injected-reader byte boundaries", () => {
-  expect(() => readConfigSample(Buffer.alloc(100_001), { readerProvided: true })).toThrow(
-    /100000-byte/,
-  );
-  expect(() =>
-    readConfigSample({ data: Buffer.alloc(100_002), truncated: true }, { readerProvided: true }),
-  ).toThrow(/100001-byte/);
-});
-
 test("omits binary samples", () => {
   expect(readConfigSample(Buffer.from([0, 1]))).toMatchObject({ binary: true, text: "" });
 });

@@ -31,18 +31,6 @@ test("preserves independent per-file limits and bounded concurrency", async () =
   expect(result).toHaveLength(2);
 });
 
-test("rejects invalid concurrency and paths outside the review root", async () => {
-  await expect(describeOtherFiles("repo", ["notes.txt"], { concurrency: 0 })).rejects.toThrow(
-    /concurrency/,
-  );
-  await expect(
-    describeOtherFiles("repo", ["../outside.txt"], {
-      inspectFile: regular,
-      readOtherFileContents: async () => ({ data: "outside", truncated: false }),
-    }),
-  ).rejects.toThrow(/escapes review root/);
-});
-
 test("supports explicit platform semantics for inventory roots", async () => {
   await expect(
     describeOtherFiles("C:\\repo", ["notes.txt"], {

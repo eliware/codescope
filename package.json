@@ -122,5 +122,8 @@
     "@eliware/common": "^2.0.0",
     "@eliware/openai": "^1.1.11",
     "@eliware/redact": "6.0.0"
+  },
+  "devDependencies": {
+    "eliware-test": "npm:@eliware/test@^8.0.0"
   }
 }

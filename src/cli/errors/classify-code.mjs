@@ -1,4 +1,4 @@
-import { errorChainHasCode } from "./cause-chain.mjs";
+import { errorChainHasCode } from "./cause-chain/error-chain-has-code.mjs";
 import { EXIT_CODES } from "./exit-codes.mjs";
 
 export function classifyErrorCode(cause) {

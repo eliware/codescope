@@ -1,4 +1,4 @@
-import { redactTestOutput } from "../redaction.mjs";
+import { redactTextOutput } from "../redaction/redact-text-output.mjs";
 
 export function readFunctionCallArguments(response) {
   if (!Array.isArray(response?.output)) return undefined;
@@ -11,7 +11,7 @@ export function readFunctionCallArguments(response) {
       const rawArguments =
         typeof item.arguments === "string" ? item.arguments : JSON.stringify(item.arguments);
       if (typeof rawArguments !== "string") continue;
-      calls.push({ name: redactTestOutput(rawName), arguments: redactTestOutput(rawArguments) });
+      calls.push({ name: redactTextOutput(rawName), arguments: redactTextOutput(rawArguments) });
     } catch {
       // Preserve unaffected calls when one provider item is malformed.
     }

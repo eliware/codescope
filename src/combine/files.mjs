@@ -1,6 +1,5 @@
 import { lstat, readFile } from "node:fs/promises";
 import { validateCombineOptions } from "./policies.mjs";
-import { getBatchSize } from "./limits.mjs";
 import { combineFileSections } from "./file-sections.mjs";
 import { selectFiles } from "./select-files.mjs";
 
@@ -31,11 +30,10 @@ export async function combineFiles(
 
   // Windows-style roots are rejected above on non-Windows hosts; on supported
   // hosts the native path implementation is the only valid one.
-  const batchSize = getBatchSize(concurrency);
   return combineFileSections(root, selectedFiles, {
     maxChars,
     concurrency,
-    batchSize,
+    batchSize: concurrency,
     readFileContents,
     inspectFile,
     validateSymlinks,
