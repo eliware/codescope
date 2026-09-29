@@ -127,7 +127,9 @@ ignored, including malformed unrelated lines. Malformed token assignments or
 quoted token values are rejected. A nonblank process token takes precedence over the file. A missing or
 whitespace-only process token is treated as absent, so a nonblank file token
 may be used. The dotenv parser accepts optional `export`, comments, and quoted
-values. A missing or blank token causes a clear error and exit code `3`.
+values. Runtime configuration uses only `OPENAI_API_TOKEN`; its default is
+unset.
+A missing or blank token causes a clear error and exit code `3`.
 
 Configuration evidence is root-bound, symlink-checked, and bounded to 100000
 bytes and 200 lines per configuration file. JSON evidence is root-bound and
@@ -145,6 +147,7 @@ same cleanup path.
 CodeScope is read-only against reviewed repositories: it reads supplied
 evidence and writes its own output, but does not modify the reviewed
 repository, execute its commands or tests, publish reviewed code, or deploy it.
+This is the operational boundary for its observable review workflow.
 Publication and deployment are handled by separate authorized release workflows.
 
 ## Commands

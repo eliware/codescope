@@ -1,23 +1,29 @@
 # CodeScope documentation
 
-## Purpose
+## Purpose and scope
 
 This folder contains end-user documentation for installing, configuring, and
 using CodeScope. Start with the quick-start workflow, then use the supporting
 guides when you need a deeper explanation.
 
-## Usage
+## Setup and usage
 
 Follow [Quick start](quick-start.md) for installation, configuration, commands,
 profiles, additions, validation boundaries, and troubleshooting links.
 
+## Validation and support
+
+Use the repository's `npm test` command to run aggregate validation. For help,
+see the [Troubleshooting](troubleshooting.md) guide or the support links in the
+root README.
+
 ## Contents
 
-- [Quick start](quick-start.md) — the complete owner workflow, profiles, and
+- [docs/quick-start.md](quick-start.md) — the complete owner workflow, profiles, and
   common options.
-- [Configuration](configuration.md) — API-token setup and optional command
+- [docs/configuration.md](configuration.md) — API-token setup and optional command
   settings.
-- [Troubleshooting](troubleshooting.md) — common token, provider, and
+- [docs/troubleshooting.md](troubleshooting.md) — common token, provider, and
   provider-output problems.
 
 See the [root README](../README.md) for installation, configuration, safety,
