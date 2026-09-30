@@ -5,11 +5,10 @@ test("loads and parses an environment file", async () => {
     loadEnvironmentFile({
       envFile: ".env",
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => "OPENAI_API_TOKEN=file",
         close: async () => {},
       }),
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
   ).resolves.toEqual({ OPENAI_API_TOKEN: "file" });
 });

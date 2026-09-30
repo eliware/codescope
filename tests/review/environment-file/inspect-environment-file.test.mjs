@@ -1,13 +1,14 @@
 import { inspectEnvironmentFile } from "../../../src/review/environment-file/inspect-environment-file.mjs";
 
-test("returns stable identity for a safe existing file", async () => {
+test("confirms a safe regular file exists at startup", async () => {
   await expect(
     inspectEnvironmentFile("file", async () => ({
       dev: 1,
       ino: 2,
       isSymbolicLink: () => false,
+      isFile: () => true,
     })),
-  ).resolves.toBe("1:2");
+  ).resolves.toBe(true);
 });
 
 test("classifies an absent file as missing", async () => {
@@ -27,10 +28,16 @@ test("wraps inspection failures with the environment path", async () => {
   ).rejects.toThrow("Unable to inspect file: denied");
 });
 
-test("rejects symbolic links before identity capture", async () => {
+test("rejects symbolic links and non-files during startup inspection", async () => {
   await expect(
     inspectEnvironmentFile("file", async () => ({ isSymbolicLink: () => true })),
   ).rejects.toThrow(/symbolic link/);
+  await expect(
+    inspectEnvironmentFile("file", async () => ({
+      isSymbolicLink: () => false,
+      isFile: () => false,
+    })),
+  ).rejects.toThrow(/regular file/);
 });
 
 test("preserves non-Error inspection causes", async () => {

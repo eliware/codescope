@@ -63,23 +63,14 @@ test.each([
   expect(openFile).not.toHaveBeenCalled();
 });
 
-test("reads verified package data through the opened regular-file handle", async () => {
-  const stat = {
-    isFile: () => true,
-    dev: 1n,
-    ino: 2n,
-    size: 2n,
-    mtimeNs: 3n,
-    ctimeNs: 4n,
-  };
+test("reads package data through the opened regular-file handle", async () => {
   let closed = false;
   let inspectedPath;
   const inspectFile = async (filePath) => {
     inspectedPath = filePath;
-    return { isSymbolicLink: () => false, isFile: () => true, dev: 1, ino: 2 };
+    return { isSymbolicLink: () => false, isFile: () => true };
   };
   const openFile = async () => ({
-    stat: async () => stat,
     readFile: async () => "{}",
     close: async () => {
       closed = true;
@@ -93,12 +84,10 @@ test("reads verified package data through the opened regular-file handle", async
   expect(closed).toBe(true);
 });
 
-test("treats disappearance after inspection as unavailable", async () => {
+test("reports an open failure after inspection as unavailable", async () => {
   const inspectFile = async () => ({
     isSymbolicLink: () => false,
     isFile: () => true,
-    dev: 1,
-    ino: 2,
   });
   const openFile = async () => {
     throw Object.assign(new Error("missing"), { code: "ENOENT" });

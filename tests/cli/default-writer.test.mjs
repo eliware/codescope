@@ -14,11 +14,22 @@ test("resolves with the number of written characters", async () => {
   expect(result).toEqual({ written: 17 });
 });
 
-test("rejects when the output stream reports an error", async () => {
+test("prioritizes a synchronous write exception over a callback error", async () => {
   const stdout = new EventEmitter();
   stdout.write = (_value, callback) => {
     callback(new Error("stream failed"));
     throw new Error("write threw after the callback");
+  };
+  await expect(createDefaultWriter(stdout)("provider response")).rejects.toThrow(
+    "write threw after the callback",
+  );
+});
+
+test("rejects when the callback reports an error", async () => {
+  const stdout = new EventEmitter();
+  stdout.write = (_value, callback) => {
+    callback(new Error("stream failed"));
+    return true;
   };
   await expect(createDefaultWriter(stdout)("provider response")).rejects.toThrow("stream failed");
 });

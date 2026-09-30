@@ -1,13 +1,11 @@
-import { readStableEnvironmentFile } from "../../src/review/stable-environment-reader.mjs";
+import { readEnvironmentFile } from "../../src/review/environment-file-reader.mjs";
 
-test("reads an unchanged environment file and closes it", async () => {
+test("reads environment content and closes the handle", async () => {
   let closed = false;
   await expect(
-    readStableEnvironmentFile({
+    readEnvironmentFile({
       envFile: ".env",
-      initialIdentity: "1:2",
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => "OPENAI_API_TOKEN=token",
         close: async () => {
           closed = true;
@@ -18,20 +16,26 @@ test("reads an unchanged environment file and closes it", async () => {
   expect(closed).toBe(true);
 });
 
-test("reports opener failures", async () => {
-  await expect(readStableEnvironmentFile({ envFile: ".env" })).rejects.toThrow(
-    /stable environment-file opener/,
-  );
+test("reports missing opener and read failures", async () => {
+  await expect(readEnvironmentFile({ envFile: ".env" })).rejects.toThrow(/environment-file opener/);
+  await expect(
+    readEnvironmentFile({
+      envFile: ".env",
+      openEnvFile: async () => ({
+        readFile: async () => {
+          throw new Error("denied");
+        },
+      }),
+    }),
+  ).rejects.toThrow("Unable to read .env: denied");
 });
 
 test("preserves close failures and combined read/close failures", async () => {
   const closeError = new Error("close failed");
   await expect(
-    readStableEnvironmentFile({
+    readEnvironmentFile({
       envFile: ".env",
-      initialIdentity: "1:2",
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => "text",
         close: async () => {
           throw closeError;
@@ -40,11 +44,9 @@ test("preserves close failures and combined read/close failures", async () => {
     }),
   ).rejects.toThrow(/close failed/);
   await expect(
-    readStableEnvironmentFile({
+    readEnvironmentFile({
       envFile: ".env",
-      initialIdentity: "1:2",
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => {
           throw new Error("read failed");
         },
@@ -56,14 +58,13 @@ test("preserves close failures and combined read/close failures", async () => {
   ).rejects.toMatchObject({ closeError });
 });
 
-test("stringifies non-Error read failures", async () => {
+test("stringifies non-Error opener failures", async () => {
   await expect(
-    readStableEnvironmentFile({
+    readEnvironmentFile({
       envFile: ".env",
-      initialIdentity: "1:2",
       openEnvFile: async () => {
         throw "open failed";
       },
     }),
-  ).rejects.toThrow(/open failed/);
+  ).rejects.toThrow("Unable to read .env: open failed");
 });

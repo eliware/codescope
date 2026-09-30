@@ -3,9 +3,8 @@ import { loadReviewEnvironment } from "../../src/review/environment.mjs";
 const base = {
   envFile: "custom.env",
   readFile: async () => "OPENAI_API_TOKEN=token",
-  inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+  inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   openEnvFile: async () => ({
-    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
     readFile: async () => "OPENAI_API_TOKEN=token",
     close: async () => {},
   }),

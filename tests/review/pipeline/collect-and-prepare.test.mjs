@@ -15,11 +15,10 @@ test("collects context and prepares the provider in order", async () => {
       readFile: async () => "",
       envFile: "repo/.env",
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => "OPENAI_API_TOKEN=token",
         close: async () => {},
       }),
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
       environment: {},
     }),
   ).resolves.toMatchObject({ combined: "context", client: "client" });

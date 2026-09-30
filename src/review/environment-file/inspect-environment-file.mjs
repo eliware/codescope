@@ -1,11 +1,11 @@
-import { assertNotSymbolicLink } from "../environment-file-safety.mjs";
-import { fileIdentity } from "../environment-file-identity.mjs";
+import { assertNotSymbolicLink, assertRegularFile } from "../environment-file-safety.mjs";
 
 export async function inspectEnvironmentFile(envFile, inspectFile) {
   try {
     const metadata = await inspectFile(envFile);
     assertNotSymbolicLink(envFile, metadata);
-    return fileIdentity(envFile, metadata);
+    assertRegularFile(envFile, metadata);
+    return true;
   } catch (cause) {
     if (cause?.code === "ENOENT") return null;
     throw createInspectionError(envFile, cause);

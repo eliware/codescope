@@ -1,5 +1,5 @@
 import { lstat, open } from "node:fs/promises";
-import { readVerifiedFile } from "../read-verified-file.mjs";
+import { readFileFromHandle } from "../read-file-from-handle.mjs";
 import { readHandleUpToLimit } from "../read-file-up-to-limit.mjs";
 import { resolveConfigPath } from "./paths.mjs";
 
@@ -17,10 +17,8 @@ export async function readConfigSource(
   if (!metadata.isFile())
     throw new Error(`configuration path is not a regular file: ${relativePath}`);
   if (readFileContents) return readFileContents(filePath);
-  return readVerifiedFile(filePath, metadata, {
+  return readFileFromHandle(filePath, {
     openFile,
-    label: "configuration",
-    changedWhileReading: "configuration file changed during read",
     readHandle: (handle) => readHandleUpToLimit(handle, MAX_CONFIG_BYTES),
   });
 }

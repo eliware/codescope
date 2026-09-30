@@ -1,6 +1,6 @@
 import { lstat, open } from "node:fs/promises";
 import path from "node:path";
-import { readVerifiedFile } from "../read-verified-file.mjs";
+import { readFileFromHandle } from "../read-file-from-handle.mjs";
 
 export async function readPackageJsonContent(
   root,
@@ -8,7 +8,7 @@ export async function readPackageJsonContent(
 ) {
   const packagePath = path.join(root, "package.json");
   if (readPackageJson) return readInjectedPackageJson(readPackageJson, packagePath);
-  return readVerifiedPackageJson(packagePath, inspectFile, openFile);
+  return readInspectedPackageJson(packagePath, inspectFile, openFile);
 }
 
 async function readInjectedPackageJson(readPackageJson, packagePath) {
@@ -19,7 +19,7 @@ async function readInjectedPackageJson(readPackageJson, packagePath) {
   }
 }
 
-async function readVerifiedPackageJson(packagePath, inspectFile, openFile) {
+async function readInspectedPackageJson(packagePath, inspectFile, openFile) {
   let metadata;
   try {
     metadata = await inspectFile(packagePath, { bigint: true });
@@ -29,9 +29,8 @@ async function readVerifiedPackageJson(packagePath, inspectFile, openFile) {
   if (metadata.isSymbolicLink() || !metadata.isFile())
     return { kind: "unavailable", reason: "package.json is not a regular file" };
   try {
-    const contents = await readVerifiedFile(packagePath, metadata, {
+    const contents = await readFileFromHandle(packagePath, {
       openFile,
-      label: "package.json",
       readHandle: (handle) => handle.readFile({ encoding: "utf8" }),
     });
     return { kind: "available", contents };

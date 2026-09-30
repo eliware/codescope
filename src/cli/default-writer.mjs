@@ -3,6 +3,7 @@ export function createDefaultWriter(stdout = process.stdout) {
   return (value) =>
     new Promise((resolve, reject) => {
       let callbackComplete = false;
+      let callbackError;
       let waitingForDrain = false;
       let drainSeen = false;
       let writeReturned = false;
@@ -13,13 +14,17 @@ export function createDefaultWriter(stdout = process.stdout) {
         stdout.removeListener("error", onError);
       };
       const fail = (cause) => {
-        if (settled) return;
         settled = true;
         cleanup();
         reject(cause);
       };
       const complete = () => {
-        if (settled || !writeReturned || !callbackComplete || waitingForDrain) return;
+        if (settled || !writeReturned) return;
+        if (callbackError) {
+          fail(callbackError);
+          return;
+        }
+        if (!callbackComplete || waitingForDrain) return;
         settled = true;
         cleanup();
         resolve({ written: value.length });
@@ -36,10 +41,10 @@ export function createDefaultWriter(stdout = process.stdout) {
       try {
         const accepted = stdout.write(value, (cause) => {
           if (cause) {
-            fail(cause);
-            return;
+            callbackError = cause;
+          } else {
+            callbackComplete = true;
           }
-          callbackComplete = true;
           complete();
         });
         writeReturned = true;

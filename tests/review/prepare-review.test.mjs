@@ -3,9 +3,8 @@ import { prepareReview } from "../../src/review/prepare-review.mjs";
 const setup = {
   envFile: "ignored",
   readFile: async () => "OPENAI_API_TOKEN=ignored",
-  inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+  inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   openEnvFile: async () => ({
-    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
     readFile: async () => "OPENAI_API_TOKEN= token ",
     close: async () => {},
   }),
@@ -26,7 +25,6 @@ test("does not initialize the provider when setup fails", async () => {
     prepareReview({
       ...setup,
       openEnvFile: async () => ({
-        stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
         readFile: async () => "",
         close: async () => {},
       }),

@@ -51,7 +51,7 @@
             "Use a nonblank OPENAI_API_TOKEN from the process environment when present; treat a missing or whitespace-only process value as absent and otherwise use a nonblank value from ~/.codescope.",
             "Expose only OPENAI_API_TOKEN to provider setup, using a nonblank process token before a nonblank ~/.codescope token.",
             "When reading ~/.codescope, ignore malformed nonblank lines that do not assign OPENAI_API_TOKEN; reject malformed assignments or quoted values for OPENAI_API_TOKEN.",
-            "Read ~/.codescope through its verified open handle and reject content if the opened file's identity or metadata changes during the read.",
+            "Assume users will not edit files while CodeScope is reading them; read and use the content returned by the read without checking file identity or metadata before or after the read for stability.",
             "Treat missing credentials and provider transport failures as errors."
           ],
           "donts": [
@@ -72,9 +72,10 @@
             "Set the default maximum combined source evidence size to 3,000,000 characters.",
             "Exclude generated coverage directories, dependency directories, Git metadata, and coverage data while retaining legitimate source directories named coverage.",
             "Skip symbolic links and never follow their targets.",
-            "Before reading selected repository files, confirm the opened handle is a regular file with the same identity as the pre-open inspection; reject replacement before reading through the handle.",
-            "Read selected source and inventory files through their verified open handles, and reject a file whose identity, size, or modification/change timestamps differ between the beginning and end of the read.",
-            "For selected configuration files, validate the opened file handle as a regular file and confirm it identifies the same file inspected before opening, so a path replacement cannot redirect the read to a symbolic-link target. Compare file identity, size, and modification/change timestamps before and after the bounded read; reject configuration evidence if any compared metadata changes.",
+            "Assume users will not edit files while CodeScope is reading them; read selected repository files and use the content returned by each read without checking file identity or metadata before or after the read for stability.",
+            "Use file metadata when needed for discovery, symbolic-link exclusion, regular-file validation, size limits, or other included evidence; do not perform pre-read or post-read metadata checks solely to detect concurrent changes or replacement.",
+            "Read selected source and inventory files, including bounded reads where applicable, and send the content returned by the read.",
+            "For selected configuration files, retain discovery-time symbolic-link and regular-file checks, apply the configured byte limit, and use the content returned by the read without rechecking identity or metadata for read stability.",
             "Frame each untrusted repository-evidence or additional-user-context block with a boundary token that does not occur in that block's content.",
             "Treat excluded or unsupplied evidence as unknown rather than inventing facts."
           ],

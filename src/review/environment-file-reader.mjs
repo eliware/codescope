@@ -1,25 +1,23 @@
-import { readVerifiedEnvironmentContent } from "./environment-file/read-verified-content.mjs";
+import { readEnvironmentContent } from "./environment-file/read-content.mjs";
 
 function readError(envFile, message, cause) {
   return new Error(
     `${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
-    {
-      cause,
-    },
+    { cause },
   );
 }
 
-export async function readStableEnvironmentFile({ envFile, openEnvFile, initialIdentity }) {
+export async function readEnvironmentFile({ envFile, openEnvFile }) {
   let handle;
   let reportedError;
   let envText;
   try {
     if (typeof openEnvFile !== "function")
-      throw new Error("a stable environment-file opener is required");
+      throw new Error("an environment-file opener is required");
     handle = await openEnvFile(envFile, "r");
-    envText = await readVerifiedEnvironmentContent(envFile, handle, initialIdentity);
+    envText = await readEnvironmentContent(handle);
   } catch (cause) {
-    reportedError = readError(envFile, "Unable to securely read", cause);
+    reportedError = readError(envFile, "Unable to read", cause);
   }
   let closeError;
   try {
@@ -31,6 +29,6 @@ export async function readStableEnvironmentFile({ envFile, openEnvFile, initialI
     if (closeError) reportedError.closeError = closeError;
     throw reportedError;
   }
-  if (closeError) throw readError(envFile, "Unable to close securely", closeError);
+  if (closeError) throw readError(envFile, "Unable to close", closeError);
   return envText;
 }

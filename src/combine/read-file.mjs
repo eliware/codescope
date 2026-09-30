@@ -1,5 +1,5 @@
 import { lstat, open, readFile } from "node:fs/promises";
-import { readVerifiedFile } from "./read-verified-file.mjs";
+import { readFileFromHandle } from "./read-file-from-handle.mjs";
 
 export async function readSourceFile(
   relativePath,
@@ -20,7 +20,7 @@ export async function readSourceFile(
     }
     const contents =
       readFileContents === readFile
-        ? await readInspectedSourceFile(rootPath, metadata, openFile)
+        ? await readInspectedSourceFile(rootPath, openFile)
         : await readFileContents(rootPath, "utf8");
     if (typeof contents !== "string") throw new Error("file reader returned non-string content");
     return contents;
@@ -32,10 +32,9 @@ export async function readSourceFile(
   }
 }
 
-async function readInspectedSourceFile(rootPath, inspectedMetadata, openFile) {
-  return readVerifiedFile(rootPath, inspectedMetadata, {
+async function readInspectedSourceFile(rootPath, openFile) {
+  return readFileFromHandle(rootPath, {
     openFile,
-    label: "source",
     readHandle: (handle) => handle.readFile("utf8"),
   });
 }

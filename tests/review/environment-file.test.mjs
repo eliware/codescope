@@ -4,16 +4,15 @@ import { defaultEnvFile } from "../../src/review/env-file-path.mjs";
 const openWith =
   (text = "OPENAI_API_TOKEN=value") =>
   async () => ({
-    stat: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false, isFile: () => true }),
     readFile: async () => text,
     close: async () => {},
   });
 
-test("reads a supplied environment file through the stable reader boundary", async () => {
+test("reads a supplied environment file after startup inspection", async () => {
   await expect(
     readReviewEnvironmentFile({
       envFile: "file",
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
       openEnvFile: openWith("OPENAI_API_TOKEN=value"),
     }),
   ).resolves.toBe("OPENAI_API_TOKEN=value");
@@ -49,14 +48,14 @@ test("does not reopen a default file that appears after startup inspection", asy
   expect(opened).toBe(false);
 });
 
-test("requires inspection and stable-reader collaborators for existing files", async () => {
+test("requires safe file metadata and an opener for existing files", async () => {
   await expect(
     readReviewEnvironmentFile({ envFile: "file", inspectFile: async () => ({}) }),
   ).rejects.toThrow(/symbolic-link metadata/);
   await expect(
     readReviewEnvironmentFile({
       envFile: "file",
-      inspectFile: async () => ({ dev: 1, ino: 2, isSymbolicLink: () => false }),
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
-  ).rejects.toThrow(/stable environment-file opener/);
+  ).rejects.toThrow(/environment-file opener/);
 });
