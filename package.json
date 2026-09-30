@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "author": "Eliware <eliware@eliware.org>",
   "keywords": [
@@ -97,21 +97,6 @@
       "application",
       "cli",
       "npm-published"
-    ],
-    "authority": {
-      "authoritativeFor": [
-        "CodeScope CLI behavior, review profiles, and supplied-evidence conventions."
-      ],
-      "notAuthoritativeFor": [
-        "Repository runtime behavior, CI execution results, publication, deployment, or registry state."
-      ]
-    },
-    "crosslinks": [
-      {
-        "path": "specs/test-context.json",
-        "relation": "relatedAuthority",
-        "authoritativeFor": "Eliware Test v8 applicability and specification references."
-      }
     ]
   },
   "publishConfig": {

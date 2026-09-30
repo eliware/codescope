@@ -1,6 +1,17 @@
 # Release Notes
 
-## Unreleased
+## 9.0.0 — 2026-09-30
+
+### Changed
+
+- Updated review guidance for current Eliware Test convention records and
+  removed version-specific wording so the prompts do not go stale on future
+  convention releases.
+- Removed CodeScope authority-map and authority-record metadata.
+- Continued decomposition of review, evidence, CLI, and response handling into
+  focused modules with mirrored tests.
+- Hardened convention evidence loading, filesystem boundaries, provider failure
+  handling, response validation, and package/workflow alignment.
 
 ### Fixed
 

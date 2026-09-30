@@ -23,6 +23,6 @@ test("formats missing-record and supplied-record outcomes", () => {
     formatTestSpecEvidence({ status: "records-missing", missing: ["general", "cli"] }),
   ).toContain("missing records: general, cli");
   expect(formatTestSpecEvidence({ status: "ready", sections: ["one", "two"] })).toBe(
-    "===== Eliware Test v8 specifications =====\none\ntwo\n",
+    "===== Eliware Test specifications =====\none\ntwo\n",
   );
 });

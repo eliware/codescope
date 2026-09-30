@@ -1,21 +1,6 @@
 {
-  "version": "8.0",
+  "version": "9.0",
   "description": "Normative v8 directives for the CodeScope review CLI, review profiles, and supplied-evidence boundaries.",
-  "authority": {
-    "authoritativeFor": [
-      "CodeScope CLI behavior, review and suggestion profiles, and supplied-evidence conventions."
-    ],
-    "notAuthoritativeFor": [
-      "Eliware repository requirements, operational procedures, publication, deployment, or Test8 harness behavior."
-    ]
-  },
-  "crosslinks": [
-    {
-      "path": "../../docs/authority-map.json",
-      "relation": "relatedAuthority",
-      "authoritativeFor": "Cross-repository authority and ownership boundaries."
-    }
-  ],
   "directives": [
     {
       "id": "E-19",

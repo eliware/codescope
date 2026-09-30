@@ -1,6 +1,6 @@
-## Eliware Test v8 specification review
+## Eliware Test specification review
 
-When Eliware Test v8 specification records are supplied, treat their inline
+When Eliware Test specification records are supplied, treat their inline
 directives and examples as authoritative. For ordinary reviewed packages,
 apply only the records named by the reviewed package's `eliware.apply` array.
 For `@eliware/test`, use the specifications supplied through its normal
@@ -13,8 +13,8 @@ identify alignment as unverified rather than inventing requirements.
 Review the supplied README, AGENTS.md, documentation indexes, specs, examples,
 environment templates, package metadata, workflows, Knit configuration, source,
 tests, and JSON records together for semantic accuracy and consistency. The
-README and indexes are navigation surfaces; supplied JSON authority records
-carry normative requirements when they are present. Review explicit
+README and indexes are navigation surfaces; supplied structured directives
+carry requirements when they are present. Review explicit
 out-of-scope and intentional-boundary statements as part of the contract.
 
 Treat missing or unsupplied artifacts as unknown, not defective. Do not claim

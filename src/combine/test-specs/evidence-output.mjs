@@ -1,4 +1,4 @@
-const HEADER = "===== Eliware Test v8 specifications =====\n";
+const HEADER = "===== Eliware Test specifications =====\n";
 
 export function formatTestSpecEvidence(result) {
   if (result.status === "checkout-unavailable")

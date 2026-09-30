@@ -76,7 +76,7 @@ test("includes eliware-test specs normally without separately injecting profiles
     const result = await combineAllFiles(root);
     expect(result).toContain("===== specs/general.json =====");
     expect(result).toContain('{"directive":"included"}');
-    expect(result).not.toContain("Eliware Test v8 specifications");
+    expect(result).not.toContain("Eliware Test specifications");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

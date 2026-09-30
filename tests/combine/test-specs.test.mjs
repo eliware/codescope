@@ -9,7 +9,13 @@ test("includes only package-selected records from the adjacent Test specs", asyn
   const project = path.join(root, "project");
   await mkdir(path.join(testRoot, "specs", "conventions"), { recursive: true });
   await mkdir(project);
-  await writeFile(path.join(testRoot, "specs", "conventions", "general.json"), '{"version":"8.0"}');
+  const packageVersion = JSON.parse(
+    await readFile(new URL("../../package.json", import.meta.url)),
+  ).version;
+  await writeFile(
+    path.join(testRoot, "specs", "conventions", "general.json"),
+    JSON.stringify({ version: packageVersion }),
+  );
   await writeFile(path.join(testRoot, "specs", "conventions", "cli.json"), '{"cli":true}');
   await writeFile(path.join(testRoot, "specs", "conventions", "web.json"), '{"web":true}');
   await writeFile(
