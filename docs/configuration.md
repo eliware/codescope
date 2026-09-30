@@ -13,11 +13,10 @@ Only a nonblank `OPENAI_API_TOKEN` from the process environment takes
 precedence over the user-level file. A missing or
 whitespace-only process value is treated as absent, so a nonblank value from
 `~/.codescope` may be used. A missing or blank token stops the request before
-any provider call. CodeScope rejects symbolic-link configuration files and
-rejects a replacement detected between the initial inspection and opening.
-After opening, reads stay bound to that verified handle; CodeScope rejects
-changes to the opened file while its contents are read. Replacing or removing
-the pathname afterward does not redirect that handle.
+any provider call. CodeScope checks that the configuration path is a regular,
+non-symbolic-link file before opening it, then reads from the opened handle. It
+does not check for replacement or content changes during the read; CodeScope
+assumes users will not edit files while it is reading them.
 Internally supplied configuration inventory paths are normalized and must
 remain inside the review root. CodeScope does not enforce Unix permission bits
 or Windows DACL policy.

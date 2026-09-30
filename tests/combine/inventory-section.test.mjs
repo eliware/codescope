@@ -1,5 +1,7 @@
 import { collectInventorySection } from "../../src/combine/inventory-section.mjs";
 
-test("formats the inventory section", async () => {
-  await expect(collectInventorySection("repo", [], {})).resolves.toContain("other files");
+test("assembles the names-and-sizes inventory section", async () => {
+  await expect(collectInventorySection(process.cwd(), [], { maxChars: 100 })).resolves.toBe(
+    "===== other files (names and sizes only) =====\n\n",
+  );
 });

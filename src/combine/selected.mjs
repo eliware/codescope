@@ -26,8 +26,6 @@ export async function combineSelectedFiles(
     metadata.json,
     metadata.yaml,
     metadata.configs,
-    // codescope ignore: A-19.3 requires the inventory for every profile before selected evidence.
-    await collectInventorySection(root, inventory, normalizedOptions),
   ];
   const budget = createSectionBudget(
     joinCombinedSections(parts, normalizedOptions.maxChars).length,
@@ -41,6 +39,11 @@ export async function combineSelectedFiles(
       inventory,
       budget,
     })),
+  );
+  parts.push(
+    await budget.read((maxChars) =>
+      collectInventorySection(root, inventory, { ...normalizedOptions, maxChars }),
+    ),
   );
   return joinCombinedSections(parts, normalizedOptions.maxChars);
 }

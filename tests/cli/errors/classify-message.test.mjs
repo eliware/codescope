@@ -7,3 +7,12 @@ test("prioritizes timeouts over other classifications and leaves unknown text un
   );
   expect(classifyErrorMessage(new Error("unclassified"))).toBeUndefined();
 });
+
+test("does not classify unrelated provider diagnostics as response failures", () => {
+  expect(classifyErrorMessage(new Error("OpenAI request failed while inspecting a verdict"))).toBe(
+    EXIT_CODES.API,
+  );
+  expect(classifyErrorMessage(new Error("provider diagnostic includes a category array"))).toBe(
+    undefined,
+  );
+});

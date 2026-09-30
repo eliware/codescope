@@ -1,5 +1,6 @@
 import { lstat, open, readFile } from "node:fs/promises";
 import { readFileFromHandle } from "./read-file-from-handle.mjs";
+import { readHandleUpToChars } from "./read-handle-up-to-chars.mjs";
 
 export async function readSourceFile(
   relativePath,
@@ -9,6 +10,7 @@ export async function readSourceFile(
     inspectFile = lstat,
     openFile = open,
     validateSymlinks = false,
+    maxChars = Number.POSITIVE_INFINITY,
   } = {},
 ) {
   try {
@@ -20,7 +22,7 @@ export async function readSourceFile(
     }
     const contents =
       readFileContents === readFile
-        ? await readInspectedSourceFile(rootPath, openFile)
+        ? await readInspectedSourceFile(rootPath, openFile, maxChars)
         : await readFileContents(rootPath, "utf8");
     if (typeof contents !== "string") throw new Error("file reader returned non-string content");
     return contents;
@@ -32,9 +34,10 @@ export async function readSourceFile(
   }
 }
 
-async function readInspectedSourceFile(rootPath, openFile) {
+async function readInspectedSourceFile(rootPath, openFile, maxChars) {
   return readFileFromHandle(rootPath, {
     openFile,
-    readHandle: (handle) => handle.readFile("utf8"),
+    readHandle: (handle) =>
+      Number.isFinite(maxChars) ? readHandleUpToChars(handle, maxChars) : handle.readFile("utf8"),
   });
 }

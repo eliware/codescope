@@ -33,6 +33,25 @@ test("includes complete Test spec records regardless of size", async () => {
   expect(sections[0]).toContain(contents);
 });
 
+test("counts formatted headers and line numbers against maxChars", async () => {
+  const contents = "{}";
+  const formatted = "===== test/specs/conventions/general.json =====\n1 {}\n";
+  await expect(
+    readTestSpecRecords("/test/specs/conventions", ["general.json"], {
+      readFileContents: async () => contents,
+      inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),
+      maxChars: formatted.length - 1,
+    }),
+  ).rejects.toThrow(/limit/);
+  await expect(
+    readTestSpecRecords("/test/specs/conventions", ["general.json"], {
+      readFileContents: async () => contents,
+      inspectFile: async () => ({ isFile: () => true, isSymbolicLink: () => false }),
+      maxChars: formatted.length,
+    }),
+  ).resolves.toEqual([formatted]);
+});
+
 test("uses default reader options for a real Test spec record", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "codescope-records-"));
   try {

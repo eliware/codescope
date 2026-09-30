@@ -17,6 +17,28 @@ test("reads a file with default options", async () => {
   ).resolves.toContain("codescope");
 });
 
+test("bounds default source reads to the character budget plus one sample character", async () => {
+  const source = Buffer.from("a".repeat(10_000));
+  let offset = 0;
+  const handle = {
+    async read(buffer, start, length) {
+      const bytesRead = Math.min(length, source.length - offset);
+      source.copy(buffer, start, offset, offset + bytesRead);
+      offset += bytesRead;
+      return { bytesRead };
+    },
+    async close() {},
+  };
+  const contents = await readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+    maxChars: 12,
+    openFile: async () => handle,
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  });
+
+  expect(contents).toBe("a".repeat(13));
+  expect(offset).toBe(13);
+});
+
 test("rejects symlinks and non-files with contextual errors", async () => {
   const inspect = async () => ({ isSymbolicLink: () => true, isFile: () => false });
   await expect(

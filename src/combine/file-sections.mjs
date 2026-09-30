@@ -16,6 +16,7 @@ export async function combineFileSections(root, files, options) {
         readFileContents,
         inspectFile,
         validateSymlinks,
+        maxChars,
       });
       if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
       return formatSourceSection(relativePath, contents);

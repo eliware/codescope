@@ -3,7 +3,6 @@ import { classifyTimeoutMessage } from "./classify-timeout.mjs";
 import { classifyUsageMessage } from "./classify-usage.mjs";
 import { classifyConfigurationMessage } from "./classify-configuration.mjs";
 import { classifyInputMessage } from "./classify-input.mjs";
-import { classifyResponseMessage } from "./classify-response.mjs";
 import { classifyApiMessage } from "./classify-api.mjs";
 
 export function classifyErrorMessage(cause) {
@@ -13,7 +12,6 @@ export function classifyErrorMessage(cause) {
     classifyUsageMessage(text) ??
     classifyConfigurationMessage(text) ??
     classifyInputMessage(text) ??
-    classifyResponseMessage(text) ??
     classifyApiMessage(text)
   );
 }

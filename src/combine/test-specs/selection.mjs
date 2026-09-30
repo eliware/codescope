@@ -10,11 +10,12 @@ export function selectTestSpecFiles(discoveredFiles, applicability) {
       const normalized = normalizeTestSpecPath(file);
       return selectedPaths.some((candidate) => normalizeTestSpecPath(candidate) === normalized);
     })
-    .sort((left, right) =>
-      normalizeTestSpecPath(left).localeCompare(normalizeTestSpecPath(right), "en", {
-        sensitivity: "variant",
-      }),
-    );
+    .sort((left, right) => {
+      const normalizedLeft = normalizeTestSpecPath(left);
+      const normalizedRight = normalizeTestSpecPath(right);
+      if (normalizedLeft !== normalizedRight) return normalizedLeft < normalizedRight ? -1 : 1;
+      return left < right ? -1 : left > right ? 1 : 0;
+    });
   const supplied = new Set(files.map(normalizeTestSpecPath));
   const missingProfiles = [...profiles].filter((profile) => {
     const candidate = canonicalPaths.get(profile);
