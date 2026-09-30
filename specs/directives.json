@@ -31,6 +31,7 @@
             "Use gpt-6-luna as the default model and support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, --model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and -a|--add <string>.",
             "Use the normal repository context for custom prompts while disabling review and suggestion tools.",
             "For codescope prompt, use the user's supplied prompt as the only built-in task and output instruction; place the complete repository context before it as explicitly fenced data so the task ends the user message, then preserve any user-supplied additions as required above.",
+            "Preserve the supplied custom prompt text verbatim, including leading and trailing whitespace; use trimming only to reject input that is blank after trimming.",
             "Keep src/cli/main.mjs as the cohesive CLI coordinator that parses the request and delegates metadata dispatch or review execution to focused modules.",
             "Use --usage with --dry-run to include estimated token and calculated cost data; use --dry-run to estimate input-token cost without running a model review.",
             "Accept dry-run input-token counts only as non-negative safe integers and report other counts as invalid provider responses.",

@@ -25,6 +25,9 @@ root README.
   settings.
 - [docs/troubleshooting.md](troubleshooting.md) — common token, provider, and
   provider-output problems.
+- [Release notes](../RELEASE_NOTES.md) — published changes by package version.
 
 See the [root README](../README.md) for installation, configuration, safety,
-and support information.
+and support information. Optional future-feature ideas are listed there too;
+they are planning notes rather than end-user guidance in this documentation
+index.

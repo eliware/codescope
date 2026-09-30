@@ -10,6 +10,11 @@ test("parses prompt text with supported model and effort options", () => {
   });
 });
 
+test("preserves leading and trailing whitespace in a supplied prompt argument", () => {
+  const prompt = " \nReview this exact text.\t\n";
+  expect(parsePromptArgs([prompt]).promptText).toBe(prompt);
+});
+
 test("supports a delimiter for dash-leading prompt text", () => {
   expect(parsePromptArgs(["--summarize", "this", "--", "--effort=low"])).toEqual({
     command: "prompt",
