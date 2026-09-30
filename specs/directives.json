@@ -3,7 +3,7 @@
   "description": "Normative v8 directives for the CodeScope review CLI, review profiles, and supplied-evidence boundaries.",
   "directives": [
     {
-      "id": "E-19",
+      "id": "E-1210",
       "dos": [
         "Provide a structured, read-only CLI for focused codebase reviews, suggestions, and token estimates.",
         "Keep CLI behavior, review profiles, and supplied-evidence conventions explicit in these directives."
@@ -14,7 +14,7 @@
       ],
       "directives": [
         {
-          "id": "A-19.0",
+          "id": "A-1210.0",
           "dos": [
             "Treat the current working directory as the review root.",
             "Keep the reviewed repository read-only and write only CodeScope's own completed output.",
@@ -25,7 +25,7 @@
           ]
         },
         {
-          "id": "A-19.1",
+          "id": "A-1210.1",
           "dos": [
             "Support codescope, codescope --help, codescope all, codescope review <profile>, codescope suggest <profile>, supported direct profile shorthand, and codescope prompt <text>.",
             "Use gpt-6-luna as the default model and support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, --model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and -a|--add <string>.",
@@ -46,7 +46,7 @@
           ]
         },
         {
-          "id": "A-19.2",
+          "id": "A-1210.2",
           "dos": [
             "Use a nonblank OPENAI_API_TOKEN from the process environment when present; treat a missing or whitespace-only process value as absent and otherwise use a nonblank value from ~/.codescope.",
             "Expose only OPENAI_API_TOKEN to provider setup, using a nonblank process token before a nonblank ~/.codescope token.",
@@ -62,7 +62,7 @@
           ]
         },
         {
-          "id": "A-19.3",
+          "id": "A-1210.3",
           "dos": [
             "Assemble comprehensive context in this order: package.json; selected Eliware Test profile records for reviewed packages other than @eliware/test; eligible root, docs, specs, and examples JSON excluding package-lock.json; .github and .knit text configuration limited to 200 lines; Markdown; implementation; test files; and a names-only inventory of remaining files with text line/byte counts and binary byte counts. For @eliware/test, include its specs through the normal JSON and Markdown context positions instead of a separate profile-record section.",
             "Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown files according to the selected profile.",
@@ -85,7 +85,7 @@
           ]
         },
         {
-          "id": "A-19.4",
+          "id": "A-1210.4",
           "dos": [
             "Never run tests in the reviewed repository and never include test execution output in provider context.",
             "Require the AI to perform an independent secret-exposure review over supplied context and report visible or redacted credentials, tokens, passwords, private keys, or other secrets as P0 with location and rotation or revocation guidance.",
@@ -97,7 +97,7 @@
           ]
         },
         {
-          "id": "A-19.5",
+          "id": "A-1210.5",
           "dos": [
             "Keep review profiles focused on actionable issues in their declared areas.",
             "Keep suggestion profiles focused on recommendations and exclude them from blocking-verdict policy.",
@@ -116,7 +116,7 @@
           ]
         },
         {
-          "id": "A-19.6",
+          "id": "A-1210.6",
           "dos": [
             "Write the exact successful provider response unchanged.",
             "Keep provider tool schemas and prompt instructions as requested-output guidance rather than CodeScope acceptance requirements.",
@@ -134,7 +134,7 @@
           ]
         },
         {
-          "id": "A-19.7",
+          "id": "A-1210.7",
           "dos": [
             "Keep CI, deployment, registry, Git, rollback, npm pack, npm audit, and other external command state outside CodeScope conclusions unless direct evidence is supplied.",
             "Keep provider internals, operating-system behavior, and delegated child-process mechanics outside the review contract when covered by internal tests.",
