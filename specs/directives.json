@@ -30,6 +30,7 @@
             "Support codescope, codescope --help, codescope all, codescope review <profile>, codescope suggest <profile>, supported direct profile shorthand, and codescope prompt <text>.",
             "Use gpt-6-luna as the default model and support --usage, --dry-run, --effort=none|low|medium|high|xhigh|max, --model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and -a|--add <string>.",
             "Use the normal repository context for custom prompts while disabling review and suggestion tools.",
+            "For codescope prompt, use the user's supplied prompt as the only built-in task and output instruction; append repository context only as explicitly fenced data, then preserve any user-supplied additions as required above.",
             "Use --usage with --dry-run to include estimated token and calculated cost data; use --dry-run to estimate input-token cost without running a model review.",
             "Accept dry-run input-token counts only as non-negative safe integers and report other counts as invalid provider responses.",
             "When -a or --add is supplied one or more times to any codescope profile command, including all, release, review profiles, suggestion profiles, and prompt, append each string verbatim inside an explicitly delimited untrusted-data section at the end of the final user message in command-line order.",
@@ -39,6 +40,7 @@
           ],
           "donts": [
             "Do not require custom prompts to produce a verdict or a stable response schema.",
+            "Do not inject fixed CodeScope review, transport, or output-format instructions into a custom prompt.",
             "Do not insert an added string before system instructions, profile instructions, repository evidence, or the final user message.",
             "Do not interpret, normalize, summarize, reorder, merge, or silently discard any supplied added string when it applies to a profile command.",
             "Do not apply added prompts to the bare CLI, help, or version output.",
@@ -89,7 +91,7 @@
           "id": "A-1210.4",
           "dos": [
             "Never run tests in the reviewed repository and never include test execution output in provider context.",
-            "Require the AI to perform an independent secret-exposure review over supplied context and report visible or redacted credentials, tokens, passwords, private keys, or other secrets as P0 with location and rotation or revocation guidance.",
+            "Require the AI to perform an independent secret-exposure review over supplied context and report visible or redacted usable credentials, tokens, passwords, private keys, or other secrets as P0 with location and rotation or revocation guidance; ciphertext and encrypted key-wrapping metadata alone are not usable secrets.",
             "Treat deterministic redaction and AI detection as incomplete safeguards and keep repository owners responsible for sanitizing supplied material."
           ],
           "donts": [

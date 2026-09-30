@@ -53,8 +53,8 @@ Use Node.js 26 with npm and native ESM. Run `npm ci`, `npm test`,
 `npm run lint`, `npm run audit`, `npm run pack`, and `npm run format:check` for
 repository validation. Use the package scripts rather than invoking their
 underlying test, lint, audit, or formatting tools directly. Maintain 100%
-statements, branches, functions, and lines for in-scope production logic. The
-Knit validation entrypoint is `.knit/validate.mjs`.
+statements, branches, functions, and lines for in-scope production logic. Knit
+deployment commands are defined in `.knit/deploy.yaml`.
 
 ## Security
 

@@ -16,6 +16,9 @@ release-blocking P0 regardless of whether the test is required or optional.
   that merely discusses secrets as exposure unless the supplied evidence shows
   usable secret material. This rule overrides accepted-risk and intentional-
   behavior exclusions.
+  Ciphertext and encrypted key-wrapping metadata alone are not usable secrets;
+  report them only when the supplied evidence also contains plaintext secret
+  material or a usable decryption key.
   The recommended action must include immediate credential rotation or
   revocation, followed by removal from the supplied source or output.
 - A security defect that permits immediate unauthorized access or destructive control.
