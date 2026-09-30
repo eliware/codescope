@@ -24,6 +24,7 @@ export async function combineSelectedFiles(
     metadata.packageJson,
     metadata.testSpecs,
     metadata.json,
+    metadata.yaml,
     metadata.configs,
     // codescope ignore: A-19.3 requires the inventory for every profile before selected evidence.
     await collectInventorySection(root, inventory, normalizedOptions),

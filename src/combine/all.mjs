@@ -7,6 +7,7 @@ export async function combineAllFiles(root, options = {}) {
       sections.packageJson,
       sections.testSpecs,
       sections.json,
+      sections.yaml,
       sections.configs,
       sections.md,
       sections.implementation,

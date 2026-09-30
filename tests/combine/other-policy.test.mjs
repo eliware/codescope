@@ -1,16 +1,27 @@
 import { isIncludedContent } from "../../src/combine/other-policy.mjs";
 
-test.each(["config.json", "docs/guide.json", "specs/directives.json", "examples/sample.json"])(
-  "does not repeat JSON context in inventory: %s",
+test.each([
+  "config.json",
+  "docs/guide.json",
+  "specs/directives.json",
+  "examples/sample.json",
+  "src/data.json",
+  "outside/nested.json",
+])("does not repeat JSON context in inventory: %s", (file) => {
+  expect(isIncludedContent(file)).toBe(true);
+});
+
+test.each(["package-lock.json", "nested/package-lock.json"])(
+  "retains package-lock JSON in inventory without supplying its contents: %s",
   (file) => {
-    expect(isIncludedContent(file)).toBe(true);
+    expect(isIncludedContent(file)).toBe(false);
   },
 );
 
-test.each(["package-lock.json", "src/data.json", "outside/nested.json"])(
-  "retains JSON not included as context in inventory: %s",
+test.each(["workflow.yml", "nested/workflow.yaml", ".github/workflows/ci.yml"])(
+  "does not repeat YAML context in inventory: %s",
   (file) => {
-    expect(isIncludedContent(file)).toBe(false);
+    expect(isIncludedContent(file)).toBe(true);
   },
 );
 

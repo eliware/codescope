@@ -4,11 +4,19 @@ import {
   selectConfigFiles,
 } from "../../../src/combine/config/paths.mjs";
 
-test("selects GitHub and Knit configuration entries", () => {
-  expect(selectConfigFiles(["README.md", ".github/workflow.yml", ".knit/check.mjs"])).toEqual([
-    ".github/workflow.yml",
-    ".knit/check.mjs",
-  ]);
+test("selects config entries not owned by another content section", () => {
+  expect(
+    selectConfigFiles([
+      "README.md",
+      ".github/workflow.yml",
+      ".github/settings.json",
+      ".github/readme.md",
+      ".github/script.mjs",
+      ".github/script.test.mjs",
+      ".github/setup.cfg",
+      ".knit/check.mjs",
+    ]),
+  ).toEqual([".github/setup.cfg"]);
 });
 
 test("rejects absolute and escaping configuration paths", () => {

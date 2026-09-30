@@ -1,5 +1,7 @@
 import path from "node:path";
 
+const CONTENT_EXTENSIONS = [".json", ".yaml", ".yml", ".md", ".js", ".mjs", ".cjs", ".ts"];
+
 export function isAbsolutePortablePath(relativePath) {
   return (
     path.posix.isAbsolute(relativePath) ||
@@ -22,6 +24,12 @@ export function selectConfigFiles(inventory) {
     .map((relativePath) => relativePath.replaceAll("\\", "/"))
     .filter((relativePath) => {
       const normalized = relativePath.toLowerCase();
-      return normalized.startsWith(".github/") || normalized.startsWith(".knit/");
+      const isCollectedElsewhere = CONTENT_EXTENSIONS.some((extension) =>
+        normalized.endsWith(extension),
+      );
+      return (
+        !isCollectedElsewhere &&
+        (normalized.startsWith(".github/") || normalized.startsWith(".knit/"))
+      );
     });
 }

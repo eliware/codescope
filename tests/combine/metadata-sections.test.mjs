@@ -11,5 +11,6 @@ test("collects metadata sections", async () => {
     [],
   );
   expect(result).toHaveProperty("packageJson");
+  expect(result).toHaveProperty("yaml");
   expect(result).toHaveProperty("configs");
 });

@@ -7,6 +7,7 @@ test("preserves the all-context section ordering", async () => {
   const names = [
     "package.json",
     ".github/ci.yml",
+    "deploy.yaml",
     "guide.md",
     "app.mjs",
     "app.test.mjs",
@@ -27,7 +28,11 @@ test("preserves the all-context section ordering", async () => {
       const name = file.split(/[\\/]/u).pop();
       if (name === "package.json") return "{}";
       if (name === "image.bin") return Buffer.from([0, 1]);
-      return name.endsWith(".yml") ? "name: check" : name.endsWith(".md") ? "# docs" : "code";
+      return name.endsWith(".yml") || name.endsWith(".yaml")
+        ? "name: check"
+        : name.endsWith(".md")
+          ? "# docs"
+          : "code";
     },
     readOtherFileContents: async (file) => ({
       data: file.endsWith("image.bin") ? Buffer.from([0, 1]) : "data",
@@ -35,8 +40,11 @@ test("preserves the all-context section ordering", async () => {
     }),
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   });
-  expect(result).toContain("===== repository configuration =====");
+  expect(result).toContain("===== deploy.yaml =====\n1 name: check");
   expect(result).toContain("===== .github/ci.yml =====");
+  expect(result).not.toContain("===== repository configuration =====");
+  expect(result).not.toContain("deploy.yaml | text");
+  expect([...result.matchAll(/===== \.github\/ci\.yml =====/gu)]).toHaveLength(1);
   expect(result.indexOf("===== package.json =====")).toBeLessThan(
     result.indexOf("===== guide.md ====="),
   );
