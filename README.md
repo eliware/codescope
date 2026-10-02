@@ -51,6 +51,14 @@ npm install -g @eliware/codescope
 npm install @eliware/codescope
 ```
 
+After a project-local install, invoke the CLI from that project with:
+
+```text
+npx codescope --help
+```
+
+The global install provides the `codescope` command directly in your shell.
+
 For repository development, install the checkout's dependencies first:
 
 ```text
