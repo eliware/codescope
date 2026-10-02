@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "author": "Eliware <eliware@eliware.org>",
   "keywords": [
@@ -53,7 +53,7 @@
     "format:check": "eliware-test --format-check"
   },
   "engines": {
-    "node": ">=26 <27"
+    "node": "26"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -109,6 +109,6 @@
     "@eliware/redact": "6.0.0"
   },
   "devDependencies": {
-    "eliware-test": "npm:@eliware/test@^8.0.0"
+    "eliware-test": "npm:@eliware/test@9.0.0"
   }
 }

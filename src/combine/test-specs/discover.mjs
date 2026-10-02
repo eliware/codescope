@@ -10,7 +10,7 @@ export async function discoverTestSpecFiles(
   try {
     return {
       specsRoot,
-      files: await findFiles(specsRoot, ".json", { readDirectory, platform }),
+      files: await findFiles(specsRoot, ".yaml", { readDirectory, platform }),
     };
   } catch (cause) {
     if (cause?.code === "ENOENT" || cause?.code === "ENOTDIR") return undefined;

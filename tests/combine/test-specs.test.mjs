@@ -13,20 +13,20 @@ test("includes only package-selected records from the adjacent Test specs", asyn
     await readFile(new URL("../../package.json", import.meta.url)),
   ).version;
   await writeFile(
-    path.join(testRoot, "specs", "conventions", "general.json"),
-    JSON.stringify({ version: packageVersion }),
+    path.join(testRoot, "specs", "conventions", "general.yaml"),
+    `version: ${packageVersion}`,
   );
-  await writeFile(path.join(testRoot, "specs", "conventions", "cli.json"), '{"cli":true}');
-  await writeFile(path.join(testRoot, "specs", "conventions", "web.json"), '{"web":true}');
+  await writeFile(path.join(testRoot, "specs", "conventions", "cli.yaml"), "cli: true");
+  await writeFile(path.join(testRoot, "specs", "conventions", "web.yaml"), "web: true");
   await writeFile(
     path.join(project, "package.json"),
     JSON.stringify({ eliware: { apply: ["general", "cli"] } }),
   );
   try {
     const result = await combineTestSpecs(project, { readFileContents: readFile });
-    expect(result).toContain("test/specs/conventions/general.json");
-    expect(result).toContain("test/specs/conventions/cli.json");
-    expect(result).not.toContain("web.json");
+    expect(result).toContain("test/specs/conventions/general.yaml");
+    expect(result).toContain("test/specs/conventions/cli.yaml");
+    expect(result).not.toContain("web.yaml");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

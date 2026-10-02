@@ -34,12 +34,12 @@ test("uses POSIX Test-spec paths when requested", async () => {
   ).resolves.toMatchObject({ specsRoot: "/missing/specs/conventions", files: [] });
 });
 
-test("discovers Test-spec JSON files on the host platform", async () => {
+test("discovers Test-spec YAML files on the host platform", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
   try {
     await mkdir(path.join(root, "specs", "conventions"), { recursive: true });
-    await writeFile(path.join(root, "specs", "conventions", "general.json"), "{}");
-    await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({ files: ["general.json"] });
+    await writeFile(path.join(root, "specs", "conventions", "general.yaml"), "{}");
+    await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({ files: ["general.yaml"] });
   } finally {
     await rm(root, { recursive: true, force: true });
   }

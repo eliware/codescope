@@ -85,7 +85,7 @@ repository evidence without modifying the reviewed repository.
 
 ## CLI
 
-The public commands are `codescope all`, `codescope review <profile>`,
+The public commands are `codescope all`, `codescope release`, `codescope review <profile>`,
 `codescope suggest <profile>`, `codescope prompt <text>`, supported direct
 profile shorthand, `codescope --help`, and `codescope --version`. Profile
 commands accept repeatable `-a|--add <text>`, model and effort selection,

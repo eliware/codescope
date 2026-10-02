@@ -4,20 +4,20 @@ test("selects package-applied Test records and reports missing profiles", () => 
   const applicability = {
     profiles: new Set(["general", "cli"]),
     canonicalPaths: new Map([
-      ["general", "general.json"],
-      ["cli", "cli.json"],
+      ["general", "general.yaml"],
+      ["cli", "cli.yaml"],
     ]),
   };
-  expect(selectTestSpecFiles(["cli.json", "general.json", "private.json"], applicability)).toEqual({
-    files: ["cli.json", "general.json"],
+  expect(selectTestSpecFiles(["cli.yaml", "general.yaml", "private.yaml"], applicability)).toEqual({
+    files: ["cli.yaml", "general.yaml"],
     missing: [],
   });
-  expect(selectTestSpecFiles(["general.json", "cli.json"], applicability).files).toEqual([
-    "cli.json",
-    "general.json",
+  expect(selectTestSpecFiles(["general.yaml", "cli.yaml"], applicability).files).toEqual([
+    "cli.yaml",
+    "general.yaml",
   ]);
-  expect(selectTestSpecFiles(["general.json"], applicability)).toEqual({
-    files: ["general.json"],
+  expect(selectTestSpecFiles(["general.yaml"], applicability)).toEqual({
+    files: ["general.yaml"],
     missing: ["cli"],
   });
 });
@@ -25,9 +25,9 @@ test("selects package-applied Test records and reports missing profiles", () => 
 test("reports unknown and unmapped profile names", () => {
   const applicability = {
     profiles: new Set(["unsupported", "unmapped"]),
-    canonicalPaths: new Map([["unsupported", "unsupported.json"]]),
+    canonicalPaths: new Map([["unsupported", "unsupported.yaml"]]),
   };
-  expect(selectTestSpecFiles(["general.json"], applicability)).toEqual({
+  expect(selectTestSpecFiles(["general.yaml"], applicability)).toEqual({
     files: [],
     missing: ["unsupported", "unmapped"],
   });
@@ -36,18 +36,18 @@ test("reports unknown and unmapped profile names", () => {
 test("orders case variants deterministically after normalized profile paths", () => {
   const applicability = {
     profiles: new Set(["cli"]),
-    canonicalPaths: new Map([["cli", "cli.json"]]),
+    canonicalPaths: new Map([["cli", "cli.yaml"]]),
   };
-  expect(selectTestSpecFiles(["cli.json", "CLI.json"], applicability).files).toEqual([
-    "CLI.json",
-    "cli.json",
+  expect(selectTestSpecFiles(["cli.yaml", "CLI.yaml"], applicability).files).toEqual([
+    "CLI.yaml",
+    "cli.yaml",
   ]);
-  expect(selectTestSpecFiles(["CLI.json", "cli.json"], applicability).files).toEqual([
-    "CLI.json",
-    "cli.json",
+  expect(selectTestSpecFiles(["CLI.yaml", "cli.yaml"], applicability).files).toEqual([
+    "CLI.yaml",
+    "cli.yaml",
   ]);
-  expect(selectTestSpecFiles(["cli.json", "cli.json"], applicability).files).toEqual([
-    "cli.json",
-    "cli.json",
+  expect(selectTestSpecFiles(["cli.yaml", "cli.yaml"], applicability).files).toEqual([
+    "cli.yaml",
+    "cli.yaml",
   ]);
 });

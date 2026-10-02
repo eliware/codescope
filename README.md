@@ -1,6 +1,6 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-## @eliware/codescope [![npm version](https://img.shields.io/npm/v/@eliware/codescope.svg)](https://www.npmjs.com/package/@eliware/codescope) [![license](https://img.shields.io/github/license/eliware/codescope.svg)](LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yml)
+## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yml)
 
 ## Table of Contents
 
@@ -214,10 +214,13 @@ diagnostics when requesting help.
 ## Links
 
 - [Documentation](docs/README.md)
-- [Specifications](specs/README.md)
-- [Home Page](https://eliware.org)
-- [GitHub Repo](https://github.com/eliware/codescope)
-- [GitHub Org](https://github.com/eliware)
+- [docs](docs/README.md)
+- [specifications](specs/README.md)
+- [Home Page](https://github.com/eliware/codescope#readme)
+- [Eliware](https://eliware.org)
+- [GitHub repository](https://github.com/eliware/codescope.git)
+- [Eliware Docs](https://github.com/eliware/docs)
+- [GitHub organization](https://github.com/eliware)
 - [npm Package](https://www.npmjs.com/package/@eliware/codescope)
 - [Release Notes](RELEASE_NOTES.md)
 - [Discord](https://discord.gg/M6aTR9eTwN)

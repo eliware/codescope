@@ -2,13 +2,13 @@
 
 [Back to the root README](../README.md)
 
-This directory contains CodeScope's v8 JSON directive records. Each directive
+This directory contains CodeScope's YAML directive records. Each directive
 has explicit `dos` and `donts`; these records are the only normative
 specification format for this repository.
 
-- [directives.json](directives.json) defines CodeScope's authority over CLI
+- [directives.yaml](directives.yaml) defines CodeScope's authority over CLI
   behavior, review profiles, and supplied-evidence conventions.
-- [test-context.json](test-context.json) defines how Eliware Test v8 profile
+- [test-context.yaml](test-context.yaml) defines how Eliware Test v10 profile
   records are selected as review evidence.
 
 Eliware Docs remains authoritative for shared documentation and the authority
