@@ -89,6 +89,13 @@
   },
   "license": "MIT",
   "eliware": {
+    "id": "E-1210",
+    "apply": [
+      "general",
+      "application",
+      "cli",
+      "npm-published"
+    ],
     "environment": {
       "providerToken": {
         "name": "OPENAI_API_TOKEN",
@@ -99,13 +106,7 @@
         ],
         "precedence": "nonblank process value, then nonblank ~/.codescope value"
       }
-    },
-    "apply": [
-      "general",
-      "application",
-      "cli",
-      "npm-published"
-    ]
+    }
   },
   "publishConfig": {
     "access": "public",
