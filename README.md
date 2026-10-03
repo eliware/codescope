@@ -1,6 +1,8 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yml)
+## @eliware/codescope
+
+[![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yml)
 
 ## Table of Contents
 
@@ -92,6 +94,7 @@ focused suggestions, or estimate review usage without modifying the repository.
 
 ```text
 codescope all
+codescope review release
 codescope review architecture
 codescope suggest new-features
 codescope --help
@@ -124,19 +127,18 @@ repository context.
 ## Security
 
 Do not place credentials, tokens, `.env` files, or runtime state in the repository. CodeScope is read-only: it analyzes supplied files and writes its output without modifying the reviewed repository.
-CodeScope reviews supplied repository files only; it does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
-Use `codescope review all` for release-readiness review.
+CodeScope sends supplied repository context to the configured provider for review. It does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
+Use `codescope review release` for release-readiness review.
 
 ## Configuration
 
-The CLI starts with the process environment, then reads only
-`OPENAI_API_TOKEN` from `~/.codescope`; unrelated dotenv assignments are
-ignored, including malformed unrelated lines. Malformed token assignments or
-quoted token values are rejected. A nonblank process token takes precedence over the file. A missing or
-whitespace-only process token is treated as absent, so a nonblank file token
-may be used. The dotenv parser accepts optional `export`, comments, and quoted
-values. Runtime configuration uses only `OPENAI_API_TOKEN`; its default is
-unset.
+The CLI uses a nonblank process `OPENAI_API_TOKEN` directly and reads only
+`OPENAI_API_TOKEN` from `~/.codescope` when the process value is missing or
+whitespace-only. Unrelated dotenv assignments are ignored, including malformed
+unrelated lines. When the process token is blank and `~/.codescope` is read,
+malformed token assignments or quoted token values in that file are rejected.
+The dotenv parser accepts optional `export`, comments, and quoted values.
+Runtime configuration uses only `OPENAI_API_TOKEN`; its default is unset.
 A missing or blank token causes a clear error and exit code `3`.
 
 Configuration evidence is root-bound, symlink-checked, and bounded to 100000
@@ -167,8 +169,9 @@ to a prompt is written unchanged; provider findings and verdict text never
 change the CLI exit code.
 
 Add one or more `-a <text>` or `--add <text>` options (also `-a=<text>` or
-`--add=<text>`) to profile commands and custom prompts to append custom guidance
-to the final user message. For `codescope prompt`, put additions before an
+`--add=<text>`) to direct profiles, `codescope all`, `codescope review
+<profile>`, `codescope suggest <profile>`, and custom prompts to append custom
+guidance to the final user message. For `codescope prompt`, put additions before an
 optional `--` delimiter; only effort and model options may follow it. Bare
 `codescope`, help, and version output do not apply additions. Use
 `codescope --help` for the complete command and option reference. Supported
