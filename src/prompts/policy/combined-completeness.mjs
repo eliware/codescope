@@ -1,14 +1,12 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+const completenessTemplate = `Review the supplied repository context for distinct, actionable findings in every category. The Eliware Test convention files named in the supplied repository context are the applicable shared rules. Treat missing information as unknown; do not invent files, behavior, test results, or external state. {{FINDING_SCOPE}}
 
-const completenessTemplate = readFileSync(
-  fileURLToPath(new URL("../../../prompts/policy/combined-completeness.md", import.meta.url)),
-  "utf8",
-).trim();
+Use P0 for an active emergency, a usable secret in supplied evidence, or a supplied test failure. Treat a redaction marker as evidence of a usable secret; identify its path and recommend revocation or rotation and removal. Ciphertext alone is not a usable secret. Use P1 only for a proven required-scope release blocker that cannot reasonably wait. Use P2 for actionable non-blockers and P3 for polish. Only unresolved P0/P1 findings block. Assume tests pass unless supplied output proves a test ran and failed. Do not infer CI, release, registry, or other external results. Do not treat provider response content or shape as a CodeScope defect. Do not list known issues as new findings, but let unresolved P0/P1 known issues block.
+
+Return every category required by the schema. Use exactly one sentinel when a category has no finding: severity none, location none, finding No issues found., empty rationale, and blank recommendation and ignore_example. For real findings, give a concise practical recommendation, a concise rationale whose steps start with Because and end at the evidence-supported impact, and one complete // codescope ignore: ... comment.`;
 
 export function combinedCompletenessGuidance(releaseGate) {
-  const releaseRule = releaseGate
-    ? "This release-gate rule overrides ordinary all-profile reporting: report only unresolved P0 and qualifying P1 blockers, and use exactly one valid no-issues sentinel for every category without such a blocker."
-    : "P2 and P3 findings must be reported but must not block.";
-  return completenessTemplate.replace("{{RELEASE_GATE_RULE}}", releaseRule);
+  const findingScope = releaseGate
+    ? "For release review, report only unresolved P0/P1 blockers; use a sentinel in every other category."
+    : "For all review, report every distinct actionable P0-P3 finding; P2/P3 findings do not block.";
+  return completenessTemplate.replace("{{FINDING_SCOPE}}", findingScope);
 }

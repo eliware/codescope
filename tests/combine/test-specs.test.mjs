@@ -2,6 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { combineTestSpecs } from "../../src/combine/test-specs.mjs";
+import { extractTestSpecPromptContext } from "../../src/test-specs/prompt-context.mjs";
 
 test("includes only package-selected records from the adjacent Test specs", async () => {
   const root = await fsTemp("codescope-test-specs-");
@@ -14,18 +15,31 @@ test("includes only package-selected records from the adjacent Test specs", asyn
   ).version;
   await writeFile(
     path.join(testRoot, "specs", "conventions", "general.yaml"),
-    `version: ${packageVersion}`,
+    `version: "${packageVersion}"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule`,
   );
-  await writeFile(path.join(testRoot, "specs", "conventions", "cli.yaml"), "cli: true");
-  await writeFile(path.join(testRoot, "specs", "conventions", "web.yaml"), "web: true");
+  await writeFile(
+    path.join(testRoot, "specs", "conventions", "cli.yaml"),
+    "directives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition",
+  );
+  await writeFile(
+    path.join(testRoot, "specs", "conventions", "web.yaml"),
+    "directives:\n  - id: E-0.3\n    dos:\n      - Web test rule",
+  );
   await writeFile(
     path.join(project, "package.json"),
     JSON.stringify({ eliware: { apply: ["general", "cli"] } }),
   );
   try {
     const result = await combineTestSpecs(project, { readFileContents: readFile });
-    expect(result).toContain("test/specs/conventions/general.yaml");
-    expect(result).toContain("test/specs/conventions/cli.yaml");
+    const context = extractTestSpecPromptContext(result);
+    expect(context.instructions).toContain(
+      "This repository must comply with the rules set forth in general.yaml and cli.yaml.",
+    );
+    expect(context.instructions).toContain("General test rule");
+    expect(context.instructions).toContain("CLI test prohibition");
+    expect(context.instructions).not.toContain("id: E-0.1");
+    expect(context.instructions).not.toContain("web.yaml");
+    expect(context.combined).not.toContain("General test rule");
     expect(result).not.toContain("web.yaml");
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -44,7 +58,7 @@ test("reports selected profiles missing from the adjacent Test specs", async () 
   );
   try {
     await expect(combineTestSpecs(project, { testRoot })).resolves.toContain(
-      "Test specification evidence incomplete; missing records: application",
+      "Convention contents are incomplete; missing application.yaml",
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -82,7 +96,7 @@ test("reports unavailable Test checkout and package applicability", async () => 
   try {
     await writeFile(path.join(root, "package.json"), JSON.stringify({ eliware: { apply: [] } }));
     await expect(combineTestSpecs(root)).resolves.toContain(
-      "Adjacent eliware/test checkout not supplied",
+      "Adjacent eliware/test checkout is not supplied",
     );
     await expect(combineTestSpecs(path.join(root, "missing-project"))).resolves.toContain(
       "Test-spec applicability unavailable",

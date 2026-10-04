@@ -1,7 +1,5 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+export const conventionPolicy = `## Eliware Test specification review
 
-export const conventionPolicy = readFileSync(
-  fileURLToPath(new URL("../../../prompts/policy/test-specs.md", import.meta.url)),
-  "utf8",
-).trim();
+Use only the Eliware Test convention files named immediately before their contents in the supplied repository context. Their rules, directives, and examples apply to this repository. For @eliware/test, use its specifications in the supplied repository context. If convention files are unavailable, treat shared-convention alignment as unknown. Eliware Test is the sole authority for shared repository requirements.
+
+Review the supplied repository context for distinct, actionable findings. Treat missing information as unknown and respect documented intent and precise attached CodeScope ignores. Keep ordinary quality improvements at P2 or P3; reserve P1 for a proven issue with substantial impact. Report a supplied location, supported impact, and practical correction. Do not infer external or historical results absent from the supplied context.`;

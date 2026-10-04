@@ -104,7 +104,8 @@
   "dependencies": {
     "@eliware/common": "^2.0.0",
     "@eliware/openai": "^1.1.11",
-    "@eliware/redact": "6.0.0"
+    "@eliware/redact": "6.0.0",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "eliware-test": "npm:@eliware/test@^11.0.0"

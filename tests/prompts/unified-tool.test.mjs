@@ -8,8 +8,8 @@ test("creates strict unified tools with required categories", () => {
     type: "array",
     items: { type: "string" },
   });
-  expect(tool.description).toContain("remove any item whose recommendation says no change");
+  expect(tool.description).toContain("all actionable findings");
   expect(tool.parameters.$defs.finding.properties.recommendation.description).toContain(
-    "Never say no change is needed",
+    "practical change",
   );
 });

@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { readBatches } from "../batches.mjs";
 import { readSourceFile } from "../read-file.mjs";
-import { formatSourceSection } from "../section-format.mjs";
-import { normalizeTestSpecPath, resolveTestSpecPath } from "./paths.mjs";
+import { resolveTestSpecPath } from "./paths.mjs";
 
 export function readTestSpecRecords(
   specsRoot,
@@ -28,8 +27,7 @@ export function readTestSpecRecords(
         maxChars,
         failOnTruncation: true,
       });
-      const normalizedPath = normalizeTestSpecPath(relativePath);
-      return formatSourceSection("test/specs/conventions/" + normalizedPath, contents);
+      return contents;
     },
   });
 }

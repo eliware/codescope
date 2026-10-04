@@ -6,8 +6,8 @@ import { createSuggestionPromptSources } from "./prompt-sources/suggestions.mjs"
 import { createAnalysisPromptSources } from "./prompt-sources/analysis.mjs";
 import { createCombinedPromptSources } from "./prompt-sources/combined.mjs";
 
-const profilePrompt = (focus, tool = createReviewTool()) =>
-  createProfilePrompt(focus, tool, { globalReviewInstructions });
+const profilePrompt = (focus, tool = createReviewTool(), options = {}) =>
+  createProfilePrompt(focus, tool, { globalReviewInstructions, ...options });
 const review = createReviewPromptSources(profilePrompt);
 const analysis = createAnalysisPromptSources(profilePrompt);
 const promptSources = Object.freeze({

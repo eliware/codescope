@@ -4,8 +4,7 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
   return {
     type: "function",
     name: "submit_unified_review",
-    description:
-      "Return one exhaustive consolidated CodeScope review. Enumerate every distinct actionable finding supported by the supplied evidence; never return a representative sample, shortlist, or only the highest-priority findings. Keep each item concise without reducing the total number of findings. Before submission, remove any item whose recommendation says no change, confirms correct or intentional behavior, or provides no practical action; use only the category sentinel when no actionable finding remains.",
+    description: "Return one consolidated CodeScope review with all actionable findings.",
     strict: true,
     parameters: {
       type: "object",
@@ -20,8 +19,7 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
               {
                 type: "array",
                 minItems: 1,
-                description:
-                  "Complete exhaustive list of all distinct actionable findings supported by the supplied evidence. Do not return a sample or only the highest-priority items. Use exactly one none sentinel only when no actionable finding exists.",
+                description: "Findings in this category, or its single no-issues sentinel.",
                 items: { $ref: "#/$defs/finding" },
               },
             ]),
@@ -41,22 +39,21 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
             finding: {
               type: "string",
               description:
-                "A concrete, evidence-supported issue requiring action; never a no-issue or already-correct statement.",
+                "A concrete issue with a current impact, or the exact no-issues sentinel.",
             },
             recommendation: {
               type: "string",
-              description:
-                "For a real finding, specify a practical change. Never say no change is needed or confirm correct/intentional behavior.",
+              description: "A practical change for a real finding; blank for the sentinel.",
             },
             rationale: {
               type: "array",
               items: { type: "string" },
               description:
-                'An ordered why-chain: each concise step starts with "Because" and answers why the previous point matters, ending at a concrete evidence-supported impact.',
+                "Concise evidence-based reasons ending at the impact; empty for the sentinel.",
             },
             ignore_example: {
               type: "string",
-              description: "A complete copy-pasteable // codescope ignore: ... comment.",
+              description: "A complete // codescope ignore: ... comment; blank for the sentinel.",
             },
           },
           required: [

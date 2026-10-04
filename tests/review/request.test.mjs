@@ -20,7 +20,7 @@ test("coordinates validation, supported-field projection, and placeholder eviden
   expect(prompt.input[0].content[0].text).toBe("<combine-mjs here>");
 });
 
-test("coordinates built-in prompt evidence insertion", () => {
+test("separates built-in prompt context and instructions", () => {
   const request = prepareRequest(
     {
       input: [
@@ -32,4 +32,5 @@ test("coordinates built-in prompt evidence insertion", () => {
   );
 
   expect(request.input[1].content[0].text).toContain("SOURCE");
+  expect(request.input[2].content[0].text).toContain("review");
 });

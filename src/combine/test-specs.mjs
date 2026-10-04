@@ -5,6 +5,7 @@ import { discoverTestSpecFiles } from "./test-specs/discover.mjs";
 import { selectTestSpecFiles } from "./test-specs/selection.mjs";
 import { readTestSpecRecords } from "./test-specs/read-records.mjs";
 import { formatTestSpecEvidence } from "./test-specs/evidence-output.mjs";
+import { compileTestSpecRecords } from "./test-specs/compile-records.mjs";
 
 export async function combineTestSpecs(
   root,
@@ -43,20 +44,30 @@ export async function combineTestSpecs(
     });
   }
   if (applicability.skipSeparateRecords) return "";
+  const profiles = [...applicability.profiles].map((profile) => `${profile}.yaml`);
   const discovery = await discoverTestSpecFiles(testRoot, { readDirectory, platform });
   if (!discovery) {
-    return formatTestSpecEvidence({ status: "checkout-unavailable" });
+    return formatTestSpecEvidence({ status: "checkout-unavailable", profiles });
   }
   const selection = selectTestSpecFiles(discovery.files, applicability);
   if (selection.missing.length > 0) {
-    return formatTestSpecEvidence({ status: "records-missing", missing: selection.missing });
+    return formatTestSpecEvidence({
+      status: "records-missing",
+      profiles,
+      missing: selection.missing.map((profile) => `${profile}.yaml`),
+    });
   }
-  const sections = await readTestSpecRecords(discovery.specsRoot, selection.files, {
+  const sources = await readTestSpecRecords(discovery.specsRoot, selection.files, {
     concurrency,
     maxChars,
     readFileContents,
     inspectFile,
     platform,
   });
-  return formatTestSpecEvidence({ status: "ready", sections });
+  const rules = compileTestSpecRecords(selection.files, sources);
+  return formatTestSpecEvidence({
+    status: "ready",
+    profiles,
+    rules,
+  });
 }

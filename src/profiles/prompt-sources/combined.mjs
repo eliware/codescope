@@ -3,7 +3,9 @@ import { createCombinedAllPrompt } from "../../prompts/combined.mjs";
 import { createUnifiedTool } from "../../prompts/unified-tool.mjs";
 
 export function createCombinedPromptSources(profilePrompt) {
-  const allPrompt = createAllPrompt(profilePrompt);
+  const combinedProfilePrompt = (focus, tool) =>
+    profilePrompt(focus, tool, { globalReviewInstructions: "" });
+  const allPrompt = createAllPrompt(combinedProfilePrompt);
   const combinedAllPrompt = createCombinedAllPrompt({
     allPrompt,
     unifiedTool: createUnifiedTool(),

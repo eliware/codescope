@@ -1,4 +1,5 @@
 import { combineSelectedFiles } from "../../src/combine/selected.mjs";
+import { extractTestSpecPromptContext } from "../../src/test-specs/prompt-context.mjs";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -36,12 +37,13 @@ test("includes applied adjacent Test records in selected profile context", async
   );
   await writeFile(
     path.join(testRoot, "specs", "conventions", "general.yaml"),
-    "required: selected profile contract",
+    'directives:\n  - id: E-0.1\n    dos:\n      - "required: selected profile contract"',
   );
   try {
     const result = await combineSelectedFiles(project, { inventory: [], testRoot });
-    expect(result).toContain("test/specs/conventions/general.yaml");
-    expect(result).toContain("required: selected profile contract");
+    const { instructions } = extractTestSpecPromptContext(result);
+    expect(instructions).toContain("required: selected profile contract");
+    expect(instructions).not.toContain("id: E-0.1");
   } finally {
     await rm(root, { recursive: true, force: true });
   }
