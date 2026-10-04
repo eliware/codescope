@@ -107,6 +107,6 @@
     "@eliware/redact": "6.0.0"
   },
   "devDependencies": {
-    "eliware-test": "npm:@eliware/test@^10.0.0"
+    "eliware-test": "npm:@eliware/test@^11.0.0"
   }
 }
