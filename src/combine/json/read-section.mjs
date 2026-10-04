@@ -16,6 +16,7 @@ export function createJsonSectionReader(
       readFileContents,
       inspectFile,
       validateSymlinks,
+      maxChars,
     });
     if (Number.isFinite(maxChars)) assertWithinLimit(contents.length, maxChars);
     return formatSourceSection(relativePath, contents);

@@ -1,10 +1,11 @@
 import { readReviewEnvironmentFile } from "../../src/review/environment-file.mjs";
 import { defaultEnvFile } from "../../src/review/env-file-path.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 const openWith =
   (text = "OPENAI_API_TOKEN=value") =>
   async () => ({
-    readFile: async () => text,
+    read: createEnvironmentReader(text),
     close: async () => {},
   });
 

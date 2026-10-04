@@ -26,6 +26,7 @@ test("rejects absolute and escaping configuration paths", () => {
   expect(isAbsolutePortablePath("relative/path")).toBe(false);
   expect(isAbsolutePortablePath("\\\\server\\share")).toBe(true);
   expect(() => resolveConfigPath("repo", "../outside", "posix")).toThrow(/escapes/);
+  expect(() => resolveConfigPath("C:\\repo", "..\\outside", "win32")).toThrow(/escapes/);
   expect(resolveConfigPath("repo", ".github/ci.yml", "posix")).toContain("repo");
   expect(resolveConfigPath("C:\\repo", ".github\\ci.yml", "win32")).toContain("repo");
   expect(resolveConfigPath("repo", ".github/ci.yml")).toContain("repo");
@@ -33,4 +34,9 @@ test("rejects absolute and escaping configuration paths", () => {
 
 test("ignores unrelated inventory entries", () => {
   expect(selectConfigFiles([".github", ".knit", "src/app.mjs"])).toEqual([]);
+});
+
+test("preserves literal backslashes in POSIX inventory filenames", () => {
+  expect(selectConfigFiles([".github\\settings.cfg"], "linux")).toEqual([]);
+  expect(resolveConfigPath("/repo", ".github\\ci.cfg", "linux")).toBe("/repo/.github\\ci.cfg");
 });

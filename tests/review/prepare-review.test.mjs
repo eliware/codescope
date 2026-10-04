@@ -1,11 +1,12 @@
 import { prepareReview } from "../../src/review/prepare-review.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 const setup = {
   envFile: "ignored",
   readFile: async () => "OPENAI_API_TOKEN=ignored",
   inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   openEnvFile: async () => ({
-    readFile: async () => "OPENAI_API_TOKEN= token ",
+    read: createEnvironmentReader("OPENAI_API_TOKEN= token "),
     close: async () => {},
   }),
 };
@@ -25,7 +26,7 @@ test("does not initialize the provider when setup fails", async () => {
     prepareReview({
       ...setup,
       openEnvFile: async () => ({
-        readFile: async () => "",
+        read: createEnvironmentReader(""),
         close: async () => {},
       }),
       createClient,

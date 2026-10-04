@@ -1,4 +1,5 @@
 import { runReview } from "../../src/review/lifecycle.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 test("resolves options and delegates a review through the pipeline", async () => {
   const writes = [];
@@ -13,7 +14,7 @@ test("resolves options and delegates a review through the pipeline", async () =>
     readFile: async () => "OPENAI_API_TOKEN=token",
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     openEnvFile: async () => ({
-      readFile: async () => "OPENAI_API_TOKEN=token",
+      read: createEnvironmentReader("OPENAI_API_TOKEN=token"),
       close: async () => {},
     }),
     createClient: () => ({ responses: { create: async () => ({ output_text: "response" }) } }),

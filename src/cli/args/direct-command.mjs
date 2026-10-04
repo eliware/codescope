@@ -7,7 +7,10 @@ export function parseDirectCommandArgs(first, rest) {
   const values = parseOptionValues(rest);
   const metaTokens = values.remaining.filter((token) => !["--usage", "--dry-run"].includes(token));
   const meta = parseMetaCommand(first, metaTokens);
-  if (meta) return normalizeCommand(meta, values);
+  if (meta) {
+    if (values.usage) throw new Error("--usage is not supported for help or version commands");
+    return normalizeCommand(meta, values);
+  }
   if (first.startsWith("-")) throw new Error(`Unknown option: ${first}`);
   return normalizeCommand(parseProfileArgs(first, values.remaining), values);
 }

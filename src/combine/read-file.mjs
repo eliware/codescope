@@ -11,6 +11,7 @@ export async function readSourceFile(
     openFile = open,
     validateSymlinks = false,
     maxChars = Number.POSITIVE_INFINITY,
+    failOnTruncation = false,
   } = {},
 ) {
   try {
@@ -22,9 +23,11 @@ export async function readSourceFile(
     }
     const contents =
       readFileContents === readFile
-        ? await readInspectedSourceFile(rootPath, openFile, maxChars)
+        ? await readInspectedSourceFile(rootPath, openFile, maxChars, failOnTruncation)
         : await readFileContents(rootPath, "utf8");
     if (typeof contents !== "string") throw new Error("file reader returned non-string content");
+    if (failOnTruncation && Number.isFinite(maxChars) && contents.length > maxChars)
+      throw new Error(`source file exceeds the ${maxChars}-character read limit`);
     return contents;
   } catch (cause) {
     throw new Error(
@@ -34,10 +37,13 @@ export async function readSourceFile(
   }
 }
 
-async function readInspectedSourceFile(rootPath, openFile, maxChars) {
-  return readFileFromHandle(rootPath, {
+async function readInspectedSourceFile(rootPath, openFile, maxChars, failOnTruncation) {
+  const contents = await readFileFromHandle(rootPath, {
     openFile,
     readHandle: (handle) =>
       Number.isFinite(maxChars) ? readHandleUpToChars(handle, maxChars) : handle.readFile("utf8"),
   });
+  if (failOnTruncation && Number.isFinite(maxChars) && contents.length > maxChars)
+    throw new Error(`source file exceeds the ${maxChars}-character read limit`);
+  return contents;
 }

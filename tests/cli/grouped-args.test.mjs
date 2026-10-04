@@ -13,6 +13,13 @@ test("parses grouped review and suggestion commands", () => {
   });
 });
 
+test("accepts the release profile through the grouped review command", () => {
+  expect(parseGroupedArgs("review", ["release"])).toMatchObject({
+    command: "analyze-release",
+    mode: "review",
+  });
+});
+
 test("rejects invalid grouped command shapes", () => {
   expect(() => parseGroupedArgs("review", [])).toThrow(/Usage/);
   expect(parseGroupedArgs("review", ["--dry-run", "all"])).toMatchObject({

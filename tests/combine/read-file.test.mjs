@@ -35,8 +35,41 @@ test("bounds default source reads to the character budget plus one sample charac
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   });
 
-  expect(contents).toBe("a".repeat(13));
+  expect(contents).toBe(`${"a".repeat(12)}�`);
   expect(offset).toBe(13);
+});
+
+test("rejects injected reads that exceed a strict character limit", async () => {
+  await expect(
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      readFileContents: async () => "longer",
+      maxChars: 3,
+      failOnTruncation: true,
+    }),
+  ).rejects.toThrow("exceeds the 3-character read limit");
+});
+
+test("rejects default handle reads that exceed a strict character limit", async () => {
+  const source = Buffer.from("abcdef");
+  let offset = 0;
+  const handle = {
+    async read(buffer, start, length) {
+      const bytesRead = Math.min(length, source.length - offset);
+      source.copy(buffer, start, offset, offset + bytesRead);
+      offset += bytesRead;
+      return { bytesRead };
+    },
+    async close() {},
+  };
+
+  await expect(
+    readSourceFile("src/a.mjs", "repo/src/a.mjs", {
+      maxChars: 3,
+      failOnTruncation: true,
+      openFile: async () => handle,
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
+  ).rejects.toThrow("exceeds the 3-character read limit");
 });
 
 test("rejects symlinks and non-files with contextual errors", async () => {

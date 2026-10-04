@@ -1,5 +1,20 @@
 /** Resolve only after the write callback completes and any backpressure drains. */
+const writers = new WeakMap();
+
 export function createDefaultWriter(stdout = process.stdout) {
+  const existing = writers.get(stdout);
+  if (existing) return existing;
+  const writer = createWriter(stdout);
+  writers.set(stdout, writer);
+  return writer;
+}
+
+function createWriter(stdout) {
+  const pendingFailures = new Set();
+  stdout.on("error", (cause) => {
+    for (const fail of pendingFailures) fail(cause);
+  });
+
   return (value) =>
     new Promise((resolve, reject) => {
       let callbackComplete = false;
@@ -11,9 +26,10 @@ export function createDefaultWriter(stdout = process.stdout) {
 
       const cleanup = () => {
         stdout.removeListener("drain", onDrain);
-        stdout.removeListener("error", onError);
+        pendingFailures.delete(fail);
       };
       const fail = (cause) => {
+        if (settled) return;
         settled = true;
         cleanup();
         reject(cause);
@@ -34,10 +50,8 @@ export function createDefaultWriter(stdout = process.stdout) {
         waitingForDrain = false;
         complete();
       };
-      const onError = (cause) => fail(cause);
-
+      pendingFailures.add(fail);
       stdout.on("drain", onDrain);
-      stdout.on("error", onError);
       try {
         const accepted = stdout.write(value, (cause) => {
           if (cause) {

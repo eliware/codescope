@@ -20,6 +20,19 @@ test("classifies an absent file as missing", async () => {
   ).resolves.toBeNull();
 });
 
+test("reports a missing explicitly configured file", async () => {
+  const error = Object.assign(new Error("missing"), { code: "ENOENT" });
+  await expect(
+    inspectEnvironmentFile(
+      "configured.env",
+      async () => {
+        throw error;
+      },
+      true,
+    ),
+  ).rejects.toThrow("Unable to inspect configured.env: missing");
+});
+
 test("wraps inspection failures with the environment path", async () => {
   await expect(
     inspectEnvironmentFile("file", async () => {

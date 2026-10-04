@@ -33,3 +33,16 @@ test("reserves a separator after the first emitted section", async () => {
   });
   expect(remaining).toBe(6);
 });
+
+test("stays exhausted after the initial content consumes the budget", async () => {
+  const budget = createSectionBudget(4, 4);
+  let loadCount = 0;
+  const loadSection = () => {
+    loadCount += 1;
+    return "unused";
+  };
+
+  await expect(budget.read(loadSection)).resolves.toBe("");
+  await expect(budget.read(loadSection)).resolves.toBe("");
+  expect(loadCount).toBe(0);
+});

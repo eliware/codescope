@@ -14,3 +14,9 @@ test("adds shared option values to a parsed command", () => {
     ),
   ).toMatchObject({ command: "all", effort: "low", model: "x", dryRun: true, add: ["note"] });
 });
+
+test("includes usage reporting when the parsed option is enabled", () => {
+  expect(
+    normalizeCommand({ command: "review" }, { effort: "high", model: "gpt-6-luna", usage: true }),
+  ).toMatchObject({ effort: "high", model: "gpt-6-luna", usage: true });
+});

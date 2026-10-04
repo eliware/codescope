@@ -11,17 +11,21 @@ export function isAbsolutePortablePath(relativePath) {
 }
 
 export function resolveConfigPath(root, relativePath, platform = process.platform) {
-  const portable = relativePath.replaceAll("\\", "/");
-  const normalized = path.posix.normalize(portable);
+  const pathApi = platform === "win32" ? path.win32 : path.posix;
+  const portable = platform === "win32" ? relativePath.replaceAll("/", "\\") : relativePath;
+  const normalized = pathApi.normalize(portable);
   if (normalized === ".." || normalized.startsWith("../"))
     throw new Error(`Configuration path escapes review root: ${relativePath}`);
-  const pathApi = platform === "win32" ? path.win32 : path.posix;
-  return pathApi.resolve(root, ...normalized.split("/"));
+  if (platform === "win32" && normalized.startsWith("..\\"))
+    throw new Error(`Configuration path escapes review root: ${relativePath}`);
+  return pathApi.resolve(root, normalized);
 }
 
-export function selectConfigFiles(inventory) {
+export function selectConfigFiles(inventory, platform = process.platform) {
   return inventory
-    .map((relativePath) => relativePath.replaceAll("\\", "/"))
+    .map((relativePath) =>
+      platform === "win32" ? relativePath.replaceAll("\\", "/") : relativePath,
+    )
     .filter((relativePath) => {
       const normalized = relativePath.toLowerCase();
       const isCollectedElsewhere = CONTENT_EXTENSIONS.some((extension) =>

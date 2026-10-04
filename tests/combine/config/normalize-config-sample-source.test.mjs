@@ -25,4 +25,16 @@ test("enforces injected-reader byte boundaries", () => {
       },
     ),
   ).toThrow(/100001-byte/);
+  expect(() =>
+    normalizeConfigSampleSource(
+      { data: "x".repeat(100_002), truncated: true },
+      { readerProvided: true },
+    ),
+  ).toThrow(/100001-byte/);
+  expect(
+    normalizeConfigSampleSource(
+      { data: "x".repeat(100_001), truncated: true },
+      { readerProvided: true },
+    ).byteTruncated,
+  ).toBe(true);
 });

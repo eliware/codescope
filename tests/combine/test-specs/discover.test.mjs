@@ -45,13 +45,13 @@ test("discovers Test-spec YAML files on the host platform", async () => {
   }
 });
 
-test("treats a non-directory Test-spec root as unavailable", async () => {
-  const file = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
-  try {
-    await writeFile(file + ".root", "{}");
-    await expect(discoverTestSpecFiles(file + ".root")).resolves.toBeUndefined();
-  } finally {
-    await rm(file, { recursive: true, force: true });
-    await rm(file + ".root", { force: true });
-  }
+test("reports a non-directory Test-spec root as a discovery error", async () => {
+  await expect(
+    discoverTestSpecFiles("/broken", {
+      platform: "linux",
+      readDirectory: async () => {
+        throw Object.assign(new Error("not a directory"), { code: "ENOTDIR" });
+      },
+    }),
+  ).rejects.toThrow(/Unable to discover Test specification evidence/);
 });

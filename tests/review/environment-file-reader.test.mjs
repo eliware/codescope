@@ -1,4 +1,5 @@
 import { readEnvironmentFile } from "../../src/review/environment-file-reader.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 test("reads environment content and closes the handle", async () => {
   let closed = false;
@@ -6,7 +7,7 @@ test("reads environment content and closes the handle", async () => {
     readEnvironmentFile({
       envFile: ".env",
       openEnvFile: async () => ({
-        readFile: async () => "OPENAI_API_TOKEN=token",
+        read: createEnvironmentReader("OPENAI_API_TOKEN=token"),
         close: async () => {
           closed = true;
         },
@@ -22,7 +23,7 @@ test("reports missing opener and read failures", async () => {
     readEnvironmentFile({
       envFile: ".env",
       openEnvFile: async () => ({
-        readFile: async () => {
+        read: async () => {
           throw new Error("denied");
         },
       }),
@@ -36,7 +37,7 @@ test("preserves close failures and combined read/close failures", async () => {
     readEnvironmentFile({
       envFile: ".env",
       openEnvFile: async () => ({
-        readFile: async () => "text",
+        read: createEnvironmentReader("text"),
         close: async () => {
           throw closeError;
         },
@@ -47,7 +48,7 @@ test("preserves close failures and combined read/close failures", async () => {
     readEnvironmentFile({
       envFile: ".env",
       openEnvFile: async () => ({
-        readFile: async () => {
+        read: async () => {
           throw new Error("read failed");
         },
         close: async () => {

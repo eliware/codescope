@@ -27,6 +27,8 @@ directives:
           - Support codescope, codescope --help, codescope all, codescope review <profile>,
             codescope suggest <profile>, supported direct profile shorthand, and codescope prompt
             <text>.
+          - Support `codescope release` and `codescope review release` as aliases for the release
+            review profile.
           - Use gpt-6-luna as the default model and support --usage, --dry-run,
             --effort=none|low|medium|high|xhigh|max,
             --model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol, and
@@ -103,7 +105,7 @@ directives:
             profile-record section."
           - Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown
             files according to the selected profile.
-          - For reviewed packages other than @eliware/test, read only the Eliware Test v10
+          - For reviewed packages other than @eliware/test, read only the Eliware Test v11
             specification records named by package.json eliware.apply from the adjacent
             test/specs/conventions directory. Accept only safe single-segment lowercase profile
             names containing letters, digits, and single hyphens, then resolve each name to its

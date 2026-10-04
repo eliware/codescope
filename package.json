@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "author": "Eliware <eliware@eliware.org>",
   "keywords": [
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/eliware/codescope"
+    "url": "git+https://github.com/eliware/codescope.git"
   },
   "bugs": {
     "url": "https://github.com/eliware/codescope/issues"
@@ -32,17 +32,13 @@
     ".": "./src/cli/main.mjs"
   },
   "files": [
-    "bin/",
     "src/",
-    "README.md",
     "docs/",
-    "examples/",
-    "prompts/",
-    "specs/",
-    "KNOWN_ISSUES.md",
-    "NEW_FEATURE_SUGGESTIONS.md",
+    "README.md",
+    "AGENTS.md",
     "LICENSE",
-    "RELEASE_NOTES.md"
+    "RELEASE_NOTES.md",
+    "bin/"
   ],
   "scripts": {
     "test": "eliware-test",
@@ -56,6 +52,10 @@
     "node": "26"
   },
   "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.mjs"
+    ],
     "collectCoverageFrom": [
       "src/**/*.mjs"
     ],
@@ -95,18 +95,7 @@
       "application",
       "cli",
       "npm-published"
-    ],
-    "environment": {
-      "providerToken": {
-        "name": "OPENAI_API_TOKEN",
-        "required": true,
-        "sources": [
-          "process environment",
-          "~/.codescope"
-        ],
-        "precedence": "nonblank process value, then nonblank ~/.codescope value"
-      }
-    }
+    ]
   },
   "publishConfig": {
     "access": "public",
@@ -118,6 +107,6 @@
     "@eliware/redact": "6.0.0"
   },
   "devDependencies": {
-    "eliware-test": "npm:@eliware/test@9.0.0"
+    "eliware-test": "npm:@eliware/test@^10.0.0"
   }
 }

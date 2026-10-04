@@ -13,7 +13,7 @@ export async function discoverTestSpecFiles(
       files: await findFiles(specsRoot, ".yaml", { readDirectory, platform }),
     };
   } catch (cause) {
-    if (cause?.code === "ENOENT" || cause?.code === "ENOTDIR") return undefined;
+    if (cause?.code === "ENOENT") return undefined;
     throw new Error(`Unable to discover Test specification evidence: ${String(cause)}`, { cause });
   }
 }

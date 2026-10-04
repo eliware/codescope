@@ -17,6 +17,7 @@ export function resolveReviewOptions(cwd, options = {}) {
     platform: process.platform,
   };
   const resolved = { ...defaults, ...options };
+  resolved.envFileExplicit = Object.hasOwn(options, "envFile");
   resolved.openEnvFile ??= defaults.openEnvFile;
   validateReviewOptions(cwd, resolved);
   return resolved;

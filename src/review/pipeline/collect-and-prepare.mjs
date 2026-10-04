@@ -12,6 +12,7 @@ export async function collectAndPrepare(cwd, options) {
   });
   const { client } = await prepareReview({
     envFile: options.envFile,
+    envFileExplicit: options.envFileExplicit,
     openEnvFile: options.openEnvFile,
     inspectFile: options.inspectFile,
     environment: options.environment,

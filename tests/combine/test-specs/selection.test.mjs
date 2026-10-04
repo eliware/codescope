@@ -33,21 +33,21 @@ test("reports unknown and unmapped profile names", () => {
   });
 });
 
-test("orders case variants deterministically after normalized profile paths", () => {
+test("requires the exact canonical case for applied profile records", () => {
   const applicability = {
     profiles: new Set(["cli"]),
     canonicalPaths: new Map([["cli", "cli.yaml"]]),
   };
-  expect(selectTestSpecFiles(["cli.yaml", "CLI.yaml"], applicability).files).toEqual([
-    "CLI.yaml",
-    "cli.yaml",
-  ]);
-  expect(selectTestSpecFiles(["CLI.yaml", "cli.yaml"], applicability).files).toEqual([
-    "CLI.yaml",
-    "cli.yaml",
-  ]);
-  expect(selectTestSpecFiles(["cli.yaml", "cli.yaml"], applicability).files).toEqual([
-    "cli.yaml",
-    "cli.yaml",
-  ]);
+  expect(selectTestSpecFiles(["CLI.yaml"], applicability)).toEqual({
+    files: [],
+    missing: ["cli"],
+  });
+  expect(selectTestSpecFiles(["CLI.yaml", "cli.yaml"], applicability)).toEqual({
+    files: ["cli.yaml"],
+    missing: [],
+  });
+  expect(selectTestSpecFiles(["cli.yaml", "cli.yaml"], applicability)).toEqual({
+    files: ["cli.yaml", "cli.yaml"],
+    missing: [],
+  });
 });

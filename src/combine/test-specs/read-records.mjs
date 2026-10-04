@@ -25,6 +25,8 @@ export function readTestSpecRecords(
         readFileContents,
         inspectFile,
         validateSymlinks: true,
+        maxChars,
+        failOnTruncation: true,
       });
       const normalizedPath = normalizeTestSpecPath(relativePath);
       return formatSourceSection("test/specs/conventions/" + normalizedPath, contents);

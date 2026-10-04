@@ -16,7 +16,7 @@ export async function readConfigSource(
     throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
   if (!metadata.isFile())
     throw new Error(`configuration path is not a regular file: ${relativePath}`);
-  if (readFileContents) return readFileContents(filePath);
+  if (readFileContents) return readFileContents(filePath, { maxBytes: MAX_CONFIG_BYTES });
   return readFileFromHandle(filePath, {
     openFile,
     readHandle: (handle) => readHandleUpToLimit(handle, MAX_CONFIG_BYTES),

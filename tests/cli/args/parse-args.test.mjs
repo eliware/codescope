@@ -19,6 +19,11 @@ test("accepts shared options before or after the command", () => {
     usage: true,
     add: ["note"],
   });
+  expect(parseArgs(["--usage", "all", "--add", "note"])).toMatchObject({
+    command: "analyze-all",
+    usage: true,
+    add: ["note"],
+  });
   expect(parseArgs(["--effort=low", "all"])).toMatchObject({ effort: "low" });
   expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({ dryRun: true });
 });
@@ -29,4 +34,17 @@ test("parses a command with options on both sides of its name", () => {
     effort: "low",
     dryRun: true,
   });
+});
+
+test("accepts additions before bare help without applying them", () => {
+  expect(parseArgs(["--add", "note"])).toMatchObject({
+    command: "help",
+    add: ["note"],
+  });
+});
+
+test("preserves addition order around a custom prompt command", () => {
+  expect(parseArgs(["--add", "before", "prompt", "Explain risks", "--add", "after"])).toMatchObject(
+    { command: "prompt", add: ["before", "after"] },
+  );
 });

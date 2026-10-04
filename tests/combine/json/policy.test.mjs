@@ -11,5 +11,6 @@ test("includes repository JSON except package metadata and lockfiles", () => {
   expect(isIncludedJson("packages/tool/package-lock.json")).toBe(false);
   expect(isIncludedJson("packages/tool/package-lock.JSON")).toBe(false);
   expect(isIncludedJson("package-lock.json")).toBe(false);
+  expect(isIncludedJson("PACKAGE-LOCK.JSON")).toBe(false);
   expect(isIncludedJson("tmp/private.json")).toBe(true);
 });

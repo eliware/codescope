@@ -4,12 +4,16 @@ import { resolveTokenEnvironment } from "./environment/resolve-provider-environm
 
 export async function loadReviewEnvironment({
   envFile,
+  envFileExplicit,
   openEnvFile,
   inspectFile,
   environment = process.env,
 }) {
+  const processEnvironment = resolveTokenEnvironment({}, environment);
+  if (processEnvironment.OPENAI_API_TOKEN) return processEnvironment;
   const fileEnvironment = await loadEnvironmentFile({
     envFile,
+    envFileExplicit,
     openEnvFile,
     inspectFile,
   });

@@ -27,12 +27,23 @@ test("decodes quoted values and inline comments", () => {
   expect(environment.OPENAI_API_TOKEN).toBe("line\nnext\tvalue");
   loadEnv("OPENAI_API_TOKEN='secret'", {});
   loadEnv("OPENAI_API_TOKEN=secret # ignored", {});
+  const quotedComment = {};
+  loadEnv('OPENAI_API_TOKEN="secret" # ignored', quotedComment);
+  expect(quotedComment.OPENAI_API_TOKEN).toBe("secret");
 });
 
 test("rejects malformed token assignments and quoted token values", () => {
   expect(() => loadEnv("OPENAI_API_TOKEN without equals", {})).toThrow(/Invalid \.env line/);
   expect(() => loadEnv('OPENAI_API_TOKEN="unterminated', {})).toThrow(/Invalid quoted/);
   expect(() => loadEnv("OPENAI_API_TOKEN='unterminated", {})).toThrow(/Invalid quoted/);
+});
+
+test("validates quoted token syntax even when the process already has a token", () => {
+  const environment = { OPENAI_API_TOKEN: "process-token" };
+  expect(() => loadEnv('OPENAI_API_TOKEN="unterminated', environment)).toThrow(/Invalid quoted/);
+  expect(() => loadEnv("OPENAI_API_TOKEN without equals", environment)).toThrow(
+    /Invalid \.env line/,
+  );
 });
 
 test("rejects non-comment text after a quoted token value", () => {

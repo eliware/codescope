@@ -1,33 +1,32 @@
 # CodeScope documentation
 
-## Purpose and scope
+## Purpose
 
 This folder contains end-user documentation for installing, configuring, and
 using CodeScope. Start with the quick-start workflow, then use the supporting
-guides when you need a deeper explanation.
+guides for details.
 
-## Setup and usage
+## Setup
 
-Follow [Quick start](quick-start.md) for installation, configuration, commands,
-profiles, additions, validation boundaries, and troubleshooting links.
+Follow [Quick start](quick-start.md) for installation and initial setup.
 
-## Validation and support
+## Usage
 
-Use the repository's `npm test` command to run aggregate validation. For help,
-see the [Troubleshooting](troubleshooting.md) guide or the support links in the
-root README.
+The quick-start and configuration guides explain commands and supported
+settings. See [Quick start](quick-start.md) and [Configuration](configuration.md).
+
+## Validation
+
+Run `eliware-test` from the repository root to validate the project. For
+troubleshooting validation or provider problems, see the guide below.
+
+## Support
+
+See [Troubleshooting](troubleshooting.md) for common token and provider issues,
+or the support links in the [root README](../README.md).
 
 ## Contents
 
-- [docs/quick-start.md](quick-start.md) — the complete owner workflow, profiles, and
-  common options.
-- [docs/configuration.md](configuration.md) — API-token setup and optional command
-  settings.
-- [docs/troubleshooting.md](troubleshooting.md) — common token, provider, and
-  provider-output problems.
-- [Release notes](../RELEASE_NOTES.md) — published changes by package version.
-
-See the [root README](../README.md) for installation, configuration, safety,
-and support information. Optional future-feature ideas are listed there too;
-they are planning notes rather than end-user guidance in this documentation
-index.
+- [docs/quick-start.md](quick-start.md)
+- [docs/configuration.md](configuration.md)
+- [docs/troubleshooting.md](troubleshooting.md)

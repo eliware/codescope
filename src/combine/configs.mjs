@@ -8,11 +8,10 @@ export async function combineConfigFiles(
   { inventory, readFileContents, inspectFile, concurrency = 8, platform = process.platform } = {},
 ) {
   validateScanRoot(root, platform);
-  const portableInventory = inventory.map((relativePath) => relativePath.replaceAll("\\", "/"));
-  for (const relativePath of portableInventory)
+  for (const relativePath of inventory)
     if (isAbsolutePortablePath(relativePath))
       throw new Error(`Configuration path escapes review root: ${relativePath}`);
-  const configFiles = selectConfigFiles(portableInventory);
+  const configFiles = selectConfigFiles(inventory, platform);
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error("Configuration concurrency must be a positive integer");
   const sections = await readBatches(configFiles, {

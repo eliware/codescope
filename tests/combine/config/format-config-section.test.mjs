@@ -13,6 +13,12 @@ test("does not count a final newline as an extra line", () => {
   expect(result).not.toContain("truncated");
 });
 
+test("preserves blank lines before the final newline", () => {
+  expect(formatConfigSection("ci.yml", { text: "first\n\n", byteTruncated: false })).toBe(
+    "===== ci.yml =====\n1 first\n2 \n",
+  );
+});
+
 test("reports line truncation at the configured boundary", () => {
   const text = Array.from({ length: 201 }, (_, index) => `line-${index}`).join("\n");
   expect(formatConfigSection("ci.yml", { text, byteTruncated: false })).toContain(

@@ -2,12 +2,14 @@ import { loadReviewEnvironment } from "./environment.mjs";
 
 export async function resolveReviewSetup({
   envFile,
+  envFileExplicit,
   openEnvFile,
   inspectFile,
   environment: processEnvironment,
 }) {
   const environment = await loadReviewEnvironment({
     envFile,
+    envFileExplicit,
     openEnvFile,
     inspectFile,
     environment: processEnvironment,

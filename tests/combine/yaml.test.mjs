@@ -20,3 +20,15 @@ test("includes all repository YAML and YML content without the config line limit
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("respects a finite aggregate character budget", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-yaml-limit-"));
+  try {
+    await writeFile(path.join(root, "large.yaml"), "value: " + "x".repeat(200));
+    await expect(combineYamlFiles(root, { maxChars: 100 })).rejects.toThrow(
+      "Combined source exceeds the 100-character limit",
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

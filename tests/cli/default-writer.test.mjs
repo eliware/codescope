@@ -25,6 +25,17 @@ test("prioritizes a synchronous write exception over a callback error", async ()
   );
 });
 
+test("keeps the first stream failure when write throws after an emitted error", async () => {
+  const stdout = new EventEmitter();
+  const streamError = new Error("stream failed");
+  stdout.write = () => {
+    stdout.emit("error", streamError);
+    throw new Error("write also failed");
+  };
+
+  await expect(createDefaultWriter(stdout)("response")).rejects.toBe(streamError);
+});
+
 test("rejects when the callback reports an error", async () => {
   const stdout = new EventEmitter();
   stdout.write = (_value, callback) => {
@@ -75,6 +86,42 @@ test("rejects stream errors while waiting for backpressure to drain", async () =
   callback();
   stdout.emit("error", new Error("drain failed"));
   await expect(pending).rejects.toThrow("drain failed");
+});
+
+test("keeps an error rejection settled when the write callback arrives later", async () => {
+  const stdout = new EventEmitter();
+  let callback;
+  stdout.write = (_value, done) => {
+    callback = done;
+    return true;
+  };
+  const pending = createDefaultWriter(stdout)("provider response");
+  const error = new Error("stream failed before callback");
+  stdout.emit("error", error);
+  callback();
+  await expect(pending).rejects.toBe(error);
+});
+
+test("handles late stdout errors without poisoning later writes", async () => {
+  const stdout = new EventEmitter();
+  const writes = [];
+  stdout.write = (value, callback) => {
+    writes.push(value);
+    callback();
+    return true;
+  };
+  const write = createDefaultWriter(stdout);
+  await expect(write("first")).resolves.toEqual({ written: 5 });
+  const error = new Error("late stream failure");
+  expect(() => stdout.emit("error", error)).not.toThrow();
+  await expect(write("second")).resolves.toEqual({ written: 6 });
+  expect(writes).toEqual(["first", "second"]);
+});
+
+test("reuses one writer and stdout error listener for the same stream", () => {
+  const stdout = new EventEmitter();
+  expect(createDefaultWriter(stdout)).toBe(createDefaultWriter(stdout));
+  expect(stdout.listenerCount("error")).toBe(1);
 });
 
 test("uses process stdout when no stream is supplied", async () => {

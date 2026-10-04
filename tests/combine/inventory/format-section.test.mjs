@@ -17,6 +17,12 @@ test("returns the complete inventory when it fits", () => {
   );
 });
 
+test("returns finite-budget inventory unchanged when all entries fit", () => {
+  const entries = ["a.txt | text | 1 lines | 1 bytes"];
+  const complete = formatInventorySection(entries);
+  expect(formatInventorySection(entries, complete.length)).toBe(complete);
+});
+
 test("omits the section when even its heading and truncation note exceed the budget", () => {
   expect(formatInventorySection(["a"], 10)).toBe("");
 });

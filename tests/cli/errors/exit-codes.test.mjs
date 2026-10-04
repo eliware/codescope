@@ -8,7 +8,7 @@ test("defines the public process exit statuses", () => {
     INPUT: 4,
     API: 5,
     RESPONSE: 6,
-    TEST_TIMEOUT: 124,
+    TIMEOUT: 124,
     SIGINT: 130,
     SIGTERM: 143,
   });

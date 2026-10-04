@@ -1,8 +1,6 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-## @eliware/codescope
-
-[![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yml)
+@eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yaml)
 
 ## Table of Contents
 
@@ -28,7 +26,7 @@ CodeScope is a structured OpenAI CLI for read-only reviews of supplied
 repository evidence, focused suggestions, and token estimates. It leaves the
 reviewed repository unchanged.
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md)
 
 Package metadata: description `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`; author `Eliware <eliware@eliware.org>`; license `MIT`.
 
@@ -102,7 +100,7 @@ codescope --help
 
 See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow and profile list.
 See [specs/](specs/) for the detailed behavior specifications.
-See [NEW_FEATURE_SUGGESTIONS.md](NEW_FEATURE_SUGGESTIONS.md) for optional future ideas.
+See [docs](docs/README.md) for product guidance and [specifications](specs/README.md) for repository directives.
 
 ## Development
 
@@ -194,9 +192,14 @@ codescope --help
 codescope --version
 ```
 
-CI validates the CLI on Ubuntu. Windows uses the same Node.js command syntax,
-but is not currently covered by the supplied CI workflow. Review commands are
+Supported platforms: the CLI uses the same Node.js command syntax on Windows
+and Linux. CI directly validates Ubuntu only; Windows is not covered by the
+supplied workflow. Review commands are
 read-only and have no destructive actions.
+
+Validation evidence: contributors run the global `eliware-test` validator. CI
+directly validates Ubuntu after installing the latest npm, then running `npm ci`
+and `npm test`; it does not directly validate Windows.
 
 ## Exit codes
 

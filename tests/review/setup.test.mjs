@@ -1,7 +1,8 @@
 import { resolveReviewSetup } from "../../src/review/setup.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 const openEnvFile = async () => ({
-  readFile: async () => "OPENAI_API_TOKEN=token",
+  read: createEnvironmentReader("OPENAI_API_TOKEN=token"),
   close: async () => {},
 });
 
@@ -33,7 +34,7 @@ test("rejects a missing token", async () => {
       readFile: async () => "",
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
       openEnvFile: async () => ({
-        readFile: async () => "",
+        read: createEnvironmentReader(""),
         close: async () => {},
       }),
     }),

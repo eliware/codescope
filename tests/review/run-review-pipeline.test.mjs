@@ -1,10 +1,11 @@
 import { runReviewPipeline } from "../../src/review/run-review-pipeline.mjs";
+import { createEnvironmentReader } from "../../test-fixtures/environment-file-handle.mjs";
 
 const base = {
   readFile: async () => "OPENAI_API_TOKEN=token",
   inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
   openEnvFile: async () => ({
-    readFile: async () => "OPENAI_API_TOKEN=token",
+    read: createEnvironmentReader("OPENAI_API_TOKEN=token"),
     close: async () => {},
   }),
   platform: "linux",
@@ -30,6 +31,32 @@ test("propagates prepared evidence through request execution and output", async 
   });
   expect(result).toBe("result");
   expect(combineOptions.platform).toBe("linux");
+});
+
+test("sends only supplied custom task text with repository context and no tools", async () => {
+  let sentRequest;
+  await runReviewPipeline("repo", {
+    ...base,
+    plainText: "Summarize this repository.",
+    combine: async () => "repository source",
+    createClient: () => ({
+      responses: {
+        create: async (request) => {
+          sentRequest = request;
+          return { output_text: "summary" };
+        },
+      },
+    }),
+    prompt,
+    write: async (value) => ({ written: value.length }),
+    register: () => ({ removeHandlers() {} }),
+  });
+  expect(sentRequest.tools).toEqual([]);
+  expect(sentRequest.input).toHaveLength(1);
+  expect(sentRequest.input[0].content[0].text).toContain("repository source");
+  expect(sentRequest.input[0].content[0].text.endsWith("\n\nSummarize this repository.")).toBe(
+    true,
+  );
 });
 
 test("writes setup failure fallback when evidence collection fails", async () => {

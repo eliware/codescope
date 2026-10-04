@@ -28,8 +28,8 @@ Maintain `README.md`, `AGENTS.md`,
 ## Development
 
 Use Node.js 26, npm, and native ESM modules in the required environment.
-Read `README.md`, relevant `docs/`, and relevant `specs/` records before
-changing files. Read `eliware/docs` for authority mapping,
+Before changing files, read `README.md`, applicable `AGENTS.md` instructions,
+and applicable documentation in `docs/` and `specs/`. Read `eliware/docs` for authority mapping,
 `eliware/test` for applicable repository requirements, and
 `eliware/operations` for operational procedures. These repository-wide
 instructions are actionable, current, concise, and project-specific. A
@@ -88,41 +88,52 @@ repository evidence without modifying the reviewed repository.
 The public commands are `codescope all`, `codescope release`, `codescope review <profile>`,
 `codescope suggest <profile>`, `codescope prompt <text>`, supported direct
 profile shorthand, `codescope --help`, and `codescope --version`. Profile
-commands accept repeatable `-a|--add <text>`, model and effort selection,
-usage reporting, and dry-run estimates. Prompt text beginning with `-`
-requires `--`; after that delimiter only supported effort and model options
-are accepted. The executable is `bin/codescope.mjs`; the package command is
-`codescope`. Windows uses the same Node.js command syntax, but CI currently
-validates Ubuntu only.
+commands accept repeatable `-a|--add <text>` and `-a=<text>` or `--add=<text>`,
+plus `--effort <value>` / `--effort=<value>`, `--model <value>` /
+`--model=<value>`, `--usage`, and `--dry-run`. Effort values are `none`, `low`,
+`medium`, `high`, `xhigh`, and `max`; supported models are `gpt-6-astra`,
+`gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
+Prompt additions must precede an optional `--` delimiter; after it, only effort
+and model options are accepted. Prompt text beginning with `-` requires `--`.
+The executable is `bin/codescope.mjs`; the package command is `codescope`.
+Supported platforms: the CLI uses the same Node.js command syntax on Windows
+and Linux. CI directly validates Ubuntu only; Windows is not covered by the
+supplied workflow.
+Validation evidence: contributors run the global `eliware-test` validator;
+CI directly validates Ubuntu after installing the latest npm, then running
+`npm ci` and `npm test`. Windows is not directly validated by CI.
 
 Profile commands default to `gpt-6-luna`, the selected model's default
 reasoning effort, a live request, no usage report, and no added prompt text.
 Invoking `codescope` without a command displays help; `codescope all` selects
 the comprehensive review profile.
 
-Successful commands exit `0`; usage, configuration, input, provider, and
-response errors exit `2`, `3`, `4`, `5`, and `6`; timeout and termination exits
-are `124`, `130` (SIGINT), and `143` (SIGTERM). Provider findings and verdicts
-do not affect the exit code. CodeScope is read-only and has no destructive
-review action.
+Exit code mapping: successful commands exit `0`, including reviews that return findings or a
+negative verdict. Usage errors exit `2`, configuration errors `3`, recognized
+input errors `4`, provider/API request errors `5`, and invalid provider
+responses `6`. Errors without a more specific classification also fall back to
+status `4`. Request and transport timeouts exit `124`; SIGINT and SIGTERM exit
+`130` and `143`, respectively.
+CodeScope is read-only and has no destructive review action.
 
 ## npm publication
 
 The public package is `@eliware/codescope`; `package.json` is the source of its
 version, and the repository URL is `https://github.com/eliware/codescope`. Its
-package files allowlist is `bin/`, `src/`, `README.md`, `docs/`, `examples/`,
-`prompts/`, `specs/`, `KNOWN_ISSUES.md`, `NEW_FEATURE_SUGGESTIONS.md`,
-`LICENSE`, and `RELEASE_NOTES.md`. The package `pack` script is `eliware-test --pack`, and
+package files allowlist is `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`,
+`RELEASE_NOTES.md`, and `bin/`. The package `pack` script is `eliware-test --pack`, and
 package-artifact validation must pass before publication.
 
 `publishConfig.provenance` is `true`; the separate
-`.github/workflows/publish.yml` publishes with npm provenance only after
+`.github/workflows/publish.yaml` publishes with npm provenance only after
 Ubuntu validation succeeds and the sole tag at `HEAD` exactly matches the
 `v#.#.#` form and `package.json` version. After publication, the authorized
 release operator verifies that the exact `@eliware/codescope@<version>` and
-release commit are visible in the npm registry; the current workflow does not
-perform this post-publication check itself.
+release commit are visible at `https://registry.npmjs.org` for the exact
+`package.json` version; the current workflow does not perform this
+post-publication check itself.
 
-Publication requires Eli's explicit release instruction after passing
-TagIt preflight, followed by the DevOps release handoff. DevOps owns publication
-execution. This file and a passing workflow are not publication authorization.
+Eli and the project developer run TagIt preflight together. Eli decides whether
+the release is ready and instructs DevOps; DevOps executes the authorized release
+through the Operations release handoff. This file and a passing workflow are not
+publication authorization.

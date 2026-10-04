@@ -3,7 +3,7 @@ export function readNumericUsage(value) {
     const usage = value?.usage;
     if (!usage || typeof usage !== "object") return undefined;
     const entries = Object.entries(usage);
-    const valid = entries.filter(([, item]) => Number.isInteger(item) && item >= 0);
+    const valid = entries.filter(([, item]) => Number.isSafeInteger(item) && item >= 0);
     return Object.fromEntries([
       ...valid,
       ...(valid.length !== entries.length ? [["invalid_fields", true]] : []),
