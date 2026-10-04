@@ -6,13 +6,14 @@ export async function countInputTokens(client, request, signal) {
     service_tier: _serviceTier,
     ...tokenRequest
   } = request;
-  const count = client.responses?.inputTokens?.count;
+  const inputTokens = client.responses?.inputTokens;
+  const count = inputTokens?.count;
   if (typeof count !== "function") {
     const error = new Error("OpenAI client does not support input-token counting");
     error.code = "API";
     throw error;
   }
-  const response = await count(tokenRequest, { signal });
+  const response = await count.call(inputTokens, tokenRequest, { signal });
   if (!Number.isSafeInteger(response?.input_tokens) || response.input_tokens < 0) {
     const error = new Error("Invalid input-token count response");
     error.code = "INVALID_RESPONSE";

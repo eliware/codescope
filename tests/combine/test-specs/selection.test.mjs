@@ -8,9 +8,15 @@ test("selects package-applied Test records and reports missing profiles", () => 
       ["cli", "cli.yaml"],
     ]),
   };
-  expect(selectTestSpecFiles(["cli.yaml", "general.yaml", "private.yaml"], applicability)).toEqual({
+  expect(
+    selectTestSpecFiles(
+      ["cli.yaml", "general.yaml", "private.yaml", "nested/profile.yaml", "README.md"],
+      applicability,
+    ),
+  ).toEqual({
     files: ["cli.yaml", "general.yaml"],
     missing: [],
+    excludedProfiles: ["private.yaml"],
   });
   expect(selectTestSpecFiles(["general.yaml", "cli.yaml"], applicability).files).toEqual([
     "cli.yaml",
@@ -19,6 +25,7 @@ test("selects package-applied Test records and reports missing profiles", () => 
   expect(selectTestSpecFiles(["general.yaml"], applicability)).toEqual({
     files: ["general.yaml"],
     missing: ["cli"],
+    excludedProfiles: [],
   });
 });
 
@@ -30,6 +37,7 @@ test("reports unknown and unmapped profile names", () => {
   expect(selectTestSpecFiles(["general.yaml"], applicability)).toEqual({
     files: [],
     missing: ["unsupported", "unmapped"],
+    excludedProfiles: ["general.yaml"],
   });
 });
 
@@ -41,13 +49,16 @@ test("requires the exact canonical case for applied profile records", () => {
   expect(selectTestSpecFiles(["CLI.yaml"], applicability)).toEqual({
     files: [],
     missing: ["cli"],
+    excludedProfiles: ["CLI.yaml"],
   });
   expect(selectTestSpecFiles(["CLI.yaml", "cli.yaml"], applicability)).toEqual({
     files: ["cli.yaml"],
     missing: [],
+    excludedProfiles: ["CLI.yaml"],
   });
   expect(selectTestSpecFiles(["cli.yaml", "cli.yaml"], applicability)).toEqual({
     files: ["cli.yaml", "cli.yaml"],
     missing: [],
+    excludedProfiles: [],
   });
 });

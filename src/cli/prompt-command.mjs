@@ -9,9 +9,10 @@ export async function runPromptCommand({
   model,
   effort,
   add = [],
+  debugRequest,
 }) {
   const { combine, prompt: profilePrompt } = getProfile("all", "review");
   const prompt = applyEffort(profilePrompt, effort);
-  await review(cwd, { combine, prompt, plainText: promptText, model, write, add });
+  await review(cwd, { combine, prompt, plainText: promptText, model, write, add, debugRequest });
   return 0;
 }

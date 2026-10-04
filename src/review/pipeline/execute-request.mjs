@@ -14,6 +14,7 @@ export async function executeRequest({ client, request, controller, options }) {
         dryRun: options.dryRun,
         usage: options.usage,
         plainText: options.plainText,
+        debugRequest: options.debugRequest,
       }),
   });
   return session.output;

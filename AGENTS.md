@@ -90,11 +90,12 @@ The public commands are `codescope all`, `codescope release`, `codescope review 
 profile shorthand, `codescope --help`, and `codescope --version`. Profile
 commands accept repeatable `-a|--add <text>` and `-a=<text>` or `--add=<text>`,
 plus `--effort <value>` / `--effort=<value>`, `--model <value>` /
-`--model=<value>`, `--usage`, and `--dry-run`. Effort values are `none`, `low`,
+`--model=<value>`, `--usage`, `--dry-run`, and `--debug-request`. Custom prompt
+commands also accept `--debug-request`. Effort values are `none`, `low`,
 `medium`, `high`, `xhigh`, and `max`; supported models are `gpt-6-astra`,
 `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
-Prompt additions must precede an optional `--` delimiter; after it, only effort
-and model options are accepted. Prompt text beginning with `-` requires `--`.
+Prompt additions must precede an optional `--` delimiter; after it, only effort,
+model, and debug-request options are accepted. Prompt text beginning with `-` requires `--`.
 The executable is `bin/codescope.mjs`; the package command is `codescope`.
 Supported platforms: the CLI uses the same Node.js command syntax on Windows
 and Linux. CI directly validates Ubuntu only; Windows is not covered by the
@@ -105,6 +106,8 @@ CI directly validates Ubuntu after installing the latest npm, then running
 
 Profile commands default to `gpt-6-luna`, the selected model's default
 reasoning effort, a live request, no usage report, and no added prompt text.
+`--debug-request` prints the complete request object to stderr immediately
+before a live provider request; the dump can contain supplied repository content.
 Invoking `codescope` without a command displays help; `codescope all` selects
 the comprehensive review profile.
 

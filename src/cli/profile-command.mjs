@@ -10,6 +10,7 @@ export async function runProfileCommand(command, options) {
     effort,
     model,
     dryRun,
+    debugRequest,
     usage = false,
     cwd,
     write,
@@ -26,6 +27,7 @@ export async function runProfileCommand(command, options) {
     prompt,
     model,
     dryRun,
+    debugRequest,
     add,
   });
   if (dryRun) return 0;

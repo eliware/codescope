@@ -9,10 +9,12 @@ export function parseOptionValues(tokens, options) {
     model: modelTokens,
     dryRun: dryRunCount,
     usage: usageTokenCount,
+    debugRequest: debugRequestCount,
   } = values;
   if (effortTokens.length > 1) throw new Error("Only one --effort option is allowed");
   if (modelTokens.length > 1) throw new Error("Only one --model option is allowed");
   if (dryRunCount > 1) throw new Error("Only one --dry-run option is allowed");
+  if (debugRequestCount > 1) throw new Error("Only one --debug-request option is allowed");
   const effort = effortTokens[0]?.slice("--effort=".length);
   const model = modelTokens[0]?.slice("--model=".length);
   validateEffort(effort);
@@ -22,9 +24,11 @@ export function parseOptionValues(tokens, options) {
     model,
     dryRun: dryRunCount > 0,
     ...(usageTokenCount > 0 ? { usage: true } : {}),
+    ...(debugRequestCount > 0 ? { debugRequest: true } : {}),
     add: values.add,
     remaining: values.remaining,
     ...(options?.leadingOnly ? { consumed: values.consumed } : {}),
     ...(options?.leadingOnly ? { usageCount: usageTokenCount } : {}),
+    ...(options?.leadingOnly ? { debugRequestCount } : {}),
   };
 }

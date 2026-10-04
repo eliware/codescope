@@ -7,6 +7,7 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
   const model = [];
   let dryRun = 0;
   let usage = 0;
+  let debugRequest = 0;
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
@@ -32,6 +33,11 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
       if (!leadingOnly) remaining.push(token);
       continue;
     }
+    if (option?.kind === "debug-request") {
+      debugRequest += 1;
+      if (!leadingOnly) remaining.push(token);
+      continue;
+    }
     if (!leadingOnly) {
       remaining.push(token);
       continue;
@@ -47,6 +53,7 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
     model,
     dryRun,
     usage,
+    debugRequest,
     remaining,
     consumed: tokens.length - remaining.length,
   };

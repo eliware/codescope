@@ -1,4 +1,5 @@
 import { scanOptionStream } from "../../../src/cli/options/scan-option-stream.mjs";
+import { parseOptionValues } from "../../../src/cli/options/parse-values.mjs";
 
 test("scans normal and leading option boundaries through one stream", () => {
   expect(
@@ -86,6 +87,15 @@ test("consumes usage before the command in leading mode", () => {
     usage: 1,
     remaining: ["all"],
   });
+});
+
+test("recognizes request debugging as a flag", () => {
+  expect(scanOptionStream(["all", "--debug-request"])).toMatchObject({
+    debugRequest: 1,
+    remaining: ["all", "--debug-request"],
+  });
+  expect(parseOptionValues(["--debug-request"]).debugRequest).toBe(true);
+  expect(() => parseOptionValues(["--debug-request", "--debug-request"])).toThrow(/Only one/);
 });
 
 test("leaves command-suffix additions for command parsing in leading mode", () => {

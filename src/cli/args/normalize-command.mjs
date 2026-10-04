@@ -11,6 +11,7 @@ export function normalizeCommand(command, values, extras = {}) {
     model: normalizeScalar(values.model, "--model="),
     ...(values.dryRun ? { dryRun: true } : {}),
     ...(values.usage ? { usage: true } : {}),
+    ...(values.debugRequest ? { debugRequest: true } : {}),
     add: values.add,
   };
 }

@@ -25,6 +25,11 @@ test("supports a delimiter for dash-leading prompt text", () => {
   });
 });
 
+test("accepts request debugging before or after the prompt delimiter", () => {
+  expect(parsePromptArgs(["question", "--debug-request"]).debugRequest).toBe(true);
+  expect(parsePromptArgs(["question", "--", "--debug-request"]).debugRequest).toBe(true);
+});
+
 test("accepts prompt additions before the delimiter", () => {
   expect(
     parsePromptArgs(["--summarize", "this", "--add", "focus on risks", "--", "--effort=low"]),
@@ -37,7 +42,7 @@ test("accepts prompt additions before the delimiter", () => {
 
 test("rejects additions after the prompt delimiter", () => {
   expect(() => parsePromptArgs(["question", "--", "--add", "note"])).toThrow(
-    "Only --effort=... or --model=... may follow --",
+    "Only --effort=..., --model=..., or --debug-request may follow --",
   );
 });
 

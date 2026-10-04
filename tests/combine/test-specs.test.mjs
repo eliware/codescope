@@ -35,12 +35,15 @@ test("includes only package-selected records from the adjacent Test specs", asyn
     expect(context.instructions).toContain(
       "This repository must comply with the rules set forth in general.yaml and cli.yaml.",
     );
+    expect(context.instructions).toContain(
+      "The following Eliware Test profiles do not apply to this repository: web.yaml.",
+    );
     expect(context.instructions).toContain("General test rule");
     expect(context.instructions).toContain("CLI test prohibition");
     expect(context.instructions).not.toContain("id: E-0.1");
-    expect(context.instructions).not.toContain("web.yaml");
+    expect(context.instructions).not.toContain("Web test rule");
     expect(context.combined).not.toContain("General test rule");
-    expect(result).not.toContain("web.yaml");
+    expect(result).toContain("web.yaml");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

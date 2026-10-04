@@ -5,7 +5,9 @@ import { normalizeCommand } from "./normalize-command.mjs";
 
 export function parseDirectCommandArgs(first, rest) {
   const values = parseOptionValues(rest);
-  const metaTokens = values.remaining.filter((token) => !["--usage", "--dry-run"].includes(token));
+  const metaTokens = values.remaining.filter(
+    (token) => !["--usage", "--dry-run", "--debug-request"].includes(token),
+  );
   const meta = parseMetaCommand(first, metaTokens);
   if (meta) {
     if (values.usage) throw new Error("--usage is not supported for help or version commands");

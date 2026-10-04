@@ -31,11 +31,15 @@ test("formats missing-record and supplied-record outcomes", () => {
   const ready = formatTestSpecEvidence({
     status: "ready",
     profiles: ["general.yaml", "application.yaml", "cli.yaml", "npm-published.yaml"],
+    excludedProfiles: ["web.yaml", "workspace.yaml"],
     rules: { dos: ["one", "two"], donts: ["three"] },
   });
   const extracted = extractTestSpecPromptContext(ready);
   expect(extracted.instructions).toContain(
     "This repository must comply with the rules set forth in general.yaml, application.yaml, cli.yaml, and npm-published.yaml.",
+  );
+  expect(extracted.instructions).toContain(
+    "The following Eliware Test profiles do not apply to this repository: web.yaml and workspace.yaml.",
   );
   expect(extracted.instructions).toContain("Do:\n- one\n- two\n\nDon't:\n- three");
   expect(extracted.combined).not.toContain("Do:\n");

@@ -55,6 +55,7 @@ export async function combineTestSpecs(
       status: "records-missing",
       profiles,
       missing: selection.missing.map((profile) => `${profile}.yaml`),
+      excludedProfiles: selection.excludedProfiles,
     });
   }
   const sources = await readTestSpecRecords(discovery.specsRoot, selection.files, {
@@ -68,6 +69,7 @@ export async function combineTestSpecs(
   return formatTestSpecEvidence({
     status: "ready",
     profiles,
+    excludedProfiles: selection.excludedProfiles,
     rules,
   });
 }

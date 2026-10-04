@@ -2,8 +2,8 @@ import { requestProviderResponse } from "../provider-request.mjs";
 import { responseText } from "../../response/provider-text.mjs";
 import { createSessionResult } from "../review-result.mjs";
 
-export async function runProviderSession({ client, request, signal, plainText }) {
-  const providerResponse = await requestProviderResponse(client, request, signal);
+export async function runProviderSession({ client, request, signal, plainText, debugRequest }) {
+  const providerResponse = await requestProviderResponse(client, request, signal, debugRequest);
   let output;
   try {
     output = responseText(providerResponse, request);

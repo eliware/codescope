@@ -6,14 +6,19 @@ export function mergeCommandOptions(parsed, values) {
   if (values.dryRun && parsed.dryRun) throw new Error("Only one --dry-run option is allowed");
   if (values.usageCount + (parsed.usage ? 1 : 0) > 1)
     throw new Error("Only one --usage option is allowed");
+  if (values.debugRequest && parsed.debugRequest)
+    throw new Error("Only one --debug-request option is allowed");
   if (parsed.command === "prompt" && values.dryRun)
-    throw new Error("Usage: codescope prompt <prompt text> [--effort=...] [--model=...]");
+    throw new Error(
+      "Usage: codescope prompt <prompt text> [--effort=...] [--model=...] [--debug-request]",
+    );
   return {
     ...parsed,
     effort: values.effort ?? parsed.effort,
     model: values.model ?? parsed.model,
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
     usage: values.usageCount > 0 || parsed.usage || undefined,
+    debugRequest: values.debugRequest || parsed.debugRequest || undefined,
     add: [...values.add, ...parsed.add],
   };
 }

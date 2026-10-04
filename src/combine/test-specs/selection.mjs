@@ -17,7 +17,15 @@ export function selectTestSpecFiles(discoveredFiles, applicability) {
     const candidate = canonicalPaths.get(profile);
     return typeof candidate !== "string" || !supplied.has(normalizeSeparators(candidate));
   });
-  return { files, missing: missingProfiles };
+  const excludedProfiles = discoveredFiles
+    .filter(
+      (file) =>
+        !file.includes("/") &&
+        file.endsWith(".yaml") &&
+        !profiles.has(file.slice(0, -".yaml".length)),
+    )
+    .sort();
+  return { files, missing: missingProfiles, excludedProfiles };
 }
 
 function normalizeSeparators(file) {

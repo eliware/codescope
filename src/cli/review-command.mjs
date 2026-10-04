@@ -11,6 +11,7 @@ export async function runReviewCommand(
     model,
     usage,
     dryRun,
+    debugRequest,
     promptText,
     add,
     cwd,
@@ -19,7 +20,7 @@ export async function runReviewCommand(
   },
 ) {
   if (command === "prompt")
-    return runPromptCommand({ cwd, write, review, promptText, model, effort, add });
+    return runPromptCommand({ cwd, write, review, promptText, model, effort, add, debugRequest });
   return runProfileCommand(command, {
     mode,
     option,
@@ -28,6 +29,7 @@ export async function runReviewCommand(
     model,
     usage,
     dryRun,
+    debugRequest,
     cwd,
     write,
     review,

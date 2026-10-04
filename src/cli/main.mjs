@@ -25,6 +25,7 @@ export async function main(args, options = {}) {
       model,
       usage,
       dryRun,
+      debugRequest,
       add,
       promptText,
     } = parseArgs(args);
@@ -37,6 +38,7 @@ export async function main(args, options = {}) {
       model,
       usage,
       dryRun,
+      debugRequest,
       add,
       promptText,
       cwd,

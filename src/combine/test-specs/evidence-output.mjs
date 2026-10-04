@@ -17,11 +17,11 @@ export function formatTestSpecEvidence(result) {
     );
   if (result.status === "records-missing")
     return frameTestSpecPromptContext(
-      `${selectionText(result.profiles)}Convention contents are incomplete; missing ${result.missing.join(", ")}. The convention requirements are unknown.`,
+      `${selectionText(result.profiles)}${exclusionText(result.excludedProfiles)}Convention contents are incomplete; missing ${result.missing.join(", ")}. The convention requirements are unknown.`,
     );
   const profileFiles = result.profiles ?? [];
   const applicability = profileFiles.length
-    ? `This repository must comply with the rules set forth in ${formatList(profileFiles)}.`
+    ? `This repository must comply with the rules set forth in ${formatList(profileFiles)}. ${exclusionText(result.excludedProfiles)}`
     : "No Eliware Test convention records apply to this repository.";
   return frameTestSpecPromptContext(`${applicability}\n\n${formatRules(result.rules)}`);
 }
@@ -29,6 +29,11 @@ export function formatTestSpecEvidence(result) {
 function selectionText(profiles = []) {
   if (!profiles.length) return "No Eliware Test convention profiles are selected. ";
   return `This repository selects the Eliware Test convention files ${formatList(profiles)}. `;
+}
+
+function exclusionText(profiles = []) {
+  if (!profiles.length) return "";
+  return `The following Eliware Test profiles do not apply to this repository: ${formatList(profiles)}. `;
 }
 
 function formatRules(rules = { dos: [], donts: [] }) {

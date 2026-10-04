@@ -11,13 +11,20 @@ export function parsePromptArgs(args) {
   const promptText = promptArgs.join(" ");
   if (!promptText.trim()) throw new Error("Usage: codescope prompt <prompt text>");
   const values = parseOptionValues(optionArgs);
-  if (values.remaining.length > 0 || values.dryRun || values.usage)
-    throw new Error("Usage: codescope prompt <prompt text> [--effort=...] [--model=...]");
+  if (
+    values.remaining.some((value) => value !== "--debug-request") ||
+    values.dryRun ||
+    values.usage
+  )
+    throw new Error(
+      "Usage: codescope prompt <prompt text> [--effort=...] [--model=...] [--debug-request]",
+    );
   return {
     command: "prompt",
     promptText,
     effort: values.effort,
     model: values.model,
+    ...(values.debugRequest ? { debugRequest: true } : {}),
     add: additions.add,
   };
 }

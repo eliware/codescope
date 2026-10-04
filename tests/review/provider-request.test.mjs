@@ -43,3 +43,31 @@ test("passes the prepared request to Responses", async () => {
   });
   expect(received[1]).toEqual({ signal: "signal" });
 });
+
+test("prints the complete request to stderr before sending when debugging is enabled", async () => {
+  const request = { model: "gpt-6-luna", input: [{ role: "user", content: "evidence" }] };
+  const events = [];
+  const originalError = console.error;
+  console.error = (value) => events.push(["debug", value]);
+  try {
+    await requestProviderResponse(
+      {
+        responses: {
+          create: async (sentRequest) => {
+            events.push(["request", sentRequest]);
+            return { output: [] };
+          },
+        },
+      },
+      request,
+      undefined,
+      true,
+    );
+  } finally {
+    console.error = originalError;
+  }
+  expect(events).toEqual([
+    ["debug", JSON.stringify(request, null, 2)],
+    ["request", request],
+  ]);
+});

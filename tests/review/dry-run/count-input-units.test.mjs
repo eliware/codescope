@@ -2,14 +2,20 @@ import { countInputTokens } from "../../../src/review/dry-run/count-input-units.
 
 test("counts a request without state and presentation-only fields", async () => {
   let call;
+  const inputTokens = {
+    _client: {
+      post: async (...args) => {
+        call = args;
+        return { input_tokens: 42 };
+      },
+    },
+    count(body, options) {
+      return this._client.post("/responses/input_tokens", { body, ...options });
+    },
+  };
   const client = {
     responses: {
-      inputTokens: {
-        count: async (...args) => {
-          call = args;
-          return { input_tokens: 42 };
-        },
-      },
+      inputTokens,
     },
   };
   const signal = {};
@@ -28,7 +34,10 @@ test("counts a request without state and presentation-only fields", async () => 
       signal,
     ),
   ).resolves.toBe(42);
-  expect(call).toEqual([{ model: "gpt-6-luna", input: [], tools: [] }, { signal }]);
+  expect(call).toEqual([
+    "/responses/input_tokens",
+    { body: { model: "gpt-6-luna", input: [], tools: [] }, signal },
+  ]);
 });
 
 test("rejects clients without input-token counting", async () => {

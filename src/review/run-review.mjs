@@ -10,6 +10,7 @@ export async function runReviewSession({
   dryRun,
   usage,
   plainText,
+  debugRequest,
 }) {
   let providerResponse;
   let providerResponseReceived = false;
@@ -23,6 +24,7 @@ export async function runReviewSession({
       signal,
       usage,
       plainText,
+      debugRequest,
       write,
     });
     providerResponse = session.providerResponse;

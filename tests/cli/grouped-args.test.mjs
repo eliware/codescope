@@ -20,6 +20,10 @@ test("accepts the release profile through the grouped review command", () => {
   });
 });
 
+test("enables request debugging for grouped profiles", () => {
+  expect(parseGroupedArgs("review", ["all", "--debug-request"]).debugRequest).toBe(true);
+});
+
 test("rejects invalid grouped command shapes", () => {
   expect(() => parseGroupedArgs("review", [])).toThrow(/Usage/);
   expect(parseGroupedArgs("review", ["--dry-run", "all"])).toMatchObject({

@@ -11,5 +11,6 @@ export function readOptionEntry(tokens, index) {
   if (scalar) return { ...scalar, kind: "scalar", scalarKind: scalar.kind };
   if (token === "--dry-run") return { kind: "dry-run", nextIndex: index };
   if (token === "--usage") return { kind: "usage", nextIndex: index };
+  if (token === "--debug-request") return { kind: "debug-request", nextIndex: index };
   return undefined;
 }

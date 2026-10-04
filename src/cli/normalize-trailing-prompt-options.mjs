@@ -1,4 +1,4 @@
-const DELIMITER_ERROR = "Only --effort=... or --model=... may follow --";
+const DELIMITER_ERROR = "Only --effort=..., --model=..., or --debug-request may follow --";
 
 export function normalizeTrailingPromptOptions(tokens) {
   const options = [];
@@ -8,6 +8,8 @@ export function normalizeTrailingPromptOptions(tokens) {
       const value = tokens[++index];
       if (value === undefined || value.startsWith("-")) throw new Error(DELIMITER_ERROR);
       options.push(`${token}=${value}`);
+    } else if (token === "--debug-request") {
+      options.push(token);
     } else if (token.startsWith("--effort=") || token.startsWith("--model=")) {
       options.push(token);
     } else {
