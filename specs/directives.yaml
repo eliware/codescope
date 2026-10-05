@@ -188,12 +188,14 @@ directives:
             separate valid finding in the same category.
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
-          - After a successful submit_review or submit_unified_review response, reuse the same
-            Responses API request object, append the first tool arguments as an assistant text
-            message, append a user re-review instruction, and make one follow-up request with the
-            unchanged review tool schema and reasoning effort `medium`. Do not request a reasoning
-            summary on the initial request; request the Responses API detailed reasoning summary
-            on the follow-up request.
+          - For review requests, use Responses explicit prompt caching with a breakpoint after the
+            stable developer and initial user context. Keep those messages and request-level
+            reasoning effort unchanged in the follow-up. After a successful submit_review or
+            submit_unified_review response, reuse the same request object, append the first tool
+            arguments as an assistant text message, append a `configuration_update` input item for
+            reasoning effort `medium`, then append the user re-review instruction. Keep the review
+            tool schema unchanged. Do not request a reasoning summary on the initial request;
+            request the Responses API detailed reasoning summary on the follow-up request.
           - In the follow-up review, independently re-evaluate every prior finding and each claim
             against supplied code, tests, specifications, and documentation. Retain valid findings;
             for partially supported findings, preserve and correct the substantiated defect while

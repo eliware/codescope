@@ -6,6 +6,7 @@ import { defaultDeveloperText } from "../../prompts/guidance.mjs";
 import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mjs";
 
 const PLACEHOLDER = "<combine-mjs here>";
+const CACHEABLE_REVIEW_TOOLS = new Set(["submit_review", "submit_unified_review"]);
 
 function formatTestSpecDeveloperInstructions(instructions) {
   return instructions
@@ -46,6 +47,8 @@ export function attachRepositoryEvidence(request, combined) {
     .filter(Boolean)
     .join("\n\n");
   const repositoryContent = frameRepositoryContent(testSpecContext.combined);
+  const cacheReviewPrefix = CACHEABLE_REVIEW_TOOLS.has(request.tool_choice?.name);
+  if (cacheReviewPrefix) request.prompt_cache_options = { mode: "explicit" };
   request.input = [
     {
       role: "developer",
@@ -57,6 +60,7 @@ export function attachRepositoryEvidence(request, combined) {
         {
           type: "input_text",
           text: frameReviewInstructions(repositoryContent, reviewInstructions),
+          ...(cacheReviewPrefix ? { prompt_cache_breakpoint: { mode: "explicit" } } : {}),
         },
       ],
     },

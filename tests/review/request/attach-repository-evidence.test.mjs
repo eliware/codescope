@@ -85,6 +85,32 @@ test("marks repository content as review-only and separates review instructions 
   expect(developerText).not.toContain(injection);
 });
 
+test("places an explicit cache breakpoint after the stable review context", () => {
+  const request = {
+    tool_choice: { type: "function", name: "submit_review" },
+    input: [
+      developer(defaultDeveloperText),
+      { role: "user", content: [{ type: "input_text", text: "review" }] },
+    ],
+  };
+  attachRepositoryEvidence(request, "SOURCE");
+  expect(request.prompt_cache_options).toEqual({ mode: "explicit" });
+  expect(request.input[1].content[0].prompt_cache_breakpoint).toEqual({ mode: "explicit" });
+});
+
+test("does not enable review-prefix caching for non-review tools", () => {
+  const request = {
+    tool_choice: { type: "function", name: "submit_suggestion" },
+    input: [
+      developer(defaultDeveloperText),
+      { role: "user", content: [{ type: "input_text", text: "suggest" }] },
+    ],
+  };
+  attachRepositoryEvidence(request, "SOURCE");
+  expect(request.prompt_cache_options).toBeUndefined();
+  expect(request.input[1].content[0].prompt_cache_breakpoint).toBeUndefined();
+});
+
 test("rejects unsupported developer text and missing user content", () => {
   expect(() => attachRepositoryEvidence({ input: [developer("custom")] }, "SOURCE")).toThrow(
     "developer text must contain",

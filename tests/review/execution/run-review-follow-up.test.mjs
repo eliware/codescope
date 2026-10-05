@@ -28,11 +28,15 @@ test("returns the follow-up tool output and logs its request and response", asyn
   }
   expect(debug).toHaveLength(2);
   const requestDump = JSON.parse(debug[0]);
-  expect(requestDump.input).toHaveLength(3);
+  expect(requestDump.input).toHaveLength(4);
   expect(requestDump.input[1]).toEqual({ role: "assistant", content: "initial" });
-  expect(requestDump.input[2].role).toBe("user");
-  expect(requestDump.input[2].content[0].text).toContain("Double-check each finding");
-  expect(requestDump.reasoning.effort).toBe("medium");
+  expect(requestDump.input[2]).toEqual({
+    type: "configuration_update",
+    reasoning: { effort: "medium" },
+  });
+  expect(requestDump.input[3].role).toBe("user");
+  expect(requestDump.input[3].content[0].text).toContain("Double-check each finding");
+  expect(requestDump.reasoning.effort).toBeUndefined();
   expect(debug[1]).toContain("final");
 });
 

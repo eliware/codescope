@@ -65,21 +65,24 @@ test("re-reviews findings and debugs only the final request and response", async
   } finally {
     console.error = originalError;
   }
-  expect(sentRequests).toEqual([request, request]);
   expect(sentRequests[0]).toBe(sentRequests[1]);
-  expect(request.input.map(({ role }) => role)).toEqual(["developer", "user", "assistant", "user"]);
-  expect(request.input[0].content[0].text).toBe("conventions");
-  expect(request.input[1].content[0].text).toBe("repository and review");
+  expect(
+    request.input
+      .filter(({ role }) => role)
+      .map(({ role }) => role)
+      .join(","),
+  ).toBe("developer,user,assistant,user");
   expect(request.input[2]).toEqual({ role: "assistant", content: firstOutput });
-  expect(request.input[3].content[0].text).toContain("Double-check each finding");
+  expect(request.input[3].type).toBe("configuration_update");
+  expect(request.input[3].reasoning.effort).toBe("medium");
+  expect(request.input[4].content[0].text).toContain("Double-check each finding");
   expect(requestSnapshots[0].input).toEqual(requestSnapshots[1].input.slice(0, 2));
   expect(requestSnapshots[0].reasoning).toEqual({ effort: "none", summary: null });
-  expect(requestSnapshots[1].reasoning).toEqual({ effort: "medium", summary: "detailed" });
+  expect(requestSnapshots[1].reasoning).toEqual({ effort: "none", summary: "detailed" });
   expect(debug).toHaveLength(2);
-  expect(JSON.parse(debug[0]).input).toHaveLength(4);
+  expect(JSON.parse(debug[0]).input).toHaveLength(5);
   expect(JSON.parse(debug[1]).output[1].arguments).toBe(finalOutput);
 });
-
 test("passes both responses to usage output for finding reviews", async () => {
   let calls = 0;
   const session = await runProviderSession({
@@ -106,7 +109,6 @@ test("passes both responses to usage output for finding reviews", async () => {
   expect(session.output).toContain('"input_tokens":100');
   expect(session.output).toContain('"input_tokens":200');
 });
-
 test("adds request usage to single-request provider output", async () => {
   const session = await runProviderSession({
     client: {
@@ -119,7 +121,6 @@ test("adds request usage to single-request provider output", async () => {
   });
   expect(session.output).toContain("ok\nRequest usage metadata:");
 });
-
 test("keeps the initial findings when the follow-up request fails", async () => {
   const firstOutput = '{"issues":{"security":[]}}';
   let calls = 0;
@@ -147,7 +148,6 @@ test("keeps the initial findings when the follow-up request fails", async () => 
   );
   expect(session.providerResponse.output[0].arguments).toBe(firstOutput);
 });
-
 test("keeps custom prompt output raw with tools disabled", async () => {
   const output = '{"provider-defined":"text"}';
   let sentRequest;

@@ -8,10 +8,14 @@ test("prepares the same request for medium-effort follow-up review", () => {
   };
   const result = appendReviewFollowUp(request, "initial result");
   expect(result).toBe(request);
-  expect(request.input).toHaveLength(3);
+  expect(request.input).toHaveLength(4);
   expect(request.input[1]).toEqual({ role: "assistant", content: "initial result" });
-  expect(request.reasoning).toEqual({ effort: "medium", summary: "detailed" });
-  expect(request.input[2].role).toBe("user");
-  expect(request.input[2].content[0].type).toBe("input_text");
-  expect(request.input[2].content[0].text).toBe(createReviewFollowUpInstructions());
+  expect(request.reasoning).toEqual({ effort: "none", summary: "detailed" });
+  expect(request.input[2]).toEqual({
+    type: "configuration_update",
+    reasoning: { effort: "medium" },
+  });
+  expect(request.input[3].role).toBe("user");
+  expect(request.input[3].content[0].type).toBe("input_text");
+  expect(request.input[3].content[0].text).toBe(createReviewFollowUpInstructions());
 });
