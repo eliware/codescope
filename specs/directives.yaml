@@ -183,9 +183,14 @@ directives:
           - After a successful submit_review or submit_unified_review response, reuse the same
             Responses API request object, append the first tool arguments as an assistant text
             message, append a user re-review instruction, and make one follow-up request with the
-            unchanged review tool schema and reasoning effort `low`.
-          - In the follow-up review, classify each issue as real, partially real, or false-positive;
-            omit false-positives, correct partially real issues, and return only real issues.
+            unchanged review tool schema and reasoning effort `medium`.
+          - In the follow-up review, retain a prior finding only when supplied code, tests,
+            specifications, or documentation demonstrate a current material defect in supported
+            usage. Verify cited code causes its stated impact; omit unsupported claims, plausible
+            risks, theoretical edge cases, test gaps alone, API preferences, and behavior outside
+            the documented contract. Correct findings when only a narrower defect is demonstrated,
+            add no findings, use the required tool and schema with no-issues sentinels for empty
+            categories, and omit explanations.
           - Write the follow-up tool arguments when that request succeeds; if the follow-up request
             or response fails, write the initial successful review output unchanged. Preserve
             process termination signals.

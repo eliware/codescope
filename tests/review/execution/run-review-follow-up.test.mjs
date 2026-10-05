@@ -28,7 +28,7 @@ test("returns the follow-up tool output and logs its request and response", asyn
   }
   expect(debug).toHaveLength(2);
   expect(debug[0]).toContain('"assistant"');
-  expect(JSON.parse(debug[0]).reasoning.effort).toBe("low");
+  expect(JSON.parse(debug[0]).reasoning.effort).toBe("medium");
   expect(debug[1]).toContain("final");
 });
 
