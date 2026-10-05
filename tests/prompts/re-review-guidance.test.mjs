@@ -1,15 +1,7 @@
 import { createReviewFollowUpInstructions } from "../../src/prompts/re-review-guidance.mjs";
 
-test("requires findings to survive evidence review and gives the issue sentinel", () => {
-  const instructions = createReviewFollowUpInstructions("issue");
-  expect(instructions).toContain("repeat it verbatim");
-  expect(instructions).toContain("correct only what is needed");
-  expect(instructions).toContain(
-    "Never preserve a finding while also explaining that it is not an issue",
+test("asks for a concise double-check of the prior review", () => {
+  expect(createReviewFollowUpInstructions()).toBe(
+    "Double-check the preceding review. Correct or remove inaccurate findings, retain valid findings, and return the complete final review using the required tool and schema. Do not add new findings.",
   );
-  expect(instructions).toContain('issue "No issues found."');
-});
-
-test("uses the unified finding field in the sentinel", () => {
-  expect(createReviewFollowUpInstructions("finding")).toContain('finding "No issues found."');
 });
