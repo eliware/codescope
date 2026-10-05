@@ -6,6 +6,7 @@ export const MAX_OTHER_FILE_BYTES = 100_000;
 
 export function isIncludedContent(relativePath) {
   const lower = relativePath.toLowerCase();
+  if (lower === "release_notes.md" || lower.endsWith("/release_notes.md")) return false;
   if (isIncludedJson(relativePath)) return true;
   if (lower.endsWith(".yaml") || lower.endsWith(".yml")) return true;
   if (lower === "package.json" || lower.endsWith(".md")) return true;

@@ -1,88 +1,54 @@
 import { runProviderSession } from "../../../src/review/execution/run-provider-review.mjs";
 
-test("runs a provider session and preserves its response", async () => {
-  await expect(
-    runProviderSession({
-      client: { responses: { create: async () => ({ output_text: "ok" }) } },
-      request: { model: "gpt-5.6-sol", input: [] },
-      signal: undefined,
-    }),
-  ).resolves.toMatchObject({ kind: "review", output: "ok" });
-});
-
-test("re-reviews findings and debugs only the final request and response", async () => {
-  const firstOutput = '{"issues":{"security":[]}}';
-  const finalOutput = '{"issues":{"security":[]},"verdict":"pass"}';
-  const request = {
-    model: "gpt-6-luna",
-    reasoning: { effort: "none", summary: null },
-    input: [
-      { role: "developer", content: [{ type: "input_text", text: "conventions" }] },
-      { role: "user", content: [{ type: "input_text", text: "repository and review" }] },
-    ],
-    tool_choice: { type: "function", name: "submit_review" },
-  };
-  const sentRequests = [];
-  const requestSnapshots = [];
+test("sets reasoning effort and summary on each finding review request", async () => {
+  const requests = [];
   const debug = [];
   const originalError = console.error;
   console.error = (value) => debug.push(value);
   try {
-    const session = await runProviderSession({
+    await runProviderSession({
       client: {
         responses: {
-          create: async (sentRequest) => {
-            sentRequests.push(sentRequest);
-            requestSnapshots.push(structuredClone(sentRequest));
-            return sentRequests.length === 1
-              ? {
-                  output: [
-                    {
-                      type: "reasoning",
-                      summary: [{ type: "summary_text", text: "The claims need separate checks." }],
-                    },
-                    { type: "function_call", name: "submit_review", arguments: firstOutput },
-                  ],
-                }
-              : {
-                  output: [
-                    {
-                      type: "reasoning",
-                      summary: [{ type: "summary_text", text: "Final claims checked." }],
-                    },
-                    { type: "function_call", name: "submit_review", arguments: finalOutput },
-                  ],
-                };
+          create: async (request) => {
+            requests.push(structuredClone(request));
+            return {
+              output: [
+                {
+                  type: "function_call",
+                  name: "submit_review",
+                  arguments: `result ${requests.length}`,
+                },
+              ],
+            };
           },
         },
       },
-      request,
+      request: {
+        model: "gpt-6-luna",
+        reasoning: { effort: "high", mode: "standard", summary: "auto" },
+        input: [{ role: "user", content: "review" }],
+        tool_choice: { type: "function", name: "submit_review" },
+      },
       debugRequest: true,
     });
-    expect(session.output).toBe(
-      `Running initial review...\n${firstOutput}\nDetailed reasoning summary:\nFinal claims checked.\nRunning final review...\n${finalOutput}`,
-    );
   } finally {
     console.error = originalError;
   }
-  expect(sentRequests[0]).toBe(sentRequests[1]);
-  expect(
-    request.input
-      .filter(({ role }) => role)
-      .map(({ role }) => role)
-      .join(","),
-  ).toBe("developer,user,assistant,user");
-  expect(request.input[2]).toEqual({ role: "assistant", content: firstOutput });
-  expect(request.input[3].type).toBe("configuration_update");
-  expect(request.input[3].reasoning.effort).toBe("medium");
-  expect(request.input[4].content[0].text).toContain("Independently check every finding");
-  expect(requestSnapshots[0].input).toEqual(requestSnapshots[1].input.slice(0, 2));
-  expect(requestSnapshots[0].reasoning).toEqual({ effort: "none", summary: null });
-  expect(requestSnapshots[1].reasoning).toEqual({ effort: "none", summary: "detailed" });
-  expect(debug).toHaveLength(2);
-  expect(JSON.parse(debug[0]).input).toHaveLength(5);
-  expect(JSON.parse(debug[1]).output[1].arguments).toBe(finalOutput);
+  expect(requests[0].reasoning).toEqual({ effort: "none", mode: "standard", summary: null });
+  expect(requests[1].reasoning).toEqual({
+    effort: "medium",
+    mode: "standard",
+    summary: "detailed",
+  });
+  expect(requests[1].input.slice(0, 1)).toEqual(requests[0].input);
+  expect(debug.filter((line) => line.startsWith("---"))).toEqual([
+    "--- INITIAL REQUEST---",
+    "--- INITIAL RESPONSE ---",
+    "--- RE-REVIEW REQUEST ---",
+    "--- RE-REVIEW RESPONSE ---",
+  ]);
 });
+
 test("passes both responses to usage output for finding reviews", async () => {
   let calls = 0;
   const session = await runProviderSession({

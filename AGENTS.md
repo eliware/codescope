@@ -109,11 +109,16 @@ CI directly validates Ubuntu after installing the latest npm, then running
 
 Profile commands default to `gpt-6-luna`, the selected model's default
 reasoning effort, a live request, no usage report, and no added prompt text.
+Finding reviews set the initial request's reasoning effort to `none` and summary
+to `null`, then set the follow-up request's effort to `medium` and summary to
+`detailed` at the request level.
 `--debug-request` prints the request object to stderr immediately before sending
-and the provider response after receipt. For finding reviews, print only the
-follow-up request and response; that request contains the original context and
-initial findings. For suggestions and custom prompts, print their single request
-and response. Dumps can contain supplied repository content.
+and the provider response after receipt. For finding reviews, print four labeled
+sections: `--- INITIAL REQUEST---`, `--- INITIAL RESPONSE ---`,
+`--- RE-REVIEW REQUEST ---`, and `--- RE-REVIEW RESPONSE ---`; each object is
+printed immediately before sending or after receipt. For suggestions and custom
+prompts, print their single request and response. Dumps can contain supplied
+repository content.
 Invoking `codescope` without a command displays help; `codescope all` selects
 the comprehensive review profile.
 

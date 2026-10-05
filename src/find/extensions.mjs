@@ -9,6 +9,12 @@ export function isCodeExtension(extension) {
 }
 
 export function matchesFile(name, extension, testsOnly, noTests) {
+  if (
+    name.toLowerCase() === "release_notes.md" &&
+    typeof extension === "string" &&
+    extension.toLowerCase() === ".md"
+  )
+    return false;
   const extensionMatches =
     extension === "" ||
     (Array.isArray(extension)

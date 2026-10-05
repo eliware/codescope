@@ -36,6 +36,13 @@ test.each(["package.json", "README.md", ".github/workflows/ci.yml", ".knit/confi
   },
 );
 
+test.each(["RELEASE_NOTES.md", "nested/release_notes.md"])(
+  "leaves release notes content for inventory instead of supplying it: %s",
+  (file) => {
+    expect(isIncludedContent(file)).toBe(false);
+  },
+);
+
 test.each(["src/main.js", "src/main.mjs", "src/main.cjs", "src/main.ts", "notes.txt"])(
   "recognizes implementation context and leaves unrelated files for inventory: %s",
   (file) => {

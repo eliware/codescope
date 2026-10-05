@@ -7,6 +7,10 @@ import { readReasoningSummary } from "../response-accessors/read-reasoning-summa
 import { runReviewFollowUp } from "./run-review-follow-up.mjs";
 
 const findingReviewTools = new Set(["submit_review", "submit_unified_review"]);
+const initialDebugMarkers = {
+  request: "--- INITIAL REQUEST---",
+  response: "--- INITIAL RESPONSE ---",
+};
 
 export async function runProviderSession({
   client,
@@ -17,12 +21,13 @@ export async function runProviderSession({
   debugRequest,
 }) {
   const hasFollowUp = plainText === undefined && findingReviewTools.has(request.tool_choice?.name);
-  if (hasFollowUp) request.reasoning = { ...request.reasoning, summary: null };
+  if (hasFollowUp) request.reasoning = { ...request.reasoning, effort: "none", summary: null };
   const providerResponse = await requestProviderResponse(
     client,
     request,
     signal,
-    debugRequest && !hasFollowUp,
+    debugRequest,
+    debugRequest && hasFollowUp ? initialDebugMarkers : undefined,
   );
   if (debugRequest && !hasFollowUp) console.error(JSON.stringify(providerResponse, null, 2));
   let output;

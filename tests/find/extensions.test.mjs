@@ -12,6 +12,8 @@ test("matches code and exact test extensions", () => {
   expect(matchesFile("app.MJS", [".MJS"], false, false)).toBe(true);
   expect(matchesFile("app.md", ".mjs", false, false)).toBe(false);
   expect(matchesFile("README.md", ".md", false, false)).toBe(true);
+  expect(matchesFile("RELEASE_NOTES.md", ".md", false, false)).toBe(false);
+  expect(matchesFile("release_notes.md", "", false, false)).toBe(true);
   expect(matchesFile("app.test.ts", ".ts", false, true)).toBe(false);
   expect(matchesFile("app.test.mjs", [".js", ".mjs", ".cjs", ".ts"], false, true)).toBe(false);
   expect(matchesFile("app.test.mjs", [".js", ".mjs", ".cjs", ".ts"], true, false)).toBe(true);

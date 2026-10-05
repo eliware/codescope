@@ -26,18 +26,16 @@ test("returns the follow-up tool output and logs its request and response", asyn
   } finally {
     console.error = originalError;
   }
-  expect(debug).toHaveLength(2);
-  const requestDump = JSON.parse(debug[0]);
-  expect(requestDump.input).toHaveLength(4);
+  expect(debug).toHaveLength(4);
+  expect(debug[0]).toBe("--- RE-REVIEW REQUEST ---");
+  expect(debug[2]).toBe("--- RE-REVIEW RESPONSE ---");
+  const requestDump = JSON.parse(debug[1]);
+  expect(requestDump.input).toHaveLength(3);
   expect(requestDump.input[1]).toEqual({ role: "assistant", content: "initial" });
-  expect(requestDump.input[2]).toEqual({
-    type: "configuration_update",
-    reasoning: { effort: "medium" },
-  });
-  expect(requestDump.input[3].role).toBe("user");
-  expect(requestDump.input[3].content[0].text).toContain("Independently check every finding");
-  expect(requestDump.reasoning.effort).toBeUndefined();
-  expect(debug[1]).toContain("final");
+  expect(requestDump.input[2].role).toBe("user");
+  expect(requestDump.input[2].content[0].text).toContain("Independently check every finding");
+  expect(requestDump.reasoning).toEqual({ effort: "medium", summary: "detailed" });
+  expect(debug[3]).toContain("final");
 });
 
 test("falls back to initial output when the follow-up request fails", async () => {
@@ -66,7 +64,9 @@ test("falls back when the follow-up response lacks the required tool call", asyn
   } finally {
     console.error = originalError;
   }
-  expect(debug).toHaveLength(2);
+  expect(debug).toHaveLength(4);
+  expect(debug[0]).toBe("--- RE-REVIEW REQUEST ---");
+  expect(debug[2]).toBe("--- RE-REVIEW RESPONSE ---");
 });
 
 test.each(["SIGINT", "SIGTERM"])("preserves %s during a failed follow-up", async (code) => {

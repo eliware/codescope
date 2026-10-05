@@ -29,6 +29,18 @@ test("does not read or list package lockfiles in the remaining-file inventory", 
   expect(read).not.toHaveBeenCalled();
 });
 
+test("lists release notes in the inventory without supplying their content", async () => {
+  await expect(
+    describeOtherFiles("repo", ["RELEASE_NOTES.md"], {
+      inspectFile: regular,
+      readOtherFileContents: async () => ({ data: "Release notes", truncated: false }),
+    }),
+  ).resolves.toEqual({
+    entries: ["RELEASE_NOTES.md | text | 1 lines | 13 bytes"],
+    totalEntries: 1,
+  });
+});
+
 test("preserves independent per-file limits and bounded concurrency", async () => {
   let active = 0;
   let maximum = 0;
