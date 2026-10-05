@@ -183,10 +183,9 @@ directives:
           - After a successful submit_review or submit_unified_review response, reuse the same
             Responses API request object, append the first tool arguments as an assistant text
             message, append a user re-review instruction, and make one follow-up request with the
-            unchanged review tool schema.
-          - In the follow-up review, use the instruction "Double-check the preceding review. Correct
-            or remove inaccurate findings, retain valid findings, and return the complete final
-            review using the required tool and schema. Do not add new findings."
+            unchanged review tool schema and reasoning effort `low`.
+          - In the follow-up review, classify each issue as real, partially real, or false-positive;
+            omit false-positives, correct partially real issues, and return only real issues.
           - Write the follow-up tool arguments when that request succeeds; if the follow-up request
             or response fails, write the initial successful review output unchanged. Preserve
             process termination signals.

@@ -1,3 +1,7 @@
 export function createReviewFollowUpInstructions() {
-  return "Double-check the preceding review. Correct or remove inaccurate findings, retain valid findings, and return the complete final review using the required tool and schema. Do not add new findings.";
+  return `Double-check the preceding review.
+For each issue, classify it as real, partially real, or false-positive.
+Omit any false-positives.
+Correct partially real issues.
+Return only real issues.`;
 }
