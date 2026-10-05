@@ -38,8 +38,11 @@ test("discovers Test-spec YAML files on the host platform", async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
   try {
     await mkdir(path.join(root, "specs", "conventions"), { recursive: true });
-    await writeFile(path.join(root, "specs", "conventions", "general.yaml"), "{}");
-    await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({ files: ["general.yaml"] });
+    await writeFile(path.join(root, "specs", "conventions", "general-semantic.yaml"), "{}");
+    await writeFile(path.join(root, "specs", "conventions", "general-deterministic.yaml"), "{}");
+    await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({
+      files: ["general-deterministic.yaml", "general-semantic.yaml"],
+    });
   } finally {
     await rm(root, { recursive: true, force: true });
   }

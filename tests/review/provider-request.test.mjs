@@ -45,7 +45,27 @@ test("passes the prepared request to Responses", async () => {
 });
 
 test("prints the complete request to stderr before sending when debugging is enabled", async () => {
-  const request = { model: "gpt-6-luna", input: [{ role: "user", content: "evidence" }] };
+  const request = {
+    model: "gpt-6-luna",
+    input: [
+      { role: "developer", content: [{ type: "input_text", text: "review rules" }] },
+      { role: "user", content: [{ type: "input_text", text: "repository" }] },
+      { role: "user", content: [{ type: "input_text", text: "review task" }] },
+    ],
+  };
+  const mergedRequest = {
+    ...request,
+    input: [
+      {
+        role: "user",
+        content: [
+          { type: "input_text", text: "review rules" },
+          { type: "input_text", text: "repository" },
+          { type: "input_text", text: "review task" },
+        ],
+      },
+    ],
+  };
   const events = [];
   const originalError = console.error;
   console.error = (value) => events.push(["debug", value]);
@@ -67,7 +87,7 @@ test("prints the complete request to stderr before sending when debugging is ena
     console.error = originalError;
   }
   expect(events).toEqual([
-    ["debug", JSON.stringify(request, null, 2)],
-    ["request", request],
+    ["debug", JSON.stringify(mergedRequest, null, 2)],
+    ["request", mergedRequest],
   ]);
 });

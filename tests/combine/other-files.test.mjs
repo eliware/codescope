@@ -18,6 +18,17 @@ test("composes metadata for unsupplied inventory files in sorted order", async (
   ]);
 });
 
+test("does not read or list package lockfiles in the remaining-file inventory", async () => {
+  const read = jest.fn();
+  await expect(
+    describeOtherFiles("repo", ["package-lock.json", "nested/package-lock.json"], {
+      inspectFile: regular,
+      readOtherFileContents: read,
+    }),
+  ).resolves.toEqual({ entries: [], totalEntries: 0 });
+  expect(read).not.toHaveBeenCalled();
+});
+
 test("preserves independent per-file limits and bounded concurrency", async () => {
   let active = 0;
   let maximum = 0;

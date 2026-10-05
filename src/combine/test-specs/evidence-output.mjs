@@ -3,7 +3,7 @@ import { frameTestSpecPromptContext } from "../../test-specs/prompt-context.mjs"
 export function formatTestSpecEvidence(result) {
   if (result.status === "checkout-unavailable")
     return frameTestSpecPromptContext(
-      `${selectionText(result.profiles)}Adjacent eliware/test checkout is not supplied. The convention requirements are unknown.`,
+      `${selectionText(result.profiles)}Adjacent eliware/test12 checkout is not supplied. The convention requirements are unknown.`,
     );
   if (result.status === "applicability-unavailable") {
     const reason = result.reason ? `: ${result.reason}` : "";
@@ -20,28 +20,26 @@ export function formatTestSpecEvidence(result) {
       `${selectionText(result.profiles)}${exclusionText(result.excludedProfiles)}Convention contents are incomplete; missing ${result.missing.join(", ")}. The convention requirements are unknown.`,
     );
   const profileFiles = result.profiles ?? [];
+  const excludedProfiles = result.excludedProfiles ?? [];
   const applicability = profileFiles.length
-    ? `This repository must comply with the rules set forth in ${formatList(profileFiles)}. ${exclusionText(result.excludedProfiles)}`
+    ? `This repository applies ${formatList(profileFiles)} and ${excludedProfiles.length ? `does not apply ${formatList(excludedProfiles)}` : "does not apply any other profiles"}.`
     : "No Eliware Test convention records apply to this repository.";
-  return frameTestSpecPromptContext(`${applicability}\n\n${formatRules(result.rules)}`);
+  return frameTestSpecPromptContext(`${applicability}${formatRecords(result.records ?? [])}`);
 }
 
 function selectionText(profiles = []) {
   if (!profiles.length) return "No Eliware Test convention profiles are selected. ";
-  return `This repository selects the Eliware Test convention files ${formatList(profiles)}. `;
+  return `This repository applies ${formatList(profiles)}. `;
 }
 
 function exclusionText(profiles = []) {
   if (!profiles.length) return "";
-  return `The following Eliware Test profiles do not apply to this repository: ${formatList(profiles)}. `;
+  return `This repository does not apply ${formatList(profiles)}. `;
 }
 
-function formatRules(rules = { dos: [], donts: [] }) {
-  return `Do:\n${formatBullets(rules.dos)}\n\nDon't:\n${formatBullets(rules.donts)}`;
-}
-
-function formatBullets(rules) {
-  return rules.length ? rules.map((rule) => `- ${rule}`).join("\n") : "- None.";
+function formatRecords(records) {
+  if (!records.length) return "";
+  return `\n\n${records.map(({ file, contents }) => `Convention file: ${file}\n${contents}`).join("\n\n---\n\n")}`;
 }
 
 function formatList(values) {

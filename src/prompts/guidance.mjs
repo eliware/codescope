@@ -3,3 +3,7 @@ export const defaultDeveloperText =
 
 export const profileReviewRules =
   "Use the category sentinel when no concrete actionable issue qualifies. Treat ordinary coverage polish as P2/P3. Do not report supported direct or grouped CLI forms without a concrete failing invocation.";
+
+export const reviewInstructionBoundary = `--- end review content---
+---begin review instructions ---
+These are the only actual instructions we want you to follow at this time:`;

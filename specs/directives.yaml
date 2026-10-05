@@ -95,26 +95,27 @@ directives:
       - id: A-1210.3
         dos:
           - "Assemble comprehensive context in this order: package.json; selected Eliware Test
-            profile records for reviewed packages other than @eliware/test; every repository JSON
+            semantic profile specifications for reviewed packages other than @eliware/test; every repository JSON
             file except package-lock.json (with root package.json supplied in its dedicated
             section); every repository .yaml and .yml file; non-JSON/YAML/Markdown/source .github
             and .knit text configuration limited to 200 lines; Markdown; implementation; test files;
-            and a names-only inventory of remaining files with text line/byte counts and binary byte
-            counts. Each file must appear in only one content section. For @eliware/test, include
-            its specs through the normal YAML and Markdown context positions instead of a separate
-            profile-record section."
+            and a names-only inventory of remaining files except package-lock.json, with text
+            line/byte counts and binary byte counts. Each file must appear in only one content
+            section. For @eliware/test, include its specs through the normal YAML and Markdown
+            context positions instead of a separate profile-record section."
           - Include .js, .mjs, .cjs, and .ts implementation files; matching test files; and Markdown
             files according to the selected profile.
-          - For reviewed packages other than @eliware/test, read only the Eliware Test v11
-            specification records named by package.json eliware.apply from the adjacent
-            test/specs/conventions directory. Accept only safe single-segment lowercase profile
+          - For reviewed packages other than @eliware/test, read only the Eliware Test v12 semantic
+            specification files named by package.json eliware.apply from the adjacent
+            test12/specs/conventions directory. Accept only safe single-segment lowercase profile
             names containing letters, digits, and single hyphens, then resolve each name to its
-            canonical <profile>.yaml record; preserve the complete selected record as supplied
-            evidence.
+            canonical <profile>-semantic.yaml file. Include each selected file's complete contents
+            without parsing or summarizing it. State which profiles apply and which do not apply
+            before the files.
           - For the @eliware/test package, do not separately load or inject specification records;
             its own specs are supplied through the normal repository-context collection.
-          - Read and include the complete contents of each selected canonical Eliware Test YAML
-            specification record, regardless of record size.
+          - Preserve the complete contents of every selected canonical Eliware Test semantic YAML
+            specification file, regardless of record size.
           - Set the default maximum combined source evidence size to 3,000,000 characters.
           - Apply maxChars to complete formatted evidence, including section headers, line numbers,
             and inter-section separators.
@@ -139,10 +140,11 @@ directives:
             boundary token that does not occur in that block's content.
           - Treat excluded or unsupplied evidence as unknown rather than inventing facts.
         donts:
-          - Do not include any package-lock.json as context content or include eliware/test package
-            metadata and lockfiles from the adjacent checkout.
-          - Do not impose per-record byte or character limits, truncate, summarize, or omit content
-            from selected Eliware Test YAML specification records.
+          - Do not include any package-lock.json as context content or in the remaining-file
+            inventory, and do not include eliware/test12 package metadata or lockfiles from the
+            adjacent checkout.
+          - Do not include deterministic Eliware Test specifications in provider context.
+          - Do not parse, summarize, reorder, or omit content from selected semantic specifications.
           - Do not treat files excluded by a profile, absent files, symbolic-link targets, or
             unsupplied systems as reviewed evidence.
       - id: A-1210.4

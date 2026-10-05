@@ -5,12 +5,11 @@ import { discoverTestSpecFiles } from "./test-specs/discover.mjs";
 import { selectTestSpecFiles } from "./test-specs/selection.mjs";
 import { readTestSpecRecords } from "./test-specs/read-records.mjs";
 import { formatTestSpecEvidence } from "./test-specs/evidence-output.mjs";
-import { compileTestSpecRecords } from "./test-specs/compile-records.mjs";
 
 export async function combineTestSpecs(
   root,
   {
-    testRoot = path.resolve(root, "..", "test"),
+    testRoot = path.resolve(root, "..", "test12"),
     readDirectory,
     readFileContents = readFile,
     readPackageJson,
@@ -44,7 +43,7 @@ export async function combineTestSpecs(
     });
   }
   if (applicability.skipSeparateRecords) return "";
-  const profiles = [...applicability.profiles].map((profile) => `${profile}.yaml`);
+  const profiles = [...applicability.profiles];
   const discovery = await discoverTestSpecFiles(testRoot, { readDirectory, platform });
   if (!discovery) {
     return formatTestSpecEvidence({ status: "checkout-unavailable", profiles });
@@ -54,7 +53,7 @@ export async function combineTestSpecs(
     return formatTestSpecEvidence({
       status: "records-missing",
       profiles,
-      missing: selection.missing.map((profile) => `${profile}.yaml`),
+      missing: selection.missing,
       excludedProfiles: selection.excludedProfiles,
     });
   }
@@ -65,11 +64,10 @@ export async function combineTestSpecs(
     inspectFile,
     platform,
   });
-  const rules = compileTestSpecRecords(selection.files, sources);
   return formatTestSpecEvidence({
     status: "ready",
     profiles,
     excludedProfiles: selection.excludedProfiles,
-    rules,
+    records: selection.files.map((file, index) => ({ file, contents: sources[index] })),
   });
 }

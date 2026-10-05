@@ -20,7 +20,7 @@ test("coordinates validation, supported-field projection, and placeholder eviden
   expect(prompt.input[0].content[0].text).toBe("<combine-mjs here>");
 });
 
-test("separates built-in prompt context and instructions", () => {
+test("places repository context before the final review instructions", () => {
   const request = prepareRequest(
     {
       input: [
@@ -31,6 +31,7 @@ test("separates built-in prompt context and instructions", () => {
     "SOURCE",
   );
 
-  expect(request.input[1].content[0].text).toContain("SOURCE");
-  expect(request.input[2].content[0].text).toContain("review");
+  expect(request.input[0].content[0].text).toContain("SOURCE");
+  expect(request.input[1].content[0].text).toContain("---begin review instructions ---");
+  expect(request.input[1].content[0].text).toContain("review");
 });

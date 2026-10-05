@@ -3,7 +3,7 @@ import { extractTestSpecPromptContext } from "../../../src/test-specs/prompt-con
 
 test("formats unavailable and invalid Test-spec outcomes", () => {
   expect(formatTestSpecEvidence({ status: "checkout-unavailable" })).toContain(
-    "Adjacent eliware/test checkout is not supplied",
+    "Adjacent eliware/test12 checkout is not supplied",
   );
   expect(formatTestSpecEvidence({ status: "applicability-unavailable" })).toContain(
     "Test-spec applicability unavailable",
@@ -19,63 +19,80 @@ test("formats unavailable and invalid Test-spec outcomes", () => {
   ).toContain("Test-spec applicability invalid: bad package.");
 });
 
-test("formats missing-record and supplied-record outcomes", () => {
-  const missing = extractTestSpecPromptContext(
+test("formats missing semantic specifications with and without excluded profiles", () => {
+  expect(
     formatTestSpecEvidence({
       status: "records-missing",
-      profiles: ["general.yaml", "application.yaml"],
-      missing: ["application.yaml"],
+      profiles: ["general"],
+      missing: ["general"],
     }),
-  );
-  expect(missing.instructions).toContain("missing application.yaml");
-  const ready = formatTestSpecEvidence({
-    status: "ready",
-    profiles: ["general.yaml", "application.yaml", "cli.yaml", "npm-published.yaml"],
-    excludedProfiles: ["web.yaml", "workspace.yaml"],
-    rules: { dos: ["one", "two"], donts: ["three"] },
-  });
-  const extracted = extractTestSpecPromptContext(ready);
-  expect(extracted.instructions).toContain(
-    "This repository must comply with the rules set forth in general.yaml, application.yaml, cli.yaml, and npm-published.yaml.",
-  );
-  expect(extracted.instructions).toContain(
-    "The following Eliware Test profiles do not apply to this repository: web.yaml and workspace.yaml.",
-  );
-  expect(extracted.instructions).toContain("Do:\n- one\n- two\n\nDon't:\n- three");
-  expect(extracted.combined).not.toContain("Do:\n");
+  ).toContain("Convention contents are incomplete; missing general.");
   expect(
-    extractTestSpecPromptContext(
-      formatTestSpecEvidence({ status: "ready", profiles: ["general.yaml"] }),
-    ).instructions,
-  ).toContain("Do:\n- None.");
-  expect(
-    extractTestSpecPromptContext(
-      formatTestSpecEvidence({
-        status: "ready",
-        profiles: null,
-        rules: { dos: [], donts: [] },
-      }),
-    ).instructions,
-  ).toContain("No Eliware Test convention records apply");
+    formatTestSpecEvidence({
+      status: "records-missing",
+      profiles: ["general"],
+      missing: ["general"],
+      excludedProfiles: ["cli"],
+    }),
+  ).toContain("This repository does not apply cli.");
 });
 
-test("names selected convention files when their contents are unavailable", () => {
+test("puts profile applicability before complete semantic files", () => {
+  const result = formatTestSpecEvidence({
+    status: "ready",
+    profiles: ["general", "application"],
+    excludedProfiles: ["cli"],
+    records: [
+      { file: "general-semantic.yaml", contents: 'version: "12.0"\ndirectives: []\n' },
+      { file: "application-semantic.yaml", contents: "description: full source\n" },
+    ],
+  });
+  const context = extractTestSpecPromptContext(result);
+
+  expect(context.instructions).toContain(
+    "This repository applies general and application and does not apply cli.",
+  );
+  expect(context.instructions).toContain(
+    'Convention file: general-semantic.yaml\nversion: "12.0"\ndirectives: []\n',
+  );
+  expect(context.instructions).toContain("\n\n---\n\nConvention file: application-semantic.yaml");
+  expect(context.instructions.indexOf("This repository applies")).toBeLessThan(
+    context.instructions.indexOf("Convention file:"),
+  );
+  expect(context.instructions).toContain("does not apply cli");
+});
+
+test("handles an empty excluded-profile list in the applicability header", () => {
+  expect(
+    formatTestSpecEvidence({
+      status: "ready",
+      profiles: ["general"],
+      records: [],
+    }),
+  ).toContain("This repository applies general and does not apply any other profiles.");
+});
+
+test("names selected semantic files when the adjacent checkout is unavailable", () => {
   const unavailable = extractTestSpecPromptContext(
     formatTestSpecEvidence({
       status: "checkout-unavailable",
-      profiles: ["general.yaml", "application.yaml"],
+      profiles: ["general", "application"],
     }),
   );
-  expect(unavailable.instructions).toContain(
-    "This repository selects the Eliware Test convention files general.yaml and application.yaml.",
-  );
+  expect(unavailable.instructions).toContain("This repository applies general and application.");
   expect(unavailable.instructions).toContain("requirements are unknown");
 });
 
 test("states when no convention profiles apply", () => {
   expect(
     extractTestSpecPromptContext(
-      formatTestSpecEvidence({ status: "ready", profiles: [], rules: { dos: [], donts: [] } }),
+      formatTestSpecEvidence({ status: "ready", profiles: [], records: [] }),
     ).instructions,
   ).toContain("No Eliware Test convention records apply to this repository.");
+});
+
+test("defaults omitted profiles and semantic files to empty lists", () => {
+  expect(formatTestSpecEvidence({ status: "ready" })).toContain(
+    "No Eliware Test convention records apply to this repository.",
+  );
 });

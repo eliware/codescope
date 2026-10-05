@@ -117,7 +117,7 @@ commands in a reviewed repository.
 ## Troubleshooting
 
 If shared requirement evidence is unavailable, verify that the adjacent
-`eliware/test` checkout exists and that `package.json.eliware.apply` names
+`eliware/test12` checkout exists and that `package.json.eliware.apply` names
 profile records under its `specs/conventions/` directory. When reviewing
 `@eliware/test` itself, its specifications are included through normal
 repository context.

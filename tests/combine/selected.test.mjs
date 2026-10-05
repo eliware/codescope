@@ -36,14 +36,14 @@ test("includes applied adjacent Test records in selected profile context", async
     JSON.stringify({ eliware: { apply: ["general"] } }),
   );
   await writeFile(
-    path.join(testRoot, "specs", "conventions", "general.yaml"),
+    path.join(testRoot, "specs", "conventions", "general-semantic.yaml"),
     'directives:\n  - id: E-0.1\n    dos:\n      - "required: selected profile contract"',
   );
   try {
     const result = await combineSelectedFiles(project, { inventory: [], testRoot });
     const { instructions } = extractTestSpecPromptContext(result);
     expect(instructions).toContain("required: selected profile contract");
-    expect(instructions).not.toContain("id: E-0.1");
+    expect(instructions).toContain("id: E-0.1");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

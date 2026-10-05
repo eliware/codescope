@@ -15,6 +15,17 @@ test("filters included content and normalizes separators", () => {
   ).toEqual(["src/a.mjs"]);
 });
 
+test("omits package lockfiles from inventory at every size", () => {
+  expect(
+    selectInventoryFiles(
+      "repo",
+      ["package-lock.json", "nested/package-lock.JSON", "notes.txt"],
+      path.posix,
+      () => false,
+    ),
+  ).toEqual(["notes.txt"]);
+});
+
 test("rejects absolute and escaping inventory paths", () => {
   expect(() => resolveInventoryPath("repo", "/outside", path.posix)).toThrow(/escapes/);
   expect(() => resolveInventoryPath("repo", "../outside", path.posix)).toThrow(/escapes/);
