@@ -1,6 +1,10 @@
 import { runReviewSession } from "../../src/review/run-review.mjs";
 
-const request = { model: "gpt-5.6-luna", tool_choice: { name: "submit_review" } };
+const request = {
+  model: "gpt-5.6-luna",
+  input: [],
+  tool_choice: { name: "submit_review" },
+};
 const write = async (value) => ({ written: value.length });
 
 test("routes a provider session through the output boundary", async () => {

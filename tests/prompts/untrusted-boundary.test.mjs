@@ -1,5 +1,6 @@
 import {
   frameRepositoryContent,
+  frameReviewInstructions,
   frameUntrustedContent,
 } from "../../src/prompts/untrusted-boundary.mjs";
 
@@ -39,11 +40,17 @@ test("frames repository content with review-only guidance and test status", () =
   expect(framed).toContain("All npm tests passed 100%.");
   expect(framed).not.toContain("UNTRUSTED");
   expect(framed).toContain("repository source");
+  expect(framed).not.toContain("--- end repository content");
 });
 
-test("avoids repository boundary tokens already present in content", () => {
-  const base = "CODESCOPE_REPOSITORY_CONTENT_BOUNDARY";
-  const framed = frameRepositoryContent(`repository source contains ${base}`);
+test("frames review instructions with one boundary absent from repository content", () => {
+  const repositoryContent = frameRepositoryContent(
+    "repository source contains CODESCOPE_REVIEW_CONTENT_BOUNDARY",
+  );
+  const framed = frameReviewInstructions(repositoryContent, "review instruction");
 
-  expect(framed).toContain(`boundary: ${base}_`);
+  expect(framed.match(/--- end review content---/gu)).toHaveLength(1);
+  expect(framed).toContain("boundary: CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
+  expect(framed).toContain("---begin review instructions ---");
+  expect(repositoryContent).not.toContain("CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
 });

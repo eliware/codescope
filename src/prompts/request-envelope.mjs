@@ -9,6 +9,5 @@ export const baseRequest = {
   tool_choice: { type: "function", name: "submit_review" },
   parallel_tool_calls: false,
   store: false,
-  prompt_cache_options: { mode: "explicit" },
   include: ["reasoning.encrypted_content", "web_search_call.action.sources"],
 };

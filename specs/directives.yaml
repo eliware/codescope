@@ -180,6 +180,18 @@ directives:
             coverage without requiring test-run output.
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
+          - After a successful submit_review or submit_unified_review response, reuse the same
+            Responses API request object, append the first tool arguments as an assistant text
+            message, append a user re-review instruction, and make one follow-up request with the
+            unchanged review tool schema.
+          - In the follow-up review, retain valid findings verbatim, correct partially inaccurate
+            real findings, omit unsupported, contradicted, intentional, or non-actionable findings,
+            and use the exact category sentinel when no findings remain.
+          - Write the follow-up tool arguments when that request succeeds; if the follow-up request
+            or response fails, write the initial successful review output unchanged. Preserve
+            process termination signals.
+          - Apply follow-up adjudication only to finding review requests, not suggestions or custom
+            prompts.
         donts:
           - Do not make the provider verdict or any finding priority change the CLI exit code.
           - Do not report absent test execution output, an unobserved test failure, or a test-run
@@ -203,8 +215,9 @@ directives:
             its single sentinel and never mix a sentinel with findings.
           - Allow review, suggestion, and custom-prompt responses to be provider-defined and not
             machine-readable.
-          - Report provider transport, setup, and output-write failures as errors, preserving safe
-            fallback output and fallback error metadata where available.
+          - Report initial provider transport, setup, and output-write failures as errors,
+            preserving safe fallback output and fallback error metadata where available. A failed
+            review follow-up falls back to the initial successful review output.
           - When failure diagnostics include provider usage, preserve every non-negative integer
             counter accepted by pricing without imposing a stricter safe-integer limit.
           - Require output writers to report an exact written character count; do not treat an

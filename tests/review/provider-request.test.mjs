@@ -44,6 +44,20 @@ test("passes the prepared request to Responses", async () => {
   expect(received[1]).toEqual({ signal: "signal" });
 });
 
+test("preserves non-text input content", async () => {
+  const request = {
+    input: [{ role: "user", content: [{ type: "input_image", image_url: "image" }] }],
+  };
+  let received;
+
+  await requestProviderResponse(
+    { responses: { create: async (sentRequest) => ((received = sentRequest), {}) } },
+    request,
+  );
+
+  expect(received).toBe(request);
+});
+
 test("prints the complete request to stderr before sending when debugging is enabled", async () => {
   const request = {
     model: "gpt-6-luna",
@@ -59,9 +73,10 @@ test("prints the complete request to stderr before sending when debugging is ena
       {
         role: "user",
         content: [
-          { type: "input_text", text: "review rules" },
-          { type: "input_text", text: "repository" },
-          { type: "input_text", text: "review task" },
+          {
+            type: "input_text",
+            text: "review rules\n\nrepository\n\nreview task",
+          },
         ],
       },
     ],

@@ -1,5 +1,8 @@
-import { frameRepositoryContent } from "../../prompts/untrusted-boundary.mjs";
-import { defaultDeveloperText, reviewInstructionBoundary } from "../../prompts/guidance.mjs";
+import {
+  frameRepositoryContent,
+  frameReviewInstructions,
+} from "../../prompts/untrusted-boundary.mjs";
+import { defaultDeveloperText } from "../../prompts/guidance.mjs";
 import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mjs";
 
 const PLACEHOLDER = "<combine-mjs here>";
@@ -31,22 +34,14 @@ export function attachRepositoryEvidence(request, combined) {
   ]
     .filter(Boolean)
     .join("\n\n");
+  const repositoryContent = frameRepositoryContent(testSpecContext.combined);
   request.input = [
     {
       role: "user",
       content: [
         {
           type: "input_text",
-          text: frameRepositoryContent(testSpecContext.combined),
-        },
-      ],
-    },
-    {
-      role: "user",
-      content: [
-        {
-          type: "input_text",
-          text: `${reviewInstructionBoundary}\n\n${reviewInstructions}`,
+          text: frameReviewInstructions(repositoryContent, reviewInstructions),
         },
       ],
     },

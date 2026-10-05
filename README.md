@@ -130,7 +130,9 @@ Use `codescope review release` for release-readiness review.
 
 ## Configuration
 
-The CLI uses a nonblank process `OPENAI_API_TOKEN` directly and reads only
+At startup, review commands resolve credentials from the process environment
+or `~/.codescope` before creating the provider client. The CLI uses a nonblank
+process `OPENAI_API_TOKEN` directly and reads only
 `OPENAI_API_TOKEN` from `~/.codescope` when the process value is missing or
 whitespace-only. Unrelated dotenv assignments are ignored, including malformed
 unrelated lines. When the process token is blank and `~/.codescope` is read,
@@ -145,12 +147,15 @@ subject to the review aggregate character budget.
 
 ## Operations
 
-Provider-backed review and suggestion commands parse and validate their
-configuration before creating the provider client, execute one request, write
-the result, then abort their request controller and remove signal handlers as
-part of startup and shutdown. Help and version commands exit before review
-configuration or provider setup. Timeouts and termination signals trigger the
-same cleanup path.
+At startup, provider-backed review, suggestion, and custom-prompt commands
+parse and validate their configuration before creating the provider client. Review
+commands make an initial request followed by a re-review request; if the
+follow-up fails, CodeScope writes the initial review result. Suggestions and
+custom prompts make one request. CodeScope writes the selected result, then
+aborts its request controller and removes signal handlers. Help and version
+commands exit before review configuration or provider setup. Termination
+signals trigger the same cleanup path. Shutdown follows that cleanup path after
+provider-backed commands complete or are interrupted.
 
 CodeScope is read-only against reviewed repositories: it reads supplied
 evidence and writes its own output, but does not modify the reviewed
