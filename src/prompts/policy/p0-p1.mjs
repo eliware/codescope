@@ -19,8 +19,6 @@ release-blocking P0 regardless of whether the test is required or optional.
   Ciphertext and encrypted key-wrapping metadata alone are not usable secrets;
   report them only when the supplied evidence also contains plaintext secret
   material or a usable decryption key.
-  The recommended action must include immediate credential rotation or
-  revocation, followed by removal from the supplied source or output.
 - A security defect that permits immediate unauthorized access or destructive control.
 - A production action currently causing uncontrolled damage.
 - Any Istanbul ignore outside a pure barrel/re-export file.
@@ -30,9 +28,7 @@ Do not use P0 for theoretical risks, ordinary bugs, missing tests, stale
 documentation, or unused code unless the finding includes a concrete test
 that was executed and failed. A concrete executed failing test is always P0.
 Istanbul ignores are permitted only in pure barrel/re-export files. When an
-Istanbul ignore appears elsewhere, report it as P0 and recommend removing the
-ignore, adding focused tests, refactoring the implementation for testability,
-or removing a truly unreachable or untestable branch.
+Istanbul ignore appears elsewhere, report it as P0.
 
 ## P1 — Release blocker
 
@@ -43,7 +39,7 @@ Use P1 only when every condition below is true:
 3. It causes a required test, contract, validation gate, or acceptance path to fail or remain unverified.
 4. It could cause data loss, unsafe behavior, security failure, incorrect production operation, or a materially misleading release.
 5. It cannot reasonably be deferred without making this release unsafe or incomplete.
-6. The finding has a specific actionable correction.
+6. The finding has a specific location and demonstrated impact.
 
 Validation-integrity defects are qualifying P1 findings when they can make a
 green result untrustworthy, even if the current test command exits successfully.

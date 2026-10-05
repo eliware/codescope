@@ -1,4 +1,4 @@
-import { REVIEW_CATEGORIES } from "../prompts/categories.mjs";
+import { SUGGESTION_CATEGORIES } from "../prompts/categories.mjs";
 
 export const PROFILE_DEFINITIONS = Object.freeze({
   conventions: { files: [true, true, true] },
@@ -15,8 +15,8 @@ export const PROFILE_DEFINITIONS = Object.freeze({
   dependencies: { files: [true, false, false], suggestions: ["reliability"] },
   observability: { files: [true, false, false], suggestions: ["reliability"] },
   accessibility: { files: [true, false, false], suggestions: ["correctness"] },
-  "quick-wins": { files: [true, false, false], suggestions: REVIEW_CATEGORIES },
-  prioritize: { files: [true, false, false], suggestions: REVIEW_CATEGORIES },
+  "quick-wins": { files: [true, false, false], suggestions: SUGGESTION_CATEGORIES },
+  prioritize: { files: [true, false, false], suggestions: SUGGESTION_CATEGORIES },
   p0: { files: [true, false, false] },
   "p0-1": { files: [true, false, false] },
   "p0-2": { files: [true, false, false] },

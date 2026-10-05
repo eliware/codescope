@@ -7,6 +7,12 @@ import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mj
 
 const PLACEHOLDER = "<combine-mjs here>";
 
+function formatTestSpecDeveloperInstructions(instructions) {
+  return instructions
+    ? `Applicable Eliware Test conventions for this repository:\n${instructions}`
+    : "";
+}
+
 export function attachRepositoryEvidence(request, combined) {
   const testSpecContext = extractTestSpecPromptContext(combined);
   const developer = request.input.find((item) => item.role === "developer");
@@ -16,7 +22,8 @@ export function attachRepositoryEvidence(request, combined) {
       PLACEHOLDER,
       frameRepositoryContent(testSpecContext.combined),
     );
-    if (testSpecContext.instructions) content.text += `\n\n${testSpecContext.instructions}`;
+    const conventions = formatTestSpecDeveloperInstructions(testSpecContext.instructions);
+    if (conventions) content.text += `\n\n${conventions}`;
     return request;
   }
   if (content.text !== defaultDeveloperText)
@@ -27,15 +34,23 @@ export function attachRepositoryEvidence(request, combined) {
   const instructionContent = instructionMessages.flatMap((message) => message.content);
   if (!instructionContent.some((part) => part.type === "input_text"))
     throw new Error("prompt must contain a user input_text part for repository source");
-  const reviewInstructions = [
+  const developerInstructions = [
     content.text.trim(),
-    testSpecContext.instructions,
-    ...instructionContent.filter((part) => part.type === "input_text").map(({ text }) => text),
+    formatTestSpecDeveloperInstructions(testSpecContext.instructions),
   ]
+    .filter(Boolean)
+    .join("\n\n");
+  const reviewInstructions = instructionContent
+    .filter((part) => part.type === "input_text")
+    .map(({ text }) => text)
     .filter(Boolean)
     .join("\n\n");
   const repositoryContent = frameRepositoryContent(testSpecContext.combined);
   request.input = [
+    {
+      role: "developer",
+      content: [{ type: "input_text", text: developerInstructions }],
+    },
     {
       role: "user",
       content: [

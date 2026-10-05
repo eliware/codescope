@@ -39,7 +39,12 @@ function exclusionText(profiles = []) {
 
 function formatRecords(records) {
   if (!records.length) return "";
-  return `\n\n${records.map(({ file, contents }) => `Convention file: ${file}\n${contents}`).join("\n\n---\n\n")}`;
+  return `\n\n${records
+    .map(({ file, contents }) => {
+      const profile = file.replace(/-semantic\.yaml$/u, "");
+      return `${profile} conventions:\nConvention file: ${file}\n${contents}`;
+    })
+    .join("\n\n---\n\n")}`;
 }
 
 function formatList(values) {

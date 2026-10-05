@@ -15,10 +15,15 @@ test("re-reviews findings and debugs only the final request and response", async
   const finalOutput = '{"issues":{"security":[]},"verdict":"pass"}';
   const request = {
     model: "gpt-6-luna",
-    input: [{ role: "user", content: [{ type: "input_text", text: "repository and review" }] }],
+    reasoning: { effort: "none", summary: null },
+    input: [
+      { role: "developer", content: [{ type: "input_text", text: "conventions" }] },
+      { role: "user", content: [{ type: "input_text", text: "repository and review" }] },
+    ],
     tool_choice: { type: "function", name: "submit_review" },
   };
   const sentRequests = [];
+  const requestSnapshots = [];
   const debug = [];
   const originalError = console.error;
   console.error = (value) => debug.push(value);
@@ -28,14 +33,23 @@ test("re-reviews findings and debugs only the final request and response", async
         responses: {
           create: async (sentRequest) => {
             sentRequests.push(sentRequest);
+            requestSnapshots.push(structuredClone(sentRequest));
             return sentRequests.length === 1
               ? {
                   output: [
+                    {
+                      type: "reasoning",
+                      summary: [{ type: "summary_text", text: "The claims need separate checks." }],
+                    },
                     { type: "function_call", name: "submit_review", arguments: firstOutput },
                   ],
                 }
               : {
                   output: [
+                    {
+                      type: "reasoning",
+                      summary: [{ type: "summary_text", text: "Final claims checked." }],
+                    },
                     { type: "function_call", name: "submit_review", arguments: finalOutput },
                   ],
                 };
@@ -45,17 +59,65 @@ test("re-reviews findings and debugs only the final request and response", async
       request,
       debugRequest: true,
     });
-    expect(session.output).toBe(finalOutput);
+    expect(session.output).toBe(
+      `Running initial review...\n${firstOutput}\nDetailed reasoning summary:\nFinal claims checked.\nRunning final review...\n${finalOutput}`,
+    );
   } finally {
     console.error = originalError;
   }
   expect(sentRequests).toEqual([request, request]);
   expect(sentRequests[0]).toBe(sentRequests[1]);
-  expect(request.input.map(({ role }) => role)).toEqual(["user", "assistant", "user"]);
-  expect(request.input[1].content).toBe(firstOutput);
+  expect(request.input.map(({ role }) => role)).toEqual(["developer", "user", "assistant", "user"]);
+  expect(request.input[0].content[0].text).toBe("conventions");
+  expect(request.input[1].content[0].text).toBe("repository and review");
+  expect(request.input[2]).toEqual({ role: "assistant", content: firstOutput });
+  expect(request.input[3].content[0].text).toContain("Double-check each finding");
+  expect(requestSnapshots[0].input).toEqual(requestSnapshots[1].input.slice(0, 2));
+  expect(requestSnapshots[0].reasoning).toEqual({ effort: "none", summary: null });
+  expect(requestSnapshots[1].reasoning).toEqual({ effort: "medium", summary: "detailed" });
   expect(debug).toHaveLength(2);
-  expect(JSON.parse(debug[0]).input[1].content).toBe(firstOutput);
-  expect(JSON.parse(debug[1]).output[0].arguments).toBe(finalOutput);
+  expect(JSON.parse(debug[0]).input).toHaveLength(4);
+  expect(JSON.parse(debug[1]).output[1].arguments).toBe(finalOutput);
+});
+
+test("passes both responses to usage output for finding reviews", async () => {
+  let calls = 0;
+  const session = await runProviderSession({
+    client: {
+      responses: {
+        create: async () => {
+          calls += 1;
+          return {
+            usage: { input_tokens: calls * 100, output_tokens: 10 },
+            output: [
+              { type: "function_call", name: "submit_review", arguments: `result ${calls}` },
+            ],
+          };
+        },
+      },
+    },
+    request: {
+      model: "gpt-6-luna",
+      input: [{ role: "user", content: "review" }],
+      tool_choice: { type: "function", name: "submit_review" },
+    },
+    usage: true,
+  });
+  expect(session.output).toContain('"input_tokens":100');
+  expect(session.output).toContain('"input_tokens":200');
+});
+
+test("adds request usage to single-request provider output", async () => {
+  const session = await runProviderSession({
+    client: {
+      responses: {
+        create: async () => ({ output_text: "ok", usage: { input_tokens: 1, output_tokens: 2 } }),
+      },
+    },
+    request: { model: "gpt-6-luna", input: [], tools: [] },
+    usage: true,
+  });
+  expect(session.output).toContain("ok\nRequest usage metadata:");
 });
 
 test("keeps the initial findings when the follow-up request fails", async () => {
@@ -80,7 +142,9 @@ test("keeps the initial findings when the follow-up request fails", async () => 
       tool_choice: { type: "function", name: "submit_review" },
     },
   });
-  expect(session.output).toBe(firstOutput);
+  expect(session.output).toBe(
+    `Running initial review...\n${firstOutput}\nDetailed reasoning summary:\n(unavailable)`,
+  );
   expect(session.providerResponse.output[0].arguments).toBe(firstOutput);
 });
 

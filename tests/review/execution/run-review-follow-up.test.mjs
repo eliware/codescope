@@ -22,13 +22,17 @@ test("returns the follow-up tool output and logs its request and response", asyn
       firstOutput: "initial",
       debugRequest: true,
     });
-    expect(result).toEqual({ output: "final", providerResponse: followUpResponse });
+    expect(result).toEqual({ output: "final", providerResponse: followUpResponse, reviewed: true });
   } finally {
     console.error = originalError;
   }
   expect(debug).toHaveLength(2);
-  expect(debug[0]).toContain('"assistant"');
-  expect(JSON.parse(debug[0]).reasoning.effort).toBe("medium");
+  const requestDump = JSON.parse(debug[0]);
+  expect(requestDump.input).toHaveLength(3);
+  expect(requestDump.input[1]).toEqual({ role: "assistant", content: "initial" });
+  expect(requestDump.input[2].role).toBe("user");
+  expect(requestDump.input[2].content[0].text).toContain("Double-check each finding");
+  expect(requestDump.reasoning.effort).toBe("medium");
   expect(debug[1]).toContain("final");
 });
 
@@ -39,7 +43,7 @@ test("falls back to initial output when the follow-up request fails", async () =
       request: request(),
       firstOutput: "initial",
     }),
-  ).resolves.toEqual({ output: "initial" });
+  ).resolves.toEqual({ output: "initial", reviewed: false });
 });
 
 test("falls back when the follow-up response lacks the required tool call", async () => {
@@ -54,7 +58,7 @@ test("falls back when the follow-up response lacks the required tool call", asyn
         firstOutput: "initial",
         debugRequest: true,
       }),
-    ).resolves.toEqual({ output: "initial" });
+    ).resolves.toEqual({ output: "initial", reviewed: false });
   } finally {
     console.error = originalError;
   }

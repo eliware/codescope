@@ -41,29 +41,8 @@ export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
               description:
                 "A concrete issue with a current impact, or the exact no-issues sentinel.",
             },
-            recommendation: {
-              type: "string",
-              description: "A practical change for a real finding; blank for the sentinel.",
-            },
-            rationale: {
-              type: "array",
-              items: { type: "string" },
-              description:
-                "Concise evidence-based reasons ending at the impact; empty for the sentinel.",
-            },
-            ignore_example: {
-              type: "string",
-              description: "A complete // codescope ignore: ... comment; blank for the sentinel.",
-            },
           },
-          required: [
-            "severity",
-            "location",
-            "finding",
-            "recommendation",
-            "rationale",
-            "ignore_example",
-          ],
+          required: ["severity", "location", "finding"],
         },
       },
     },

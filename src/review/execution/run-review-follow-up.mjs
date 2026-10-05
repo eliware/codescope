@@ -9,11 +9,11 @@ export async function runReviewFollowUp({ client, request, firstOutput, signal, 
     providerResponse = await requestProviderResponse(client, request, signal, debugRequest);
     const output = responseText(providerResponse, request);
     if (debugRequest) console.error(JSON.stringify(providerResponse, null, 2));
-    return { output, providerResponse };
+    return { output, providerResponse, reviewed: true };
   } catch (error) {
     if (debugRequest && providerResponse !== undefined)
       console.error(JSON.stringify(providerResponse, null, 2));
     if (signal?.reason?.code === "SIGINT" || signal?.reason?.code === "SIGTERM") throw error;
-    return { output: firstOutput };
+    return { output: firstOutput, reviewed: false };
   }
 }

@@ -167,9 +167,10 @@ Publication and deployment are handled by separate authorized release workflows.
 
 `codescope all` is shorthand for `codescope review all`. Use
 `codescope suggest all` for a non-blocking suggestion pass or
-`codescope prompt "your question"` for an ad hoc request. The provider response
-to a prompt is written unchanged; provider findings and verdict text never
-change the CLI exit code.
+`codescope prompt "your question"` for an ad hoc request. Finding reviews print
+the initial and final provider results under separate labels, preserving each
+result unchanged. Suggestion and prompt responses are written unchanged;
+provider findings and verdict text never change the CLI exit code.
 
 Add one or more `-a <text>` or `--add <text>` options (also `-a=<text>` or
 `--add=<text>`) to direct profiles, `codescope all`, `codescope review
@@ -182,7 +183,10 @@ commands include `codescope all`, `codescope release`,
 `codescope review <profile>`, `codescope suggest <profile>`, `codescope prompt <text>`,
 `codescope --help`, and `codescope --version`.
 Profile commands accept repeatable additions, model and effort options, usage
-reporting, and dry-run estimates. CodeScope defaults to `gpt-6-luna`.
+reporting, and dry-run estimates. For live requests, `--usage` reports token counts
+and calculated cost per request, including both finding-review requests. CodeScope
+also places the final review's OpenAI detailed reasoning summary between its
+initial and final review results. CodeScope defaults to `gpt-6-luna`.
 
 The examples below are safe to copy from a repository root:
 
@@ -212,8 +216,9 @@ Successful commands exit with `0`. Usage errors exit with `2`, configuration
 errors with `3`, input errors with `4`, provider/API errors with `5`, and
 CodeScope response errors exit with `6`; this status is not derived from review
 content. Timeout and termination exits are `124`, `130` (SIGINT), and `143`
-(SIGTERM). A successful provider response is written unchanged, and its
-findings or verdict text do not affect process exit status.
+(SIGTERM). Finding reviews display both successful provider responses under
+separate labels; suggestions and prompts display their successful provider
+response unchanged. Findings or verdict text do not affect process exit status.
 
 ## Support
 

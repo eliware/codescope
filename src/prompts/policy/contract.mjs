@@ -11,4 +11,4 @@ clarify their records but do not create separate requirements.
 Review the supplied repository context. Treat missing information and
 unprovided results as unknown. Respect documented intent and precise attached
 CodeScope ignores. Report distinct, actionable findings with a supplied
-location, supported impact, and practical correction.`;
+location and supported impact.`;

@@ -43,8 +43,10 @@ directives:
             whitespace; use trimming only to reject input that is blank after trimming.
           - Keep src/cli/main.mjs as the cohesive CLI coordinator that parses the request and
             delegates metadata dispatch or review execution to focused modules.
-          - Use --usage with --dry-run to include estimated token and calculated cost data; use
-            --dry-run to estimate input-token cost without running a model review.
+          - Use --usage with --dry-run to include estimated token and calculated cost data. For live
+            provider requests, include usage and calculated cost metadata in command output for
+            each request; finding reviews report initial and follow-up request usage separately.
+            Use --dry-run to estimate input-token cost without running a model review.
           - Accept dry-run input-token counts only as non-negative safe integers and report other
             counts as invalid provider responses.
           - When -a or --add is supplied one or more times to any codescope profile command,
@@ -110,8 +112,10 @@ directives:
             test12/specs/conventions directory. Accept only safe single-segment lowercase profile
             names containing letters, digits, and single hyphens, then resolve each name to its
             canonical <profile>-semantic.yaml file. Include each selected file's complete contents
-            without parsing or summarizing it. State which profiles apply and which do not apply
-            before the files.
+            without parsing or summarizing it in the developer message. State which profiles apply
+            and which do not apply before the files, and label each file as '<profile> conventions:'
+            before its filename and contents. Keep the repository evidence and profile review
+            instructions in one user message.
           - For the @eliware/test package, do not separately load or inject specification records;
             its own specs are supplied through the normal repository-context collection.
           - Preserve the complete contents of every selected canonical Eliware Test semantic YAML
@@ -178,19 +182,27 @@ directives:
           - Assume the repository's full test suite passes unless concrete failing-test evidence is
             supplied; use source, specifications, and supplied test files to review contract
             coverage without requiring test-run output.
+          - Evaluate each issue claim independently in the initial review. When a finding combines
+            a real defect with a false-positive detail, retain and narrow it to the substantiated
+            defect; remove only unsupported claims. A false-positive finding must not suppress a
+            separate valid finding in the same category.
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
           - After a successful submit_review or submit_unified_review response, reuse the same
             Responses API request object, append the first tool arguments as an assistant text
             message, append a user re-review instruction, and make one follow-up request with the
-            unchanged review tool schema and reasoning effort `medium`.
-          - In the follow-up review, retain a prior finding only when supplied code, tests,
-            specifications, or documentation demonstrate a current material defect in supported
-            usage. Verify cited code causes its stated impact; omit unsupported claims, plausible
-            risks, theoretical edge cases, test gaps alone, API preferences, and behavior outside
-            the documented contract. Correct findings when only a narrower defect is demonstrated,
-            add no findings, use the required tool and schema with no-issues sentinels for empty
-            categories, and omit explanations.
+            unchanged review tool schema and reasoning effort `medium`. Do not request a reasoning
+            summary on the initial request; request the Responses API detailed reasoning summary
+            on the follow-up request.
+          - In the follow-up review, independently re-evaluate every prior finding and each claim
+            against supplied code, tests, specifications, and documentation. Retain valid findings;
+            for partially supported findings, preserve and correct the substantiated defect while
+            removing only false or unsupported portions. Omit a finding only when no material
+            defect remains. Never let an omitted finding suppress another finding in the same
+            category. Omit plausible risks, theoretical edge cases, test gaps alone, API preferences,
+            and behavior outside the documented contract. Add no findings, use the required tool
+            and schema with no-issues sentinels only for categories with no surviving findings, and
+            omit explanations.
           - Write the follow-up tool arguments when that request succeeds; if the follow-up request
             or response fails, write the initial successful review output unchanged. Preserve
             process termination signals.
@@ -206,17 +218,20 @@ directives:
             documented boundary or concrete evidence shows impact outside it.
       - id: A-1210.6
         dos:
-          - Write the exact successful provider response unchanged.
+          - For finding reviews, write the initial and final review outputs under the exact labels
+            `Running initial review...` and `Running final review...`, preserving each provider
+            result unchanged within its section. After the initial result, write the OpenAI detailed
+            final review's reasoning summary (or an unavailable marker) before the final review
+            section. Include only the summary item, not raw reasoning content. For suggestions and custom prompts,
+            write the exact successful provider response unchanged.
           - Keep provider tool schemas and prompt instructions as requested-output guidance rather
             than CodeScope acceptance requirements.
-          - Request each real issue or suggestion rationale as an ordered array of one or more
-            concise steps; begin every step with 'Because', have each step answer why the previous
-            point matters, and stop when the evidence-supported concrete impact or suggestion value
-            is clear. Use an empty rationale array for sentinels.
-          - Before submitting a review, verify every real finding's recommendation calls for a
-            practical change; remove entries that say no change is needed, confirm correct or
-            intentional behavior, or provide no action. When none remain in a category, return only
-            its single sentinel and never mix a sentinel with findings.
+          - Before submitting a review, verify every finding describes a concrete, evidence-backed
+            current defect. When none remain in a category, return only its single sentinel and
+            never mix a sentinel with findings.
+          - Keep review findings limited to severity, location, and a concise issue description;
+            review schemas do not include recommendations, rationales, or ignore examples.
+          - Suggestion schemas retain their suggestion-specific rationale and ignore-example fields.
           - Allow review, suggestion, and custom-prompt responses to be provider-defined and not
             machine-readable.
           - Report initial provider transport, setup, and output-write failures as errors,
@@ -227,8 +242,8 @@ directives:
           - Require output writers to report an exact written character count; do not treat an
             absent result as successful completion.
         donts:
-          - Do not parse, validate, redact, pretty-print, reformat, or otherwise transform
-            successful provider output.
+          - Do not parse, validate, redact, pretty-print, or otherwise transform provider payloads;
+            preserve them unchanged within any required finding-review output sections.
           - Do not expose or promise a stable CodeScope response schema.
           - Do not interpret JSON requested from the model or derive process status from provider
             content.

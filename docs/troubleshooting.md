@@ -16,10 +16,11 @@ CI workflow.
 
 ## Unexpected provider output
 
-CodeScope preserves the selected successful provider response text unchanged.
-It does not parse or format that response. Reviews make an initial request and
-a follow-up re-review request. If the follow-up fails, CodeScope writes the
-initial review response instead. Failures in evidence collection, provider
+Finding reviews display both provider results with `Running initial review...`
+and `Running final review...` labels, preserving each response unchanged.
+Suggestions and custom prompts write the selected provider response unchanged.
+Reviews make an initial request and a follow-up re-review request. If the
+follow-up fails, CodeScope writes the initial review response instead. Failures in evidence collection, provider
 setup, the initial request, or output handling are reported and emit a safe
 incomplete result when possible.
 Fallback diagnostics preserve independently readable fields, are JSON-serialized,

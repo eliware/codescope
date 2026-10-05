@@ -23,7 +23,11 @@ test("routes a provider session through the output boundary", async () => {
       dryRun: false,
       usage: false,
     }),
-  ).resolves.toMatchObject({ kind: "review", output: "{}" });
+  ).resolves.toMatchObject({
+    kind: "review",
+    output:
+      "Running initial review...\n{}\nDetailed reasoning summary:\n(unavailable)\nRunning final review...\n{}",
+  });
 });
 
 test("routes dry-run requests to the dry session", async () => {

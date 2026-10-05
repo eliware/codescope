@@ -12,7 +12,5 @@ test("does not flag external-project claims based only on missing context", () =
   expect(documentationReviewPolicy).toContain(
     "report them only when supplied evidence directly contradicts them or shows concrete impact in the reviewed repository.",
   );
-  expect(documentationReviewPolicy).toContain(
-    "Do not recommend external verification the review cannot perform.",
-  );
+  expect(documentationReviewPolicy).not.toContain("recommendation");
 });

@@ -40,7 +40,7 @@ test("includes complete selected semantic specs and omits deterministic specs", 
     expect(context.instructions).toContain("purpose: preserved test example");
     expect(context.instructions).toContain("CLI test prohibition");
     expect(context.instructions).toContain(
-      'Convention file: general-semantic.yaml\nversion: "12.0"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule\n    examples:\n      - purpose: preserved test example\n\n---\n\nConvention file: cli-semantic.yaml\nversion: "12.0"\ndirectives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition',
+      'general conventions:\nConvention file: general-semantic.yaml\nversion: "12.0"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule\n    examples:\n      - purpose: preserved test example\n\n---\n\ncli conventions:\nConvention file: cli-semantic.yaml\nversion: "12.0"\ndirectives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition',
     );
     expect(context.instructions).toContain("id: E-0.1");
     expect(context.instructions).not.toContain("Web test rule");

@@ -32,26 +32,8 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
             severity: { type: "string", enum: ["P0", "P1", "P2", "P3", "none"] },
             location: { type: "string" },
             issue: { type: "string" },
-            recommendation: { type: "string" },
-            rationale: {
-              type: "array",
-              items: { type: "string" },
-              description:
-                'An ordered why-chain: each concise step starts with "Because" and answers why the previous point matters, ending at a concrete evidence-supported impact.',
-            },
-            ignore_example: {
-              type: "string",
-              description: "A complete copy-pasteable // codescope ignore: ... comment.",
-            },
           },
-          required: [
-            "severity",
-            "location",
-            "issue",
-            "recommendation",
-            "rationale",
-            "ignore_example",
-          ],
+          required: ["severity", "location", "issue"],
         },
       },
     },

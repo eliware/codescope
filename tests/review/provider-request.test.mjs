@@ -64,21 +64,8 @@ test("prints the complete request to stderr before sending when debugging is ena
     input: [
       { role: "developer", content: [{ type: "input_text", text: "review rules" }] },
       { role: "user", content: [{ type: "input_text", text: "repository" }] },
+      { role: "assistant", content: "prior findings" },
       { role: "user", content: [{ type: "input_text", text: "review task" }] },
-    ],
-  };
-  const mergedRequest = {
-    ...request,
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: "review rules\n\nrepository\n\nreview task",
-          },
-        ],
-      },
     ],
   };
   const events = [];
@@ -102,7 +89,7 @@ test("prints the complete request to stderr before sending when debugging is ena
     console.error = originalError;
   }
   expect(events).toEqual([
-    ["debug", JSON.stringify(mergedRequest, null, 2)],
-    ["request", mergedRequest],
+    ["debug", JSON.stringify(request, null, 2)],
+    ["request", request],
   ]);
 });

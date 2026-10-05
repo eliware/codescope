@@ -4,8 +4,5 @@ test("creates strict review tools with required categories", () => {
   expect(reviewTool.name).toBe("submit_review");
   const parameters = createReviewTool(["security"]).parameters;
   expect(parameters.properties.issues.required).toEqual(["security"]);
-  expect(parameters.$defs.issue.properties.rationale).toMatchObject({
-    type: "array",
-    items: { type: "string" },
-  });
+  expect(Object.keys(parameters.$defs.issue.properties)).toEqual(["severity", "location", "issue"]);
 });

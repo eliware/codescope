@@ -2,5 +2,7 @@ import { REVIEW_CATEGORIES, SUGGESTION_CATEGORIES } from "../../src/prompts/cate
 
 test("defines review and suggestion category sets", () => {
   expect(REVIEW_CATEGORIES).toContain("cross_platform");
+  expect(REVIEW_CATEGORIES).toContain("conventions");
+  expect(SUGGESTION_CATEGORIES).not.toContain("conventions");
   expect(SUGGESTION_CATEGORIES).toContain("new-features");
 });

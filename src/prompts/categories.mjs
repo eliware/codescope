@@ -1,4 +1,4 @@
-export const REVIEW_CATEGORIES = [
+const COMMON_CATEGORIES = [
   "correctness",
   "security",
   "reliability",
@@ -10,4 +10,6 @@ export const REVIEW_CATEGORIES = [
   "documentation",
 ];
 
-export const SUGGESTION_CATEGORIES = [...REVIEW_CATEGORIES, "new-features"];
+export const REVIEW_CATEGORIES = [...COMMON_CATEGORIES, "conventions"];
+
+export const SUGGESTION_CATEGORIES = [...COMMON_CATEGORIES, "new-features"];
