@@ -75,7 +75,7 @@ test("re-reviews findings and debugs only the final request and response", async
   expect(request.input[2]).toEqual({ role: "assistant", content: firstOutput });
   expect(request.input[3].type).toBe("configuration_update");
   expect(request.input[3].reasoning.effort).toBe("medium");
-  expect(request.input[4].content[0].text).toContain("Double-check each finding");
+  expect(request.input[4].content[0].text).toContain("Independently check every finding");
   expect(requestSnapshots[0].input).toEqual(requestSnapshots[1].input.slice(0, 2));
   expect(requestSnapshots[0].reasoning).toEqual({ effort: "none", summary: null });
   expect(requestSnapshots[1].reasoning).toEqual({ effort: "none", summary: "detailed" });

@@ -1,9 +1,13 @@
 export function createReviewFollowUpInstructions() {
-  return `Double-check each finding in the prior review independently against the supplied code, tests, specifications, and documentation.
+  return `Independently check every finding in the preceding initial review against the original repository content and applicable conventions. Apply the same reporting threshold and priority rules as the initial review.
 
-Keep a finding only if the supplied evidence demonstrates a current, material defect in supported usage. A plausible risk, theoretical edge case, missing test by itself, API preference, or behavior outside the documented contract is not enough.
+For each initial finding ID, record exactly one assessment: real, partially_real, or false_positive.
 
-For each finding, check each claim and its impact separately. If only part of a finding is supported, retain and correct that finding to describe the substantiated defect; do not omit the whole finding just because another detail is false or overstated. Omit it only when no material defect remains. Evaluate every prior finding independently, so rejecting one finding never removes another valid finding in the same category. Use a category sentinel only when none of its prior findings has a substantiated portion.
+Give each assessment a concise basis tied to the supplied evidence. For a false_positive, identify what evidence disproves the finding or why its causal path does not establish a defect. For a partially_real finding, identify what was corrected.
 
-Do not add findings. Return the complete final review using the required tool and schema, preserving fully substantiated issues and corrected substantiated portions only. If none remain in a category, return its required no-issues sentinel. Do not include explanations.`;
+Check each claim within a finding separately. If any supported defect remains, retain the finding under its original ID and correct it to state only that defect. Do not discard an entire finding because one detail is false. Do not discard one finding because another finding in the same category is false. Passing tests, absence of a dedicated test, or uncertainty alone do not disprove a defect demonstrated by the supplied code and contract.
+
+Preserve real findings, correcting inaccurate wording without changing their substance.
+
+Do not introduce unrelated findings. Return every surviving finding in the final category arrays and exactly one assessment for every initial finding ID. Use empty arrays where no findings survive. Return the complete final review using the required tool and schema.`;
 }

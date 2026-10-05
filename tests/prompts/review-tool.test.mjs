@@ -1,8 +1,7 @@
 import { createReviewTool, reviewTool } from "../../src/prompts/review-tool.mjs";
 
-test("creates strict review tools with required categories", () => {
+test("creates strict review tools with selected categories", () => {
   expect(reviewTool.name).toBe("submit_review");
   const parameters = createReviewTool(["security"]).parameters;
-  expect(parameters.properties.issues.required).toEqual(["security"]);
-  expect(Object.keys(parameters.$defs.issue.properties)).toEqual(["severity", "location", "issue"]);
+  expect(parameters.properties.findings.required).toEqual(["security"]);
 });

@@ -35,7 +35,7 @@ test("returns the follow-up tool output and logs its request and response", asyn
     reasoning: { effort: "medium" },
   });
   expect(requestDump.input[3].role).toBe("user");
-  expect(requestDump.input[3].content[0].text).toContain("Double-check each finding");
+  expect(requestDump.input[3].content[0].text).toContain("Independently check every finding");
   expect(requestDump.reasoning.effort).toBeUndefined();
   expect(debug[1]).toContain("final");
 });

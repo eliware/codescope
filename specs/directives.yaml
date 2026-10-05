@@ -186,6 +186,12 @@ directives:
             a real defect with a false-positive detail, retain and narrow it to the substantiated
             defect; remove only unsupported claims. A false-positive finding must not suppress a
             separate valid finding in the same category.
+          - Require each initial review finding to have a unique ID, severity, location, concise
+            issue, supporting evidence, and concrete impact. Keep findings atomic and reconcile
+            each proposed defect with relevant supplied code, tests, specifications, documentation,
+            and applicable conventions. Passing tests do not disprove behavior they do not cover.
+            Use empty arrays for categories without findings and an empty reviewed_prior_findings
+            array in the initial response.
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
           - For review requests, use Responses explicit prompt caching with a breakpoint after the
@@ -197,14 +203,15 @@ directives:
             tool schema unchanged. Do not request a reasoning summary on the initial request;
             request the Responses API detailed reasoning summary on the follow-up request.
           - In the follow-up review, independently re-evaluate every prior finding and each claim
-            against supplied code, tests, specifications, and documentation. Retain valid findings;
-            for partially supported findings, preserve and correct the substantiated defect while
-            removing only false or unsupported portions. Omit a finding only when no material
-            defect remains. Never let an omitted finding suppress another finding in the same
-            category. Omit plausible risks, theoretical edge cases, test gaps alone, API preferences,
-            and behavior outside the documented contract. Add no findings, use the required tool
-            and schema with no-issues sentinels only for categories with no surviving findings, and
-            omit explanations.
+            against the original supplied code, tests, specifications, documentation, and applicable
+            conventions using the same reporting threshold and priority rules as the initial
+            review. Assess every prior finding ID exactly once as real, partially_real, or
+            false_positive. Preserve real findings under their original IDs; correct partially real
+            findings to retain every substantiated defect and remove only unsupported claims; omit
+            findings only when no supported defect remains. Give a concise evidence-based basis for
+            each assessment. Passing tests, absence of a dedicated test, or uncertainty alone do not
+            disprove a defect demonstrated by supplied code and contract. Do not introduce unrelated
+            findings. Use empty arrays for categories without surviving findings.
           - Write the follow-up tool arguments when that request succeeds; if the follow-up request
             or response fails, write the initial successful review output unchanged. Preserve
             process termination signals.
@@ -229,10 +236,10 @@ directives:
           - Keep provider tool schemas and prompt instructions as requested-output guidance rather
             than CodeScope acceptance requirements.
           - Before submitting a review, verify every finding describes a concrete, evidence-backed
-            current defect. When none remain in a category, return only its single sentinel and
-            never mix a sentinel with findings.
-          - Keep review findings limited to severity, location, and a concise issue description;
-            review schemas do not include recommendations, rationales, or ignore examples.
+            current defect. Review tool schemas include finding ID, severity, location, issue,
+            evidence, and impact, plus a reviewed_prior_findings assessment ledger. Categories with
+            no findings use empty arrays. Review schemas do not include recommendations, rationales,
+            or ignore examples.
           - Suggestion schemas retain their suggestion-specific rationale and ignore-example fields.
           - Allow review, suggestion, and custom-prompt responses to be provider-defined and not
             machine-readable.

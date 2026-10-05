@@ -1,50 +1,13 @@
 import { REVIEW_CATEGORIES } from "./categories.mjs";
+import { createReviewParameters } from "./review-schema.mjs";
 
 export function createUnifiedTool(categories = REVIEW_CATEGORIES) {
   return {
     type: "function",
     name: "submit_unified_review",
-    description: "Return one consolidated CodeScope review with all actionable findings.",
+    description:
+      "Return the complete consolidated evidence-based review with all actionable findings and prior-finding assessments.",
     strict: true,
-    parameters: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        findings: {
-          type: "object",
-          additionalProperties: false,
-          properties: Object.fromEntries(
-            categories.map((category) => [
-              category,
-              {
-                type: "array",
-                minItems: 1,
-                description: "Findings in this category, or its single no-issues sentinel.",
-                items: { $ref: "#/$defs/finding" },
-              },
-            ]),
-          ),
-          required: [...categories],
-        },
-        verdict: { type: "string", enum: ["pass", "block"] },
-      },
-      required: ["findings", "verdict"],
-      $defs: {
-        finding: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            severity: { type: "string", enum: ["P0", "P1", "P2", "P3", "none"] },
-            location: { type: "string" },
-            finding: {
-              type: "string",
-              description:
-                "A concrete issue with a current impact, or the exact no-issues sentinel.",
-            },
-          },
-          required: ["severity", "location", "finding"],
-        },
-      },
-    },
+    parameters: createReviewParameters(categories),
   };
 }

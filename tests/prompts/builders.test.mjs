@@ -11,7 +11,7 @@ test("builds the shared request envelope and profile focus", () => {
   expect(prompt.model).toBe("gpt-6-luna");
   expect(prompt.input[0].content[0].text).not.toContain("ignore_example");
   expect(prompt.input[1].content[0].text).toContain("Review builders.");
-  expect(prompt.input[1].content[0].text).toContain("category sentinel");
+  expect(prompt.input[1].content[0].text).toContain("empty array");
 });
 
 test("builds a profile with default tool and instructions", () => {
