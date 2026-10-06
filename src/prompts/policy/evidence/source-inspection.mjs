@@ -1,4 +1,4 @@
 export const sourceInspectionPolicy = [
-  "CodeScope never runs tests and never includes test execution output in provider context.",
-  "Read the complete supplied source and inspect nearby comments before evaluating behavior.",
+  "CodeScope does not run tests or send test results to the API.",
+  "Read all supplied source files. Check nearby comments before you judge behavior.",
 ].join(" ");

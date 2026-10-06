@@ -1,6 +1,6 @@
 export const findingActionabilityPolicy = [
-  "Do not emit fully covered concerns as findings.",
-  "If no actionable findings remain, use empty arrays for review categories.",
-  "Do not require integration tests for delegated platform/runtime behavior when focused unit tests cover the application contract.",
-  "Do not treat provider-output shape as a CodeScope defect, but continue reviewing CodeScope's own response construction, parsing, preservation, fallback, error mapping, tool-call, and verdict logic for concrete defects.",
+  "Do not report a concern that the supplied evidence already handles.",
+  "Use empty arrays when a category has no actionable finding.",
+  "Do not require an integration test for platform or runtime behavior when focused unit tests check the application contract.",
+  "Do not report the API response format as a CodeScope defect. Review CodeScope's request and response handling, fallback, error mapping, tool calls, and verdict logic for proven defects.",
 ].join(" ");

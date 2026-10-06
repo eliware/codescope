@@ -1,16 +1,16 @@
 import { documentationReviewPolicy } from "../../../../src/prompts/policy/evidence/documentation-review.mjs";
 
 test("distinguishes materially misleading documentation from polish", () => {
-  expect(documentationReviewPolicy).toContain("qualifying P1");
-  expect(documentationReviewPolicy).toContain("remain P2/P3");
+  expect(documentationReviewPolicy).toContain("Use P1 and block the verdict");
+  expect(documentationReviewPolicy).toContain("Use P2 or P3 for small errors");
 });
 
 test("does not flag external-project claims based only on missing context", () => {
   expect(documentationReviewPolicy).toContain(
-    "Claims about linked external projects are not findings just because the referenced project's code or authoritative docs are absent.",
+    "Do not report a claim about an external project just because its code or official docs are not supplied.",
   );
   expect(documentationReviewPolicy).toContain(
-    "report them only when supplied evidence directly contradicts them or shows concrete impact in the reviewed repository.",
+    "Report it only when supplied evidence disproves it or shows a concrete effect in this repository.",
   );
   expect(documentationReviewPolicy).not.toContain("recommendation");
 });

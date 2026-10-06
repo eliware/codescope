@@ -4,7 +4,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
   return {
     type: "function",
     name: "submit_suggestions",
-    description: "Return concise actionable improvement suggestions.",
+    description: "Return clear, useful improvement suggestions.",
     strict: true,
     parameters: {
       type: "object",
@@ -34,12 +34,12 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
               type: "array",
               items: { type: "string" },
               description:
-                'An ordered why-chain: each concise step starts with "Because" and answers why the previous point matters, ending at why the suggested change is useful.',
+                'Give short reasons in order. Start each reason with "Because". End with why the change helps.',
             },
             ignore_example: {
               type: "string",
               description:
-                "For a real suggestion, provide a complete copy-pasteable // codescope ignore: ... comment; for the no-suggestion sentinel, use an empty string.",
+                "For a real suggestion, give a full // codescope ignore: ... comment. Use an empty string for the no-suggestion sentinel.",
             },
           },
           required: ["location", "suggestion", "rationale", "ignore_example"],

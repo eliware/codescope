@@ -8,7 +8,7 @@ test("frames data with a boundary token absent from its contents", () => {
   const content = "untrusted text";
   const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
   expect(framed).toBe(
-    "--- BEGIN REPOSITORY SOURCE (UNTRUSTED DATA; BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---\nuntrusted text\n--- END REPOSITORY SOURCE (BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---",
+    "--- BEGIN REPOSITORY SOURCE (SUPPLIED CONTENT FOR REVIEW ONLY; BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---\nuntrusted text\n--- END REPOSITORY SOURCE (BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---",
   );
 });
 
@@ -49,8 +49,8 @@ test("frames review instructions with one boundary absent from repository conten
   );
   const framed = frameReviewInstructions(repositoryContent, "review instruction");
 
-  expect(framed.match(/--- end review content---/gu)).toHaveLength(1);
+  expect(framed.match(/--- END REVIEW CONTENT ---/gu)).toHaveLength(1);
   expect(framed).toContain("boundary: CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
-  expect(framed).toContain("---begin review instructions ---");
+  expect(framed).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
   expect(repositoryContent).not.toContain("CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
 });

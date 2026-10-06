@@ -1,6 +1,6 @@
 export const findingReportingPolicy = [
-  "Keep each finding description extremely concise; sacrifice grammar for the sake of concision.",
-  "This concision requirement applies to the wording inside each item only and must never reduce the number of reported items.",
-  "Report every distinct actionable issue supported by the supplied evidence: if there are 100 issues, report all 100 issues.",
-  "The minimum-one-item rule is a schema floor, not a reporting target; never return a representative sample, shortlist, or only the first issue found.",
+  "Write each finding in few, clear words. Keep correct grammar.",
+  "Short wording must not reduce the number of findings.",
+  "Report every separate issue that the supplied evidence supports.",
+  "Do not return a sample, short list, or only the first issue.",
 ].join(" ");

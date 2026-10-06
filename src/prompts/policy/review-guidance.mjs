@@ -13,4 +13,4 @@ export const ceoPriorityGuidance = [
   transportPolicy,
 ].join("\n\n");
 
-export const globalReviewInstructions = `${ceoPriorityGuidance}\n\n${evidencePolicy}\n\nAssume the repository's full test suite passes unless concrete failing-test evidence is supplied. Review supplied test files for contract coverage, but do not require test-run output or infer an unobserved test failure.`;
+export const globalReviewInstructions = `${ceoPriorityGuidance}\n\n${evidencePolicy}\n\nThe request states that all npm tests passed 100%. Treat this as the supplied test status. CodeScope does not run tests. Review supplied tests for the behavior they check. Do not claim that a test failed unless this request supplies that result.`;

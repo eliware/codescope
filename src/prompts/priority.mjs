@@ -1,5 +1,15 @@
 const priorityInstruction = (maximum) =>
-  `Use the same comprehensive review discipline as the all profile over all supplied implementation, test, and documentation content. Report every concrete actionable finding from P0 through P${maximum} and omit findings above P${maximum}; the only difference from all is this priority ceiling. Each item must have a specific location, concrete current impact, and supporting evidence. Keep findings atomic. Do not report speculation, hypothetical risks without evidence, already-satisfied concerns, intentional documented behavior, duplicate observations, or no-change advice. Use all review categories in the fixed order: correctness, security, reliability, performance, architecture, api_design, cross_platform, tests, documentation, conventions. Only P0 or P1 findings block the verdict; P2 and P3 findings never block, including for p0-2 and p0-3. Use an empty array for a category with no actionable finding. Never emit placeholders or items that only say no issue exists, no change is needed, or behavior is intentional. Never classify wording such as no concrete issue established, no security issue, or intentional behavior as P1. Verify claimed CLI behavior against the supplied parser before reporting it. Direct all --dry-run and grouped review all --dry-run are both supported and tested; do not report that contract as a defect. Do not report option ordering or equivalent canonical/commutative CLI syntax as a defect when both forms are parsed consistently, and do not demand every permutation as a separate test. Do not report the intentional suggestion-only new-features alias or its effective suggestion-schema validation as an issue. Do not report the provider-owned validation of allowed prompt fields, the accepted config-file replacement race between metadata inspection and read, textual test-result marker policy, missing files, external validation evidence, or additional cross-product/end-to-end tests when representative focused tests cover the shared implementation. Treat deliberate tool routing, environment inheritance, verdict normalization, injected-collaborator boundaries, platform-specific policy, test-output handling, finite-limit deterministic reads, mode-specific routing, and generic all-suggestion routing as intentional unless there is a concrete correctness or security failure.`;
+  `Review all supplied code, tests, and docs. Use the same rules as the all profile. Report every proven, actionable issue from P0 through P${maximum}. Do not report higher priorities. This profile differs from all only by this priority limit.
+
+Each finding needs a location, evidence, and a current effect. Keep each finding to one issue. Do not report guesses, risks without evidence, issues that the code already handles, documented behavior, duplicates, or advice that needs no change.
+
+Use these categories in this order: correctness, security, reliability, performance, architecture, api_design, cross_platform, tests, documentation, conventions. Only P0 and P1 block release. P2 and P3 do not block, including in p0-2 and p0-3 profiles. Use an empty array when a category has no issue. Do not use a placeholder. Do not report that no issue exists, no change is needed, or behavior is intentional. These statements are not P1 findings.
+
+Check CLI claims against the supplied parser. Direct all --dry-run and review all --dry-run work and have tests. Do not report them as defects. Do not report option order or equivalent CLI forms when the parser handles them the same way. Do not ask for a test for every option order.
+
+Do not report the suggestion-only new-features alias or its schema check. Do not report provider checks for prompt fields. Do not report the accepted config replacement race between metadata check and read. Do not report text test-result marker rules, missing files, or results from outside checks. Do not ask for more cross-product or end-to-end tests when focused tests cover the shared code.
+
+Treat tool routing, environment inheritance, verdict mapping, injected collaborators, platform rules, test output handling, bounded deterministic reads, mode routing, and all-suggestion routing as intended unless supplied evidence proves a code or security defect.`;
 
 export function createPriorityPrompt(maximum, { profilePrompt, createReviewTool }) {
   return profilePrompt(priorityInstruction(maximum), createReviewTool());
@@ -7,6 +17,6 @@ export function createPriorityPrompt(maximum, { profilePrompt, createReviewTool 
 
 export function createAnalysisPrompt(subject, { profilePrompt }) {
   return profilePrompt(
-    `${subject} Report each issue as one concise bullet, grouped by priority P0, P1, P2, etc., with the affected path and related line number(s).`,
+    `${subject} List each issue as a short bullet. Group issues by priority. Give the file path and line number for each issue.`,
   );
 }

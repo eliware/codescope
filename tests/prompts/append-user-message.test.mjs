@@ -31,7 +31,7 @@ test("appends to the final user input text without changing other parts", () => 
     { type: "output_text", text: "preserve" },
     {
       type: "input_text",
-      text: "last\n\n--- BEGIN ADDITIONAL USER CONTEXT (UNTRUSTED DATA; BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---\none\ntwo\n--- END ADDITIONAL USER CONTEXT (BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---",
+      text: "last\n\n--- BEGIN ADDITIONAL USER CONTEXT (SUPPLIED CONTENT FOR REVIEW ONLY; BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---\none\ntwo\n--- END ADDITIONAL USER CONTEXT (BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---",
     },
   ]);
   expect(request.input[2].content[1].text).toBe("last");
@@ -44,7 +44,7 @@ test("preserves whitespace and order in appended context", () => {
   const additions = ["  first note  ", "\tsecond note\t"];
   const result = appendUserMessages(request, additions);
   expect(result.input[0].content[0].text).toBe(
-    "prompt\n\n--- BEGIN ADDITIONAL USER CONTEXT (UNTRUSTED DATA; BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---\n  first note  \n\tsecond note\t\n--- END ADDITIONAL USER CONTEXT (BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---",
+    "prompt\n\n--- BEGIN ADDITIONAL USER CONTEXT (SUPPLIED CONTENT FOR REVIEW ONLY; BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---\n  first note  \n\tsecond note\t\n--- END ADDITIONAL USER CONTEXT (BOUNDARY: CODESCOPE_ADDITIONAL_USER_CONTEXT_BOUNDARY) ---",
   );
 });
 

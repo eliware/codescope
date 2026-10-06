@@ -1,6 +1,6 @@
-export const p2P3Policy = `## P2 — Important follow-up
+export const p2P3Policy = `## P2 — Important issue
 
-Use P2 for a real, actionable issue that should be addressed but does not block the current release.
+Use P2 for a real issue that needs action but does not block this release.
 
 Examples:
 
@@ -17,7 +17,7 @@ Examples:
 
 P2 findings must not change the overall verdict from pass to block.
 
-## P3 — Polish and convenience
+## P3 — Minor improvement
 
 Use P3 for low-risk improvements:
 

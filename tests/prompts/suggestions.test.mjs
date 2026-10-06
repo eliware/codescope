@@ -7,6 +7,6 @@ test("builds implementation-only suggestion prompts through injected dependencie
   });
   expect(prompt.tool).toEqual({ name: "submit_suggestions" });
   expect(prompt.focus).toContain("Suggest architecture.");
-  expect(prompt.focus).toContain("Every category must contain at least one item.");
+  expect(prompt.focus).toContain("Put at least one item in every category.");
   expect(prompt.focus).toContain("rationale: []");
 });

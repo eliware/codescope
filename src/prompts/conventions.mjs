@@ -2,6 +2,6 @@ import { conventionPolicy } from "./policy/conventions.mjs";
 
 export function createConventionPrompt(profilePrompt) {
   return profilePrompt(
-    `${conventionPolicy}\n\nPerform a complete Eliware Test review over all supplied implementation, test, documentation, configuration, metadata, JSON, and inventory evidence. Review formatter compliance and semantic quality, but do not replace deterministic formatter checks owned by @eliware/test. Keep documentation semantic-quality findings distinct from deterministic file-existence or structural enforcement.`,
+    `${conventionPolicy}\n\nReview all supplied code, tests, docs, configuration, metadata, JSON, and file names against Eliware Test rules. Review formatting and meaning. Do not replace the formatter checks run by @eliware/test. Report content and meaning issues separately from file-name or structure checks.`,
   );
 }

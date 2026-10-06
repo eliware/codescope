@@ -1,3 +1,3 @@
 export const externalStateEvidencePolicy = [
-  "Do not infer npm pack, npm audit, Git status, deployment-readiness, rollback, registry state, or any other external check that was not supplied.",
+  "Do not guess the result of npm pack, npm audit, Git, deployment, rollback, registry, or any other check that is not supplied.",
 ].join(" ");

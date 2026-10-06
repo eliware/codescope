@@ -1,6 +1,6 @@
 import { runProviderSession } from "../../../src/review/execution/run-provider-review.mjs";
 
-test("sets finding review reasoning and logs one request and response", async () => {
+test("preserves finding review reasoning and logs one request and response", async () => {
   const requests = [];
   const debug = [];
   const originalError = console.error;
@@ -34,7 +34,7 @@ test("sets finding review reasoning and logs one request and response", async ()
   } finally {
     console.error = originalError;
   }
-  expect(requests[0].reasoning).toEqual({ effort: "none", mode: "standard", summary: null });
+  expect(requests[0].reasoning).toEqual({ effort: "high", mode: "standard", summary: "auto" });
   expect(requests).toHaveLength(1);
   expect(debug.filter((line) => line.startsWith("---"))).toEqual([
     "--- REVIEW REQUEST ---",

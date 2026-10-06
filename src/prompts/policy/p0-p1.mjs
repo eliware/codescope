@@ -1,53 +1,47 @@
-export const p0P1Policy = `## P0 — Emergency or test-gate failure
+export const p0P1Policy = `## P0 — Emergency or failed test
 
-Use P0 for an active or imminent severe incident, or any supplied test that
-was executed and failed. Any supplied test that was executed and failed is a
-release-blocking P0 regardless of whether the test is required or optional.
+Use P0 for an active or imminent emergency. Also use P0 for any supplied test
+that ran and failed. This rule applies to required and optional tests.
 
 - Active service outage affecting a required service.
 - Confirmed or imminent irreversible data loss or corruption.
 - Confirmed critical credential, secret, or private-key exposure.
-- Any supplied source, documentation, configuration, or test output that
-  contains an actual credential, token, password, private key, or other usable
-  secret is P0. This applies equally when the value is visible and when
-  CodeScope has replaced it with a redaction marker: treat the redacted
-  evidence as proof that secret material was present, and report the path or
-  output location. Do not classify labels, placeholders, examples, or text
-  that merely discusses secrets as exposure unless the supplied evidence shows
-  usable secret material. This rule overrides accepted-risk and intentional-
-  behavior exclusions.
-  Ciphertext and encrypted key-wrapping metadata alone are not usable secrets;
-  report them only when the supplied evidence also contains plaintext secret
-  material or a usable decryption key.
+- Supplied evidence contains a usable credential, token, password, private
+  key, or other secret. This rule applies to source, docs, configuration, and
+  test output.
+- CodeScope has hidden a usable secret with a redaction marker. Treat the
+  marker as proof. Report the file or output location.
+- Do not report a label, placeholder, example, or text about secrets unless
+  the evidence shows a usable secret.
+- This secret rule overrides accepted-risk and intentional-behavior rules.
+- Ciphertext or encrypted key data alone is not a usable secret. Report it
+  only if the evidence also has the plain secret or a usable decryption key.
 - A security defect that permits immediate unauthorized access or destructive control.
 - A production action currently causing uncontrolled damage.
 - Any Istanbul ignore outside a pure barrel/re-export file.
-P0 requires immediate action. It blocks all releases and may justify emergency intervention.
+P0 needs immediate action. It blocks every release.
 
-Do not use P0 for theoretical risks, ordinary bugs, missing tests, stale
-documentation, or unused code unless the finding includes a concrete test
-that was executed and failed. A concrete executed failing test is always P0.
+Do not use P0 for theories, ordinary bugs, missing tests, old documentation,
+or unused code. Use P0 for these only when a supplied test ran and failed.
 Istanbul ignores are permitted only in pure barrel/re-export files. When an
 Istanbul ignore appears elsewhere, report it as P0.
 
 ## P1 — Release blocker
 
-Use P1 only when every condition below is true:
+Use P1 only when all these points are true:
 
-1. The finding is reproducible or directly proven by concrete evidence.
-2. It affects required behavior in the current release scope.
-3. It causes a required test, contract, validation gate, or acceptance path to fail or remain unverified.
-4. It could cause data loss, unsafe behavior, security failure, incorrect production operation, or a materially misleading release.
-5. It cannot reasonably be deferred without making this release unsafe or incomplete.
-6. The finding has a specific location and demonstrated impact.
+1. Evidence proves the issue or lets another person repeat it.
+2. The issue affects behavior required in this release.
+3. It makes a required test, contract, check, or acceptance path fail or lack proof.
+4. It can cause data loss, unsafe behavior, a security failure, wrong production behavior, or a misleading release.
+5. The team cannot defer it and still make a safe release.
+6. It has a specific location and a proven effect.
 
-Validation-integrity defects are qualifying P1 findings when they can make a
-green result untrustworthy, even if the current test command exits successfully.
-This includes ignored coverage counters, incorrect coverage derivation,
-coverage artifacts that can be mixed or overwritten between runs, and missing
-checks that permit a required validation result to report success incorrectly.
-Treat the defect itself as P1; classify a missing regression test separately
-as P2 unless that test failure is supplied and executed.
+Use P1 for a validation defect that can make a passing result untrustworthy.
+Examples include ignored coverage counts, wrong coverage calculations, mixed
+or overwritten coverage files, and missing checks that allow a false pass.
+Classify the defect as P1. Classify a missing regression test as P2, unless a
+supplied test ran and failed.
 
 Examples:
 
@@ -62,8 +56,8 @@ Examples:
 - A mandatory release artifact is missing or generated from the wrong commit.
 - A required production or deployment configuration is invalid.
 - Coverage or validation logic can report a passing result while omitting required source lines, branches, functions, or statements.
-- Concurrent or stale validation artifacts can contaminate a required result, produce a false pass, or make the result non-deterministic.
-- Required source logic lacks a corresponding test and the omission leaves required behavior or the 100×4 gate unverified.
+- Old or concurrent validation files can mix with current results, cause a false pass, or change the result between runs.
+- Required code has no test, so required behavior or the 100×4 gate lacks proof.
 
 Do not use P1 for:
 

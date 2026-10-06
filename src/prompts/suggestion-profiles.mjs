@@ -6,7 +6,7 @@ export function createSuggestionProfiles({ profilePrompt, suggestionTool }) {
   return {
     architecturePrompt: implementationOnlyPrompt("Suggest architecture optimizations only."),
     newFeaturesPrompt: implementationOnlyPrompt(
-      "Suggest new features only. Do not report existing bugs, risks, quality issues, refactoring opportunities, missing tests, or documentation problems. Do not assign P0/P1/P2 priorities to feature suggestions. For each concise suggestion, state the user value and likely implementation area.",
+      "Suggest new features only. Do not report bugs, risks, quality issues, refactoring, missing tests, or documentation problems. Do not assign P0, P1, or P2 priorities. For each suggestion, state its user value and likely code area.",
     ),
     securityPrompt: implementationOnlyPrompt("Identify security risks only."),
     performancePrompt: implementationOnlyPrompt("Identify performance risks only."),
@@ -15,11 +15,9 @@ export function createSuggestionProfiles({ profilePrompt, suggestionTool }) {
     dependenciesPrompt: implementationOnlyPrompt("Suggest dependency improvements only."),
     observabilityPrompt: implementationOnlyPrompt("Suggest observability improvements only."),
     accessibilityPrompt: implementationOnlyPrompt(
-      "Suggest accessibility improvements only for user-facing behavior.",
+      "Suggest accessibility improvements for user-facing behavior only.",
     ),
     quickWinsPrompt: implementationOnlyPrompt("Suggest only high-value, low-effort improvements."),
-    prioritizePrompt: implementationOnlyPrompt(
-      "Prioritize existing improvement opportunities only.",
-    ),
+    prioritizePrompt: implementationOnlyPrompt("Rank existing improvement opportunities only."),
   };
 }

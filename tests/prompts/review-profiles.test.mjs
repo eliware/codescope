@@ -6,6 +6,6 @@ test("builds the focused review profile prompts", () => {
     reviewTool: { name: "submit_review" },
   });
   expect(Object.keys(profiles)).toEqual(["prompt", "refactorPrompt", "reviewTool"]);
-  expect(profiles.prompt.focus).toContain("actionable implementation issues");
-  expect(profiles.refactorPrompt.focus).toContain("monolithic-file");
+  expect(profiles.prompt.focus).toContain("proven, actionable code issues");
+  expect(profiles.refactorPrompt.focus).toContain("large files that combine separate jobs");
 });

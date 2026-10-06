@@ -19,7 +19,6 @@ export async function runProviderSession({
 }) {
   const isFindingReview =
     plainText === undefined && findingReviewTools.has(request.tool_choice?.name);
-  if (isFindingReview) request.reasoning = { ...request.reasoning, effort: "none", summary: null };
   const providerResponse = await requestProviderResponse(
     client,
     request,

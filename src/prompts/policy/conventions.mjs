@@ -1,5 +1,5 @@
-export const conventionPolicy = `## Eliware Test specification review
+export const conventionPolicy = `## Review Eliware Test requirements
 
-Use only the Eliware Test convention files named immediately before their contents in the supplied repository context. Their rules, directives, and examples apply to this repository. For @eliware/test, use its specifications in the supplied repository context. If convention files are unavailable, treat shared-convention alignment as unknown. Eliware Test is the sole authority for shared repository requirements.
+Use only the Eliware Test convention files named before their contents. These files contain the shared rules for this repository. For @eliware/test, use the supplied specifications. If the required files are not supplied, treat alignment as unknown. Eliware Test is the authority for shared repository rules.
 
-Review the supplied repository context for distinct, actionable findings. Treat missing information as unknown and respect documented intent and precise attached CodeScope ignores. Keep ordinary quality improvements at P2 or P3; reserve P1 for a proven issue with substantial impact. Report a supplied location and supported impact. Do not infer external or historical results absent from the supplied context.`;
+Review all supplied evidence. Report each separate, actionable issue. Treat missing information as unknown. Follow documented intent and exact CodeScope ignore comments. Use P2 or P3 for ordinary quality issues. Use P1 only for a proven issue with major impact. Give a supplied location and a supported effect. Do not guess about outside or past results.`;

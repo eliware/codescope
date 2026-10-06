@@ -197,9 +197,9 @@ directives:
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
           - For review requests, use Responses explicit prompt caching with a breakpoint after the
-            stable developer and review user context. Set finding-review requests' reasoning effort
-            to `none` and summary to `null`. Keep the review tool schema limited to findings and
-            verdict.
+            stable developer and review user context. Preserve the selected finding-review
+            reasoning effort, defaulting to `none`, and set the summary to `null`. Keep the review
+            tool schema limited to findings and verdict.
         donts:
           - Do not make the provider verdict or any finding priority change the CLI exit code.
           - Do not report absent test execution output, an unobserved test failure, or a test-run

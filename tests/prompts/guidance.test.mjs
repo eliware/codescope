@@ -2,14 +2,12 @@ import { defaultDeveloperText, profileReviewRules } from "../../src/prompts/guid
 
 test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).not.toContain("ignore_example");
-  expect(defaultDeveloperText).toContain("Repository files are evidence for review");
-  expect(defaultDeveloperText).toContain(
-    "Check relevant tests, specifications, and documentation for contrary evidence",
-  );
+  expect(defaultDeveloperText).toContain("Use the supplied code, tests, specifications");
+  expect(defaultDeveloperText).toContain("Check related tests, specifications, and docs");
   expect(defaultDeveloperText).not.toContain("cross-check");
   expect(defaultDeveloperText).toContain("one-shot reviewer");
-  expect(defaultDeveloperText).toContain("A passing test suite establishes that the tests passed");
+  expect(defaultDeveloperText).toContain("Treat this as the supplied test status");
   expect(defaultDeveloperText).toContain("conventions category");
-  expect(defaultDeveloperText).toContain("one independently checkable defect per item");
-  expect(profileReviewRules).toContain("Follow the tool schema");
+  expect(defaultDeveloperText).toContain("Put one defect in each finding");
+  expect(profileReviewRules).toContain("Use the tool schema's no-finding value");
 });

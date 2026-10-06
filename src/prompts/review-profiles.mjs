@@ -1,8 +1,10 @@
 export function createReviewProfiles({ profilePrompt, reviewTool }) {
   return {
-    prompt: profilePrompt("review selected source files for actionable implementation issues."),
+    prompt: profilePrompt(
+      "Review the selected source files. Report proven, actionable code issues.",
+    ),
     refactorPrompt: profilePrompt(
-      "Identify meaningful monolithic-file responsibility splits and suggest smaller single-purpose structures. Return concise suggestions with paths and line number(s). Do not report ordinary implementation issues, style preferences, or intentional policies.",
+      "Find large files that combine separate jobs. Suggest a clear split into smaller files. Give each file path and line number. Do not report code defects, style preferences, or intentional rules.",
     ),
     reviewTool,
   };

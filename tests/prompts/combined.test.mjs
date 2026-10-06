@@ -22,7 +22,7 @@ test("adds the unified tool and one consolidated guidance message", () => {
   expect(result.input[1].content[0].text).toBe("review");
   expect(result.input).toHaveLength(allPrompt.input.length + 1);
   expect(result.input.at(-1).content[0].text).toContain(
-    "Review the supplied repository as a release candidate",
+    "Review the supplied repository for this release",
   );
   expect(allPrompt.input[1].content[0].text).toBe("review");
 });
@@ -30,6 +30,8 @@ test("adds the unified tool and one consolidated guidance message", () => {
 test("switches only the completeness message for release-gate mode", () => {
   const standard = buildPrompt().result;
   const release = buildPrompt(true).result;
-  expect(standard.input.at(-1).content[0].text).toContain("report every distinct actionable");
-  expect(release.input.at(-1).content[0].text).toContain("include only unresolved P0/P1 blockers");
+  expect(standard.input.at(-1).content[0].text).toContain("report every proven P0-P3 issue");
+  expect(release.input.at(-1).content[0].text).toContain(
+    "report only unresolved P0 or P1 blockers",
+  );
 });

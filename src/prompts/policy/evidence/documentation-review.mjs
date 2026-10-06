@@ -1,5 +1,5 @@
 export const documentationReviewPolicy = [
-  "Documentation that falsely claims a command, API, option, or required usage path exists when it does not is a qualifying P1 and requires verdict block.",
-  "Minor documentation wording, formatting, examples, and other documentation discrepancies remain P2/P3 unless they materially misrepresent how to use the app or API.",
-  "Claims about linked external projects are not findings just because the referenced project's code or authoritative docs are absent. Treat those claims as unknown unless authoritative evidence is supplied; report them only when supplied evidence directly contradicts them or shows concrete impact in the reviewed repository.",
+  "Use P1 and block the verdict when docs say that a command, API, option, or required use exists, but it does not.",
+  "Use P2 or P3 for small errors in wording, format, or examples. Use a higher priority only when the docs give wrong instructions for the app or API.",
+  "Do not report a claim about an external project just because its code or official docs are not supplied. Treat the claim as unknown. Report it only when supplied evidence disproves it or shows a concrete effect in this repository.",
 ].join(" ");

@@ -1,3 +1,3 @@
 export const missingEvidencePolicy = [
-  "Missing or excluded files and absent command output are not evidence of failure or absence.",
+  "A missing or excluded file does not prove failure or absence. Missing command output does not prove failure or success.",
 ].join(" ");

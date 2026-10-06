@@ -5,7 +5,7 @@ export function createReviewParameters(categories) {
     properties: {
       findings: {
         type: "object",
-        description: "Every review category, with an empty array when it has no findings.",
+        description: "All review categories. Use an empty array when a category has no findings.",
         additionalProperties: false,
         properties: Object.fromEntries(
           categories.map((category) => [
@@ -37,7 +37,7 @@ export function createReviewParameters(categories) {
           evidence: {
             type: "string",
             description:
-              "Specific supplied code and relevant test, specification, or documentation evidence.",
+              "Code and related test, specification, or documentation evidence from this request.",
           },
           impact: { type: "string", description: "Concrete effect of the demonstrated defect." },
         },

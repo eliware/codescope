@@ -4,5 +4,5 @@ test("registers the review-family prompt sources", () => {
   const profilePrompt = (focus) => ({ focus });
   const result = createReviewPromptSources(profilePrompt);
   expect(Object.keys(result.sources)).toEqual(["conventions", "refactor"]);
-  expect(result.defaultPrompt.focus).toContain("actionable implementation issues");
+  expect(result.defaultPrompt.focus).toContain("proven, actionable code issues");
 });

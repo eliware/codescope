@@ -14,7 +14,7 @@ test("routes the conventions profile through the full review tool", () => {
   const result = getPromptRouting("conventions", "review").promptSource;
   expect(result.tools.map((tool) => tool.name)).toEqual(["submit_review"]);
   expect(JSON.stringify(result.input)).toContain("convention files named");
-  expect(JSON.stringify(result.input)).toContain("immediately before their contents");
+  expect(JSON.stringify(result.input)).toContain("named before their contents");
 });
 
 test("routes generic suggestions and scoped reviews", () => {

@@ -2,6 +2,6 @@ import { missingEvidencePolicy } from "../../../../src/prompts/policy/evidence/m
 
 test("treats absent evidence as unknown", () => {
   expect(missingEvidencePolicy).toBe(
-    "Missing or excluded files and absent command output are not evidence of failure or absence.",
+    "A missing or excluded file does not prove failure or absence. Missing command output does not prove failure or success.",
   );
 });

@@ -12,8 +12,7 @@ export function createUnifiedReviewParameters(categories) {
             {
               type: "array",
               minItems: 1,
-              description:
-                "Complete list of actionable findings, or exactly one no-issues sentinel.",
+              description: "List every finding. If none remain, return one no-issues sentinel.",
               items: { $ref: "#/$defs/finding" },
             },
           ]),
@@ -35,13 +34,13 @@ export function createUnifiedReviewParameters(categories) {
           severity: {
             type: "string",
             enum: ["P0", "P1", "P2", "P3", "none"],
-            description: "Applicable priority, or none for the no-issues sentinel.",
+            description: "Use the issue priority. Use none for the no-issues sentinel.",
           },
           location: { type: "string" },
           finding: {
             type: "string",
             description:
-              "A concrete, evidence-supported issue requiring action, or the exact no-issues sentinel.",
+              "For P0-P3, state one current defect, its cause, and its effect. Do not include claims that you reject or say that no defect exists. For none, use exactly 'No issues found.'.",
           },
         },
         required: ["severity", "location", "finding"],

@@ -1,6 +1,8 @@
 import { profileVerdictPolicy } from "../../../../src/prompts/policy/evidence/profile-verdict.mjs";
 
 test("limits verdict handling to review profiles", () => {
-  expect(profileVerdictPolicy).toContain("normal review and unified-review profiles");
-  expect(profileVerdictPolicy).toContain("suggestion and custom-prompt profiles do not validate");
+  expect(profileVerdictPolicy).toContain("Use the API verdict as status for review profiles only");
+  expect(profileVerdictPolicy).toContain(
+    "Suggestion and custom-prompt profiles do not check a verdict",
+  );
 });

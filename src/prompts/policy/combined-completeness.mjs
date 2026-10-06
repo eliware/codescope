@@ -1,23 +1,23 @@
-const completenessTemplate = `Review the supplied repository as a release candidate. Use the supplied code, tests, specifications, documentation, inventory, and applicable Eliware Test conventions. Treat missing information as unknown; do not invent files, behavior, test results, or external state.
+const completenessTemplate = `Review the supplied repository for this release. Use the supplied code, tests, specifications, docs, file inventory, and Eliware Test conventions. Treat missing information as unknown. Do not invent files, behavior, test results, or outside facts.
 
-Report a finding only when the supplied evidence supports all of these:
-1. Current behavior: identify the supplied code or artifact that causes the defect or contradicts the applicable requirement.
-2. Contract: check relevant specifications, documentation, conventions, and tests. An existing test that directly exercises the claimed behavior may disprove the finding. Passing tests do not disprove behavior they do not cover.
-3. Concrete impact: explain what fails or is materially affected in supported usage, or describe a reachable code path that causes that impact. A failing test or runtime reproduction is not required when the supplied evidence establishes the causal path.
+Report an issue only when the supplied evidence supports every point:
+1. Name the current behavior. Name the code or file that causes it.
+2. Name the rule or supported use that it breaks. Check related code, tests, specifications, and docs. A test can disprove a claim when it checks the same behavior. A passing test does not prove behavior that it does not check.
+3. State the effect in supported use. Give a code path that can cause this effect. A test run is not required when the supplied code proves the path.
 
-The claim, cited cause, contract, and impact must agree. If only part of a claim is supported, report only that narrower defect and remove unsupported details. Do not include a finding that also says its own claim is harmless, already handled, or correct.
+Make the claim, cause, rule, and effect agree. If only part of a claim is true, report only that part. Do not report a claim that says the behavior is safe, correct, or already handled.
 
-Omit hypothetical risks without a supported causal path, behavior explicitly outside the documented contract, behavior that supplied tests establish is correct under the applicable contract, documented intentional behavior, duplicate observations, preferences without a demonstrated defect, and missing tests unless a specific consequential contract gap remains. Do not propose new features. Do not require evidence that CodeScope cannot obtain from the supplied request.
+Do not report a theory without a code path. Do not report behavior that the docs allow or the tests prove correct. Do not report a preference, duplicate issue, or missing test alone. Do not suggest new features. Do not ask for evidence that this request cannot supply.
 
-Report every distinct finding that meets this standard; do not stop after one finding in a category, return a sample, or invent findings to fill categories. Report shared Eliware Test requirement violations in the conventions category; place implementation defects in their relevant categories. {{FINDING_SCOPE}}
+Report each separate issue that meets these rules. Do not return a sample. Do not add issues to fill a category. Put shared Eliware Test issues in conventions. Put code defects in the matching category. {{FINDING_SCOPE}}
 
-Use P0 for an active emergency, a usable secret in supplied evidence, or a supplied test failure. Treat a redaction marker as evidence of a usable secret; identify its path. Ciphertext alone is not a usable secret. Use P1 only for a proven required-scope release blocker that cannot reasonably wait. Use P2 for actionable non-blockers and P3 for polish. Only unresolved P0/P1 findings block. Do not infer CI, release, registry, or other external results. Do not treat provider response content or shape as a CodeScope defect. Do not list known issues as new findings, but let unresolved P0/P1 known issues block.
+Use P0 for an active emergency, a usable secret in supplied evidence, or a supplied test failure. A redaction marker shows that usable secret data was present. Name its file. Ciphertext alone is not a usable secret. Use P1 only for a proven release blocker that cannot wait. Use P2 for a real issue that does not block release. Use P3 for low-risk polish. Only P0 and P1 block. Do not infer CI, release, registry, or other outside results. Do not report provider response content or format as a CodeScope defect. Do not report a known issue as new. Keep the block verdict for an unresolved P0 or P1 known issue.
 
-Return the complete review using submit_unified_review. Each finding must contain severity, location, and one concise description of the defect with its supplied evidence and concrete impact. Keep each finding to one independently checkable defect. Return every category required by the schema. When a category has no findings, return exactly one sentinel with severity "none", location "none", and finding "No issues found." Set verdict to block only for unresolved P0/P1 findings.`;
+Return the full review with submit_unified_review. Check each candidate before you call the tool. The tool call is the final result. Do not use it to describe rejected candidates. Each finding must state one defect, its evidence, and its effect. Do not include a doubt, counterexample, correction, or statement that no defect exists in a finding. Omit a claim that fails any rule above. Return every category in the schema. For an empty category, return one sentinel: severity "none", location "none", finding "No issues found." If no issues remain, use sentinels in all categories and set verdict to "pass". Set verdict to "block" only for unresolved P0 or P1 findings.`;
 
 export function combinedCompletenessGuidance(releaseGate) {
   const findingScope = releaseGate
-    ? "For release review, include only unresolved P0/P1 blockers; use the no-issues sentinel in every other category."
-    : "For all review, report every distinct actionable P0-P3 finding; P2/P3 findings do not block. This comprehensive all review is the release iteration gate: report actionable non-blocking findings too, so owners can resolve them before the next run.";
+    ? "For release review, report only unresolved P0 or P1 blockers. Use the no-issues sentinel in every other category."
+    : "For all review, report every proven P0-P3 issue. P2 and P3 do not block. This review supports the release gate. Report issues that the owner can fix before the next review.";
   return completenessTemplate.replace("{{FINDING_SCOPE}}", findingScope);
 }

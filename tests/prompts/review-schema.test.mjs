@@ -17,6 +17,8 @@ test("defines empty review categories and evidence-backed findings", () => {
     "impact",
   ]);
   expect(parameters.$defs.finding.properties.severity.enum).toEqual(["P0", "P1", "P2", "P3"]);
-  expect(parameters.$defs.finding.properties.evidence.description).toContain("supplied code");
+  expect(parameters.$defs.finding.properties.evidence.description).toContain(
+    "Code and related test",
+  );
   expect(parameters.$defs).not.toHaveProperty("assessment");
 });

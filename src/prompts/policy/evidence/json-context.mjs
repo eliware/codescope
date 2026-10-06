@@ -1,3 +1,3 @@
 export const jsonContextPolicy = [
-  "JSON content supplied from the repository root, docs, examples, and specs is review evidence; package-lock.json and unsupplied JSON are not.",
+  "Review supplied JSON files from the repository root, docs, examples, and specs. Do not review package-lock.json or JSON files that are not supplied.",
 ].join(" ");
