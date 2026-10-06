@@ -4,7 +4,7 @@ export const baseRequest = {
   model: "gpt-6-luna",
   service_tier: "default",
   text: { format: { type: "text" }, verbosity: "low" },
-  reasoning: { effort: "none", mode: "standard", summary: null },
+  reasoning: { effort: "low", mode: "standard", summary: null },
   tools: [reviewTool],
   tool_choice: { type: "function", name: "submit_review" },
   parallel_tool_calls: false,

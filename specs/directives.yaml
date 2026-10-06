@@ -156,7 +156,7 @@ directives:
           - Keep one explicit breakpoint after stable developer instructions and conventions.
           - Do not set cache mode to explicit-only.
           - Keep review tool schemas limited to findings and verdict.
-          - Use finding-review effort `none` by default and summary `null`.
+          - Use finding-review effort `low` by default and summary `null`.
         donts:
           - Do not let findings or the provider verdict change the CLI exit code.
           - Do not report missing test output, an unseen failure, or an unsupported test-run requirement.
