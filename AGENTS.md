@@ -30,7 +30,6 @@ Read [Eliware Docs](https://github.com/eliware/docs) for authority rules.
 Read [Eliware Test conventions](https://github.com/eliware/test/blob/main/specs/conventions/README.md) for shared repository rules.
 Read [Eliware Operations](https://github.com/eliware/operations/blob/main/README.md) for procedures.
 Keep these instructions actionable, current, concise, and project-specific.
-<!-- These links identify shared authorities; CodeScope ownership remains defined above. -->
 
 Project rules may add shared rules. They must not weaken shared rules without authorization.
 
@@ -140,7 +139,6 @@ The public package is `@eliware/codescope`.
 The repository is <https://github.com/eliware/codescope>.
 
 The exact `package.json.files` allowlist is `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, and `bin/`.
-<!-- Specifications are repository review rules; they are not part of the published package. -->
 
 The pack command is `eliware-test --pack`.
 Package checks must pass before publication.

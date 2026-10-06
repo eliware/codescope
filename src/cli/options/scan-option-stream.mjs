@@ -25,7 +25,6 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
     }
     if (option?.kind === "dry-run") {
       dryRun += 1;
-      // Keep the token when requested so command-specific validation can reject unsupported use.
       if (keepScalarOptions) remaining.push(token);
       continue;
     }
@@ -44,7 +43,6 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
       continue;
     }
 
-    // Command parsing scans the remaining tokens after leading-only parsing stops here.
     remaining.push(...tokens.slice(index));
     break;
   }

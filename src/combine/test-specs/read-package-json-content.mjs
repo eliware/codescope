@@ -62,13 +62,11 @@ async function readInspectedPackageJson(packagePath, inspectFile, openFile) {
       return { kind: "unavailable", reason: "package.json exceeds the 100000-byte read limit" };
     return { kind: "available", contents: decodePackageJsonBytes(result.data) };
   } catch {
-    // Unreadable package metadata stays unknown; do not infer selected conventions from stale metadata.
     return { kind: "unavailable", reason: "package.json could not be read" };
   }
 }
 
 function decodePackageJsonBytes(bytes) {
-  // The decoder removes a leading UTF-8 BOM before package.json parsing.
   return new TextDecoder("utf-8", { fatal: true, ignoreBOM: false }).decode(bytes);
 }
 

@@ -6,7 +6,6 @@ export function isAbsolutePortablePath(relativePath) {
   return (
     path.posix.isAbsolute(relativePath) ||
     path.win32.isAbsolute(relativePath) ||
-    // POSIX treats //name as absolute; this also rejects portable UNC roots.
     /^(?:\\\\|\/\/)/u.test(relativePath)
   );
 }
@@ -25,11 +24,9 @@ export function resolveConfigPath(root, relativePath, platform = process.platfor
 export function selectConfigFiles(inventory, platform = process.platform) {
   return inventory
     .map((relativePath) =>
-      // Windows inventory paths use forward slashes; normalize before section ownership checks.
       platform === "win32" ? relativePath.replaceAll("\\", "/") : relativePath,
     )
     .filter((relativePath) => {
-      // The JSON section supplies nested .github/.knit JSON files; exclude them to avoid duplicate evidence.
       const normalized = relativePath.toLowerCase();
       const isCollectedElsewhere = CONTENT_EXTENSIONS.some((extension) =>
         normalized.endsWith(extension),

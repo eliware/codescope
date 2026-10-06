@@ -29,7 +29,6 @@ export async function findFiles(
     const metadata = await inspectRoot(root);
     validateScanRootMetadata(metadata);
   } catch (cause) {
-    // Injected directory adapters may model virtual roots that do not exist on disk.
     if (readDirectory === readdir || cause?.code !== "ENOENT") throw cause;
   }
 

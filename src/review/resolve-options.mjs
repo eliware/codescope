@@ -17,7 +17,6 @@ export function resolveReviewOptions(cwd, options = {}) {
     platform: process.platform,
   };
   const resolved = { ...defaults, ...options };
-  // Only a supplied envFile makes the path explicit. The default file stays optional.
   resolved.envFileExplicit = Object.hasOwn(options, "envFile");
   resolved.openEnvFile ??= defaults.openEnvFile;
   validateReviewOptions(cwd, resolved);

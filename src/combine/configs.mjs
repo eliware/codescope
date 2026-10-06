@@ -8,7 +8,6 @@ export async function combineConfigFiles(
   { inventory, readFileContents, inspectFile, concurrency = 8, platform = process.platform } = {},
 ) {
   validateScanRoot(root, platform);
-  // Reject portable absolute paths before resolving inventory paths against the root.
   for (const relativePath of inventory)
     if (isAbsolutePortablePath(relativePath))
       throw new Error(`Configuration path escapes review root: ${relativePath}`);

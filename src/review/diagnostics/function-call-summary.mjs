@@ -12,9 +12,7 @@ export function readFunctionCallArguments(response) {
         typeof item.arguments === "string" ? item.arguments : JSON.stringify(item.arguments);
       if (typeof rawArguments !== "string") continue;
       calls.push({ name: redactTextOutput(rawName), arguments: redactTextOutput(rawArguments) });
-    } catch {
-      // Preserve unaffected calls when one provider item is malformed.
-    }
+    } catch {}
   }
   return calls.length ? calls : undefined;
 }

@@ -23,7 +23,6 @@ jobs:
           cache: npm
       - run: npm -g install npm@latest
       - run: npm ci
-      # Aggregate validation runs the package check for this published package.
       - run: npm test
 
   publish:

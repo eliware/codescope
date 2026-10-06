@@ -2,7 +2,6 @@ const MAX_CONFIG_LINES = 200;
 
 export function formatConfigSection(relativePath, { text, byteTruncated }) {
   const lines = text.split(/\r\n|\r|\n/u);
-  // codescope ignore: remove only the final-newline split artifact.
   if (lines.at(-1) === "") lines.pop();
   const lineTruncated = lines.length > MAX_CONFIG_LINES;
   const visibleLines = lines.slice(0, MAX_CONFIG_LINES);

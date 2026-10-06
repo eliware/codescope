@@ -27,7 +27,6 @@ export async function runProviderSession({
     debugRequest,
     debugRequest && isFindingReview ? findingReviewDebugMarkers : undefined,
   );
-  // This opt-in dump prints full responses; docs warn that captured logs can contain sensitive evidence.
   if (debugRequest && !isFindingReview) console.error(JSON.stringify(providerResponse, null, 2));
 
   let output;

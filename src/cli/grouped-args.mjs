@@ -4,7 +4,6 @@ import { parseOptionValues } from "./options/parse-values.mjs";
 
 export function parseGroupedArgs(mode, tokens) {
   const usage = "Usage: codescope review|suggest <profile> [options]";
-  // Scan the full command first so options after the profile remain in values.
   const values = parseOptionValues(tokens);
   const [profile, ...profileTokens] = values.remaining;
   if (!profile) throw new Error(usage);
@@ -15,7 +14,6 @@ export function parseGroupedArgs(mode, tokens) {
   const profileValues = parseCommandOptions(
     profileTokens,
     usage,
-    // These options remain valid after the profile name.
     new Set(["--usage", "--debug-request", "--help", "-h"]),
   );
   return {
@@ -23,7 +21,6 @@ export function parseGroupedArgs(mode, tokens) {
     mode,
     option: profileValues.remaining[0],
     options: profileValues.remaining,
-    // The first scan captures shared options from either side of the profile name.
     effort: values.effort,
     model: values.model,
     ...(values.usage ? { usage: true } : {}),

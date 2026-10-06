@@ -43,7 +43,7 @@ Use `--dry-run` to estimate token use without a provider call.
 
 Finding reviews default to effort `none` and reasoning summary `auto`.
 The `--effort` option selects the effort sent to the provider.
-Debug output can contain repository evidence. Protect these logs.
+Debug output is raw and is not redacted. It can contain repository evidence or sensitive values returned by the provider. Protect these logs.
 
 Finding reviews print `--- REVIEW REQUEST ---` before send and `--- REVIEW RESPONSE ---` after receipt.
 Suggestions and custom prompts print their single request and response.
@@ -60,5 +60,6 @@ Add guidance with `-a <text>`, `--add <text>`, `-a=<text>`, or `--add=<text>`.
 For example, run `codescope prompt "your question" --add "Focus on changed files"`.
 
 Put additions before an optional `--` delimiter.
-If prompt text begins with `-`, use `--` before trailing options.
+If prompt text begins with `-`, put it before `--` and put trailing options after `--`.
+For example, run `codescope prompt --summarize this -- --effort=low`.
 After `--`, use only `--effort`, `--model`, or `--debug-request`.

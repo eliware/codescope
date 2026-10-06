@@ -15,7 +15,6 @@ function formatTestSpecDeveloperInstructions(instructions) {
     : "";
 }
 
-// Keep this focused adapter below the repository's 100-line source limit.
 export function attachRepositoryEvidence(request, combined) {
   const testSpecContext = extractTestSpecPromptContext(combined);
   const developer = request.input.find((item) => item.role === "developer");

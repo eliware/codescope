@@ -51,6 +51,7 @@ npm install -g @eliware/codescope
 npm install @eliware/codescope
 ```
 
+The package maps the `codescope` command to `bin/codescope.mjs`.
 Run a project-local install with `npx codescope --help`.
 Run a global install with `codescope`.
 
@@ -89,14 +90,12 @@ codescope --help
 See [Quick start](docs/quick-start.md) for the owner workflow and profile list.
 See [documentation](docs/README.md) for user guidance.
 See [specifications](specs/README.md) for CodeScope rules.
-<!-- The specs folder is a repository source and is intentionally outside the npm package allowlist. -->
-<!-- These links point to supplied, existing documentation and specification indexes. -->
 
 The executable is `bin/codescope.mjs`.
 The package command is `codescope`.
 The package export is `src/cli/main.mjs`.
 The version is in `package.json`. Release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
-Publication requires successful Ubuntu validation and an exact `v#.#.#` tag that matches the package version.
+Publication requires successful Ubuntu validation, an exact `v#.#.#` tag that matches the package version, and clear authorization through the Eliware Operations release handoff. Passing checks and a matching tag do not authorize publication.
 
 ## Development
 
@@ -117,7 +116,7 @@ npm run format:check
 ```
 
 Use `npm test` as the aggregate validation command.
-<!-- The aggregate command runs the validation checks listed above. -->
+The `test` script runs `eliware-test`, which performs aggregate validation.
 
 CodeScope does not run commands in a reviewed repository.
 

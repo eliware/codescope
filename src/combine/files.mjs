@@ -28,8 +28,6 @@ export async function combineFiles(
     testsOnly,
   });
 
-  // Windows-style roots are rejected above on non-Windows hosts; on supported
-  // hosts the native path implementation is the only valid one.
   return combineFileSections(root, selectedFiles, {
     maxChars,
     concurrency,

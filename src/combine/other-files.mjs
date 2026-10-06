@@ -21,7 +21,6 @@ export async function describeOtherFiles(
   const pathApi = platform === "win32" ? path.win32 : path.posix;
   const rootPath = pathApi.resolve(root);
   const paths = selectInventoryFiles(root, inventory, pathApi, isIncludedContent);
-  // The provider receives formatted inventory metadata, not sampled file bytes.
   const read = (relativePath) =>
     readInventoryEntry(rootPath, relativePath, { pathApi, readOtherFileContents, inspectFile });
   if (Number.isFinite(maxChars)) {
@@ -29,7 +28,6 @@ export async function describeOtherFiles(
     for (const relativePath of paths) {
       const entry = await read(relativePath);
       const candidate = [...entries, entry];
-      // Keep skipped paths in the omitted count. Continue to test later, smaller entries.
       if (
         formatInventorySectionResult(candidate, maxChars, paths.length).included < candidate.length
       )
