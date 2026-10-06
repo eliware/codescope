@@ -9,7 +9,11 @@ Make the claim, cause, rule, and effect agree. If only part of a claim is true, 
 
 Do not report a theory without a code path. Do not report behavior that the docs allow or the tests prove correct. Do not report a preference, duplicate issue, or missing test alone. Do not suggest new features. Do not ask for evidence that this request cannot supply.
 
-Report each separate issue that meets these rules. Do not return a sample. Do not add issues to fill a category. Put shared Eliware Test issues in conventions. Put code defects in the matching category. {{FINDING_SCOPE}}
+Review all supplied evidence before you form the result. Inspect every supplied implementation file and its related tests. Trace relevant behavior through its callers, callees, and data flow. Check every review category against the supplied code, tests, specifications, docs, and conventions.
+
+Build a candidate list during the review. Check each candidate against the evidence rules above. Continue after the first valid finding. Report every independent issue that passes those rules. Do not stop when you have enough findings for a verdict. Combine only findings that describe the same defect and effect. Do not omit a supported issue because its category already has another finding. Do not lower the evidence standard to increase the finding count. Do not return a sample or add issues to fill a category.
+
+Put shared Eliware Test issues in conventions. Put code defects in the matching category. {{FINDING_SCOPE}}
 
 Use P0 for an active emergency, a usable secret in supplied evidence, or a supplied test failure. A redaction marker shows that usable secret data was present. Name its file. Ciphertext alone is not a usable secret. Use P1 only for a proven release blocker that cannot wait. Use P2 for a real issue that does not block release. Use P3 for low-risk polish. Only P0 and P1 block. Do not infer CI, release, registry, or other outside results. Do not report provider response content or format as a CodeScope defect. Do not report a known issue as new. Keep the block verdict for an unresolved P0 or P1 known issue.
 
