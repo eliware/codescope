@@ -53,7 +53,8 @@ Suggestions and custom prompts print their single request and response.
 Run `codescope prompt "your question"` to send a custom task.
 CodeScope places the complete `all` context before your prompt as data.
 Custom prompts use no review policy, output format, or tools.
-CodeScope writes the provider response unchanged.
+CodeScope prints a provided reasoning summary before the provider response.
+It writes the provider response unchanged after that summary.
 
 Add guidance with `-a <text>`, `--add <text>`, `-a=<text>`, or `--add=<text>`.
 For example, run `codescope prompt "your question" --add "Focus on changed files"`.

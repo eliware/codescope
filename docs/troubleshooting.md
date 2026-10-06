@@ -16,7 +16,8 @@ Get test status from the repository's validation or CI workflow.
 
 ## Unexpected provider output
 
-Finding reviews, suggestions, and custom prompts write the successful provider response unchanged.
+Commands print a provided reasoning summary before the successful provider response.
+They write the provider response unchanged after that summary.
 Each command makes one provider request.
 CodeScope reports evidence, setup, provider, and output errors.
 It writes a safe incomplete result when possible.

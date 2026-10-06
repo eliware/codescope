@@ -182,7 +182,8 @@ Runtime settings and defaults are defined in Configuration.
 Use `codescope suggest all` for non-blocking suggestions.
 Use `codescope prompt "your question"` for a custom request.
 
-Finding reviews, suggestions, and prompts write the provider response unchanged.
+Commands print a provided reasoning summary before the provider response.
+They write the provider response unchanged after that summary.
 Findings and verdict text do not change the CLI exit code.
 
 Profile commands accept repeatable additions:

@@ -164,7 +164,8 @@ directives:
           - Do not repeat known issues unless code contradicts the stated limit or evidence shows outside impact.
       - id: A-1210.6
         dos:
-          - Write each successful provider response unchanged.
+          - Print reasoning summary text before the successful provider response when present.
+          - Otherwise, write the successful provider response unchanged.
           - Send one request for each finding review, suggestion, and custom prompt.
           - With `--debug-request`, print finding-review requests to stderr before send.
           - Print finding-review responses to stderr after receipt.
