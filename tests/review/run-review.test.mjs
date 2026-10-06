@@ -25,8 +25,7 @@ test("routes a provider session through the output boundary", async () => {
     }),
   ).resolves.toMatchObject({
     kind: "review",
-    output:
-      "Running initial review...\n{}\nDetailed reasoning summary:\n(unavailable)\nRunning final review...\n{}",
+    output: "{}",
   });
 });
 

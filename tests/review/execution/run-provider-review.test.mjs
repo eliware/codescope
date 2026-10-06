@@ -1,6 +1,6 @@
 import { runProviderSession } from "../../../src/review/execution/run-provider-review.mjs";
 
-test("sets reasoning effort and summary on each finding review request", async () => {
+test("sets finding review reasoning and logs one request and response", async () => {
   const requests = [];
   const debug = [];
   const originalError = console.error;
@@ -35,21 +35,14 @@ test("sets reasoning effort and summary on each finding review request", async (
     console.error = originalError;
   }
   expect(requests[0].reasoning).toEqual({ effort: "none", mode: "standard", summary: null });
-  expect(requests[1].reasoning).toEqual({
-    effort: "medium",
-    mode: "standard",
-    summary: "detailed",
-  });
-  expect(requests[1].input.slice(0, 1)).toEqual(requests[0].input);
+  expect(requests).toHaveLength(1);
   expect(debug.filter((line) => line.startsWith("---"))).toEqual([
-    "--- INITIAL REQUEST---",
-    "--- INITIAL RESPONSE ---",
-    "--- RE-REVIEW REQUEST ---",
-    "--- RE-REVIEW RESPONSE ---",
+    "--- REVIEW REQUEST ---",
+    "--- REVIEW RESPONSE ---",
   ]);
 });
 
-test("passes both responses to usage output for finding reviews", async () => {
+test("reports usage for the single finding review response", async () => {
   let calls = 0;
   const session = await runProviderSession({
     client: {
@@ -72,8 +65,24 @@ test("passes both responses to usage output for finding reviews", async () => {
     },
     usage: true,
   });
+  expect(calls).toBe(1);
   expect(session.output).toContain('"input_tokens":100');
-  expect(session.output).toContain('"input_tokens":200');
+  expect(session.output).not.toContain('"input_tokens":200');
+});
+
+test("keeps the single finding review response without phase labels", async () => {
+  const result = '{"findings":{}}';
+  const session = await runProviderSession({
+    client: {
+      responses: {
+        create: async () => ({
+          output: [{ type: "function_call", name: "submit_review", arguments: result }],
+        }),
+      },
+    },
+    request: { model: "gpt-6-luna", input: [], tool_choice: { name: "submit_review" } },
+  });
+  expect(session.output).toBe(result);
 });
 test("adds request usage to single-request provider output", async () => {
   const session = await runProviderSession({
@@ -87,32 +96,26 @@ test("adds request usage to single-request provider output", async () => {
   });
   expect(session.output).toContain("ok\nRequest usage metadata:");
 });
-test("keeps the initial findings when the follow-up request fails", async () => {
-  const firstOutput = '{"issues":{"security":[]}}';
+test("does not retry a failed finding review", async () => {
   let calls = 0;
-  const session = await runProviderSession({
-    client: {
-      responses: {
-        create: async () => {
-          calls += 1;
-          if (calls === 1)
-            return {
-              output: [{ type: "function_call", name: "submit_review", arguments: firstOutput }],
-            };
-          throw new Error("follow-up unavailable");
+  await expect(
+    runProviderSession({
+      client: {
+        responses: {
+          create: async () => {
+            calls += 1;
+            throw new Error("provider unavailable");
+          },
         },
       },
-    },
-    request: {
-      model: "gpt-6-luna",
-      input: [{ role: "user", content: "repository and review" }],
-      tool_choice: { type: "function", name: "submit_review" },
-    },
-  });
-  expect(session.output).toBe(
-    `Running initial review...\n${firstOutput}\nDetailed reasoning summary:\n(unavailable)`,
-  );
-  expect(session.providerResponse.output[0].arguments).toBe(firstOutput);
+      request: {
+        model: "gpt-6-luna",
+        input: [{ role: "user", content: "repository and review" }],
+        tool_choice: { type: "function", name: "submit_review" },
+      },
+    }),
+  ).rejects.toThrow("provider unavailable");
+  expect(calls).toBe(1);
 });
 test("keeps custom prompt output raw with tools disabled", async () => {
   const output = '{"provider-defined":"text"}';

@@ -11,7 +11,5 @@ test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).toContain("A passing test suite establishes that the tests passed");
   expect(defaultDeveloperText).toContain("conventions category");
   expect(defaultDeveloperText).toContain("one independently checkable defect per item");
-  expect(defaultDeveloperText).toContain("unique ID in order, such as F001");
-  expect(defaultDeveloperText).toContain("by ID");
   expect(profileReviewRules).toContain("empty array");
 });

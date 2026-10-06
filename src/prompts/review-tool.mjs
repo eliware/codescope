@@ -5,7 +5,7 @@ export function createReviewTool(categories = REVIEW_CATEGORIES) {
   return {
     type: "function",
     name: "submit_review",
-    description: "Return the complete evidence-based review and prior-finding assessments.",
+    description: "Return the complete evidence-based review.",
     strict: true,
     parameters: createReviewParameters(categories),
   };

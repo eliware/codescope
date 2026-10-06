@@ -1,5 +1,11 @@
 # Release Notes
 
+## Unreleased
+
+### Changed
+
+- Finding reviews now make one provider request and return that review directly.
+
 ## 11.0.0 — 2026-10-03
 
 ### Added

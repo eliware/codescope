@@ -7,9 +7,8 @@ test("uses ordinary completeness and priority guidance by default", () => {
   expect(guidance).toContain("conventions category");
   expect(guidance).not.toContain("rationale");
   expect(guidance).not.toContain("{{FINDING_SCOPE}}");
-  expect(guidance).toContain("unique ID, severity, location, concise issue");
+  expect(guidance).toContain("severity, location, concise issue");
   expect(guidance).toContain("use an empty array");
-  expect(guidance).toContain("reviewed_prior_findings to an empty array");
   expect(guidance).toContain("passing tests do not by themselves disprove");
 });
 

@@ -45,7 +45,7 @@ directives:
             delegates metadata dispatch or review execution to focused modules.
           - Use --usage with --dry-run to include estimated token and calculated cost data. For live
             provider requests, include usage and calculated cost metadata in command output for
-            each request; finding reviews report initial and follow-up request usage separately.
+            each request.
             Use --dry-run to estimate input-token cost without running a model review.
           - Accept dry-run input-token counts only as non-negative safe integers and report other
             counts as invalid provider responses.
@@ -184,40 +184,21 @@ directives:
           - Assume the repository's full test suite passes unless concrete failing-test evidence is
             supplied; use source, specifications, and supplied test files to review contract
             coverage without requiring test-run output.
-          - Evaluate each issue claim independently in the initial review. When a finding combines
+          - Evaluate each issue claim independently. When a finding combines
             a real defect with a false-positive detail, retain and narrow it to the substantiated
             defect; remove only unsupported claims. A false-positive finding must not suppress a
             separate valid finding in the same category.
-          - Require each initial review finding to have a unique ID, severity, location, concise
+          - Require each review finding to have severity, location, concise
             issue, supporting evidence, and concrete impact. Keep findings atomic and reconcile
             each proposed defect with relevant supplied code, tests, specifications, documentation,
             and applicable conventions. Passing tests do not disprove behavior they do not cover.
-            Use empty arrays for categories without findings and an empty reviewed_prior_findings
-            array in the initial response.
+            Use empty arrays for categories without findings.
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
           - For review requests, use Responses explicit prompt caching with a breakpoint after the
-            stable developer and initial user context. Set the initial finding-review request's
-            reasoning effort to `none` and summary to `null`. After a successful submit_review or
-            submit_unified_review response, reuse the same request object, append the first tool
-            arguments as an assistant text message, then append the user re-review instruction.
-            Set the follow-up request's reasoning effort to `medium` and summary to `detailed` at
-            the request level. Keep the review tool schema unchanged.
-          - In the follow-up review, independently re-evaluate every prior finding and each claim
-            against the original supplied code, tests, specifications, documentation, and applicable
-            conventions using the same reporting threshold and priority rules as the initial
-            review. Assess every prior finding ID exactly once as real, partially_real, or
-            false_positive. Preserve real findings under their original IDs; correct partially real
-            findings to retain every substantiated defect and remove only unsupported claims; omit
-            findings only when no supported defect remains. Give a concise evidence-based basis for
-            each assessment. Passing tests, absence of a dedicated test, or uncertainty alone do not
-            disprove a defect demonstrated by supplied code and contract. Do not introduce unrelated
-            findings. Use empty arrays for categories without surviving findings.
-          - Write the follow-up tool arguments when that request succeeds; if the follow-up request
-            or response fails, write the initial successful review output unchanged. Preserve
-            process termination signals.
-          - Apply follow-up adjudication only to finding review requests, not suggestions or custom
-            prompts.
+            stable developer and review user context. Set finding-review requests' reasoning effort
+            to `none` and summary to `null`. Keep the review tool schema limited to findings and
+            verdict.
         donts:
           - Do not make the provider verdict or any finding priority change the CLI exit code.
           - Do not report absent test execution output, an unobserved test failure, or a test-run
@@ -228,37 +209,30 @@ directives:
             documented boundary or concrete evidence shows impact outside it.
       - id: A-1210.6
         dos:
-          - For finding reviews, write the initial and final review outputs under the exact labels
-            `Running initial review...` and `Running final review...`, preserving each provider
-            result unchanged within its section. After the initial result, write the OpenAI detailed
-            final review's reasoning summary (or an unavailable marker) before the final review
-            section. Include only the summary item, not raw reasoning content. For suggestions and custom prompts,
-            write the exact successful provider response unchanged.
-          - With `--debug-request`, write the initial and re-review request and response objects to
-            stderr under the exact labels `--- INITIAL REQUEST---`, `--- INITIAL RESPONSE ---`,
-            `--- RE-REVIEW REQUEST ---`, and `--- RE-REVIEW RESPONSE ---`. Print each request
-            immediately before sending it and each response immediately after receipt. For
-            suggestions and custom prompts, retain their single-request debug output.
+          - Write each successful provider response unchanged. For finding reviews, suggestions,
+            and custom prompts, submit one provider request.
+          - With `--debug-request`, write review request and response objects to stderr under the
+            exact labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`; print the request
+            immediately before sending and the response immediately after receipt. For suggestions
+            and custom prompts, retain their single-request debug output.
           - Keep provider tool schemas and prompt instructions as requested-output guidance rather
             than CodeScope acceptance requirements.
           - Before submitting a review, verify every finding describes a concrete, evidence-backed
-            current defect. Review tool schemas include finding ID, severity, location, issue,
-            evidence, and impact, plus a reviewed_prior_findings assessment ledger. Categories with
-            no findings use empty arrays. Review schemas do not include recommendations, rationales,
-            or ignore examples.
+            current defect. Review tool schemas include severity, location, issue, evidence, and
+            impact. Categories with no findings use empty arrays. Review schemas do not include
+            recommendations, rationales, or ignore examples.
           - Suggestion schemas retain their suggestion-specific rationale and ignore-example fields.
           - Allow review, suggestion, and custom-prompt responses to be provider-defined and not
             machine-readable.
-          - Report initial provider transport, setup, and output-write failures as errors,
-            preserving safe fallback output and fallback error metadata where available. A failed
-            review follow-up falls back to the initial successful review output.
+          - Report provider transport, setup, and output-write failures as errors, preserving safe
+            fallback output and fallback error metadata where available.
           - When failure diagnostics include provider usage, preserve every non-negative integer
             counter accepted by pricing without imposing a stricter safe-integer limit.
           - Require output writers to report an exact written character count; do not treat an
             absent result as successful completion.
         donts:
           - Do not parse, validate, redact, pretty-print, or otherwise transform provider payloads;
-            preserve them unchanged within any required finding-review output sections.
+            preserve the requested output text unchanged.
           - Do not expose or promise a stable CodeScope response schema.
           - Do not interpret JSON requested from the model or derive process status from provider
             content.

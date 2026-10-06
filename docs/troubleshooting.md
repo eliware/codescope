@@ -16,12 +16,9 @@ CI workflow.
 
 ## Unexpected provider output
 
-Finding reviews display both provider results with `Running initial review...`
-and `Running final review...` labels, preserving each response unchanged.
-Suggestions and custom prompts write the selected provider response unchanged.
-Reviews make an initial request and a follow-up re-review request. If the
-follow-up fails, CodeScope writes the initial review response instead. Failures in evidence collection, provider
-setup, the initial request, or output handling are reported and emit a safe
+Finding reviews, suggestions, and custom prompts write the successful provider
+response unchanged. Each command makes one provider request. Failures in evidence
+collection, provider setup, the provider request, or output handling are reported and emit a safe
 incomplete result when possible.
 Fallback diagnostics preserve independently readable fields, are JSON-serialized,
 redacted, and capped; a `response_truncated` marker identifies capped output.

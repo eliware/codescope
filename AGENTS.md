@@ -76,11 +76,10 @@ No intentional deviations from shared Eliware Test requirements are currently ap
 The application entrypoint is `bin/codescope.mjs`, exposed as the `codescope`
 package command; the package root export is `src/cli/main.mjs`. Provider-backed
 review and suggestion commands load configuration before creating the provider
-client. Review commands make an initial request followed by a re-review request;
-if the follow-up fails, they write the initial review result. Suggestions and
-custom prompts make one request. Commands write the selected result, then abort
-their controller and remove signal handlers. Help and version commands exit
-before review configuration or provider setup. Runtime configuration uses only
+client. Reviews, suggestions, and custom prompts make one request. Commands write
+the provider result, then abort their controller and remove signal handlers. Help
+and version commands exit before review configuration or provider setup. Runtime
+configuration uses only
 `OPENAI_API_TOKEN`: a nonblank process value takes precedence over a
 nonblank value in `~/.codescope`. The default model is `gpt-6-luna`; there are
 no other supported runtime environment settings. The CLI reviews supplied
@@ -109,16 +108,12 @@ CI directly validates Ubuntu after installing the latest npm, then running
 
 Profile commands default to `gpt-6-luna`, the selected model's default
 reasoning effort, a live request, no usage report, and no added prompt text.
-Finding reviews set the initial request's reasoning effort to `none` and summary
-to `null`, then set the follow-up request's effort to `medium` and summary to
-`detailed` at the request level.
-`--debug-request` prints the request object to stderr immediately before sending
-and the provider response after receipt. For finding reviews, print four labeled
-sections: `--- INITIAL REQUEST---`, `--- INITIAL RESPONSE ---`,
-`--- RE-REVIEW REQUEST ---`, and `--- RE-REVIEW RESPONSE ---`; each object is
-printed immediately before sending or after receipt. For suggestions and custom
-prompts, print their single request and response. Dumps can contain supplied
-repository content.
+Finding reviews set the request's reasoning effort to `none` and summary to
+`null`. `--debug-request` prints the request object to stderr immediately before
+sending and the provider response after receipt. For finding reviews, label the
+two objects `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`. For
+suggestions and custom prompts, print their single request and response. Dumps
+can contain supplied repository content.
 Invoking `codescope` without a command displays help; `codescope all` selects
 the comprehensive review profile.
 

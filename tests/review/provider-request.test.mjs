@@ -63,9 +63,7 @@ test("prints the complete request to stderr before sending when debugging is ena
     model: "gpt-6-luna",
     input: [
       { role: "developer", content: [{ type: "input_text", text: "review rules" }] },
-      { role: "user", content: [{ type: "input_text", text: "repository" }] },
-      { role: "assistant", content: "prior findings" },
-      { role: "user", content: [{ type: "input_text", text: "review task" }] },
+      { role: "user", content: [{ type: "input_text", text: "repository and review task" }] },
     ],
   };
   const events = [];

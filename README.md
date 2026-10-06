@@ -148,11 +148,10 @@ subject to the review aggregate character budget.
 ## Operations
 
 At startup, provider-backed review, suggestion, and custom-prompt commands
-parse and validate their configuration before creating the provider client. Review
-commands make an initial request followed by a re-review request; if the
-follow-up fails, CodeScope writes the initial review result. Suggestions and
-custom prompts make one request. CodeScope writes the selected result, then
-aborts its request controller and removes signal handlers. Help and version
+parse and validate their configuration before creating the provider client.
+Review commands make one provider request. Suggestions and custom prompts also
+make one request. CodeScope writes the provider result, then aborts its request
+controller and removes signal handlers. Help and version
 commands exit before review configuration or provider setup. Termination
 signals trigger the same cleanup path. Shutdown follows that cleanup path after
 provider-backed commands complete or are interrupted.
@@ -167,9 +166,8 @@ Publication and deployment are handled by separate authorized release workflows.
 
 `codescope all` is shorthand for `codescope review all`. Use
 `codescope suggest all` for a non-blocking suggestion pass or
-`codescope prompt "your question"` for an ad hoc request. Finding reviews print
-the initial and final provider results under separate labels, preserving each
-result unchanged. Suggestion and prompt responses are written unchanged;
+`codescope prompt "your question"` for an ad hoc request. Finding reviews,
+suggestions, and prompts write the provider response unchanged;
 provider findings and verdict text never change the CLI exit code.
 
 Add one or more `-a <text>` or `--add <text>` options (also `-a=<text>` or
@@ -184,9 +182,7 @@ commands include `codescope all`, `codescope release`,
 `codescope --help`, and `codescope --version`.
 Profile commands accept repeatable additions, model and effort options, usage
 reporting, and dry-run estimates. For live requests, `--usage` reports token counts
-and calculated cost per request, including both finding-review requests. CodeScope
-also places the final review's OpenAI detailed reasoning summary between its
-initial and final review results. CodeScope defaults to `gpt-6-luna`.
+and calculated cost for the provider request. CodeScope defaults to `gpt-6-luna`.
 
 The examples below are safe to copy from a repository root:
 
