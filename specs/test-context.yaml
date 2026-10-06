@@ -1,16 +1,17 @@
 version: "12.0"
-description: CodeScope-local specification for supplying Eliware Test v12 semantic specifications to reviews.
+description: Local rules for Eliware Test v12 semantic specifications in reviews.
 testSpecifications:
-  applicability: For ordinary reviewed repositories, read only complete semantic specification
-    files named by package.json eliware.apply from the adjacent test12/specs/conventions directory;
-    profile names are safe single-segment lowercase identifiers and map to
-    <profile>-semantic.yaml. Do not load deterministic specification files. State which profiles
-    apply and which do not apply before the complete selected semantic files. For @eliware/test, do
-    not load or inject separate specifications because its own specs are supplied in normal
-    repository context.
-  authority: Eliware Test is the sole authority for shared repository requirements and specification text.
-  missingEvidence:
-    If the adjacent eliware/test12 checkout or a selected semantic specification is unavailable,
-    report Test-spec alignment as unverified. Do not infer or import requirements.
-  scope: Supply complete selected semantic specifications as review evidence. Do not redefine,
-    duplicate, or extend their requirements.
+  applicability: |
+    For repositories other than `@eliware/test`, read only complete semantic files named in
+    `package.json` under `eliware.apply`. Read them from the adjacent `test12/specs/conventions`
+    folder. Accept only safe, lowercase, single-segment profile names. Map each name to
+    `<profile>-semantic.yaml`. Do not load deterministic specification files. State which profiles
+    apply and which do not apply before the selected files. For `@eliware/test`, do not load or add
+    separate specifications. Its own specifications are part of normal repository context.
+  authority: Eliware Test is the sole authority for shared repository rules and specification text.
+  missingEvidence: |
+    If the adjacent `eliware/test12` checkout or a selected semantic file is missing, report
+    Test-spec alignment as unverified. Do not guess or import requirements.
+  scope: |
+    Supply the complete selected semantic files as review evidence. Do not redefine, copy, or extend
+    their requirements.

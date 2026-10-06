@@ -1,30 +1,32 @@
 # Configuration
 
-This guide explains the user-supplied configuration CodeScope needs to review
-a repository.
+This guide explains the configuration that CodeScope uses for reviews.
 
 ## API token
 
-Set `OPENAI_API_TOKEN` in the process environment or in the user-level
-`~/.codescope` file. Keep the token outside the repository.
+Set `OPENAI_API_TOKEN` in the process environment or in `~/.codescope`.
+Keep the token outside the repository.
 
-CodeScope uses a nonblank `OPENAI_API_TOKEN` from the process environment
-directly and reads `~/.codescope` only when the process value is missing or
-whitespace-only. A nonblank file value is then used. A missing or blank token stops the request before
-any provider call. CodeScope checks that the configuration path is a regular,
-non-symbolic-link file before opening it, then reads at most 100,000 bytes from
-the opened handle. It does not check file identity or content stability after
-opening, so replacement or edits during the read are not detected. Do not edit
-`~/.codescope` while CodeScope is reading it.
+CodeScope uses a nonblank process token first.
+It reads `~/.codescope` only when the process value is missing or blank.
+It then uses a nonblank file value.
+If neither value is available, CodeScope stops before a provider call.
+
+The configuration path must point to a regular file, not a symbolic link.
+CodeScope reads at most 100,000 bytes from the opened file.
+It does not check whether the file changes during the read.
+Do not edit `~/.codescope` while CodeScope reads it.
 CodeScope does not enforce Unix permission bits or Windows DACL policy.
 
-Only `OPENAI_API_TOKEN` is interpreted from `~/.codescope`. Unrelated lines,
-including malformed ones, are ignored. Token values may be single- or
-double-quoted, with a trailing comment after whitespace; malformed token
-assignments or quoted values are rejected.
+CodeScope reads only `OPENAI_API_TOKEN` from `~/.codescope`.
+It ignores unrelated lines, including malformed lines.
+Token values can use single or double quotes.
+A trailing comment is allowed after whitespace.
+Malformed token assignments and quoted values cause an error.
 
 ## Optional command settings
 
-Use the documented command options for model, reasoning effort, usage reporting,
-and dry-run token estimates. Run `codescope --help` for the
-current workflow and complete option list.
+Use command options to set the model and reasoning effort.
+Use `--usage` to report token counts and cost.
+Use `--dry-run` to estimate token use.
+Run `codescope --help` for the complete option list.

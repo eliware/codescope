@@ -2,28 +2,27 @@
 
 ## Purpose
 
-This folder contains end-user documentation for installing, configuring, and
-using CodeScope. Start with the quick-start workflow, then use the supporting
-guides for details.
+This folder contains guides for CodeScope.
+Use the quick-start guide to install and run the CLI.
+Use the other guides for settings and problem solving.
 
 ## Setup
 
-Follow [Quick start](quick-start.md) for installation and initial setup.
+Follow [Quick start](quick-start.md) to install and use CodeScope.
 
 ## Usage
 
-The quick-start and configuration guides explain commands and supported
-settings. See [Quick start](quick-start.md) and [Configuration](configuration.md).
+See [Configuration](configuration.md) for token and command settings.
 
 ## Validation
 
-Run `eliware-test` from the repository root to validate the project. For
-troubleshooting validation or provider problems, see the guide below.
+Run `eliware-test` from the repository root to validate this project.
+See [Troubleshooting](troubleshooting.md) for validation and provider problems.
 
 ## Support
 
-See [Troubleshooting](troubleshooting.md) for common token and provider issues,
-or the support links in the [root README](../README.md).
+See [Troubleshooting](troubleshooting.md) for common issues.
+Use the support links in the [root README](../README.md) for more help.
 
 ## Contents
 

@@ -1,5 +1,6 @@
 import {
   frameRepositoryContent,
+  frameReviewContent,
   frameReviewInstructions,
 } from "../../prompts/untrusted-boundary.mjs";
 import { defaultDeveloperText } from "../../prompts/guidance.mjs";
@@ -48,19 +49,32 @@ export function attachRepositoryEvidence(request, combined) {
     .join("\n\n");
   const repositoryContent = frameRepositoryContent(testSpecContext.combined);
   const cacheReviewPrefix = CACHEABLE_REVIEW_TOOLS.has(request.tool_choice?.name);
-  if (cacheReviewPrefix) request.prompt_cache_options = { mode: "explicit" };
   request.input = [
     {
       role: "developer",
-      content: [{ type: "input_text", text: developerInstructions }],
+      content: [
+        {
+          type: "input_text",
+          text: developerInstructions,
+          ...(cacheReviewPrefix ? { prompt_cache_breakpoint: { mode: "explicit" } } : {}),
+        },
+      ],
     },
     {
       role: "user",
       content: [
         {
           type: "input_text",
-          text: frameReviewInstructions(repositoryContent, reviewInstructions),
-          ...(cacheReviewPrefix ? { prompt_cache_breakpoint: { mode: "explicit" } } : {}),
+          text: frameReviewContent(repositoryContent),
+        },
+      ],
+    },
+    {
+      role: "user",
+      content: [
+        {
+          type: "input_text",
+          text: frameReviewInstructions(reviewInstructions),
         },
       ],
     },

@@ -4,26 +4,29 @@ Use this guide when a CodeScope command does not complete as expected.
 
 ## Missing token
 
-Configure `OPENAI_API_TOKEN` in the environment or `~/.codescope`, then rerun
-the command. Never put the token in a repository file or paste it into review
-input.
+Set `OPENAI_API_TOKEN` in the process environment or in `~/.codescope`.
+Run the command again.
+Never put the token in a repository file or review input.
 
-## Test results are not present
+## Test results are missing
 
-CodeScope never runs repository tests and never includes test execution output
-in provider context. Obtain test status from the repository's own validation or
-CI workflow.
+CodeScope does not run repository tests.
+It does not send test output to the provider.
+Get test status from the repository's validation or CI workflow.
 
 ## Unexpected provider output
 
-Finding reviews, suggestions, and custom prompts write the successful provider
-response unchanged. Each command makes one provider request. Failures in evidence
-collection, provider setup, the provider request, or output handling are reported and emit a safe
-incomplete result when possible.
-Fallback diagnostics preserve independently readable fields, are JSON-serialized,
-redacted, and capped; a `response_truncated` marker identifies capped output.
-Tool-call arguments in that summary are diagnostic serialization, not successful
-review output. Use `--usage` when investigating token or cost behavior, and rerun
-only when a fresh assessment is needed.
+Finding reviews, suggestions, and custom prompts write the successful provider response unchanged.
+Each command makes one provider request.
+CodeScope reports evidence, setup, provider, and output errors.
+It writes a safe incomplete result when possible.
+
+Fallback diagnostics preserve readable fields.
+CodeScope serializes, redacts, and limits this diagnostic data.
+The `response_truncated` marker shows that CodeScope limited the output.
+Tool-call arguments in this summary are diagnostic data, not review output.
+
+Use `--usage` to inspect token counts and cost.
+Run a command again only when you need a new assessment.
 
 For support, use the issue tracker linked from the root README.

@@ -31,9 +31,10 @@ test("places repository context before the final review instructions", () => {
     "SOURCE",
   );
 
-  expect(request.input.map(({ role }) => role)).toEqual(["developer", "user"]);
+  expect(request.input.map(({ role }) => role)).toEqual(["developer", "user", "user"]);
   expect(request.input[1].content).toHaveLength(1);
   expect(request.input[1].content[0].text).toContain("SOURCE");
-  expect(request.input[1].content[0].text).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
-  expect(request.input[1].content[0].text).toContain("review");
+  expect(request.input[1].content[0].text).not.toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
+  expect(request.input[2].content[0].text).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
+  expect(request.input[2].content[0].text).toContain("review");
 });

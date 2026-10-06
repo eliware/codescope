@@ -1,37 +1,63 @@
+# Quick start
+
 ## Owner workflow
 
-1. Run `codescope all` once to collect this iteration's findings. A single provider response is not a guarantee that every repository issue was found. CodeScope never runs repository tests or includes test execution results. If the task requests further iterations, rerun after making fixes; otherwise the goal harness owns subsequent iterations.
-2. Fix every issue reported by that single CodeScope run.
-3. Implement every practical suggestion reported by that single CodeScope run.
-4. Run `npm test` and restore genuine 100×4 coverage.
-5. For findings rejected by design:
-   - First clarify the relevant documentation.
-   - If documentation alone is insufficient, add a narrowly scoped CodeScope ignore beside the affected code.
-   - Never use ignores to hide real defects.
-6. If a finding appears already ignored or documented as out of scope, treat that as insufficiently explicit. Strengthen the documentation or add a scoped ignore at the specific code location.
-7. Every finding must receive an action:
-   - Fix or implementation
-   - Documentation update
-   - Narrowly scoped ignore with justification
-8. Organize changes into separate, focused commits:
-   - One commit per independent fix or tightly related group.
-   - Include matching tests and documentation in the relevant commit.
-   - Avoid combining unrelated fixes.
-   - Avoid splitting trivial parts of one fix into unnecessary commits.
-9. Validate each focused change when practical using the repository’s normal validation commands, but do not rerun `codescope all`.
-10. Report every original issue and suggestion from the single CodeScope run with:
-    - Final disposition
-    - Relevant commit hash
-    - Validation performed
-11. Include all commit hashes and final validation results.
-12. Only push and mark the goal complete when the final report for this iteration is pass with 0 issues and 0 suggestions. Do not rerun CodeScope to verify fixes; leave re-iteration to the goal harness.
+1. Run `codescope all` once. Review its findings and suggestions.
+2. Fix each valid issue from that run.
+3. Apply each useful suggestion from that run.
+4. Run `npm test`. Restore genuine 100% statement, branch, function, and line coverage.
+5. If a finding is invalid, clarify the relevant documentation first.
+6. If documentation is not enough, add a narrow CodeScope ignore beside the code.
+7. Do not use an ignore to hide a real defect.
+8. Give each finding one action: fix, documentation change, or justified narrow ignore.
+9. Use focused commits. Put each independent fix in its own commit.
+10. Include matching tests and docs with each change.
+11. Validate each focused change with the normal project commands.
+12. Do not run `codescope all` again during the same iteration.
+13. Report each original issue and suggestion, its final action, commit, and validation.
+14. Report all commit hashes and final validation results.
+15. Push and complete the goal only when the final report says pass, with no issues or suggestions.
+16. Leave later iterations to the goal harness.
 
-## Available profiles
+CodeScope does not run repository tests or include test results.
+A provider response does not prove that the review found every issue.
 
-Review: `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`.
+## Profiles
 
-Suggestions: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, `prioritize`. `suggest all` is one non-blocking generic suggestion pass across every review category plus `new-features`.
+Review profiles: `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, and `prioritize`.
 
-Run profiles with `codescope review <profile>` or `codescope suggest <profile>`. Direct profile names are supported shorthand. CodeScope defaults to `gpt-6-luna`; use `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, `--usage`, and `--debug-request` when needed. `--usage` reports provider token counts and calculated cost for each live request. Finding reviews default to the model's default effort (`none` for CodeScope's request) and summary `null`; `--effort` selects the effort sent to the provider. With `--debug-request`, finding reviews print `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`; each object is printed immediately before sending or after receipt. Suggestions and custom prompts print their single request and response. Dumps can include supplied repository content, so handle them as sensitive data.
+Suggestion profiles: `all`, `new-features`, `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, and `prioritize`.
+`codescope suggest all` makes one non-blocking pass across review categories and new features.
 
-Custom prompt: `codescope prompt "your question"` uses your prompt as the task, places the complete `all` context before it as data, disables tools, and returns the provider response unchanged. CodeScope adds no fixed review policy or output format. Add custom guidance with `-a <text>`, `--add <text>`, `-a=<text>`, or `--add=<text>` before an optional `--` delimiter, for example `codescope prompt "your question" --add "Focus on changed files"`. Use `--` to end prompt text before supported trailing options if the prompt begins with `-`; additions must remain before the delimiter, and only trailing `--effort`, `--model`, or `--debug-request` options may follow it.
+Run a profile with `codescope review <profile>` or `codescope suggest <profile>`.
+Direct profile names are also supported.
+
+## Options
+
+The default model is `gpt-6-luna`.
+Set effort with `--effort=none|low|medium|high|xhigh|max`.
+Select a model with `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`.
+Use `--usage` for provider token counts and calculated cost.
+Use `--debug-request` to print request and response objects.
+Use `--dry-run` to estimate token use without a provider call.
+
+Finding reviews default to effort `none` and summary `null`.
+The `--effort` option selects the effort sent to the provider.
+Debug output can contain repository evidence. Protect these logs.
+
+Finding reviews print `--- REVIEW REQUEST ---` before send and `--- REVIEW RESPONSE ---` after receipt.
+Suggestions and custom prompts print their single request and response.
+
+## Custom prompts
+
+Run `codescope prompt "your question"` to send a custom task.
+CodeScope places the complete `all` context before your prompt as data.
+Custom prompts use no review policy, output format, or tools.
+CodeScope writes the provider response unchanged.
+
+Add guidance with `-a <text>`, `--add <text>`, `-a=<text>`, or `--add=<text>`.
+For example, run `codescope prompt "your question" --add "Focus on changed files"`.
+
+Put additions before an optional `--` delimiter.
+If prompt text begins with `-`, use `--` before trailing options.
+After `--`, use only `--effort`, `--model`, or `--debug-request`.

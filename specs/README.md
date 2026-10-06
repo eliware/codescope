@@ -1,2 +1,4 @@
-- [directives.yaml](directives.yaml)
-- [test-context.yaml](test-context.yaml)
+# Specifications
+
+- [CLI directives](directives.yaml)
+- [Test context](test-context.yaml)

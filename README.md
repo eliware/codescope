@@ -22,19 +22,19 @@
 
 ## Features
 
-CodeScope is a structured OpenAI CLI for read-only reviews of supplied
-repository evidence, focused suggestions, and token estimates. It leaves the
-reviewed repository unchanged.
+CodeScope is a read-only CLI for AI-assisted repository reviews, suggestions, and token estimates.
+It reviews supplied evidence and does not change the reviewed repository.
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md)
+The package description is: `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`
+The author is `Eliware <eliware@eliware.org>`. The license is MIT.
 
-Package metadata: description `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`; author `Eliware <eliware@eliware.org>`; license `MIT`.
+- Focused profiles review architecture, security, reliability, performance, API design, dependencies, conventions, and release readiness.
+- The `all` profile reviews code, tests, and Markdown in one provider request.
+- The CLI estimates tokens and cost. It also selects models and reasoning effort.
+- Discovery avoids symbolic links and follows documented evidence limits.
+- The CLI does not change the reviewed repository.
 
-- Focused review and suggestion profiles for architecture, security, reliability, performance, API design, cross-platform compatibility, dependencies, conventions, and release readiness.
-- Comprehensive `all` reviews that combine implementation, tests, and Markdown into one provider review request.
-- Token and cost estimates, model selection, and reasoning-effort controls.
-- Symlink-safe discovery and documented boundaries for intentional behavior.
-- Read-only analysis that does not modify the reviewed repository.
+See [documentation](docs/README.md) and [specifications](specs/README.md).
 
 ## Requirements
 
@@ -43,52 +43,40 @@ Package metadata: description `A structured OpenAI CLI for focused codebase revi
 
 ## Setup
 
-Install the public package globally or in a project; it uses registry
-dependencies and does not require a sibling checkout:
+Install the public package globally or in a project. It uses registry dependencies.
+It does not require a sibling checkout.
 
 ```text
 npm install -g @eliware/codescope
 npm install @eliware/codescope
 ```
 
-After a project-local install, invoke the CLI from that project with:
+Run a project-local install with `npx codescope --help`.
+Run a global install with `codescope`.
 
-```text
-npx codescope --help
-```
-
-The global install provides the `codescope` command directly in your shell.
-
-For repository development, install the checkout's dependencies first:
+For development, install this checkout's dependencies:
 
 ```text
 npm ci
 ```
 
-Run the CLI locally from this checkout:
+Run the local CLI with these commands:
 
 ```text
 node bin/codescope.mjs --help
 node bin/codescope.mjs --version
 ```
 
-For this optional development-only setup, create a live global npm link from the already-installed checkout with `npm link`. The resulting `codescope` command points directly at the checkout, so changes are available immediately without reinstalling or republishing. Remove it with `npm unlink --global @eliware/codescope` when no longer needed; package consumers should use the published-install commands above.
+You can create a global npm link for this checkout with `npm link`.
+The link makes checkout changes available without a new install or publish.
+Remove it with `npm unlink --global @eliware/codescope`.
+Package users must use the install commands above.
 
 ## Usage
 
-After installing the published CLI globally or in a project, use the
-[`@eliware/codescope` npm package](https://www.npmjs.com/package/@eliware/codescope)
-from your repository root. It uses registry dependencies and does not require
-a sibling checkout.
-
-The `codescope` command maps to `bin/codescope.mjs`, and the package root
-export is `src/cli/main.mjs`. The package version is maintained in
-`package.json`; release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
-Publication requires successful Ubuntu validation and an exact `v#.#.#` tag
-matching the package version.
-
-Run CodeScope from the repository root to review supplied evidence, request
-focused suggestions, or estimate review usage without modifying the repository.
+Run CodeScope from the repository root.
+It reviews supplied evidence, gives focused suggestions, or estimates usage.
+It does not modify the repository.
 
 ```text
 codescope all
@@ -98,97 +86,109 @@ codescope suggest new-features
 codescope --help
 ```
 
-See [docs/quick-start.md](docs/quick-start.md) for the complete owner workflow and profile list.
-See [specs/](specs/) for the detailed behavior specifications.
-See [docs](docs/README.md) for product guidance and [specifications](specs/README.md) for repository directives.
+See [Quick start](docs/quick-start.md) for the owner workflow and profile list.
+See [documentation](docs/README.md) for user guidance.
+See [specifications](specs/README.md) for CodeScope rules.
+
+The executable is `bin/codescope.mjs`.
+The package command is `codescope`.
+The package export is `src/cli/main.mjs`.
+The version is in `package.json`. Release history is in [RELEASE_NOTES.md](RELEASE_NOTES.md).
+Publication requires successful Ubuntu validation and an exact `v#.#.#` tag that matches the package version.
 
 ## Development
 
-CodeScope uses Node.js 26 native ESM. Keep runtime implementation in `src/`,
-the CLI entrypoint in `bin/`, end-user guidance in `docs/`, and CodeScope
-directives in `specs/`.
+Use Node.js 26 and native ESM.
+Keep runtime code in `src/`, the CLI entry point in `bin/`, guides in `docs/`, and directives in `specs/`.
 
 ## Testing
 
-Run `npm ci`, `npm test`, `npm run lint`, `npm run audit`, `npm run pack`, and
-`npm run format:check` to validate the repository. CodeScope itself never runs
-commands in a reviewed repository.
+Run these commands for full validation:
+
+```text
+npm ci
+npm test
+npm run lint
+npm run audit
+npm run pack
+npm run format:check
+```
+
+Use `npm test` as the aggregate validation command.
+CodeScope does not run commands in a reviewed repository.
 
 ## Troubleshooting
 
-If shared requirement evidence is unavailable, verify that the adjacent
-`eliware/test12` checkout exists and that `package.json.eliware.apply` names
-profile records under its `specs/conventions/` directory. When reviewing
-`@eliware/test` itself, its specifications are included through normal
-repository context.
+See [Troubleshooting](docs/troubleshooting.md) for token and provider errors.
 
 ## Security
 
-Do not place credentials, tokens, `.env` files, or runtime state in the repository. CodeScope is read-only: it analyzes supplied files and writes its output without modifying the reviewed repository.
-CodeScope sends supplied repository context to the configured provider for review. It does not execute repository commands or include test execution output. Do not run reviews against workspaces containing credentials or other sensitive values; scrub source, fixtures, and logs first. Redaction is not a guarantee that arbitrary secrets are removed. Custom prompt JSON is provider-defined and has no stable schema, so consumers must validate it themselves.
-Use `codescope review release` for release-readiness review.
+Keep credentials, tokens, `.env` files, and runtime state out of the repository.
+CodeScope reads supplied files and writes its output.
+It does not change the reviewed repository.
+
+CodeScope sends supplied repository context to the configured provider.
+It does not run repository commands or tests.
+Do not review a workspace with credentials or other secrets.
+Remove sensitive values from source, fixtures, and logs first.
+Redaction cannot guarantee that it removes every secret.
+
+Custom prompt JSON has a provider-defined format.
+The format is not stable. Validate it in your own code.
+Use `codescope review release` for a release-readiness review.
 
 ## Configuration
 
-At startup, review commands resolve credentials from the process environment
-or `~/.codescope` before creating the provider client. The CLI uses a nonblank
-process `OPENAI_API_TOKEN` directly and reads only
-`OPENAI_API_TOKEN` from `~/.codescope` when the process value is missing or
-whitespace-only. Unrelated dotenv assignments are ignored, including malformed
-unrelated lines. When the process token is blank and `~/.codescope` is read,
-malformed token assignments or quoted token values in that file are rejected.
-The dotenv parser accepts optional `export`, comments, and quoted values.
-Runtime configuration uses only `OPENAI_API_TOKEN`; its default is unset.
-A missing or blank token causes a clear error and exit code `3`.
+Startup: Review commands validate configuration before they create the provider client.
+Runtime settings and defaults: CodeScope uses `OPENAI_API_TOKEN` and defaults to `gpt-6-luna`.
+Set `OPENAI_API_TOKEN` in the process environment or in `~/.codescope`.
+Keep the token outside the repository.
 
-Configuration evidence is root-bound, symlink-checked, and bounded to 100000
-bytes and 200 lines per configuration file. JSON evidence is root-bound and
-subject to the review aggregate character budget.
+A nonblank process token takes priority.
+CodeScope reads `~/.codescope` only when the process value is missing or blank.
+CodeScope reads only `OPENAI_API_TOKEN` from that file.
+It ignores malformed lines for other names.
+It rejects malformed token assignments and quoted token values.
+The parser accepts optional `export`, comments, and quoted values.
+
+Configuration files must be regular files, not symbolic links.
+CodeScope reads at most 100,000 bytes and 200 lines per file.
+JSON evidence must fit the review's aggregate character limit.
+A missing or blank token causes an error with exit code `3`.
+
+Use command options to set the model or reasoning effort.
+Use `--usage` to report provider token counts and calculated cost.
+Use `--dry-run` to estimate token use without a provider call.
+Run `codescope --help` for the complete option list.
 
 ## Operations
 
-At startup, provider-backed review, suggestion, and custom-prompt commands
-parse and validate their configuration before creating the provider client.
-Review commands make one provider request. Suggestions and custom prompts also
-make one request. CodeScope writes the provider result, then aborts its request
-controller and removes signal handlers. Help and version
-commands exit before review configuration or provider setup. Termination
-signals trigger the same cleanup path. Shutdown follows that cleanup path after
-provider-backed commands complete or are interrupted.
+Startup: Review, suggestion, and custom-prompt commands validate configuration before provider setup.
+Each command makes one provider request.
+Shutdown: CodeScope writes the result, stops its controller, and removes signal handlers.
+Help and version commands exit before provider setup.
+Termination signals use the same cleanup path.
 
-CodeScope is read-only against reviewed repositories: it reads supplied
-evidence and writes its own output, but does not modify the reviewed
-repository, execute its commands or tests, publish reviewed code, or deploy it.
-This is the operational boundary for its observable review workflow.
-Publication and deployment are handled by separate authorized release workflows.
+Operational boundaries: CodeScope reads supplied evidence and writes its own output.
+It does not change the reviewed repository or run its commands or tests.
+It does not publish reviewed code or deploy it.
+Separate authorized workflows handle publication and deployment.
+These rules define the supported application workflows and their boundaries.
+Runtime settings and defaults are defined in Configuration.
 
 ## Commands
 
-`codescope all` is shorthand for `codescope review all`. Use
-`codescope suggest all` for a non-blocking suggestion pass or
-`codescope prompt "your question"` for an ad hoc request. Finding reviews,
-suggestions, and prompts write the provider response unchanged;
-provider findings and verdict text never change the CLI exit code.
+`codescope all` is the full review profile.
+Use `codescope suggest all` for non-blocking suggestions.
+Use `codescope prompt "your question"` for a custom request.
 
-Add one or more `-a <text>` or `--add <text>` options (also `-a=<text>` or
-`--add=<text>`) to direct profiles, `codescope all`, `codescope review
-<profile>`, `codescope suggest <profile>`, and custom prompts to append custom
-guidance to the final user message. For `codescope prompt`, put additions before an
-optional `--` delimiter; only effort and model options may follow it. Bare
-`codescope`, help, and version output do not apply additions. Use
-`codescope --help` for the complete command and option reference. Supported
-commands include `codescope all`, `codescope release`,
-`codescope review <profile>`, `codescope suggest <profile>`, `codescope prompt <text>`,
-`codescope --help`, and `codescope --version`.
-Profile commands accept repeatable additions, model and effort options, usage
-reporting, and dry-run estimates. For live requests, `--usage` reports token counts
-and calculated cost for the provider request. CodeScope defaults to `gpt-6-luna`.
+Finding reviews, suggestions, and prompts write the provider response unchanged.
+Findings and verdict text do not change the CLI exit code.
 
-The examples below are safe to copy from a repository root:
+Profile commands accept repeatable additions:
 
 ```text
-codescope all --add "Focus on reliability risks in recently changed code"
-codescope release
+codescope all --add "Focus on reliability risks in changed code"
 codescope review architecture
 codescope suggest new-features
 codescope prompt "Explain the main reliability risks"
@@ -197,24 +197,34 @@ codescope --help
 codescope --version
 ```
 
-Supported platforms: the CLI uses the same Node.js command syntax on Windows
-and Linux. CI directly validates Ubuntu only; Windows is not covered by the
-supplied workflow. Review commands are
-read-only and have no destructive actions.
+Use `-a <text>`, `--add <text>`, `-a=<text>`, or `--add=<text>`.
+The CLI appends each addition to the final user message in command-line order.
+For `codescope prompt`, place additions before an optional `--` delimiter.
+After `--`, use only effort, model, or debug options.
+If prompt text starts with `-`, use `--`.
 
-Validation evidence: contributors run the global `eliware-test` validator. CI
-directly validates Ubuntu after installing the latest npm, then running `npm ci`
-and `npm test`; it does not directly validate Windows.
+Profile commands support model and effort options, usage reports, and dry-run estimates.
+The default model is `gpt-6-luna`.
+`--usage` reports token counts and calculated cost for each live request.
+
+Supported platforms: Windows and Linux use the same command syntax.
+Validation evidence: CI checks Ubuntu only. It does not check Windows.
+Contributors run the global `eliware-test` validator.
+CI installs the latest npm, then runs `npm ci` and `npm test` on Ubuntu.
+
+Review commands are read-only. They have no destructive actions.
 
 ## Exit codes
 
-Successful commands exit with `0`. Usage errors exit with `2`, configuration
-errors with `3`, input errors with `4`, provider/API errors with `5`, and
-CodeScope response errors exit with `6`; this status is not derived from review
-content. Timeout and termination exits are `124`, `130` (SIGINT), and `143`
-(SIGTERM). Finding reviews display both successful provider responses under
-separate labels; suggestions and prompts display their successful provider
-response unchanged. Findings or verdict text do not affect process exit status.
+Successful commands exit with `0`, even when a review reports findings.
+Usage errors exit with `2`. Configuration errors exit with `3`.
+Input errors exit with `4`. Provider errors exit with `5`.
+Invalid provider responses exit with `6`.
+Other errors exit with `4`.
+Timeouts exit with `124`. SIGINT exits with `130`. SIGTERM exits with `143`.
+
+Finding reviews print their request and response under separate labels.
+Suggestions and prompts print one successful response unchanged.
 
 ## Support
 
@@ -222,10 +232,9 @@ response unchanged. Findings or verdict text do not affect process exit status.
 
 **[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
 
-Use the [Eliware Discord community](https://discord.gg/M6aTR9eTwN),
-[GitHub issues](https://github.com/eliware/codescope/issues), or
-eliware@eliware.org. Include the command, Node.js version, and redacted
-diagnostics when requesting help.
+Ask for help in the [Eliware Discord community](https://discord.gg/M6aTR9eTwN).
+You can also use [GitHub issues](https://github.com/eliware/codescope/issues) or email eliware@eliware.org.
+Include the command, Node.js version, and redacted diagnostics.
 
 ## License
 
@@ -234,13 +243,14 @@ diagnostics when requesting help.
 ## Links
 
 - [Documentation](docs/README.md)
-- [docs](docs/README.md)
-- [specifications](specs/README.md)
+- [Specifications](specs/README.md)
 - [Home Page](https://github.com/eliware/codescope#readme)
 - [Eliware](https://eliware.org)
 - [GitHub repository](https://github.com/eliware/codescope.git)
 - [Eliware Docs](https://github.com/eliware/docs)
 - [GitHub organization](https://github.com/eliware)
-- [npm Package](https://www.npmjs.com/package/@eliware/codescope)
+- [npm package](https://www.npmjs.com/package/@eliware/codescope)
 - [Release Notes](RELEASE_NOTES.md)
 - [Discord](https://discord.gg/M6aTR9eTwN)
+- Documentation: [docs](docs/README.md) · [specifications](specs/README.md)
+- [npm Package](https://www.npmjs.com/package/@eliware/codescope)

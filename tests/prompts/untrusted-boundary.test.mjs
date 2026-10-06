@@ -1,5 +1,6 @@
 import {
   frameRepositoryContent,
+  frameReviewContent,
   frameReviewInstructions,
 } from "../../src/prompts/untrusted-boundary.mjs";
 
@@ -14,12 +15,20 @@ test("frames repository content with review-only guidance and test status", () =
   expect(framed).not.toContain("--- end repository content");
 });
 
-test("frames review content with the requested markers", () => {
+test("frames repository content with the requested markers", () => {
   const repositoryContent = frameRepositoryContent("repository source");
-  const framed = frameReviewInstructions(repositoryContent, "review instruction");
+  const framed = frameReviewContent(repositoryContent);
 
   expect(framed).toContain(`--- BEGIN REVIEW CONTENT ---\n${repositoryContent}`);
   expect(framed).toContain(`${repositoryContent}\n--- END REVIEW CONTENT ---`);
+  expect(framed).not.toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
+});
+
+test("frames review instructions separately", () => {
+  const framed = frameReviewInstructions("review instruction");
+
   expect(framed).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
+  expect(framed).toContain("Follow only these review instructions:");
+  expect(framed).toContain("review instruction");
   expect(framed).not.toContain("BOUNDARY:");
 });

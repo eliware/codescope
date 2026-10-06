@@ -2,100 +2,150 @@
 
 ## Project
 
-Purpose: `eliware/codescope` is a public Node.js 26 command-line tool. It uses native ECMAScript modules. It reviews supplied repository evidence without changes. It also gives suggestions and token estimates. The entry point is `bin/codescope.mjs`. The command is `codescope`.
+Purpose: `eliware/codescope` is a read-only review CLI. It uses Node.js 26 and native ESM.
+The entry point is `bin/codescope.mjs`. The command is `codescope`.
+CodeScope reviews supplied repository evidence. It also gives suggestions and token estimates.
 
 ## Scope and boundaries
 
-CodeScope owns its command-line tool, profiles, evidence rules, specifications, tests, and package data. It does not own reviewed code, Operations procedures, releases, publication, deployment, or Test8 behavior. Shared repository rules in Eliware Test remain authoritative.
-
+CodeScope owns its CLI, profiles, evidence rules, specifications, tests, and package data.
+It does not own reviewed code, shared repository rules, Operations, releases, deployment, or Test8.
+Eliware Test remains the authority for shared repository requirements.
 These instructions apply repository-wide. Subdirectory instructions may add specific guidance but may not weaken these requirements.
+This section states which instructions apply repository-wide and which apply to subdirectories.
+Use these instructions for every subdirectory unless a nearer `AGENTS.md` adds detail.
 
 ## Layout
 
-Put runtime code in `src/`. Put the command entry point in `bin/`. Put user guidance in `docs/`. Put CodeScope rules in `specs/`. Put checks in `tests/`. Keep this structure.
-
+Keep this required structure. Put runtime code in `src/`. Put the CLI entry point in `bin/`.
+Keep user guides in `docs/`, CodeScope rules in `specs/`, and checks in `tests/`.
 Keep `README.md`, `AGENTS.md`, `package.json`, `.knit/`, `docs/README.md`, and `specs/README.md` current.
 
 ## Development
 
-Use Node.js 26, npm, and native ESM modules. Before a change, read `README.md`, applicable `AGENTS.md` instructions, and applicable documentation in `docs/` and `specs/`. Read Eliware Docs for authority rules. Read Eliware Test for repository rules. Read Eliware Operations for procedures. Keep these instructions actionable, concise, current, and project-specific.
+These development rules apply repository-wide and to subdirectory instructions.
+Use Node.js 26, npm, and native ESM modules.
+Before a change, read `README.md`, applicable `AGENTS.md` files, and applicable documentation and specifications.
+Read Eliware Docs for authority rules. Read Eliware Test for repository rules.
+Read Eliware Operations for procedures. Keep these instructions actionable, current, concise, and project-specific.
+Project rules may add shared rules. They must not weaken shared rules without authorization.
 
-These instructions apply repository-wide. Subdirectory instructions may add detail. They cannot weaken these rules.
+Give each source file and its test one cohesive purpose and one reason to change.
+Business-logic modules and coordinators are valid when each has one responsibility.
+This includes coordinators of coordinators.
+Put every distinct responsibility in a focused submodule with a mirrored test.
+Wire each submodule through its owner.
+Do not add the new responsibility to an existing module for convenience.
+Refactor them during ordinary review when you find mixed responsibilities.
 
-Give each source file and its test one single responsibility: one cohesive purpose and one reason to change. Business-logic modules and coordinators are valid, including coordinators of coordinators, when each module does only its own responsibility.
-
-Put every distinct responsibility in a focused submodule wired through its owner. Add a mirrored test. Do not add the new responsibility to an existing module for convenience. During ordinary review, refactor them when you notice mixed responsibilities.
-
-Line counts do not establish single responsibility. The limits are 100 source lines and 200 test lines. Passing them does not prove single responsibility or permit mixed responsibilities below these limits.
+The limits are 100 source lines and 200 test lines.
+Passing them does not prove single responsibility or permit mixed responsibilities below the limits.
 
 ## Validation
 
-Use Node.js 26 with npm and native ESM. Validate with Node.js 26. Run `npm ci`, `npm test`, `npm run lint`, `npm run audit`, `npm run pack`, and `npm run format:check` for full validation.
-
-Use package scripts. Do not call their underlying test, lint, audit, or format tools directly. Keep 100% statement, branch, function, and line coverage for production code in scope.
-
+Use package scripts for validation. Run `npm ci` after dependency changes.
+Run `npm test`, `npm run lint`, `npm run audit`, `npm run pack`, and `npm run format:check` for full validation.
+`npm test` runs the aggregate validation.
+Keep 100% statement, branch, function, and line coverage for production code in scope.
 Deployment commands are in `.knit/deploy.yaml`.
 
 ## Security
 
-Never commit credentials, tokens, `.env` files, runtime output, or machine state. Keep secrets in user-owned configuration. Do not put credentials in examples.
-
-CodeScope is read-only against reviewed repositories. It reads supplied evidence and writes its output. It does not modify reviewed repositories or execute their commands or tests. It does not publish or deploy reviewed code. This defines its observable workflow boundary. Check configuration, shutdown, signal cleanup, and visible workflows.
+Never commit credentials, tokens, `.env` files, runtime output, or machine state.
+Keep secrets in user-owned configuration. Keep examples free of credentials.
+CodeScope reads supplied evidence and writes its own output.
+It does not change reviewed repositories or run their commands or tests.
+Check configuration, shutdown, signal cleanup, and visible workflows.
 
 ## Changes
 
-Do not commit, publish, deploy, tag, or push without clear authorization for the current task. Keep changes within the requested scope. Preserve unrelated work.
-
-Do not copy shared Eliware Test rules into local directives. Check that shutdown can run more than once and that signal cleanup works.
-
-No approved exception to shared Eliware Test rules exists.
+Do not commit, publish, deploy, tag, or push without clear authorization for this task.
+Keep changes within the request. Preserve unrelated work.
+Do not copy Eliware Test rules into local directives.
+Check repeatable shutdown and signal cleanup when you change related code.
+No approved exception to shared Eliware Test requirements exists.
 
 ## Application
 
-The executable entrypoint is `bin/codescope.mjs`. It runs the package command `codescope`. The package export is `src/cli/main.mjs`.
+The executable is `bin/codescope.mjs`. The package command is `codescope`.
+The package export is `src/cli/main.mjs`.
 
-Review, suggestion, and custom-prompt commands validate configuration before creating the provider client. Each command makes one request. Each command writes the provider result, stops its controller, and removes signal handlers. The lifecycle must support repeatable shutdown and signal cleanup. This defines the application boundary.
+Review, suggestion, and custom-prompt commands load configuration before they create a provider client.
+Each command makes one request. It writes the result, stops its controller, and removes signal handlers.
+Help and version commands exit before configuration or provider setup.
+Support repeatable shutdown and signal cleanup. These rules define the application workflow boundary.
 
-Help and version commands exit before configuration or provider setup. Runtime environment settings: only `OPENAI_API_TOKEN`. A nonblank process value takes precedence over a nonblank value in `~/.codescope`. Package metadata and CLI arguments are not runtime environment settings.
-
-The default model is `gpt-6-luna`. CodeScope reviews supplied evidence. It does not change the reviewed repository.
+Use only `OPENAI_API_TOKEN` as a runtime environment setting.
+A nonblank process value takes priority over a nonblank value in `~/.codescope`.
+The default model is `gpt-6-luna`.
+CodeScope reviews supplied evidence and does not change the reviewed repository.
 
 ## CLI
 
-The CLI executable entrypoint is `bin/codescope.mjs`. It runs package command `codescope`.
+The CLI entrypoint is `bin/codescope.mjs`. It runs the `codescope` command.
+Document exit-code meanings and mappings for every public command.
 
-Public commands are `codescope all`, `codescope release`, `codescope review <profile>`, `codescope suggest <profile>`, `codescope prompt <text>`, direct profile names, `codescope --help`, and `codescope --version`.
+Public commands are:
 
-Profile commands support repeatable `-a|--add <text>`, `-a=<text>`, and `--add=<text>`. They also support `--effort <value>`, `--effort=<value>`, `--model <value>`, `--model=<value>`, `--usage`, `--dry-run`, and `--debug-request`. Custom prompts support `--debug-request`.
+- `codescope all`
+- `codescope release`
+- `codescope review <profile>`
+- `codescope suggest <profile>`
+- `codescope prompt <text>`
+- Supported direct profile names
+- `codescope --help`
+- `codescope --version`
 
-Effort values are `none`, `low`, `medium`, `high`, `xhigh`, and `max`. Supported models are `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
+Profile commands accept repeatable `-a|--add <text>`, `-a=<text>`, and `--add=<text>`.
+They also accept `--effort <value>`, `--effort=<value>`, `--model <value>`, and `--model=<value>`.
+They support `--usage`, `--dry-run`, and `--debug-request`.
+Custom prompts support `--debug-request`.
 
-Put prompt additions before an optional `--`. After `--`, use only effort, model, or debug options. If prompt text starts with `-`, use `--`.
+Effort values are `none`, `low`, `medium`, `high`, `xhigh`, and `max`.
+Supported models are `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`, `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
+Put prompt additions before an optional `--` delimiter.
+After `--`, use only effort, model, and debug options.
+If prompt text starts with `-`, use `--`.
 
-Supported platforms are Windows and Linux. The CLI uses the same command syntax on both platforms. CI checks Ubuntu only. CI does not check Windows. Validation evidence must distinguish direct checks from inferred compatibility.
+Supported platforms: Windows and Linux use the same command syntax.
+Validation evidence: CI checks Ubuntu only. It does not check Windows.
+State which platform checks ran and which platform support is inferred.
+Contributors run the global `eliware-test` validator.
+CI installs the latest npm, then runs `npm ci` and `npm test` on Ubuntu.
 
-Contributors run the global `eliware-test` validator. CI installs the latest npm, then runs `npm ci` and `npm test` on Ubuntu. Tests must check public inputs and visible workflow results.
+Profile commands default to `gpt-6-luna`, its default effort, a live request, no usage report, and no added text.
+Finding reviews send effort `none` and summary `null`.
+`--debug-request` prints finding-review requests before send and responses after receipt.
+Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`.
+Suggestions and custom prompts print their single request and response.
+Debug output can contain repository evidence.
+Run `codescope` without a command to show help. Run `codescope all` for a full review.
 
-Profile commands default to `gpt-6-luna`, its default reasoning effort, a live request, no usage report, and no added text. Finding reviews send effort `none` and summary `null`.
-
-`--debug-request` prints the request to stderr before send. It prints the provider response after receipt. Finding reviews label these objects `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`. Suggestions and custom prompts print one request and response. Logs can contain repository evidence.
-
-Run `codescope` without a command to display help. Run `codescope all` for the full review.
-
-Exit code mapping: successful commands exit with code `0`, even when a review has findings or a negative verdict. Usage errors exit with code `2`. Configuration errors exit with code `3`. Input errors exit with code `4`.
-
-Provider request errors exit with code `5`. Invalid provider responses exit with code `6`. Other errors exit with code `4`. Request and transport timeouts exit with code `124`. SIGINT exits with code `130`. SIGTERM exits with code `143`.
-
+Exit code mapping: successful commands exit with `0`, even when findings exist.
+Usage errors exit with `2`. Configuration errors exit with `3`.
+Input errors exit with `4`. Provider errors exit with `5`.
+Invalid provider responses exit with `6`. Other errors exit with `4`.
+Request and transport timeouts exit with `124`.
+SIGINT exits with `130`. SIGTERM exits with `143`.
 CodeScope is read-only. It has no destructive review action.
 
 ## npm publication
 
-The public package is `@eliware/codescope`. `package.json` is the source for its version. The repository is `https://github.com/eliware/codescope`.
+The public package is `@eliware/codescope`.
+`package.json` is the source for its version.
+The repository is <https://github.com/eliware/codescope>.
 
-Exact `package.json.files` allowlist: `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, and `bin/`. The pack command is `eliware-test --pack`. Package checks must pass before publication.
+The exact `package.json.files` allowlist is `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, and `bin/`.
+The pack command is `eliware-test --pack`.
+Package checks must pass before publication.
 
-`publishConfig.provenance` is `true`. The package uses npm Trusted Publishing with provenance. After publication, the authorized release operator verifies that the exact package version and release commit are visible at `https://registry.npmjs.org`.
+`publishConfig.provenance` is `true`.
+The publish workflow uses npm provenance after Ubuntu validation passes.
+It also requires one `v#.#.#` tag at `HEAD` that matches `package.json`.
+After publication, the release operator checks the exact version and commit at <https://registry.npmjs.org>.
 
-Eli and the project developer run TagIt preflight together. Eli decides if the release is ready and instructs DevOps. DevOps executes the release through the Eliware Operations handoff.
-
-This file and the npm-published profile do not authorize publication. Publication requires clear authorization through the Eliware Operations handoff.
+Release approval and execution ownership: Eli and the project developer run TagIt preflight together.
+Eli decides if the release is ready and instructs DevOps.
+DevOps executes the release through the Eliware Operations handoff.
+Release authorization and handoff: this file and a passing workflow do not authorize publication.
+Publication requires clear authorization through the Eliware Operations release handoff.
