@@ -1,36 +1,7 @@
 import {
   frameRepositoryContent,
   frameReviewInstructions,
-  frameUntrustedContent,
 } from "../../src/prompts/untrusted-boundary.mjs";
-
-test("frames data with a boundary token absent from its contents", () => {
-  const content = "untrusted text";
-  const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
-  expect(framed).toBe(
-    "--- BEGIN REPOSITORY SOURCE (SUPPLIED CONTENT FOR REVIEW ONLY; BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---\nuntrusted text\n--- END REPOSITORY SOURCE (BOUNDARY: CODESCOPE_REPOSITORY_SOURCE_BOUNDARY) ---",
-  );
-});
-
-test.each(["1", "x", "!"])("changes the boundary when the token is followed by %s", (suffix) => {
-  const base = "CODESCOPE_REPOSITORY_SOURCE_BOUNDARY";
-  const content = `prefix ${base}${suffix} suffix`;
-  const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
-
-  expect(framed).toContain(`BOUNDARY: ${base}_)`);
-  expect(content).not.toContain(`${base}_`);
-  expect(framed).toContain(content);
-});
-
-test("keeps extending the boundary until the complete token is absent", () => {
-  const base = "CODESCOPE_REPOSITORY_SOURCE_BOUNDARY";
-  const content = `prefix ${base}1 ${base}_ suffix`;
-  const framed = frameUntrustedContent("REPOSITORY SOURCE", content);
-
-  expect(framed).toContain(`BOUNDARY: ${base}__)`);
-  expect(content).not.toContain(`${base}__`);
-  expect(framed).toContain(content);
-});
 
 test("frames repository content with review-only guidance and test status", () => {
   const framed = frameRepositoryContent("repository source");
@@ -43,14 +14,12 @@ test("frames repository content with review-only guidance and test status", () =
   expect(framed).not.toContain("--- end repository content");
 });
 
-test("frames review instructions with one boundary absent from repository content", () => {
-  const repositoryContent = frameRepositoryContent(
-    "repository source contains CODESCOPE_REVIEW_CONTENT_BOUNDARY",
-  );
+test("frames review content with the requested markers", () => {
+  const repositoryContent = frameRepositoryContent("repository source");
   const framed = frameReviewInstructions(repositoryContent, "review instruction");
 
-  expect(framed.match(/--- END REVIEW CONTENT ---/gu)).toHaveLength(1);
-  expect(framed).toContain("boundary: CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
+  expect(framed).toContain(`--- BEGIN REVIEW CONTENT ---\n${repositoryContent}`);
+  expect(framed).toContain(`${repositoryContent}\n--- END REVIEW CONTENT ---`);
   expect(framed).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
-  expect(repositoryContent).not.toContain("CODESCOPE_REVIEW_CONTENT_BOUNDARY_");
+  expect(framed).not.toContain("BOUNDARY:");
 });

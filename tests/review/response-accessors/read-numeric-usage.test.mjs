@@ -7,10 +7,10 @@ test("preserves valid usage counters and marks malformed fields", () => {
   });
 });
 
-test("marks counters above the safe-integer range as malformed", () => {
+test("keeps integer counters above the safe-integer range", () => {
   const largeCount = Number.MAX_SAFE_INTEGER + 1;
   expect(readNumericUsage({ usage: { input_tokens: largeCount } })).toEqual({
-    invalid_fields: true,
+    input_tokens: largeCount,
   });
 });
 

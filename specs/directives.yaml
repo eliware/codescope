@@ -51,8 +51,7 @@ directives:
             counts as invalid provider responses.
           - When -a or --add is supplied one or more times to any codescope profile command,
             including all, release, review profiles, suggestion profiles, and prompt, append each
-            string verbatim inside an explicitly delimited untrusted-data section at the end of the
-            final user message in command-line order.
+            string verbatim at the end of the final user message in command-line order.
           - Accept -a or --add on the bare codescope command and on codescope help or codescope
             --help without applying it to output or help text.
           - Treat non-option tokens as free-form prompt text; require -- when prompt text itself
@@ -142,8 +141,9 @@ directives:
           - For selected configuration files, retain discovery-time symbolic-link and regular-file
             checks, apply the configured byte limit, and use the content returned by the read
             without rechecking identity or metadata for read stability.
-          - Frame each untrusted repository-evidence or additional-user-context block with a
-            boundary token that does not occur in that block's content.
+          - Mark repository evidence with `--- BEGIN REVIEW CONTENT ---` and
+            `--- END REVIEW CONTENT ---`; do not add generated tokens to these markers.
+          - Do not add boundary markers around additional user text.
           - Treat excluded or unsupplied evidence as unknown rather than inventing facts.
         donts:
           - Do not include any package-lock.json as context content or in the remaining-file

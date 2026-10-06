@@ -78,7 +78,9 @@ test("marks repository content as review-only and separates review instructions 
   expect(userText).toContain("All npm tests passed 100%.");
   expect(userText).not.toContain("UNTRUSTED");
   expect(userText).not.toContain("--- end repository content");
+  expect(userText).toContain("--- BEGIN REVIEW CONTENT ---");
   expect(userText.match(/--- END REVIEW CONTENT ---/gu)).toHaveLength(1);
+  expect(userText).not.toContain("BOUNDARY:");
   expect(userText).toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
   expect(developerText).not.toContain(injection);
 });

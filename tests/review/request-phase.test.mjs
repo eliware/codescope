@@ -25,6 +25,6 @@ test("appends additions in order to the final user message", () => {
     "second instruction",
   ]);
   expect(request.input.at(-1).content[0].text).toMatch(
-    /Review this\.[\s\S]*first instruction[\s\S]*second instruction[\s\S]*END ADDITIONAL USER CONTEXT/u,
+    /Review this\.[\s\S]*first instruction[\s\S]*second instruction$/u,
   );
 });

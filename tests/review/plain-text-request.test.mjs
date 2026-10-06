@@ -1,14 +1,14 @@
 import { preparePlainTextRequest } from "../../src/review/plain-text-request.mjs";
 import {
+  frameCustomPrompt,
   frameRepositoryContent,
-  frameReviewInstructions,
 } from "../../src/prompts/untrusted-boundary.mjs";
 
 test("rejects a blank custom prompt", () => {
   expect(() => preparePlainTextRequest({}, "  ", "source")).toThrow(/non-empty/);
 });
 
-test("uses only the supplied prompt as task instructions and disables review tools", () => {
+test("uses only the supplied prompt as the task and disables review tools", () => {
   const request = preparePlainTextRequest(
     { tool_choice: "required", parallel_tool_calls: true },
     "prompt",
@@ -16,22 +16,26 @@ test("uses only the supplied prompt as task instructions and disables review too
   );
   expect(request.tools).toEqual([]);
   expect(request.input[0].content[0].text).toBe(
-    frameReviewInstructions(frameRepositoryContent("context"), "prompt"),
+    frameCustomPrompt(frameRepositoryContent("context"), "prompt"),
   );
+  expect(request.input[0].content[0].text).not.toContain("REVIEW INSTRUCTIONS");
 });
 
 test("preserves supplied prompt whitespace verbatim", () => {
   const prompt = " \nReview this exact text.\t\n";
   const request = preparePlainTextRequest({}, prompt, "context");
   expect(request.input[0].content[0].text).toBe(
-    frameReviewInstructions(frameRepositoryContent("context"), prompt),
+    frameCustomPrompt(frameRepositoryContent("context"), prompt),
   );
 });
 
-test("frames repository context with a boundary token absent from its content", () => {
-  const combined = "repository text contains CODESCOPE_REPOSITORY_CONTEXT_BOUNDARY";
+test("frames repository context with simple review-content markers", () => {
+  const combined = "repository text";
   const request = preparePlainTextRequest({}, "review", combined);
   expect(request.input[0].content[0].text).toBe(
-    frameReviewInstructions(frameRepositoryContent(combined), "review"),
+    frameCustomPrompt(frameRepositoryContent(combined), "review"),
   );
+  expect(request.input[0].content[0].text).toContain("--- BEGIN REVIEW CONTENT ---");
+  expect(request.input[0].content[0].text).toContain("--- END REVIEW CONTENT ---");
+  expect(request.input[0].content[0].text).not.toContain("BOUNDARY:");
 });
