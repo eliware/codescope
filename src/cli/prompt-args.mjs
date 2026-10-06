@@ -5,6 +5,7 @@ import { partitionPromptArgs } from "./prompt-partition.mjs";
 export function parsePromptArgs(args) {
   const delimiter = args.indexOf("--");
   const optionBoundary = delimiter < 0 ? args.length : delimiter;
+  // Separate option tokens are CLI flags; put literal flag text inside the quoted prompt argument.
   const additions = scanOptionStream(args.slice(0, optionBoundary), { keepScalarOptions: true });
   args = [...additions.remaining, ...(delimiter < 0 ? [] : args.slice(delimiter))];
   const { promptArgs, optionArgs } = partitionPromptArgs(args);

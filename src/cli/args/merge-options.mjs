@@ -8,6 +8,7 @@ export function mergeCommandOptions(parsed, values) {
     throw new Error("Only one --usage option is allowed");
   if (values.debugRequest && parsed.debugRequest)
     throw new Error("Only one --debug-request option is allowed");
+  // Custom prompts do not support --dry-run, whether it appears before or after the command.
   if (parsed.command === "prompt" && values.dryRun)
     throw new Error(
       "Usage: codescope prompt <prompt text> [--effort=...] [--model=...] [--debug-request]",
@@ -19,6 +20,7 @@ export function mergeCommandOptions(parsed, values) {
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
     usage: values.usageCount > 0 || parsed.usage || undefined,
     debugRequest: values.debugRequest || parsed.debugRequest || undefined,
+    // Leading values precede the command; parsed values follow it, so this preserves argument order.
     add: [...values.add, ...parsed.add],
   };
 }

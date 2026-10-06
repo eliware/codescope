@@ -41,6 +41,16 @@ test("lists release notes in the inventory without supplying their content", asy
   });
 });
 
+test("lists environment files as metadata without exposing their content", async () => {
+  const contents = "PRIVATE_VALUE";
+  const result = await describeOtherFiles("repo", [".env"], {
+    inspectFile: regular,
+    readOtherFileContents: async () => ({ data: contents, truncated: false }),
+  });
+  expect(result.entries).toEqual([`.env | text | 1 lines | ${Buffer.byteLength(contents)} bytes`]);
+  expect(result.entries.join("\n")).not.toContain(contents);
+});
+
 test("preserves independent per-file limits and bounded concurrency", async () => {
   let active = 0;
   let maximum = 0;

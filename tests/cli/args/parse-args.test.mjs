@@ -10,6 +10,10 @@ test("merges leading and command options while preserving addition order", () =>
 
 test("accepts shared options before or after the command", () => {
   expect(parseArgs(["all"])).toMatchObject({ command: "analyze-all" });
+  expect(parseArgs(["all", "--dry-run"])).toMatchObject({
+    command: "analyze-all",
+    dryRun: true,
+  });
   expect(parseArgs(["all", "--add", "first", "--effort=medium", "-a", "second"])).toMatchObject({
     effort: "medium",
     add: ["first", "second"],
@@ -28,6 +32,15 @@ test("accepts shared options before or after the command", () => {
   expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({ dryRun: true });
   expect(parseArgs(["all", "--debug-request"])).toMatchObject({ debugRequest: true });
   expect(parseArgs(["--debug-request", "all"])).toMatchObject({ debugRequest: true });
+  expect(parseArgs(["review", "all", "--debug-request"])).toMatchObject({
+    command: "analyze-all",
+    debugRequest: true,
+  });
+  expect(parseArgs(["review", "all", "--effort=high", "--model=gpt-6-sol"])).toMatchObject({
+    command: "analyze-all",
+    effort: "high",
+    model: "gpt-6-sol",
+  });
   expect(() => parseArgs(["--debug-request", "all", "--debug-request"])).toThrow(/Only one/);
 });
 
@@ -44,6 +57,10 @@ test("accepts additions before bare help without applying them", () => {
     command: "help",
     add: ["note"],
   });
+});
+
+test("keeps provider request flags from changing help output", () => {
+  expect(parseArgs(["--debug-request", "help"])).toMatchObject({ command: "help" });
 });
 
 test("preserves addition order around a custom prompt command", () => {

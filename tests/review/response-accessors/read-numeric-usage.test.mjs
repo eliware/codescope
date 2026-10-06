@@ -14,6 +14,28 @@ test("keeps integer counters above the safe-integer range", () => {
   });
 });
 
+test("preserves nested pricing counters in input token details", () => {
+  expect(
+    readNumericUsage({
+      usage: {
+        input_tokens: 10,
+        input_tokens_details: { cached_tokens: 2, cache_write_tokens: 3 },
+        output_tokens: 1,
+      },
+    }),
+  ).toEqual({
+    input_tokens: 10,
+    input_tokens_details: { cached_tokens: 2, cache_write_tokens: 3 },
+    output_tokens: 1,
+  });
+});
+
+test("marks malformed nested pricing counters", () => {
+  expect(
+    readNumericUsage({ usage: { input_tokens_details: { cached_tokens: -1, ignored: 2 } } }),
+  ).toEqual({ invalid_fields: true });
+});
+
 test("reads a stateful usage getter only once", () => {
   let reads = 0;
   const response = {

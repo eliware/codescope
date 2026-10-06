@@ -4,12 +4,12 @@ import {
   selectInventoryFiles,
 } from "../../../src/combine/inventory/paths.mjs";
 
-test("filters included content and normalizes separators", () => {
+test("filters included content and normalizes Windows separators", () => {
   expect(
     selectInventoryFiles(
       "repo",
       ["src\\a.mjs", "package.json"],
-      path.posix,
+      path.win32,
       (file) => file === "package.json",
     ),
   ).toEqual(["src/a.mjs"]);
@@ -34,7 +34,18 @@ test("rejects absolute and escaping inventory paths", () => {
 test("applies native root semantics for explicit Windows and POSIX path APIs", () => {
   expect(() => resolveInventoryPath("C:\\repo", "..\\outside", path.win32)).toThrow(/escapes/);
   expect(resolveInventoryPath("/repo", "nested\\file.txt", path.posix)).toBe(
-    "/repo/nested/file.txt",
+    "/repo/nested\\file.txt",
+  );
+});
+
+test("keeps POSIX backslashes as literal filename characters", () => {
+  expect(
+    selectInventoryFiles("repo", [".github\\settings.cfg"], path.posix, (file) =>
+      file.startsWith(".github/"),
+    ),
+  ).toEqual([".github\\settings.cfg"]);
+  expect(resolveInventoryPath("/repo", ".github\\settings.cfg", path.posix)).toBe(
+    "/repo/.github\\settings.cfg",
   );
 });
 
@@ -42,7 +53,7 @@ test("rejects non-string inventory paths and normalizes Windows separators", () 
   expect(() => selectInventoryFiles("repo", [42], path.posix, () => false)).toThrow(
     /must be strings/,
   );
-  expect(selectInventoryFiles("repo", ["nested\\notes.txt"], path.posix, () => false)).toEqual([
+  expect(selectInventoryFiles("repo", ["nested\\notes.txt"], path.win32, () => false)).toEqual([
     "nested/notes.txt",
   ]);
 });

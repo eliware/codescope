@@ -26,8 +26,12 @@ Keep `README.md`, `AGENTS.md`, `package.json`, `.knit/`, `docs/README.md`, and `
 These development rules apply repository-wide and to subdirectory instructions.
 Use Node.js 26, npm, and native ESM modules.
 Before a change, read `README.md`, applicable `AGENTS.md` files, and applicable documentation and specifications.
-Read Eliware Docs for authority rules. Read Eliware Test for repository rules.
-Read Eliware Operations for procedures. Keep these instructions actionable, current, concise, and project-specific.
+Read [Eliware Docs](https://github.com/eliware/docs) for authority rules.
+Read [Eliware Test conventions](https://github.com/eliware/test/blob/main/specs/conventions/README.md) for shared repository rules.
+Read [Eliware Operations](https://github.com/eliware/operations/blob/main/README.md) for procedures.
+Keep these instructions actionable, current, concise, and project-specific.
+<!-- These links identify shared authorities; CodeScope ownership remains defined above. -->
+
 Project rules may add shared rules. They must not weaken shared rules without authorization.
 
 Give each source file and its test one cohesive purpose and one reason to change.
@@ -136,6 +140,8 @@ The public package is `@eliware/codescope`.
 The repository is <https://github.com/eliware/codescope>.
 
 The exact `package.json.files` allowlist is `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, and `bin/`.
+<!-- Specifications are repository review rules; they are not part of the published package. -->
+
 The pack command is `eliware-test --pack`.
 Package checks must pass before publication.
 

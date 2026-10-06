@@ -44,6 +44,9 @@ test("rejects additions after the prompt delimiter", () => {
   expect(() => parsePromptArgs(["question", "--", "--add", "note"])).toThrow(
     "Only --effort=..., --model=..., or --debug-request may follow --",
   );
+  expect(() => parsePromptArgs(["question", "--", "--effort=low", "--add=note"])).toThrow(
+    "Only --effort=..., --model=..., or --debug-request may follow --",
+  );
 });
 
 test("rejects missing, duplicate, and invalid prompt options", () => {

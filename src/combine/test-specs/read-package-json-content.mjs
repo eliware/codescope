@@ -20,7 +20,12 @@ async function readInjectedPackageJson(readPackageJson, packagePath) {
     const result = await readPackageJson(packagePath, "utf8", {
       maxBytes: MAX_PACKAGE_JSON_BYTES,
     });
-    const bounded = typeof result === "string" ? { data: result } : result;
+    const bounded = typeof result === "string" ? { data: result, truncated: false } : result;
+    if (bounded === null || typeof bounded !== "object" || typeof bounded.truncated !== "boolean")
+      return {
+        kind: "unavailable",
+        reason: "package.json reader returned invalid bounded content",
+      };
     const contents =
       typeof bounded?.data === "string"
         ? bounded.data
@@ -29,7 +34,7 @@ async function readInjectedPackageJson(readPackageJson, packagePath) {
           : undefined;
     if (
       typeof contents !== "string" ||
-      bounded?.truncated === true ||
+      bounded.truncated ||
       Buffer.byteLength(contents) > MAX_PACKAGE_JSON_BYTES
     )
       return { kind: "unavailable", reason: "package.json exceeds the 100000-byte read limit" };
@@ -57,11 +62,13 @@ async function readInspectedPackageJson(packagePath, inspectFile, openFile) {
       return { kind: "unavailable", reason: "package.json exceeds the 100000-byte read limit" };
     return { kind: "available", contents: decodePackageJsonBytes(result.data) };
   } catch {
+    // Unreadable package metadata stays unknown; do not infer selected conventions from stale metadata.
     return { kind: "unavailable", reason: "package.json could not be read" };
   }
 }
 
 function decodePackageJsonBytes(bytes) {
+  // The decoder removes a leading UTF-8 BOM before package.json parsing.
   return new TextDecoder("utf-8", { fatal: true, ignoreBOM: false }).decode(bytes);
 }
 

@@ -5,6 +5,10 @@ test("parses direct profiles and metadata commands", () => {
     command: "analyze-all",
     dryRun: true,
   });
+  expect(parseDirectCommandArgs("all", ["--debug-request"])).toMatchObject({
+    command: "analyze-all",
+    debugRequest: true,
+  });
   expect(parseDirectCommandArgs("--help", [])).toMatchObject({ command: "help" });
   expect(parseDirectCommandArgs("help", ["--dry-run"])).toMatchObject({
     command: "help",

@@ -2,12 +2,6 @@ import path from "node:path";
 import { jest } from "@jest/globals";
 import { readPackageJsonContent } from "../../../src/combine/test-specs/read-package-json-content.mjs";
 
-test("reads package contents through the injected reader", async () => {
-  await expect(
-    readPackageJsonContent("repo", { readPackageJson: async () => "{}" }),
-  ).resolves.toEqual({ kind: "available", contents: "{}" });
-});
-
 test("bounds injected package readers and rejects truncated package metadata", async () => {
   const readPackageJson = jest.fn(async (_filePath, _encoding, options) => ({
     data: Buffer.alloc(options.maxBytes + 1),
@@ -22,12 +16,22 @@ test("bounds injected package readers and rejects truncated package metadata", a
   });
 });
 
-test("accepts bounded text package metadata from an injected reader", async () => {
+test("reads plain and bounded package metadata from injected readers", async () => {
+  for (const result of ["{}", { data: "{}", truncated: false }])
+    await expect(
+      readPackageJsonContent("repo", { readPackageJson: async () => result }),
+    ).resolves.toEqual({ kind: "available", contents: "{}" });
+});
+
+test("rejects bounded package data without a truncation status", async () => {
   await expect(
     readPackageJsonContent("repo", {
-      readPackageJson: async () => ({ data: "{}", truncated: false }),
+      readPackageJson: async () => ({ data: "{}" }),
     }),
-  ).resolves.toEqual({ kind: "available", contents: "{}" });
+  ).resolves.toEqual({
+    kind: "unavailable",
+    reason: "package.json reader returned invalid bounded content",
+  });
 });
 
 test("rejects invalid UTF-8 package metadata bytes", async () => {
@@ -51,10 +55,18 @@ test("rejects an oversized plain-string package reader result", async () => {
 
 test("rejects injected package metadata without readable contents", async () => {
   await expect(
-    readPackageJsonContent("repo", { readPackageJson: async () => ({}) }),
+    readPackageJsonContent("repo", {
+      readPackageJson: async () => ({ data: 1, truncated: false }),
+    }),
   ).resolves.toEqual({
     kind: "unavailable",
     reason: "package.json exceeds the 100000-byte read limit",
+  });
+  await expect(
+    readPackageJsonContent("repo", { readPackageJson: async () => null }),
+  ).resolves.toEqual({
+    kind: "unavailable",
+    reason: "package.json reader returned invalid bounded content",
   });
 });
 

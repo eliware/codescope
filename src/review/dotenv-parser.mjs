@@ -15,6 +15,7 @@ export function loadEnv(text = "", environment) {
       ((raw.startsWith('"') || raw.startsWith("'")) && raw.length < 2)
     )
       throw new Error("Invalid quoted .env value");
+    // Validate file syntax before preserving a nonblank process token.
     if (environment[match[1]]?.trim()) continue;
     const value = raw.startsWith('"')
       ? raw

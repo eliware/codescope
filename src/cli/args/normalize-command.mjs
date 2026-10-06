@@ -4,6 +4,7 @@ function normalizeScalar(value, prefix) {
 }
 
 export function normalizeCommand(command, values, extras = {}) {
+  // Apply request-wide options after every command-specific parser returns.
   return {
     ...command,
     ...extras,

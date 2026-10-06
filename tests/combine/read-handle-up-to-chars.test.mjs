@@ -93,3 +93,17 @@ test("preserves replacement output for an incomplete UTF-8 sequence at EOF", asy
   };
   await expect(readHandleUpToChars(handle, 1)).resolves.toBe("�");
 });
+
+test("keeps valid prefix text before an incomplete UTF-8 sequence at EOF", async () => {
+  const source = Buffer.from([0x61, 0xc3]);
+  let offset = 0;
+  const handle = {
+    async read(buffer, start, length) {
+      const bytesRead = Math.min(length, source.length - offset);
+      source.copy(buffer, start, offset, offset + bytesRead);
+      offset += bytesRead;
+      return { bytesRead };
+    },
+  };
+  await expect(readHandleUpToChars(handle, 1)).resolves.toBe("a�");
+});

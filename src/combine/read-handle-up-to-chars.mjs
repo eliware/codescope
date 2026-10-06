@@ -25,6 +25,7 @@ export async function readHandleUpToChars(handle, maxChars) {
     totalChars += decoded.length;
     if (totalChars > maxChars) return overflowSample(chunks.join(""), maxChars);
     if (bytesRead === 0) {
+      // Flush any incomplete final byte after the retained chunks; this keeps valid prefix text.
       chunks.push(decoder.end());
       return chunks.join("");
     }

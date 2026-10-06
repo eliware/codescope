@@ -89,6 +89,8 @@ codescope --help
 See [Quick start](docs/quick-start.md) for the owner workflow and profile list.
 See [documentation](docs/README.md) for user guidance.
 See [specifications](specs/README.md) for CodeScope rules.
+<!-- The specs folder is a repository source and is intentionally outside the npm package allowlist. -->
+<!-- These links point to supplied, existing documentation and specification indexes. -->
 
 The executable is `bin/codescope.mjs`.
 The package command is `codescope`.
@@ -115,6 +117,8 @@ npm run format:check
 ```
 
 Use `npm test` as the aggregate validation command.
+<!-- The aggregate command runs the validation checks listed above. -->
+
 CodeScope does not run commands in a reviewed repository.
 
 ## Troubleshooting
@@ -151,9 +155,9 @@ It ignores malformed lines for other names.
 It rejects malformed token assignments and quoted token values.
 The parser accepts optional `export`, comments, and quoted values.
 
-Configuration files must be regular files, not symbolic links.
-CodeScope reads at most 100,000 bytes and 200 lines per file.
-JSON evidence must fit the review's aggregate character limit.
+Selected text files under `.github/` and `.knit/` must be regular files, not symbolic links.
+CodeScope limits each selected file to 100,000 bytes and 200 lines.
+JSON, YAML, and other supplied evidence must fit the review's aggregate character limit.
 A missing or blank token causes an error with exit code `3`.
 
 Use command options to set the model or reasoning effort.

@@ -53,6 +53,7 @@ function createWriter(stdout) {
       pendingFailures.add(fail);
       stdout.on("drain", onDrain);
       try {
+        // Writable callbacks use an error-first argument; an empty argument means success.
         const accepted = stdout.write(value, (cause) => {
           if (cause) {
             callbackError = cause;
@@ -62,6 +63,7 @@ function createWriter(stdout) {
           complete();
         });
         writeReturned = true;
+        // A drain signal matters only when write() returns false; otherwise the callback is enough.
         waitingForDrain = accepted === false && !drainSeen;
         complete();
       } catch (cause) {

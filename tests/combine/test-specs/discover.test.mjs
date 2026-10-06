@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, readdir, writeFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { discoverTestSpecFiles } from "../../../src/combine/test-specs/discover.mjs";
@@ -43,6 +43,44 @@ test("discovers Test-spec YAML files on the host platform", async () => {
     await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({
       files: ["general-deterministic.yaml", "general-semantic.yaml"],
     });
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("treats a missing convention checkout as unavailable", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
+  try {
+    await expect(discoverTestSpecFiles(root)).resolves.toBeUndefined();
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("reports convention-root inspection failures with context", async () => {
+  await expect(
+    discoverTestSpecFiles("/broken", {
+      inspectRoot: async () => {
+        throw Object.assign(new Error("denied"), { code: "EACCES" });
+      },
+    }),
+  ).rejects.toThrow(/Unable to inspect Test specification evidence/);
+});
+
+test("reports an ENOENT during nested Test-spec discovery", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
+  const specsRoot = path.join(root, "specs", "conventions");
+  try {
+    await mkdir(path.join(specsRoot, "nested"), { recursive: true });
+    await expect(
+      discoverTestSpecFiles(root, {
+        readDirectory: async (directory, options) => {
+          if (directory === path.join(specsRoot, "nested"))
+            throw Object.assign(new Error("entry disappeared"), { code: "ENOENT" });
+          return readdir(directory, options);
+        },
+      }),
+    ).rejects.toThrow(/Unable to discover Test specification evidence/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

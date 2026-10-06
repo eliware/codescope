@@ -40,3 +40,8 @@ test("preserves literal backslashes in POSIX inventory filenames", () => {
   expect(selectConfigFiles([".github\\settings.cfg"], "linux")).toEqual([]);
   expect(resolveConfigPath("/repo", ".github\\ci.cfg", "linux")).toBe("/repo/.github\\ci.cfg");
 });
+
+test("classifies Windows inventory paths by their owning content section", () => {
+  expect(selectConfigFiles([".github\\workflow.yml"], "win32")).toEqual([]);
+  expect(selectConfigFiles([".github\\setup.cfg"], "win32")).toEqual([".github/setup.cfg"]);
+});

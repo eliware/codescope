@@ -21,6 +21,7 @@ export async function describeOtherFiles(
   const pathApi = platform === "win32" ? path.win32 : path.posix;
   const rootPath = pathApi.resolve(root);
   const paths = selectInventoryFiles(root, inventory, pathApi, isIncludedContent);
+  // The provider receives formatted inventory metadata, not sampled file bytes.
   const read = (relativePath) =>
     readInventoryEntry(rootPath, relativePath, { pathApi, readOtherFileContents, inspectFile });
   if (Number.isFinite(maxChars)) {

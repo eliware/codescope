@@ -6,7 +6,8 @@ export function partitionPromptArgs(args) {
   const optionArgs =
     delimiter < 0
       ? args.filter(isPromptOption)
-      : normalizeTrailingPromptOptions(args.slice(delimiter + 1));
+      : // Validate the complete suffix before shared option parsing can consume any token.
+        normalizeTrailingPromptOptions(args.slice(delimiter + 1));
   return {
     promptArgs:
       delimiter < 0 ? args.filter((value) => !isPromptOption(value)) : args.slice(0, delimiter),

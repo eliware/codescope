@@ -2,17 +2,23 @@ import path from "node:path";
 import { isPackageLock } from "../json/policy.mjs";
 
 export function resolveInventoryPath(rootPath, relativePath, pathApi) {
-  const portablePath = relativePath.replaceAll("\\", "/");
+  const portablePath = pathApi.sep === "\\" ? relativePath.replaceAll("\\", "/") : relativePath;
   if (
     path.posix.isAbsolute(portablePath) ||
     path.win32.isAbsolute(portablePath) ||
     /^(?:\\\\|\/\/)/u.test(portablePath)
   )
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
-  const portableRelative = pathApi.normalize(portablePath).replaceAll("\\", "/");
-  if (portableRelative === ".." || portableRelative.startsWith("../"))
+  const portableRelative = pathApi.normalize(portablePath);
+  const resolvedPath = pathApi.resolve(rootPath, portableRelative);
+  const resolvedRelative = pathApi.relative(rootPath, resolvedPath);
+  if (
+    resolvedRelative === ".." ||
+    resolvedRelative.startsWith(`..${pathApi.sep}`) ||
+    pathApi.isAbsolute(resolvedRelative)
+  )
     throw new Error(`Inventory path escapes review root: ${relativePath}`);
-  return pathApi.resolve(rootPath, portableRelative);
+  return resolvedPath;
 }
 
 export function selectInventoryFiles(root, inventory, pathApi, isIncludedContent) {
@@ -20,7 +26,9 @@ export function selectInventoryFiles(root, inventory, pathApi, isIncludedContent
   for (const relativePath of inventory)
     if (typeof relativePath !== "string") throw new Error("Inventory paths must be strings");
   return inventory
-    .map((relativePath) => relativePath.replaceAll("\\", "/"))
+    .map((relativePath) =>
+      pathApi.sep === "\\" ? relativePath.replaceAll("\\", "/") : relativePath,
+    )
     .map((relativePath) => {
       resolveInventoryPath(rootPath, relativePath, pathApi);
       return relativePath;

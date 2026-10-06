@@ -30,6 +30,10 @@ test("rejects invalid grouped command shapes", () => {
     command: "analyze-all",
     dryRun: true,
   });
+  expect(parseGroupedArgs("review", ["all", "--dry-run"])).toMatchObject({
+    command: "analyze-all",
+    dryRun: true,
+  });
   expect(() => parseGroupedArgs("review", ["missing"])).toThrow(/Unknown command profile/);
   expect(() => parseGroupedArgs("review", ["new-features"])).toThrow(/suggestion-only/);
   expect(() => parseGroupedArgs("review", ["all", "--bad"])).toThrow(/Usage/);

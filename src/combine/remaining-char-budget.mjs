@@ -1,5 +1,6 @@
 export function remainingCharBudget(sections, maxChars = Number.POSITIVE_INFINITY) {
   if (!Number.isFinite(maxChars)) return maxChars;
+  // Remove empty section slots before counting separators between emitted sections.
   const included = sections.filter(Boolean);
   const used = included.reduce(
     (total, section) => total + section.length,

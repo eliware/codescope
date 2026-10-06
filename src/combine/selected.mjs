@@ -27,6 +27,7 @@ export async function combineSelectedFiles(
     metadata.yaml,
     metadata.configs,
   ];
+  // Joined metadata counts its internal separators; the budget reserves only later section boundaries.
   const budget = createSectionBudget(
     joinCombinedSections(parts, normalizedOptions.maxChars).length,
     normalizedOptions.maxChars,

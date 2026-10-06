@@ -7,6 +7,7 @@ export async function inspectEnvironmentFile(envFile, inspectFile, envFileExplic
     assertRegularFile(envFile, metadata);
     return true;
   } catch (cause) {
+    // A missing default file is optional; do not recheck it for concurrent file creation.
     if (cause?.code === "ENOENT" && !envFileExplicit) return null;
     throw createInspectionError(envFile, cause);
   }
