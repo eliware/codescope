@@ -62,7 +62,7 @@ async function readInspectedPackageJson(packagePath, inspectFile, openFile) {
 }
 
 function decodePackageJsonBytes(bytes) {
-  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+  return new TextDecoder("utf-8", { fatal: true, ignoreBOM: false }).decode(bytes);
 }
 
 function packageReadFailure(error) {

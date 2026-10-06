@@ -15,6 +15,21 @@ test("resolves selected Test spec records from eliware.apply", async () => {
   });
 });
 
+test("reads BOM-prefixed package.json convention profiles", async () => {
+  const contents = Buffer.from(
+    `\uFEFF${JSON.stringify({ eliware: { apply: ["general", "cli"] } })}`,
+    "utf8",
+  );
+  await expect(
+    readTestSpecApplicability("repo", {
+      readPackageJson: async () => ({ data: contents, truncated: false }),
+    }),
+  ).resolves.toMatchObject({
+    profiles: new Set(["general", "cli"]),
+    skipSeparateRecords: false,
+  });
+});
+
 test("skips separate profile records for eliware-test", async () => {
   await expect(
     readTestSpecApplicability("repo", {

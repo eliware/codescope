@@ -6,6 +6,7 @@ export function isAbsolutePortablePath(relativePath) {
   return (
     path.posix.isAbsolute(relativePath) ||
     path.win32.isAbsolute(relativePath) ||
+    // POSIX treats //name as absolute; this also rejects portable UNC roots.
     /^(?:\\\\|\/\/)/u.test(relativePath)
   );
 }
