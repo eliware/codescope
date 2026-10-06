@@ -1,5 +1,5 @@
-version: "9.0"
-description: Normative v9 rules for the CodeScope CLI, profiles, and supplied evidence.
+version: "12.0"
+description: Normative v12 rules for the CodeScope CLI, profiles, and supplied evidence.
 directives:
   - id: E-1210
     dos:
