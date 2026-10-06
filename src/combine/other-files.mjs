@@ -28,6 +28,7 @@ export async function describeOtherFiles(
     for (const relativePath of paths) {
       const entry = await read(relativePath);
       const candidate = [...entries, entry];
+      // Keep skipped paths in the omitted count. Continue to test later, smaller entries.
       if (
         formatInventorySectionResult(candidate, maxChars, paths.length).included < candidate.length
       )
