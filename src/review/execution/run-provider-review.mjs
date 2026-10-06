@@ -1,5 +1,6 @@
 import { requestProviderResponse } from "../provider-request.mjs";
 import { responseText } from "../../response/provider-text.mjs";
+import { readReasoningSummary } from "../../response/read-reasoning-summary.mjs";
 import { createSessionResult } from "../review-result.mjs";
 import { formatSingleRequestUsage } from "../usage-reporting.mjs";
 
@@ -34,6 +35,10 @@ export async function runProviderSession({
   } catch (cause) {
     cause.providerResponse = providerResponse;
     throw cause;
+  }
+  const reasoningSummary = readReasoningSummary(providerResponse);
+  if (reasoningSummary) {
+    output = `Reasoning summary:\n${reasoningSummary}\n\n${output}`;
   }
   if (usage) output = formatSingleRequestUsage(output, providerResponse, request.model);
   return createSessionResult(

@@ -84,6 +84,24 @@ test("keeps the single finding review response without phase labels", async () =
   });
   expect(session.output).toBe(result);
 });
+
+test("prints a supplied reasoning summary before the review result", async () => {
+  const session = await runProviderSession({
+    client: {
+      responses: {
+        create: async () => ({
+          output: [
+            { type: "reasoning", summary: [{ type: "summary_text", text: "Summary text." }] },
+            { type: "function_call", name: "submit_review", arguments: '{"findings":{}}' },
+          ],
+        }),
+      },
+    },
+    request: { model: "gpt-6-luna", input: [], tool_choice: { name: "submit_review" } },
+  });
+  expect(session.output).toBe('Reasoning summary:\nSummary text.\n\n{"findings":{}}');
+});
+
 test("adds request usage to single-request provider output", async () => {
   const session = await runProviderSession({
     client: {
