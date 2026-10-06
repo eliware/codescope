@@ -113,7 +113,7 @@ State which platform checks ran and which platform support is inferred.
 Contributors run the global `eliware-test` validator.
 CI installs the latest npm, then runs `npm ci` and `npm test` on Ubuntu.
 
-Profile commands default to `gpt-6-luna`, effort `low`, a live request, no usage report, and no added text.
+Profile commands default to `gpt-6-luna`, effort `none`, a live request, no usage report, and no added text.
 Finding reviews send reasoning summary `auto` by default.
 `--debug-request` prints finding-review requests before send and responses after receipt.
 Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`.

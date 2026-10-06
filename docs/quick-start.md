@@ -41,7 +41,7 @@ Use `--usage` for provider token counts and calculated cost.
 Use `--debug-request` to print request and response objects.
 Use `--dry-run` to estimate token use without a provider call.
 
-Finding reviews default to effort `low` and reasoning summary `auto`.
+Finding reviews default to effort `none` and reasoning summary `auto`.
 The `--effort` option selects the effort sent to the provider.
 Debug output can contain repository evidence. Protect these logs.
 
