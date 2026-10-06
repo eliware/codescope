@@ -188,11 +188,12 @@ directives:
             a real defect with a false-positive detail, retain and narrow it to the substantiated
             defect; remove only unsupported claims. A false-positive finding must not suppress a
             separate valid finding in the same category.
-          - Require each review finding to have severity, location, concise
-            issue, supporting evidence, and concrete impact. Keep findings atomic and reconcile
+          - Require each review finding to have severity, location, and a concise finding that
+            states the supported defect and concrete impact. Keep findings atomic and reconcile
             each proposed defect with relevant supplied code, tests, specifications, documentation,
             and applicable conventions. Passing tests do not disprove behavior they do not cover.
-            Use empty arrays for categories without findings.
+            Require each category to contain findings or exactly one no-issues sentinel with
+            severity `none`, location `none`, and finding `No issues found.`
           - Request a provider block verdict for unresolved P0/P1 findings while treating that
             verdict as provider output only.
           - For review requests, use Responses explicit prompt caching with a breakpoint after the
@@ -218,9 +219,9 @@ directives:
           - Keep provider tool schemas and prompt instructions as requested-output guidance rather
             than CodeScope acceptance requirements.
           - Before submitting a review, verify every finding describes a concrete, evidence-backed
-            current defect. Review tool schemas include severity, location, issue, evidence, and
-            impact. Categories with no findings use empty arrays. Review schemas do not include
-            recommendations, rationales, or ignore examples.
+            current defect. All and release review tool schemas include severity, location, and
+            finding; empty categories use the required no-issues sentinel. Review schemas do not
+            include recommendations, rationales, or ignore examples.
           - Suggestion schemas retain their suggestion-specific rationale and ignore-example fields.
           - Allow review, suggestion, and custom-prompt responses to be provider-defined and not
             machine-readable.

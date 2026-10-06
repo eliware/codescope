@@ -11,5 +11,5 @@ test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).toContain("A passing test suite establishes that the tests passed");
   expect(defaultDeveloperText).toContain("conventions category");
   expect(defaultDeveloperText).toContain("one independently checkable defect per item");
-  expect(profileReviewRules).toContain("empty array");
+  expect(profileReviewRules).toContain("Follow the tool schema");
 });

@@ -7,13 +7,13 @@ test("uses ordinary completeness and priority guidance by default", () => {
   expect(guidance).toContain("conventions category");
   expect(guidance).not.toContain("rationale");
   expect(guidance).not.toContain("{{FINDING_SCOPE}}");
-  expect(guidance).toContain("severity, location, concise issue");
-  expect(guidance).toContain("use an empty array");
+  expect(guidance).toContain("severity, location, and a concise description");
+  expect(guidance).toContain("exactly one sentinel");
   expect(guidance).toContain("passing tests do not by themselves disprove");
 });
 
 test("uses release-gate guidance when requested", () => {
   const guidance = combinedCompletenessGuidance(true);
   expect(guidance).toContain("report only unresolved P0/P1 blockers");
-  expect(guidance).toContain("use an empty array in every other category");
+  expect(guidance).toContain("use the no-issues sentinel in every other category");
 });
