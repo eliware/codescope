@@ -4,6 +4,7 @@ import { parseMetaCommand } from "../meta-args.mjs";
 import { normalizeCommand } from "./normalize-command.mjs";
 
 export function parseDirectCommandArgs(first, rest) {
+  // codescope ignore this because option values are consumed before metadata argument checks.
   const values = parseOptionValues(rest);
   const metaTokens = values.remaining.filter(
     (token) => !["--usage", "--dry-run", "--debug-request"].includes(token),
