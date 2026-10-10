@@ -1,9 +1,9 @@
 const priorityInstruction = (maximum) =>
   `Review all supplied code, tests, and docs. Use the same rules as the all profile. Report every proven, actionable issue from P0 through P${maximum}. Do not report higher priorities. This profile differs from all only by this priority limit.
 
-Each finding needs a location, evidence, and a current effect. Keep each finding to one issue. Do not report guesses, risks without evidence, issues that the code already handles, documented behavior, duplicates, or advice that needs no change.
+Each issue needs locations, evidence, and a current effect. Put related file paths and line ranges in locations. Keep each issue to one defect. Do not report guesses, risks without evidence, issues that the code already handles, documented behavior, duplicates, or advice that needs no change.
 
-Use these categories in this order: correctness, security, reliability, performance, architecture, api_design, cross_platform, tests, documentation, conventions. Only P0 and P1 block release. P2 and P3 do not block, including in p0-2 and p0-3 profiles. Use an empty array when a category has no issue. Do not use a placeholder. Do not report that no issue exists, no change is needed, or behavior is intentional. These statements are not P1 findings.
+Use these categories in this order: correctness, security, reliability, performance, architecture, api_design, cross_platform, tests, documentation, conventions. Only P0 and P1 block release. P2 and P3 do not block, including in p0-2 and p0-3 profiles. Use an empty array when a category has no issue. Do not use a placeholder. Do not report that no issue exists, no change is needed, or behavior is intentional. These statements are not P1 issues.
 
 Check CLI claims against the supplied parser. Direct all --dry-run and review all --dry-run work and have tests. Do not report them as defects. Do not report option order or equivalent CLI forms when the parser handles them the same way. Do not ask for a test for every option order.
 

@@ -28,7 +28,11 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
           type: "object",
           additionalProperties: false,
           properties: {
-            location: { type: "string" },
+            locations: {
+              type: "array",
+              minItems: 1,
+              items: { type: "string" },
+            },
             suggestion: { type: "string" },
             rationale: {
               type: "array",
@@ -42,7 +46,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
                 "For a real suggestion, give a full // codescope ignore: ... comment. Use an empty string for the no-suggestion sentinel.",
             },
           },
-          required: ["location", "suggestion", "rationale", "ignore_example"],
+          required: ["locations", "suggestion", "rationale", "ignore_example"],
         },
       },
     },

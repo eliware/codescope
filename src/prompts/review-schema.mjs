@@ -3,14 +3,14 @@ export function createReviewParameters(categories) {
     type: "object",
     additionalProperties: false,
     properties: {
-      findings: {
+      issues: {
         type: "object",
-        description: "All review categories. Use an empty array when a category has no findings.",
+        description: "All review categories. Use an empty array when a category has no issues.",
         additionalProperties: false,
         properties: Object.fromEntries(
           categories.map((category) => [
             category,
-            { type: "array", items: { $ref: "#/$defs/finding" } },
+            { type: "array", items: { $ref: "#/$defs/issue" } },
           ]),
         ),
         required: [...categories],
@@ -18,12 +18,12 @@ export function createReviewParameters(categories) {
       verdict: {
         type: "string",
         enum: ["pass", "block"],
-        description: "Block only for unresolved P0 or P1 findings.",
+        description: "Block only for unresolved P0 or P1 issues.",
       },
     },
-    required: ["findings", "verdict"],
+    required: ["issues", "verdict"],
     $defs: {
-      finding: {
+      issue: {
         type: "object",
         additionalProperties: false,
         properties: {
@@ -32,8 +32,18 @@ export function createReviewParameters(categories) {
             enum: ["P0", "P1", "P2", "P3"],
             description: "Highest applicable issue priority.",
           },
-          location: { type: "string", description: "Supplied file path and relevant line(s)." },
-          issue: { type: "string", description: "One concise, independently checkable defect." },
+          locations: {
+            type: "array",
+            minItems: 1,
+            items: { type: "string" },
+            description: "Supplied file paths and relevant line ranges.",
+          },
+          issues: {
+            type: "array",
+            minItems: 1,
+            items: { type: "string" },
+            description: "One concise, independently checkable defect.",
+          },
           evidence: {
             type: "string",
             description:
@@ -41,7 +51,7 @@ export function createReviewParameters(categories) {
           },
           impact: { type: "string", description: "Concrete effect of the demonstrated defect." },
         },
-        required: ["severity", "location", "issue", "evidence", "impact"],
+        required: ["severity", "locations", "issues", "evidence", "impact"],
       },
     },
   };
