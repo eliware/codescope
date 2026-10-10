@@ -15,7 +15,7 @@ Examples:
 - Behavior affecting optional features.
 - Issues in code scheduled for a later release.
 
-P2 findings must not change the overall verdict from pass to block.
+P2 issues must not change the overall verdict from pass to block.
 
 ## P3 — Minor improvement
 
@@ -31,4 +31,4 @@ Use P3 for low-risk improvements:
 - Cosmetic UX improvements.
 - Developer-experience suggestions with no current functional impact.
 
-P3 findings must never block a release.`;
+P3 issues must never block a release.`;

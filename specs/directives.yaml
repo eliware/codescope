@@ -13,7 +13,7 @@ directives:
         dos:
           - Use the current working directory as the review root.
           - Keep the reviewed repository read-only. Write only CodeScope's completed output.
-          - Review supplied context and report findings. Leave fixes and validation to repository owners.
+          - Review supplied context and report issues. Leave fixes and validation to repository owners.
         donts:
           - Do not change repositories, apply fixes, commit, push, release, publish, deploy, or run repository commands.
       - id: A-1210.1
@@ -143,22 +143,23 @@ directives:
           - Use supplied code, specs, and tests to review contract coverage.
           - Do not require test-run output to review contract coverage.
           - Assess each issue claim on its own evidence.
-          - Keep the supported part of a mixed finding. Remove unsupported claims.
-          - Do not let a false-positive finding hide another valid issue in its category.
-          - Give each finding a severity, location, and concise defect with concrete impact.
-          - Keep findings atomic. Check each claim against relevant code, tests, specs, docs, and conventions.
+          - Keep the supported part of a mixed issue. Remove unsupported claims.
+          - Do not let an invalid issue hide another valid issue in its category.
+          - Give each issue a severity, locations array, and issues array.
+          - Require at least one item in each locations and issues array.
+          - Keep issues atomic. Check each claim against relevant code, tests, specs, docs, and conventions.
           - Do not treat passing tests as proof about behavior they do not test.
-          - Give each category findings or one no-issues sentinel.
-          - Use severity `none`, location `none`, and finding `No issues found.` for the sentinel.
-          - Request a provider block verdict for unresolved P0 or P1 findings.
+          - Give each category issues or one no-issues sentinel.
+          - Use severity `none`, locations [`none`], and issues [`No issues found.`] for the sentinel.
+          - Request a provider block verdict for unresolved P0 or P1 issues.
           - Treat the provider verdict as provider output only.
           - Use implicit prompt caching for review requests.
           - Keep one explicit breakpoint after stable developer instructions and conventions.
           - Do not set cache mode to explicit-only.
-          - Keep review tool schemas limited to findings and verdict.
-          - Use finding-review effort `none` and reasoning summary `auto` by default.
+          - Keep review tool schemas limited to issues and verdict.
+          - Use issue-review effort `none` and reasoning summary `auto` by default.
         donts:
-          - Do not let findings or the provider verdict change the CLI exit code.
+          - Do not let issues or the provider verdict change the CLI exit code.
           - Do not report missing test output, an unseen failure, or an unsupported test-run requirement.
           - Do not replace deterministic checks owned by other tools.
           - Do not repeat known issues unless code contradicts the stated limit or evidence shows outside impact.
@@ -166,14 +167,16 @@ directives:
         dos:
           - Print reasoning summary text before the successful provider response when present.
           - Otherwise, write the successful provider response unchanged.
-          - Send one request for each finding review, suggestion, and custom prompt.
-          - With `--debug-request`, print finding-review requests to stderr before send.
-          - Print finding-review responses to stderr after receipt.
+          - Send one request for each issue review, suggestion, and custom prompt.
+          - With `--debug-request`, print issue-review requests to stderr before send.
+          - Print issue-review responses to stderr after receipt.
           - Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`.
           - Print the single request and response for suggestions and custom prompts.
           - Treat tool schemas and prompt instructions as output guidance, not CodeScope acceptance rules.
-          - Check every finding for a concrete, evidence-backed current defect before request send.
-          - Include severity, location, and finding in all and release review schemas.
+          - Check every issue for a concrete, evidence-backed current defect before request send.
+          - Use top-level issues and verdict fields in all and release review schemas.
+          - Include severity, locations, and issues in each issue item.
+          - Use a locations array and an issues array with at least one item.
           - Use the required no-issues sentinel for empty categories.
           - Keep suggestions' rationale and ignore-example fields in suggestion schemas.
           - Allow provider-defined responses without a machine-readable format.

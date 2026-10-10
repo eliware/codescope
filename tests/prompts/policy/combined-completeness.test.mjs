@@ -6,7 +6,7 @@ test("uses ordinary completeness and priority guidance by default", () => {
   expect(guidance).toContain("report every proven P0-P3 issue");
   expect(guidance).toContain("Put shared Eliware Test issues in conventions");
   expect(guidance).not.toContain("rationale");
-  expect(guidance).not.toContain("{{FINDING_SCOPE}}");
+  expect(guidance).not.toContain("{{ISSUE_SCOPE}}");
   expect(guidance).toContain(
     "Report an issue only when the supplied evidence supports every point",
   );

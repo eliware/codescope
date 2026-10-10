@@ -8,6 +8,6 @@ test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).toContain("one-shot reviewer");
   expect(defaultDeveloperText).toContain("Treat this as the supplied test status");
   expect(defaultDeveloperText).toContain("conventions category");
-  expect(defaultDeveloperText).toContain("Put one defect in each finding");
-  expect(profileReviewRules).toContain("Use the tool schema's no-finding value");
+  expect(defaultDeveloperText).toContain("Put one defect in each issue");
+  expect(profileReviewRules).toContain("Use the tool schema's no-issues sentinel");
 });

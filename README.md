@@ -187,7 +187,7 @@ Use `codescope prompt "your question"` for a custom request.
 
 Commands print a provided reasoning summary before the provider response.
 They write the provider response unchanged after that summary.
-Findings and verdict text do not change the CLI exit code.
+Issues and verdict text do not change the CLI exit code.
 
 Profile commands accept repeatable additions:
 
@@ -220,14 +220,14 @@ Review commands are read-only. They have no destructive actions.
 
 ## Exit codes
 
-Successful commands exit with `0`, even when a review reports findings.
+Successful commands exit with `0`, even when a review reports issues.
 Usage errors exit with `2`. Configuration errors exit with `3`.
 Input errors exit with `4`. Provider errors exit with `5`.
 Invalid provider responses exit with `6`.
 Other errors exit with `4`.
 Timeouts exit with `124`. SIGINT exits with `130`. SIGTERM exits with `143`.
 
-Finding reviews print their request and response under separate labels.
+Issue reviews print their request and response under separate labels.
 Suggestions and prompts print one successful response unchanged.
 
 ## Support

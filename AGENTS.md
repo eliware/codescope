@@ -117,14 +117,14 @@ Contributors run the global `eliware-test` validator.
 CI installs the latest npm, then runs `npm ci` and `npm test` on Ubuntu.
 
 Profile commands default to `gpt-6-luna`, effort `none`, a live request, no usage report, and no added text.
-Finding reviews send reasoning summary `auto` by default.
-`--debug-request` prints finding-review requests before send and responses after receipt.
+Issue reviews send reasoning summary `auto` by default.
+`--debug-request` prints issue-review requests before send and responses after receipt.
 Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`.
 Suggestions and custom prompts print their single request and response.
 Debug output can contain repository evidence.
 Run `codescope` without a command to show help. Run `codescope all` for a full review.
 
-Exit code mapping: successful commands exit with `0`, even when findings exist.
+Exit code mapping: successful commands exit with `0`, even when issues exist.
 Usage errors exit with `2`. Configuration errors exit with `3`.
 Input errors exit with `4`. Provider errors exit with `5`.
 Invalid provider responses exit with `6`. Other errors exit with `4`.

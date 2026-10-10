@@ -2,14 +2,14 @@
 
 ## Owner workflow
 
-1. Run `codescope all` once. Review its findings and suggestions.
+1. Run `codescope all` once. Review its issues and suggestions.
 2. Fix each valid issue from that run.
 3. Apply each useful suggestion from that run.
 4. Run `npm test`. Restore genuine 100% statement, branch, function, and line coverage.
-5. If a finding is invalid, clarify the relevant documentation first.
+5. If an issue is invalid, clarify the relevant documentation first.
 6. If documentation is not enough, add a narrow CodeScope ignore beside the code.
 7. Do not use an ignore to hide a real defect.
-8. Give each finding one action: fix, documentation change, or justified narrow ignore.
+8. Give each issue one action: fix, documentation change, or justified narrow ignore.
 9. Use focused commits. Put each independent fix in its own commit.
 10. Include matching tests and docs with each change.
 11. Validate each focused change with the normal project commands.
@@ -41,11 +41,11 @@ Use `--usage` for provider token counts and calculated cost.
 Use `--debug-request` to print request and response objects.
 Use `--dry-run` to estimate token use without a provider call.
 
-Finding reviews default to effort `none` and reasoning summary `auto`.
+Issue reviews default to effort `none` and reasoning summary `auto`.
 The `--effort` option selects the effort sent to the provider.
 Debug output is raw and is not redacted. It can contain repository evidence or sensitive values returned by the provider. Protect these logs.
 
-Finding reviews print `--- REVIEW REQUEST ---` before send and `--- REVIEW RESPONSE ---` after receipt.
+Issue reviews print `--- REVIEW REQUEST ---` before send and `--- REVIEW RESPONSE ---` after receipt.
 Suggestions and custom prompts print their single request and response.
 
 ## Custom prompts
