@@ -8,21 +8,20 @@ Use the other guides for settings and problem solving.
 
 ## Setup
 
-Follow [Quick start](quick-start.md) to install and use CodeScope.
+Follow quick-start.md to install and use CodeScope.
 
 ## Usage
 
-See [Configuration](configuration.md) for token and command settings.
+See configuration.md for token and command settings.
 
 ## Validation
 
 Run `eliware-test` from the repository root to validate this project.
-See [Troubleshooting](troubleshooting.md) for validation and provider problems.
+Review the troubleshooting guide for validation and provider problems.
 
 ## Support
 
-See [Troubleshooting](troubleshooting.md) for common issues.
-Use the support links in the [root README](../README.md) for more help.
+Use the support links in the root README for more help.
 
 ## Contents
 

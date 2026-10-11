@@ -18,13 +18,13 @@ that ran and failed. This rule applies to required and optional tests.
   only if the evidence also has the plain secret or a usable decryption key.
 - A security defect that permits immediate unauthorized access or destructive control.
 - A production action currently causing uncontrolled damage.
-- Any Istanbul ignore outside a pure barrel/re-export file.
+- Any test exclusion marker outside a pure barrel/re-export file.
 P0 needs immediate action. It blocks every release.
 
 Do not use P0 for theories, ordinary bugs, missing tests, old documentation,
 or unused code. Use P0 for these only when a supplied test ran and failed.
-Istanbul ignores are permitted only in pure barrel/re-export files. When an
-Istanbul ignore appears elsewhere, report it as P0.
+test exclusion markers are permitted only in pure barrel/re-export files. When an
+test exclusion marker appears elsewhere, report it as P0.
 
 ## P1 — Release blocker
 

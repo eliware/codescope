@@ -1,6 +1,8 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-@eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yaml)
+## @eliware/codescope [![npm](https://img.shields.io/npm/v/@eliware/codescope)](https://www.npmjs.com/package/@eliware/codescope) [![License](https://img.shields.io/github/license/eliware/codescope)](https://github.com/eliware/codescope/blob/main/LICENSE) [![CI](https://github.com/eliware/codescope/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/codescope/actions/workflows/ci.yaml)
+
+A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.
 
 ## Table of Contents
 
@@ -17,16 +19,13 @@
 - [Commands](#commands)
 - [Exit codes](#exit-codes)
 - [Support](#support)
-- [License](#license)
 - [Links](#links)
+- [License](#license)
 
 ## Features
 
 CodeScope is a read-only CLI for AI-assisted repository reviews, suggestions, and token estimates.
 It reviews supplied evidence and does not change the reviewed repository.
-
-The package description is: `A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.`
-The author is `Eliware <eliware@eliware.org>`. The license is MIT.
 
 - Focused profiles review architecture, security, reliability, performance, API design, dependencies, conventions, and release readiness.
 - The `all` profile reviews code, tests, and Markdown in one provider request.
@@ -38,8 +37,7 @@ See [documentation](docs/README.md) and [specifications](specs/README.md).
 
 ## Requirements
 
-- Node.js 26.x
-- npm
+Use Node.js 26 or later and npm 12 or later.
 
 ## Setup
 
@@ -99,7 +97,7 @@ Publication requires successful Ubuntu validation, an exact `v#.#.#` tag that ma
 
 ## Development
 
-Use Node.js 26 and native ESM.
+Use Node.js 26 or later and native ESM.
 Keep runtime code in `src/`, the CLI entry point in `bin/`, guides in `docs/`, and directives in `specs/`.
 
 ## Testing
@@ -232,29 +230,21 @@ Suggestions and prompts print one successful response unchanged.
 
 ## Support
 
-[![Discord](https://eliware.org/logos/discord_96.png)](https://discord.gg/M6aTR9eTwN)
+For help, questions, or to chat with the author and community, visit:
+
+[![Discord](https://eliware.org/logos/discord_96.png)](https://discord.gg/M6aTR9eTwN)[![eliware.org](https://eliware.org/logos/eliware_96.png)](https://discord.gg/M6aTR9eTwN)
 
 **[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
 
-Ask for help in the [Eliware Discord community](https://discord.gg/M6aTR9eTwN).
-You can also use [GitHub issues](https://github.com/eliware/codescope/issues) or email eliware@eliware.org.
-Include the command, Node.js version, and redacted diagnostics.
+## Links
+
+- [Home Page](https://eliware.org)
+- [GitHub Org](https://github.com/eliware)
+- [GitHub Repo](https://github.com/eliware/codescope)
+- [Bug Reports](https://github.com/eliware/codescope/issues)
+- [npm](https://www.npmjs.com/package/@eliware/codescope)
+- [Discord](https://discord.gg/M6aTR9eTwN)
 
 ## License
 
-[license](LICENSE)
-
-## Links
-
-- [Documentation](docs/README.md)
-- [Specifications](specs/README.md)
-- [Home Page](https://github.com/eliware/codescope#readme)
-- [Eliware](https://eliware.org)
-- [GitHub repository](https://github.com/eliware/codescope.git)
-- [Eliware Docs](https://github.com/eliware/docs)
-- [GitHub organization](https://github.com/eliware)
-- [npm package](https://www.npmjs.com/package/@eliware/codescope)
-- [Release Notes](RELEASE_NOTES.md)
-- [Discord](https://discord.gg/M6aTR9eTwN)
-- Documentation: [docs](docs/README.md) · [specifications](specs/README.md)
-- [npm Package](https://www.npmjs.com/package/@eliware/codescope)
+[MIT © Eliware](LICENSE)

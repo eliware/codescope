@@ -138,7 +138,7 @@ The public package is `@eliware/codescope`.
 `package.json` is the source for its version.
 The repository is <https://github.com/eliware/codescope>.
 
-The exact `package.json.files` allowlist is `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, and `bin/`.
+Start `package.json.files` with `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`. Add `bin/` for the application and `specs/` for npm publication.
 
 The pack command is `eliware-test --pack`.
 Package checks must pass before publication.

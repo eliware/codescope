@@ -1,22 +1,22 @@
 version: "12.0"
 description: Normative v12 rules for the CodeScope CLI, profiles, and supplied evidence.
 directives:
-  - id: E-1210
+  - id: E-1210.0
     dos:
       - Provide a structured, read-only CLI for focused reviews, suggestions, and token estimates.
       - State CLI behavior, review profiles, and evidence rules in these directives.
     donts:
       - Do not define or enforce Eliware Test repository requirements.
       - Do not define Operations, publication, deployment, or Test8 harness behavior.
-    directives:
-      - id: A-1210.0
+    children:
+      - id: E-1210.0.0
         dos:
           - Use the current working directory as the review root.
           - Keep the reviewed repository read-only. Write only CodeScope's completed output.
           - Review supplied context and report issues. Leave fixes and validation to repository owners.
         donts:
           - Do not change repositories, apply fixes, commit, push, release, publish, deploy, or run repository commands.
-      - id: A-1210.1
+      - id: E-1210.0.1
         dos:
           - Support `codescope`, `codescope --help`, `codescope all`, `codescope review <profile>`, `codescope suggest <profile>`, direct profile names, and `codescope prompt <text>`.
           - Support `codescope release` and `codescope review release` as release-profile aliases.
@@ -50,7 +50,7 @@ directives:
           - Do not apply additions to bare CLI, help, or version output.
           - Do not treat valid prompt words as misplaced options.
           - After `--`, reject unsupported trailing tokens with the delimiter grammar error.
-      - id: A-1210.2
+      - id: E-1210.0.2
         dos:
           - Use a nonblank process `OPENAI_API_TOKEN` when available.
           - If the process value is missing or blank, use a nonblank value from `~/.codescope`.
@@ -66,7 +66,7 @@ directives:
           - Do not reject the file because an unrelated line is malformed.
           - Do not place credentials, tokens, environment files, or runtime state in reviewed repositories.
           - Do not claim redaction removes every secret.
-      - id: A-1210.3
+      - id: E-1210.0.3
         dos:
           - Exclude `RELEASE_NOTES.md` from supplied Markdown, without case sensitivity.
           - Keep the excluded release-notes file in the unsupplied-file inventory.
@@ -115,7 +115,7 @@ directives:
           - Do not include deterministic Eliware Test specifications in provider context.
           - Do not parse, summarize, reorder, or omit selected semantic specification content.
           - Do not treat excluded files, missing files, link targets, or unsupplied systems as reviewed evidence.
-      - id: A-1210.4
+      - id: E-1210.0.4
         dos:
           - Never run tests in the reviewed repository.
           - Never send test output as provider context.
@@ -128,7 +128,7 @@ directives:
         donts:
           - Do not claim CodeScope is a sanitized-environment mode or a complete secret scanner.
           - Do not claim CodeScope makes secret-bearing source or test output safe.
-      - id: A-1210.5
+      - id: E-1210.0.5
         dos:
           - Keep review profiles focused on actionable issues in their declared areas.
           - Keep suggestions focused on advice. Do not include suggestions in blocking-verdict policy.
@@ -163,7 +163,7 @@ directives:
           - Do not report missing test output, an unseen failure, or an unsupported test-run requirement.
           - Do not replace deterministic checks owned by other tools.
           - Do not repeat known issues unless code contradicts the stated limit or evidence shows outside impact.
-      - id: A-1210.6
+      - id: E-1210.0.6
         dos:
           - Print reasoning summary text before the successful provider response when present.
           - Otherwise, write the successful provider response unchanged.
@@ -189,7 +189,7 @@ directives:
           - Do not parse, validate, redact, format, or change provider payloads.
           - Do not expose or promise a stable CodeScope response schema.
           - Do not parse model JSON or derive process status from provider content.
-      - id: A-1210.7
+      - id: E-1210.0.7
         dos:
           - Keep CI, deployment, registry, Git, rollback, package, and other external command state out of conclusions unless evidence is supplied.
           - Keep provider internals, operating-system behavior, and child-process behavior outside the review contract when tests cover them.
