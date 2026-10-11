@@ -9,4 +9,5 @@ test("builds implementation-only suggestion prompts through injected dependencie
   expect(prompt.focus).toContain("Suggest architecture.");
   expect(prompt.focus).toContain("Put at least one item in every category.");
   expect(prompt.focus).toContain("rationale: []");
+  expect(prompt.focus).toContain('locations ["none"]');
 });

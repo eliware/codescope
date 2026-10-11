@@ -3,8 +3,12 @@ import path from "node:path";
 import { TextDecoder } from "node:util";
 import { readFileFromHandle } from "../read-file-from-handle.mjs";
 import { readHandleUpToLimit } from "../read-file-up-to-limit.mjs";
+import {
+  MAX_PACKAGE_JSON_BYTES,
+  normalizeInjectedPackageJson,
+} from "./normalize-injected-package-json.mjs";
 
-export const MAX_PACKAGE_JSON_BYTES = 100_000;
+export { MAX_PACKAGE_JSON_BYTES } from "./normalize-injected-package-json.mjs";
 
 export async function readPackageJsonContent(
   root,
@@ -20,25 +24,7 @@ async function readInjectedPackageJson(readPackageJson, packagePath) {
     const result = await readPackageJson(packagePath, "utf8", {
       maxBytes: MAX_PACKAGE_JSON_BYTES,
     });
-    const bounded = typeof result === "string" ? { data: result, truncated: false } : result;
-    if (bounded === null || typeof bounded !== "object" || typeof bounded.truncated !== "boolean")
-      return {
-        kind: "unavailable",
-        reason: "package.json reader returned invalid bounded content",
-      };
-    const contents =
-      typeof bounded?.data === "string"
-        ? bounded.data
-        : Buffer.isBuffer(bounded?.data)
-          ? decodePackageJsonBytes(bounded.data)
-          : undefined;
-    if (
-      typeof contents !== "string" ||
-      bounded.truncated ||
-      Buffer.byteLength(contents) > MAX_PACKAGE_JSON_BYTES
-    )
-      return { kind: "unavailable", reason: "package.json exceeds the 100000-byte read limit" };
-    return { kind: "available", contents };
+    return normalizeInjectedPackageJson(result);
   } catch (error) {
     return packageReadFailure(error);
   }

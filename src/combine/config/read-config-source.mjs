@@ -1,24 +1,13 @@
-import { lstat, open } from "node:fs/promises";
-import { readFileFromHandle } from "../read-file-from-handle.mjs";
-import { readHandleUpToLimit } from "../read-file-up-to-limit.mjs";
-import { resolveConfigPath } from "./paths.mjs";
+import { readBoundedConfigSource } from "./read-bounded-config-source.mjs";
+import { validateConfigSource } from "./validate-config-source.mjs";
 
-export const MAX_CONFIG_BYTES = 100_000;
+export { MAX_CONFIG_BYTES } from "./read-bounded-config-source.mjs";
 
 export async function readConfigSource(
   root,
   relativePath,
-  { readFileContents, inspectFile, openFile = open, platform = process.platform } = {},
+  { readFileContents, inspectFile, openFile, platform = process.platform } = {},
 ) {
-  const filePath = resolveConfigPath(root, relativePath, platform);
-  const metadata = await (inspectFile ?? lstat)(filePath, { bigint: true });
-  if (metadata.isSymbolicLink())
-    throw new Error(`symlinked configuration files are not supported: ${relativePath}`);
-  if (!metadata.isFile())
-    throw new Error(`configuration path is not a regular file: ${relativePath}`);
-  if (readFileContents) return readFileContents(filePath, { maxBytes: MAX_CONFIG_BYTES });
-  return readFileFromHandle(filePath, {
-    openFile,
-    readHandle: (handle) => readHandleUpToLimit(handle, MAX_CONFIG_BYTES),
-  });
+  const filePath = await validateConfigSource(root, relativePath, { inspectFile, platform });
+  return readBoundedConfigSource(filePath, { readFileContents, openFile });
 }
