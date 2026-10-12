@@ -9,5 +9,6 @@ test("provides the shared developer guidance", () => {
   expect(defaultDeveloperText).toContain("Treat this as the supplied test status");
   expect(defaultDeveloperText).toContain("conventions category");
   expect(defaultDeveloperText).toContain("Put one defect in each issue");
+  expect(defaultDeveloperText).toContain("Use web search to verify public API behavior");
   expect(profileReviewRules).toContain("Use the tool schema's no-issues sentinel");
 });

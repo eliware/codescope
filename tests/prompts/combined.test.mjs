@@ -14,7 +14,10 @@ const buildPrompt = (releaseGate = false) => {
 
 test("adds the unified tool and one consolidated guidance message", () => {
   const { allPrompt, result, system } = buildPrompt();
-  expect(result.tools).toEqual([{ name: "submit_unified_review" }]);
+  expect(result.tools).toEqual([
+    { type: "web_search", user_location: { type: "approximate" }, search_context_size: "medium" },
+    { name: "submit_unified_review" },
+  ]);
   expect(result.tool_choice).toEqual({ type: "function", name: "submit_unified_review" });
   expect(result.parallel_tool_calls).toBeUndefined();
   expect(result.model).toBe("gpt-6-luna");

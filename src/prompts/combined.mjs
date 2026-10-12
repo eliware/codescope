@@ -1,9 +1,10 @@
 import { combinedCompletenessGuidance } from "./policy/combined-completeness.mjs";
+import { webSearchTool } from "./request-envelope.mjs";
 
 export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = false }) {
   return {
     ...allPrompt,
-    tools: [unifiedTool],
+    tools: [webSearchTool, unifiedTool],
     tool_choice: { type: "function", name: unifiedTool.name },
     input: [
       ...allPrompt.input,

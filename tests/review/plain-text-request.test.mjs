@@ -8,13 +8,15 @@ test("rejects a blank custom prompt", () => {
   expect(() => preparePlainTextRequest({}, "  ", "source")).toThrow(/non-empty/);
 });
 
-test("uses only the supplied prompt as the task and disables review tools", () => {
+test("uses the supplied prompt and enables web search without review tools", () => {
   const request = preparePlainTextRequest(
     { tool_choice: "required", parallel_tool_calls: true },
     "prompt",
     "context",
   );
-  expect(request.tools).toEqual([]);
+  expect(request.tools).toEqual([
+    { type: "web_search", user_location: { type: "approximate" }, search_context_size: "medium" },
+  ]);
   expect(request.input[0].content[0].text).toBe(
     frameCustomPrompt(frameRepositoryContent("context"), "prompt"),
   );

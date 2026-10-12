@@ -33,7 +33,7 @@ test("propagates prepared evidence through request execution and output", async 
   expect(combineOptions.platform).toBe("linux");
 });
 
-test("sends only supplied custom task text with repository context and no tools", async () => {
+test("sends supplied custom task text with repository context and web search", async () => {
   let sentRequest;
   await runReviewPipeline("repo", {
     ...base,
@@ -51,7 +51,9 @@ test("sends only supplied custom task text with repository context and no tools"
     write: async (value) => ({ written: value.length }),
     register: () => ({ removeHandlers() {} }),
   });
-  expect(sentRequest.tools).toEqual([]);
+  expect(sentRequest.tools).toEqual([
+    { type: "web_search", user_location: { type: "approximate" }, search_context_size: "medium" },
+  ]);
   expect(sentRequest.input).toHaveLength(1);
   expect(sentRequest.input[0].content[0].text).toContain("repository source");
   expect(sentRequest.input[0].content[0].text.endsWith("\n\nSummarize this repository.")).toBe(

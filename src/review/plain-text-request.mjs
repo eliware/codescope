@@ -1,4 +1,5 @@
 import { frameCustomPrompt, frameRepositoryContent } from "../prompts/untrusted-boundary.mjs";
+import { webSearchTool } from "../prompts/request-envelope.mjs";
 
 export function preparePlainTextRequest(request, plainText, combined) {
   if (typeof plainText !== "string" || !plainText.trim())
@@ -7,7 +8,7 @@ export function preparePlainTextRequest(request, plainText, combined) {
   const repositoryContent = frameRepositoryContent(combined);
   const text = frameCustomPrompt(repositoryContent, plainText);
   request.input = [{ role: "user", content: [{ type: "input_text", text }] }];
-  request.tools = [];
+  request.tools = [webSearchTool];
   delete request.text;
   delete request.tool_choice;
   delete request.parallel_tool_calls;

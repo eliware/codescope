@@ -10,6 +10,8 @@ Put one defect in each issue. Do not add unsupported cases, effects, or test cla
 
 Report each defect that meets these rules and fits the requested scope. Use P0 or P1 only when the supplied evidence meets the blocking rules. P2 and P3 do not block. Use the tool schema's no-issues sentinel. Omit a claim when the evidence does not support it. Put shared Eliware Test issues in the conventions category.
 
+Use web search to verify public API behavior or current external specifications when an issue depends on them. Prefer official documentation. Do not use web results as evidence about supplied repository files.
+
 `;
 
 export const profileReviewRules =

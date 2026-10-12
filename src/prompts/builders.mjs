@@ -1,6 +1,6 @@
 import { reviewTool } from "./review-tool.mjs";
 import { defaultDeveloperText, profileReviewRules } from "./guidance.mjs";
-import { baseRequest } from "./request-envelope.mjs";
+import { baseRequest, webSearchTool } from "./request-envelope.mjs";
 
 export function createProfilePrompt(
   focus,
@@ -9,7 +9,7 @@ export function createProfilePrompt(
 ) {
   return {
     ...baseRequest,
-    tools: [tool],
+    tools: [webSearchTool, tool],
     tool_choice: { type: "function", name: tool.name },
     input: [
       { role: "developer", content: [{ type: "input_text", text: defaultDeveloperText }] },

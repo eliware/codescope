@@ -1,4 +1,5 @@
 import { runProviderSession } from "../../../src/review/execution/run-provider-review.mjs";
+import { webSearchTool } from "../../../src/prompts/request-envelope.mjs";
 
 test("preserves finding review reasoning and logs one request and response", async () => {
   const requests = [];
@@ -135,7 +136,7 @@ test("does not retry a failed finding review", async () => {
   ).rejects.toThrow("provider unavailable");
   expect(calls).toBe(1);
 });
-test("keeps custom prompt output raw with tools disabled", async () => {
+test("keeps custom prompt output raw with web search enabled", async () => {
   const output = '{"provider-defined":"text"}';
   let sentRequest;
   await expect(
@@ -148,12 +149,16 @@ test("keeps custom prompt output raw with tools disabled", async () => {
           },
         },
       },
-      request: { model: "gpt-5.6-sol", input: [], tools: [] },
+      request: {
+        model: "gpt-5.6-sol",
+        input: [],
+        tools: [webSearchTool],
+      },
       signal: undefined,
       plainText: "custom",
     }),
   ).resolves.toMatchObject({ kind: "prompt", output });
-  expect(sentRequest.tools).toEqual([]);
+  expect(sentRequest.tools).toEqual([webSearchTool]);
 });
 
 test("debugs the request and response for a single custom-prompt request", async () => {
@@ -163,7 +168,11 @@ test("debugs the request and response for a single custom-prompt request", async
   try {
     await runProviderSession({
       client: { responses: { create: async () => ({ output_text: "answer" }) } },
-      request: { model: "gpt-5.6-sol", input: [], tools: [] },
+      request: {
+        model: "gpt-5.6-sol",
+        input: [],
+        tools: [webSearchTool],
+      },
       plainText: "custom",
       debugRequest: true,
     });
@@ -171,7 +180,7 @@ test("debugs the request and response for a single custom-prompt request", async
     console.error = originalError;
   }
   expect(debug).toHaveLength(2);
-  expect(debug[0]).toContain('"tools": []');
+  expect(debug[0]).toContain('"type": "web_search"');
   expect(debug[1]).toContain("answer");
 });
 

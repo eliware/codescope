@@ -9,6 +9,7 @@ test("builds the shared request envelope and profile focus", () => {
     },
   );
   expect(prompt.model).toBe("gpt-6-luna");
+  expect(prompt.tools[0].type).toBe("web_search");
   expect(prompt.input[0].content[0].text).not.toContain("ignore_example");
   expect(prompt.input[1].content[0].text).toContain("Review builders.");
   expect(prompt.input[1].content[0].text).toContain("Use the tool schema's no-issues sentinel");
@@ -16,7 +17,7 @@ test("builds the shared request envelope and profile focus", () => {
 
 test("builds a profile with default tool and instructions", () => {
   expect(createProfilePrompt("Default builder")).toMatchObject({
-    tools: [{ name: "submit_review" }],
+    tools: [{ type: "web_search" }, { name: "submit_review" }],
   });
   expect(createProfilePrompt("Default builder").input[1].content[0].text).not.toContain(
     "undefined",

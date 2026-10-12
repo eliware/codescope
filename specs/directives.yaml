@@ -22,7 +22,9 @@ directives:
           - Support `codescope release` and `codescope review release` as release review commands.
           - Use `gpt-6-luna` as the default model.
           - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6.1-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `-a|--add <string>`.
-          - Give custom prompts normal repository context. Disable review and suggestion tools.
+          - Give custom prompts normal repository context. Disable review and suggestion output tools. Add the web search tool to every request.
+          - Set the web search location type to approximate. Set its search context size to medium.
+          - Use web search to verify public API behavior and current external specifications when an issue depends on them. Prefer official documentation.
           - Use the supplied prompt as the only built-in task and output instruction for `codescope prompt`.
           - Put complete repository context before that prompt. Mark the context as data.
           - Put the prompt at the end of its user message. Keep supplied additions after it as specified.
