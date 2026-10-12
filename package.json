@@ -45,9 +45,8 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@eliware/common": "^2.0.0",
-    "@eliware/openai": "^1.1.11",
-    "@eliware/redact": "6.0.0"
+    "@eliware/common": "^12.0.1",
+    "@eliware/openai": "^1.1.11"
   },
   "devDependencies": {
     "@eliware/test": "^12.0.0"
