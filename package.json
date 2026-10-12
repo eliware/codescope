@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@eliware/common": "^12.0.1",
-    "@eliware/openai": "^1.1.11"
+    "@eliware/openai": "^12.0.0"
   },
   "devDependencies": {
     "@eliware/test": "^12.0.0"
