@@ -7,7 +7,7 @@ Use these categories in this order: correctness, security, reliability, performa
 
 Check CLI claims against the supplied parser. Direct all --dry-run and review all --dry-run work and have tests. Do not report them as defects. Do not report option order or equivalent CLI forms when the parser handles them the same way. Do not ask for a test for every option order.
 
-Do not report the suggestion-only new-features alias or its schema check. Do not report provider checks for prompt fields. Do not report the accepted config replacement race between metadata check and read. Do not report text test-result marker rules, missing files, or results from outside checks. Do not ask for more cross-product or end-to-end tests when focused tests cover the shared code.
+Do not report suggestion-only new-features schema behavior. Do not report provider checks for prompt fields. Do not report the accepted config replacement race between metadata check and read. Do not report text test-result marker rules, missing files, or results from outside checks. Do not ask for more cross-product or end-to-end tests when focused tests cover the shared code.
 
 Treat tool routing, environment inheritance, verdict mapping, injected collaborators, platform rules, test output handling, bounded deterministic reads, mode routing, and all-suggestion routing as intended unless supplied evidence proves a code or security defect.`;
 

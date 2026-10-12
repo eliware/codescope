@@ -12,8 +12,6 @@ export async function runReviewSession({
   plainText,
   debugRequest,
 }) {
-  let providerResponse;
-  let providerResponseReceived = false;
   try {
     if (dryRun) {
       return await runDrySession({ client, request, signal, write, usage });
@@ -27,12 +25,8 @@ export async function runReviewSession({
       debugRequest,
       write,
     });
-    providerResponse = session.providerResponse;
-    providerResponseReceived = true;
     return session;
   } catch (cause) {
-    providerResponse ??= cause.providerResponse;
-    providerResponseReceived ||= providerResponse !== undefined;
-    return throwSessionFailure({ cause, providerResponse, providerResponseReceived, write });
+    return throwSessionFailure({ cause });
   }
 }

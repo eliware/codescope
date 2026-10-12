@@ -59,8 +59,8 @@ test("sends only supplied custom task text with repository context and no tools"
   );
 });
 
-test("writes setup failure fallback when evidence collection fails", async () => {
-  const writes = [];
+test("reports setup failure without writing a result", async () => {
+  let wrote = false;
   await expect(
     runReviewPipeline("repo", {
       ...base,
@@ -68,13 +68,12 @@ test("writes setup failure fallback when evidence collection fails", async () =>
         throw new Error("evidence failed");
       },
       createClient: () => ({}),
-      write: async (value) => {
-        writes.push(value);
-        return { written: value.length };
+      write: () => {
+        wrote = true;
       },
     }),
   ).rejects.toThrow("CodeScope setup failed: evidence failed");
-  expect(JSON.parse(writes[0])).toMatchObject({ issues: "not submitted" });
+  expect(wrote).toBe(false);
 });
 
 test("routes request construction failures through the phase boundary", async () => {

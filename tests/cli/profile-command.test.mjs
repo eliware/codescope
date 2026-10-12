@@ -31,20 +31,6 @@ test("uses empty raw options when omitted", async () => {
   expect(received.usage).toBe(false);
 });
 
-test("maps new-features review commands to suggestion mode", async () => {
-  let received;
-  await expect(
-    runProfileCommand("analyze-new-features", {
-      cwd: "repo",
-      write: () => {},
-      review: async (_cwd, options) => {
-        received = options;
-      },
-    }),
-  ).resolves.toBe(0);
-  expect(received.prompt).toBeDefined();
-});
-
 test("returns success immediately for dry runs", async () => {
   await expect(
     runProfileCommand("analyze-all", {

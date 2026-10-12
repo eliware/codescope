@@ -14,6 +14,7 @@ test("parses direct profile options", () => {
 
 test("rejects invalid direct profile options", () => {
   expect(() => parseProfileArgs("missing", [])).toThrow(/Unknown command/);
+  expect(() => parseProfileArgs("new-features", [])).toThrow(/requires the suggest command/);
   expect(() => parseProfileArgs("all", ["--version"])).toThrow(/not valid/);
   expect(() => parseProfileArgs("all", ["--bad"])).toThrow(/Unexpected/);
 });

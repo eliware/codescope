@@ -17,8 +17,7 @@ export async function runProfileCommand(command, options) {
     review,
     add = [],
   } = options;
-  const effectiveMode = target === "new-features" && mode === "review" ? "suggest" : mode;
-  const { combine, prompt: profilePrompt } = getProfile(target, effectiveMode);
+  const { combine, prompt: profilePrompt } = getProfile(target, mode);
   const prompt = applyEffort(profilePrompt, effort);
   await review(cwd, {
     write,

@@ -6,16 +6,14 @@ import { runReviewPhase } from "./pipeline/write-phase-failure.mjs";
 
 export async function runReviewPipeline(cwd, options) {
   const prepared = await runReviewPhase(() => collectAndPrepare(cwd, options), {
-    write: options.write,
     createFailure: createSetupFailure,
-    fallbackCause: new Error("Review setup failed"),
   });
   const { request, controller } = await runReviewPhase(
     () => createRequest(options, prepared.combined),
-    { write: options.write },
+    {},
   );
   return runReviewPhase(
     () => executeRequest({ client: prepared.client, request, controller, options }),
-    { write: options.write },
+    {},
   );
 }

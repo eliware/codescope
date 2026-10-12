@@ -1,27 +1,20 @@
 import { attachProviderFailureDetails } from "../../../src/review/failure/attach-provider-failure-details.mjs";
 import { ResponsesError } from "@eliware/openai";
 
-test("attaches provider code, fallback result, and fallback-write error", () => {
+test("attaches provider error details", () => {
   const failure = new Error("request failed");
-  const result = { issues: "not submitted" };
-  const fallbackError = new Error("write failed");
 
   expect(
     attachProviderFailureDetails(failure, {
       cause: { code: "API" },
-      result,
-      fallbackError,
     }),
-  ).toMatchObject({ code: "API", result, fallbackError });
+  ).toMatchObject({ code: "API" });
 });
 
-test("omits absent provider and fallback-write metadata", () => {
+test("omits absent provider metadata", () => {
   const failure = new Error("request failed");
-  const result = {};
-  expect(attachProviderFailureDetails(failure, { cause: {}, result })).toBe(failure);
-  expect(failure.result).toBe(result);
+  expect(attachProviderFailureDetails(failure, { cause: {} })).toBe(failure);
   expect(failure).not.toHaveProperty("code");
-  expect(failure).not.toHaveProperty("fallbackError");
 });
 
 test("copies normalized provider error details", () => {
@@ -39,7 +32,7 @@ test("copies normalized provider error details", () => {
     },
   });
 
-  expect(attachProviderFailureDetails(failure, { cause, result: {} })).toMatchObject({
+  expect(attachProviderFailureDetails(failure, { cause })).toMatchObject({
     code: "invalid_request",
     type: "invalid_request_error",
     status: 400,

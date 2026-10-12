@@ -20,12 +20,6 @@ Commands print a provided reasoning summary before the successful provider respo
 They write the provider response unchanged after that summary.
 Each command makes one provider request.
 CodeScope reports evidence, setup, provider, and output errors.
-It writes a safe incomplete result when possible.
-
-Fallback diagnostics preserve readable fields.
-CodeScope serializes, redacts, and limits this diagnostic data.
-The `response_truncated` marker shows that CodeScope limited the output.
-Tool-call arguments in this summary are diagnostic data, not review output.
 
 Use `--usage` to inspect token counts and cost.
 Run a command again only when you need a new assessment.

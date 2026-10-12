@@ -19,7 +19,7 @@ directives:
       - id: E-1210.0.1
         dos:
           - Support `codescope`, `codescope --help`, `codescope all`, `codescope review <profile>`, `codescope suggest <profile>`, direct profile names, and `codescope prompt <text>`.
-          - Support `codescope release` and `codescope review release` as release-profile aliases.
+          - Support `codescope release` and `codescope review release` as release review commands.
           - Use `gpt-6-luna` as the default model.
           - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6.1-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `-a|--add <string>`.
           - Give custom prompts normal repository context. Disable review and suggestion tools.
@@ -183,7 +183,7 @@ directives:
           - Keep suggestions' rationale and ignore-example fields in suggestion schemas.
           - Allow provider-defined responses without a machine-readable format.
           - Report provider setup, transport, and output-write errors.
-          - Preserve safe fallback output and available fallback error data.
+          - Report setup and provider failures with available error details.
           - Preserve provider status, code, type, parameter, and request ID in failure diagnostics when available.
           - Require output writers to report the exact number of written characters.
           - Treat a missing write result as incomplete output.
