@@ -207,7 +207,7 @@ If prompt text starts with `-`, use `--`.
 
 Profile commands support model and effort options, usage reports, and dry-run estimates.
 The default model is `gpt-6-luna`.
-`--usage` reports token counts and calculated cost for each live request.
+`--usage` reports token counts, context status, and calculated cost for each live request.
 
 Supported platforms: Windows and Linux use the same command syntax.
 Validation evidence: CI checks Ubuntu only. It does not check Windows.
@@ -225,7 +225,7 @@ Invalid provider responses exit with `6`.
 Other errors exit with `4`.
 Timeouts exit with `124`. SIGINT exits with `130`. SIGTERM exits with `143`.
 
-Issue reviews print their request and response under separate labels.
+Issue reviews print request, event, and response data with `--debug-request`.
 Suggestions and prompts print one successful response unchanged.
 
 ## Support

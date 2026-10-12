@@ -21,7 +21,7 @@ directives:
           - Support `codescope`, `codescope --help`, `codescope all`, `codescope review <profile>`, `codescope suggest <profile>`, direct profile names, and `codescope prompt <text>`.
           - Support `codescope release` and `codescope review release` as release-profile aliases.
           - Use `gpt-6-luna` as the default model.
-          - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `-a|--add <string>`.
+          - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6.1-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `-a|--add <string>`.
           - Give custom prompts normal repository context. Disable review and suggestion tools.
           - Use the supplied prompt as the only built-in task and output instruction for `codescope prompt`.
           - Put complete repository context before that prompt. Mark the context as data.
@@ -169,8 +169,10 @@ directives:
           - Otherwise, write the successful provider response unchanged.
           - Send one request for each issue review, suggestion, and custom prompt.
           - With `--debug-request`, print issue-review requests to stderr before send.
+          - Capture HTTP reasoning-summary deltas and request IDs for debug output.
           - Print issue-review responses to stderr after receipt.
-          - Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---`.
+          - Print captured event metadata under `--- RESPONSE EVENTS ---`.
+          - Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---` for issue reviews.
           - Print the single request and response for suggestions and custom prompts.
           - Treat tool schemas and prompt instructions as output guidance, not CodeScope acceptance rules.
           - Check every issue for a concrete, evidence-backed current defect before request send.
@@ -182,11 +184,11 @@ directives:
           - Allow provider-defined responses without a machine-readable format.
           - Report provider setup, transport, and output-write errors.
           - Preserve safe fallback output and available fallback error data.
-          - Preserve every non-negative integer usage counter accepted by pricing in failure diagnostics.
+          - Preserve provider status, code, type, parameter, and request ID in failure diagnostics when available.
           - Require output writers to report the exact number of written characters.
           - Treat a missing write result as incomplete output.
         donts:
-          - Do not parse, validate, redact, format, or change provider payloads.
+          - Do not parse, validate, redact, format, or change provider response content except for documented output and debug fields.
           - Do not expose or promise a stable CodeScope response schema.
           - Do not parse model JSON or derive process status from provider content.
       - id: E-1210.0.7

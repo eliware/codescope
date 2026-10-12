@@ -1,4 +1,4 @@
-import { calculateUsageCostBreakdown } from "../pricing/calculator.mjs";
+import { calculateUsageCostBreakdown } from "@eliware/openai";
 
 export function formatUsageMetadata(response, model, label = "Request") {
   try {

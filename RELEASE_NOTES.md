@@ -5,6 +5,9 @@
 ### Changed
 
 - Finding reviews now make one provider request and return its review.
+- Use the `@eliware/openai` v12 model catalog and pricing calculators.
+- Add reasoning-summary deltas and request IDs to debug event output.
+- Add provider error details to API failure output.
 
 ## 11.0.0 — 2026-10-03
 

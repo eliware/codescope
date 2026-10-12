@@ -1,4 +1,4 @@
-import { calculateUsageCost } from "../../pricing/calculator.mjs";
+import { calculateUsageCost } from "@eliware/openai";
 
 export function createDryRunOutput(inputTokens, { model, usage }) {
   const output = { model, estimated_input_tokens: inputTokens };

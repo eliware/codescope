@@ -48,6 +48,24 @@ test("renders ordinary Errors without usage guidance", async () => {
   expect(errors).toEqual(["codescope: provider failed"]);
 });
 
+test("renders safe provider error details", async () => {
+  const errors = [];
+  await runWithCliErrors(
+    async () => {
+      throw Object.assign(new Error("provider failed"), {
+        status: 429,
+        code: "rate_limit_exceeded",
+        requestId: "req_1",
+      });
+    },
+    (value) => errors.push(value),
+  );
+  expect(errors).toEqual([
+    "codescope: provider failed",
+    'OpenAI error details: {"status":429,"code":"rate_limit_exceeded","requestId":"req_1"}',
+  ]);
+});
+
 test("uses the default console error writer when none is supplied", async () => {
   const original = console.error;
   const errors = [];

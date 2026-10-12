@@ -36,7 +36,7 @@ Direct profile names are also supported.
 
 The default model is `gpt-6-luna`.
 Set effort with `--effort=none|low|medium|high|xhigh|max`.
-Select a model with `--model=gpt-6-astra|gpt-6-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`.
+Select a model with `--model=gpt-6-astra|gpt-6-sol|gpt-6.1-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`.
 Use `--usage` for provider token counts and calculated cost.
 Use `--debug-request` to print request and response objects.
 Use `--dry-run` to estimate token use without a provider call.
@@ -45,7 +45,7 @@ Issue reviews default to effort `none` and reasoning summary `auto`.
 The `--effort` option selects the effort sent to the provider.
 Debug output is raw and is not redacted. It can contain repository evidence or sensitive values returned by the provider. Protect these logs.
 
-Issue reviews print `--- REVIEW REQUEST ---` before send and `--- REVIEW RESPONSE ---` after receipt.
+Issue reviews print request, event, and response data with `--debug-request`.
 Suggestions and custom prompts print their single request and response.
 
 ## Custom prompts
