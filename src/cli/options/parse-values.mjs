@@ -24,7 +24,6 @@ export function parseOptionValues(tokens, options) {
     model,
     dryRun: dryRunCount > 0,
     ...(usageTokenCount > 0 ? { usage: true } : {}),
-    // codescope ignore this because debugRequest is returned in both parsing modes.
     ...(debugRequestCount > 0 ? { debugRequest: true } : {}),
     add: values.add,
     remaining: values.remaining,

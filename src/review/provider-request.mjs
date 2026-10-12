@@ -6,7 +6,6 @@ export async function requestProviderResponse(
   debugMarkers,
 ) {
   if (debugRequest) {
-    // codescope ignore this because debug mode intentionally prints the raw request, as documented.
     if (debugMarkers?.request) console.error(debugMarkers.request);
     console.error(JSON.stringify(request, null, 2));
   }

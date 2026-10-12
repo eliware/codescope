@@ -2,7 +2,6 @@ const HELP = ["-h", "--help"];
 const VERSION = ["-v", "--version"];
 
 export function parseMetaCommand(first, tokens) {
-  // codescope ignore this because callers pass only tokens left after option parsing.
   const option = tokens[0];
   if (HELP.includes(first)) {
     if (tokens.length) throw new Error(`Unexpected arguments: ${tokens.join(" ")}`);

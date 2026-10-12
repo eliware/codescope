@@ -27,7 +27,6 @@ export async function runProviderSession({
     debugRequest,
     debugRequest && isFindingReview ? findingReviewDebugMarkers : undefined,
   );
-  // codescope ignore this because debug mode intentionally prints the raw response, as documented.
   if (debugRequest && !isFindingReview) console.error(JSON.stringify(providerResponse, null, 2));
 
   let output;
