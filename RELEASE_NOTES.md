@@ -13,6 +13,7 @@
 - Add API token setup through the process environment or `~/.codescope`.
 - Add request and response details, reasoning summary events, and request IDs to debug output.
 - Add end-user guides for setup, commands, configuration, operations, and troubleshooting.
+- Add optional OpenAI web search to review, suggestion, and custom prompt requests.
 
 ### Changed
 
@@ -23,6 +24,7 @@
 - Print provider output as text. Print a reasoning summary first when the provider returns one.
 - Use `gpt-6-luna` as the default model and `none` as the default reasoning effort.
 - Ask review requests for an automatic reasoning summary.
+- Allow web search with structured output tools while requiring a structured result.
 - Keep review commands read-only. Do not run commands or tests in the reviewed repository.
 - Keep issue reports informational. Do not use issue text or verdicts as process exit status.
 

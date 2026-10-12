@@ -28,6 +28,20 @@ The provider can receive confidential source, tests, documentation, and configur
 Review and remove secrets before you run CodeScope.
 Do not treat redaction or review as a complete secret control.
 
+## Web search
+
+Review, suggestion, and custom prompt requests include OpenAI web search.
+The model can choose to search when it needs current public information.
+A search query can use details from the request, including repository content and prompt text.
+For example, a query can include an API name, package name, code detail, or error message.
+OpenAI processes the query and search results as part of the request.
+Review request data before you run CodeScope. Do not send secrets or private data.
+
+Each web search call adds a separate tool charge.
+OpenAI bills search result tokens at the selected model's input token rates.
+The `--usage` cost does not include the separate web search call charge.
+See [OpenAI API pricing](https://developers.openai.com/api/docs/pricing) for current rates.
+
 ## Output
 
 CodeScope writes the provider response to standard output.

@@ -82,8 +82,10 @@ See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
 ## Security
 
 CodeScope sends supplied repository content to the configured OpenAI service.
+The model can also use web search for current public information. It can form search queries from request context, including repository content.
 Remove secrets from that content before you run a review.
 Protect debug logs because they can contain repository content.
+Read [Operations and data](docs/operations.md) for web search and cost details.
 
 ## Configuration
 
