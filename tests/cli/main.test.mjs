@@ -3,7 +3,7 @@ import { main } from "../../src/cli/main.mjs";
 test("dispatches a metadata command through the public CLI boundary", async () => {
   const output = [];
   await expect(main(["help"], { output: (value) => output.push(value) })).resolves.toBe(0);
-  expect(output.join("")).toContain("## Owner workflow");
+  expect(output.join("")).toContain("## Requirements");
 });
 
 test("uses the process-boundary defaults for metadata dispatch", async () => {
