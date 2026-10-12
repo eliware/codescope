@@ -15,11 +15,11 @@ export function decorateProfilePrompt(promptSource, mode, suggestionCategories) 
     ];
     const tool = createSuggestionTool(categories);
     prompt.tools = [webSearchTool, tool];
-    prompt.tool_choice = { type: "function", name: tool.name };
+    prompt.tool_choice = "auto";
   } else if (suggestionCategories) {
     const tool = createReviewTool(suggestionCategories);
     prompt.tools = [webSearchTool, tool];
-    prompt.tool_choice = { type: "function", name: tool.name };
+    prompt.tool_choice = "auto";
   }
   return prompt;
 }

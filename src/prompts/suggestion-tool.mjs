@@ -4,7 +4,7 @@ export function createSuggestionTool(categories = SUGGESTION_CATEGORIES) {
   return {
     type: "function",
     name: "submit_suggestions",
-    description: "Return clear, useful improvement suggestions.",
+    description: "Call this tool to return clear, useful improvement suggestions.",
     strict: true,
     parameters: {
       type: "object",

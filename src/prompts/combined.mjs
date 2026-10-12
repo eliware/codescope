@@ -5,7 +5,7 @@ export function createCombinedAllPrompt({ allPrompt, unifiedTool, releaseGate = 
   return {
     ...allPrompt,
     tools: [webSearchTool, unifiedTool],
-    tool_choice: { type: "function", name: unifiedTool.name },
+    tool_choice: "auto",
     input: [
       ...allPrompt.input,
       {

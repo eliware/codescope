@@ -12,7 +12,7 @@ export const baseRequest = {
   text: { format: { type: "text" }, verbosity: "low" },
   reasoning: { effort: "none", mode: "standard", summary: "auto" },
   tools: [webSearchTool, reviewTool],
-  tool_choice: { type: "function", name: "submit_review" },
+  tool_choice: "auto",
   parallel_tool_calls: false,
   store: false,
   include: ["reasoning.encrypted_content", "web_search_call.action.sources"],

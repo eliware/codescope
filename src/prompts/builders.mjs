@@ -10,7 +10,7 @@ export function createProfilePrompt(
   return {
     ...baseRequest,
     tools: [webSearchTool, tool],
-    tool_choice: { type: "function", name: tool.name },
+    tool_choice: "auto",
     input: [
       { role: "developer", content: [{ type: "input_text", text: defaultDeveloperText }] },
       {

@@ -91,7 +91,8 @@ test("marks repository content as review-only and separates review instructions 
 
 test("keeps implicit caching and marks stable developer context", () => {
   const request = {
-    tool_choice: { type: "function", name: "submit_review" },
+    tools: [{ type: "web_search" }, { type: "function", name: "submit_review" }],
+    tool_choice: "auto",
     input: [
       developer(defaultDeveloperText),
       { role: "user", content: [{ type: "input_text", text: "review" }] },
@@ -105,7 +106,8 @@ test("keeps implicit caching and marks stable developer context", () => {
 
 test("does not enable review-prefix caching for non-review tools", () => {
   const request = {
-    tool_choice: { type: "function", name: "submit_suggestion" },
+    tools: [{ type: "function", name: "submit_suggestion" }],
+    tool_choice: "auto",
     input: [
       developer(defaultDeveloperText),
       { role: "user", content: [{ type: "input_text", text: "suggest" }] },

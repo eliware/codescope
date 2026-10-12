@@ -1,5 +1,7 @@
+import { getFunctionToolName } from "../review/request/function-tool-name.mjs";
+
 export function readOutputText(response, request) {
-  const name = request.tool_choice?.name;
+  const name = getFunctionToolName(request);
   const output = response?.output;
   if (output !== undefined && !Array.isArray(output))
     throw new Error("Provider response output was not an array");

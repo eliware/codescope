@@ -5,6 +5,7 @@ import {
 } from "../../prompts/untrusted-boundary.mjs";
 import { defaultDeveloperText } from "../../prompts/guidance.mjs";
 import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mjs";
+import { getFunctionToolName } from "./function-tool-name.mjs";
 
 const PLACEHOLDER = "<combine-mjs here>";
 const CACHEABLE_REVIEW_TOOLS = new Set(["submit_review", "submit_unified_review"]);
@@ -48,7 +49,7 @@ export function attachRepositoryEvidence(request, combined) {
     .filter(Boolean)
     .join("\n\n");
   const repositoryContent = frameRepositoryContent(testSpecContext.combined);
-  const cacheReviewPrefix = CACHEABLE_REVIEW_TOOLS.has(request.tool_choice?.name);
+  const cacheReviewPrefix = CACHEABLE_REVIEW_TOOLS.has(getFunctionToolName(request));
   request.input = [
     {
       role: "developer",

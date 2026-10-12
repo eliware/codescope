@@ -4,7 +4,7 @@ test("decorates suggestion prompts with the required tool", () => {
   const prompt = decorateProfilePrompt({ tools: [] }, "suggest", ["security"]);
   expect(prompt.tools).toHaveLength(2);
   expect(prompt.tools[0].type).toBe("web_search");
-  expect(prompt.tool_choice.type).toBe("function");
+  expect(prompt.tool_choice).toBe("auto");
 });
 test("leaves generic review prompts without scoped categories undecorated", () => {
   const prompt = decorateProfilePrompt({ input: [] }, "review");
@@ -25,5 +25,5 @@ test("keeps a generic review tool with web search", () => {
 test("uses all suggestion categories when none are supplied", () => {
   const prompt = decorateProfilePrompt({ tools: [] }, "suggest");
   expect(prompt.tools).toHaveLength(2);
-  expect(prompt.tool_choice.type).toBe("function");
+  expect(prompt.tool_choice).toBe("auto");
 });

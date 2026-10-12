@@ -28,7 +28,8 @@ test("preserves finding review reasoning and logs one request and response", asy
         model: "gpt-6-luna",
         reasoning: { effort: "high", mode: "standard", summary: "auto" },
         input: [{ role: "user", content: "review" }],
-        tool_choice: { type: "function", name: "submit_review" },
+        tools: [webSearchTool, { type: "function", name: "submit_review" }],
+        tool_choice: "auto",
       },
       debugRequest: true,
     });

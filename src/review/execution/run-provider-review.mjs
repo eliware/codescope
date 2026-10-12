@@ -3,6 +3,7 @@ import { responseText } from "../../response/provider-text.mjs";
 import { readReasoningSummary } from "../../response/read-reasoning-summary.mjs";
 import { createSessionResult } from "../review-result.mjs";
 import { formatSingleRequestUsage } from "../usage-reporting.mjs";
+import { getFunctionToolName } from "../request/function-tool-name.mjs";
 
 const findingReviewTools = new Set(["submit_review", "submit_unified_review"]);
 const findingReviewDebugMarkers = {
@@ -19,7 +20,7 @@ export async function runProviderSession({
   debugRequest,
 }) {
   const isFindingReview =
-    plainText === undefined && findingReviewTools.has(request.tool_choice?.name);
+    plainText === undefined && findingReviewTools.has(getFunctionToolName(request));
   const providerResponse = await requestProviderResponse(
     client,
     request,

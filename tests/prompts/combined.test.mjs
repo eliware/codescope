@@ -18,7 +18,7 @@ test("adds the unified tool and one consolidated guidance message", () => {
     { type: "web_search", user_location: { type: "approximate" }, search_context_size: "medium" },
     { name: "submit_unified_review" },
   ]);
-  expect(result.tool_choice).toEqual({ type: "function", name: "submit_unified_review" });
+  expect(result.tool_choice).toBe("auto");
   expect(result.parallel_tool_calls).toBeUndefined();
   expect(result.model).toBe("gpt-6-luna");
   expect(result.input[0]).toBe(system);

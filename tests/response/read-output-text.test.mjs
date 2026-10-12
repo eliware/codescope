@@ -12,6 +12,16 @@ test("rejects a missing selected function call", () => {
   expect(() => readOutputText({ output: [] }, request)).toThrow(/required function call/);
 });
 
+test("requires the function tool when automatic choice is enabled", () => {
+  const request = {
+    tool_choice: "auto",
+    tools: [{ type: "web_search" }, { type: "function", name: "submit_review" }],
+  };
+  expect(() => readOutputText({ output_text: "plain text" }, request)).toThrow(
+    /required function call: submit_review/,
+  );
+});
+
 test("rejects multiple matching function calls", () => {
   const call = { type: "function_call", name: "review", arguments: "text" };
   const response = { output: [call, call] };
