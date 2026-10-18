@@ -35,6 +35,6 @@ Inspection requests ask for an automatic reasoning summary.
 Online lookup is off by default. Add `--web-search` to enable it for one request.
 
 Use `--usage` to report token counts and cost.
-Use `--dry-run` to estimate input tokens and cost without a inspection request.
+Use `--dry-run` to estimate input tokens and cost without an inspection request.
 
 Read the [command guide](commands.md) for option syntax and supported values.

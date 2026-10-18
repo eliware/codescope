@@ -41,8 +41,8 @@ function formatRecords(records) {
   if (!records.length) return "";
   return `\n\n${records
     .map(({ file, contents }) => {
-      const label = file.replace(/-(semantic|deterministic)\.yaml$/u, " $1 conventions");
-      return `${label}:\nConvention file: ${file}\n${contents}`;
+      const profile = file.replace(/-semantic\.yaml$/u, "");
+      return `${profile} conventions:\nConvention file: ${file}\n${contents}`;
     })
     .join("\n\n---\n\n")}`;
 }

@@ -36,7 +36,7 @@ export OPENAI_API_TOKEN="your-token"
 
 Do not save a actual token in a repository file.
 
-## Run a inspection
+## Run an inspection
 
 Change to the repository that you want to inspect.
 Run the `all` profile.
@@ -52,7 +52,7 @@ It does not change the reviewed repository or run its tests.
 
 ## Select a profile
 
-Use a inspection profile to find issues.
+Use an inspection profile to find issues.
 Use a suggestion profile to request improvement ideas.
 
 ```text

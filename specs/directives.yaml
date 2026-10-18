@@ -104,8 +104,8 @@ directives:
           - Exclude `RELEASE_NOTES.md` from supplied Markdown. Match uppercase or lowercase letters.
           - Keep the excluded release-notes file in the unsupplied-file inventory.
           - Put `package.json` first in the repository context.
-          - Put selected semantic and deterministic convention files in the developer message.
-          - Put other JSON files after `package.json`.
+          - Put selected semantic profiles after `package.json`.
+          - Put other JSON files after selected semantic profiles.
           - Put YAML files after other JSON files.
           - Put bounded configuration after YAML files.
           - Put Markdown after bounded configuration.
@@ -126,27 +126,21 @@ directives:
             Include `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, matching tests, and
             profile-selected Markdown.
           - >-
-            For other packages, read only Eliware Test v13 semantic and deterministic files named by
+            For other packages, read only Eliware Test v13 semantic files named by
             `package.json` `eliware.apply`.
           - Read those files from the adjacent `test/specs/conventions` folder.
           - >-
             Accept safe, lowercase, single-segment profile names with letters, digits, and
             single hyphens.
-          - >-
-            Map each profile to its canonical `<profile>-semantic.yaml` and
-            `<profile>-deterministic.yaml` files.
+          - Map each profile to its canonical `<profile>-semantic.yaml` file.
           - Include each selected file in full. Do not parse or summarize it.
           - Put selected convention files in the developer message.
           - State which profiles apply and which do not apply before the convention files.
-          - >-
-            Label each file as `<profile> semantic conventions:` or
-            `<profile> deterministic conventions:` before its name and contents.
+          - Label each file as `<profile> conventions:` before its name and contents.
           - Put repository content in one user message.
           - Put inspection instructions in a separate final user message.
           - Do not load separate specification records for `@eliware/test`.
-          - >-
-            Preserve complete selected semantic and deterministic files, regardless of record
-            length.
+          - Preserve complete selected semantic files, regardless of record length.
           - Set the default combined source limit to 3,000,000 characters.
           - Apply `maxChars` to formatted support, headers, line numbers, and separators.
           - In focused profiles, put the remaining-file inventory after selected support.
@@ -173,7 +167,8 @@ directives:
         donts:
           - Do not include `package-lock.json` in content or inventory.
           - Do not include adjacent `test` package metadata or lockfiles.
-          - Do not parse, summarize, reorder, or omit selected convention specification content.
+          - Do not include deterministic Eliware Test specifications in provider context.
+          - Do not parse, summarize, reorder, or omit selected semantic specification content.
           - >-
             Do not use excluded files, missing files, link targets, or unsupplied systems as
             supplied material.

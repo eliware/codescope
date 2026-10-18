@@ -28,7 +28,7 @@ Prevent debug output because it can contain repository content.
 ## Test results are missing
 
 CodeScope does not run repository tests.
-Run the repository's test command before or after a inspection.
+Run the repository's test command before or after an inspection.
 CodeScope does not send test output to OpenAI.
 
 ## Exit code
