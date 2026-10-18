@@ -3,7 +3,7 @@ import { frameTestSpecPromptContext } from "../../test-specs/prompt-context.mjs"
 export function formatTestSpecEvidence(result) {
   if (result.status === "checkout-unavailable")
     return frameTestSpecPromptContext(
-      `${selectionText(result.profiles)}Adjacent eliware/test12 checkout is not supplied. The convention requirements are unknown.`,
+      `${selectionText(result.profiles)}Adjacent eliware/test checkout is not supplied. The convention requirements are unknown.`,
     );
   if (result.status === "applicability-unavailable") {
     const reason = result.reason ? `: ${result.reason}` : "";

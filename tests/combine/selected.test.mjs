@@ -22,11 +22,11 @@ test("combines selected implementation, tests, and docs in order", async () => {
 test("includes applied adjacent Test records in selected profile context", async () => {
   const result = await combineSelectedFiles("/repo", {
     inventory: [],
-    testRoot: "/test12",
+    testRoot: "/test",
     platform: "linux",
     readPackageJson: async () => JSON.stringify({ eliware: { apply: ["general"] } }),
     readDirectory: async (directory) =>
-      directory === "/test12/specs/conventions"
+      directory === "/test/specs/conventions"
         ? [{ name: "general-semantic.yaml", isFile: () => true }]
         : [],
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),

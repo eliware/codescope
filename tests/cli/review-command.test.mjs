@@ -63,3 +63,18 @@ test("runs refactor through the plain-text prompt path", async () => {
     webSearch: false,
   });
 });
+
+test("runs conventions through the plain-text prompt path", async () => {
+  let received;
+  await expect(
+    runReviewCommand("analyze-conventions", {
+      cwd: "repo",
+      write: () => {},
+      review: async (_cwd, options) => {
+        received = options;
+      },
+    }),
+  ).resolves.toBe(0);
+  expect(received.plainText).toContain("List each case where the repository does not follow");
+  expect(received.webSearch).toBe(false);
+});

@@ -22,7 +22,7 @@ export async function combineTestSpecs(
   } = {},
 ) {
   const pathApi = platform === "win32" ? path.win32 : path.posix;
-  testRoot ??= pathApi.resolve(root, "..", "test12");
+  testRoot ??= pathApi.resolve(root, "..", "test");
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error("Test-spec read concurrency must be a positive integer");
   const applicability = await readTestSpecApplicability(root, {

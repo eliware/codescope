@@ -34,12 +34,12 @@ export async function runReviewCommand(
       usage,
       debugRequest,
     });
-  if (command === "analyze-refactor")
+  if (["analyze-refactor", "analyze-conventions"].includes(command))
     return runPromptCommand({
       cwd,
       write,
       review,
-      promptText: readPrompt("refactor.md"),
+      promptText: readPrompt(command === "analyze-refactor" ? "refactor.md" : "conventions.md"),
       model,
       effort,
       webSearch,

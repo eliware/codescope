@@ -3,6 +3,14 @@
 Run commands from the repository that you want to inspect.
 Use `codescope --help` to print the quick-start guide.
 Use `codescope --version` to print the package version.
+Use profile options to print help or version data for a profile command.
+
+```text
+codescope all --help
+codescope review all --help
+codescope all --version
+codescope review all --version
+```
 
 ## Inspection profiles
 
@@ -19,7 +27,9 @@ codescope architecture
 
 The `all` profile inspects code, tests, documentation, package data, and the file inventory.
 The `release` profile checks release readiness.
-The `conventions` profile checks supplied rules and repository consistency.
+The `conventions` command uses a plain-text prompt to list cases where code does not follow applicable conventions.
+It accepts `--effort`, `--model`, `--debug-request`, `--web-search`, and `--add`.
+It does not support `--usage` or `--dry-run`.
 Other inspection profiles focus on one area.
 
 Available inspection profiles are `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`,

@@ -19,7 +19,7 @@ export function readTestSpecRecords(
     maxChars,
     read: async (relativePath) => {
       const portablePath = resolveTestSpecPath(specsRoot, relativePath, platform);
-      const evidencePath = "test12/specs/conventions/" + relativePath;
+      const evidencePath = "test/specs/conventions/" + relativePath;
       const contents = await readSourceFile(evidencePath, portablePath, {
         readFileContents,
         inspectFile,

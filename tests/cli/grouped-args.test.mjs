@@ -29,6 +29,11 @@ test("enables web search only when the grouped command includes its flag", () =>
   expect(parseGroupedArgs("review", ["all", "--web-search"]).webSearch).toBe(true);
 });
 
+test("accepts help and version options for grouped profiles", () => {
+  expect(parseGroupedArgs("review", ["all", "--help"]).option).toBe("--help");
+  expect(parseGroupedArgs("review", ["all", "--version"]).option).toBe("--version");
+});
+
 test("rejects invalid grouped command shapes", () => {
   expect(() => parseGroupedArgs("review", [])).toThrow(/Usage/);
   expect(parseGroupedArgs("review", ["--dry-run", "all"])).toMatchObject({

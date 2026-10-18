@@ -14,7 +14,7 @@ export function parseGroupedArgs(mode, tokens) {
   const profileValues = parseCommandOptions(
     profileTokens,
     usage,
-    new Set(["--usage", "--debug-request", "--web-search", "--help", "-h"]),
+    new Set(["--usage", "--debug-request", "--web-search", "--help", "-h", "--version", "-v"]),
   );
   return {
     command: `analyze-${profile}`,

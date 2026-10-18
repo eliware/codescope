@@ -27,7 +27,7 @@ It rejects malformed token assignments and malformed quoted values.
 ## Command values
 
 Use `--model` to select a supported model.
-Use `--effort` to set reasoning reasoning level.
+Use `--effort` to set the reasoning level.
 The default model is `gpt-6-luna`.
 The default reasoning level is `none`.
 Inspection requests ask for an automatic reasoning summary.

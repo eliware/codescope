@@ -46,7 +46,7 @@ npm install -g @eliware/codescope
 The package command is `codescope`.
 The CLI entry point is `bin/codescope.mjs`.
 The package export is `src/cli/main.mjs`.
-Package files include `src/`, `bin/`, `docs/`, `specs/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
+Package files include `src/`, `bin/`, `docs/`, `specs/`, `prompts/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
 See [Setup guide](docs/quick-start.md) for setup steps.
 
 ## Usage

@@ -6,7 +6,7 @@ const regularFile = async () => ({ isFile: () => true, isSymbolicLink: () => fal
 
 test("includes selected semantic specs and omits deterministic specs", async () => {
   const root = "/workspace/project";
-  const testRoot = "/workspace/test12";
+  const testRoot = "/workspace/test";
   const packageJson = JSON.stringify({ eliware: { apply: ["general", "cli"] } });
   const records = {
     "general-semantic.yaml":
@@ -43,7 +43,7 @@ test("includes selected semantic specs and omits deterministic specs", async () 
   expect(context.combined).not.toContain("General test rule");
 });
 
-test("uses the adjacent test12 checkout by default", async () => {
+test("uses the adjacent test checkout by default", async () => {
   const directoriesRead = [];
   const root = "/workspace/codescope";
   const result = await combineTestSpecs(root, {
@@ -51,22 +51,22 @@ test("uses the adjacent test12 checkout by default", async () => {
     readPackageJson: async () => JSON.stringify({ eliware: { apply: ["general"] } }),
     readDirectory: async (directory) => {
       directoriesRead.push(directory);
-      return directory === "/workspace/test12/specs/conventions"
+      return directory === "/workspace/test/specs/conventions"
         ? [{ name: "general-semantic.yaml", isFile: () => true }]
         : [];
     },
     inspectFile: regularFile,
-    readFileContents: async () => "version: 13\nsource: test12",
+    readFileContents: async () => "version: 13\nsource: test",
   });
-  expect(result).toContain("source: test12");
-  expect(directoriesRead).toContain("/workspace/test12/specs/conventions");
+  expect(result).toContain("source: test");
+  expect(directoriesRead).toContain("/workspace/test/specs/conventions");
 });
 
 test("reports selected profiles missing from the supplied specifications", async () => {
   await expect(
     combineTestSpecs("/repo", {
       platform: "linux",
-      testRoot: "/test12",
+      testRoot: "/test",
       readPackageJson: async () => JSON.stringify({ eliware: { apply: ["application"] } }),
       readDirectory: async () => [],
       inspectFile: regularFile,
@@ -102,7 +102,7 @@ test("reports an unavailable checkout when its root is missing", async () => {
         throw Object.assign(new Error("missing"), { code: "ENOENT" });
       },
     }),
-  ).resolves.toContain("Adjacent eliware/test12 checkout is not supplied");
+  ).resolves.toContain("Adjacent eliware/test checkout is not supplied");
 });
 
 test("reports package applicability errors from injected readers", async () => {

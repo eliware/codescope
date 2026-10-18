@@ -3,7 +3,7 @@ import { extractTestSpecPromptContext } from "../../../src/test-specs/prompt-con
 
 test("formats unavailable and invalid Test-spec outcomes", () => {
   expect(formatTestSpecEvidence({ status: "checkout-unavailable" })).toContain(
-    "Adjacent eliware/test12 checkout is not supplied",
+    "Adjacent eliware/test checkout is not supplied",
   );
   expect(formatTestSpecEvidence({ status: "applicability-unavailable" })).toContain(
     "Test-spec applicability unavailable",

@@ -72,3 +72,15 @@ test("preserves addition order around a custom prompt command", () => {
     { command: "prompt", add: ["before", "after"] },
   );
 });
+
+test("rejects usage and dry-run options for plain-text profile commands", () => {
+  for (const args of [
+    ["conventions", "--usage"],
+    ["conventions", "--dry-run"],
+    ["refactor", "--usage"],
+    ["review", "conventions", "--dry-run"],
+  ])
+    expect(() => parseArgs(args)).toThrow(
+      "Options --usage and --dry-run are not valid for plain-text commands",
+    );
+});
