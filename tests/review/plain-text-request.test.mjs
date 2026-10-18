@@ -23,6 +23,16 @@ test("uses the supplied prompt and enables web search without review tools", () 
   expect(request.input[0].content[0].text).not.toContain("REVIEW INSTRUCTIONS");
 });
 
+test("removes all tools when the caller disables web search", () => {
+  const request = preparePlainTextRequest(
+    { tools: [{ type: "function", name: "review" }] },
+    "prompt",
+    "context",
+    false,
+  );
+  expect(request.tools).toEqual([]);
+});
+
 test("preserves supplied prompt whitespace verbatim", () => {
   const prompt = " \nReview this exact text.\t\n";
   const request = preparePlainTextRequest({}, prompt, "context");

@@ -6,6 +6,7 @@ export function createRequest(options, combined) {
     combined,
     model: options.model,
     plainText: options.plainText,
+    webSearch: options.webSearch,
     add: options.add,
   });
 }

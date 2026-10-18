@@ -40,6 +40,7 @@ export async function runReviewCommand(
       promptText: readPrompt("refactor.md"),
       model,
       effort,
+      webSearch: false,
       add,
       usage,
       debugRequest,

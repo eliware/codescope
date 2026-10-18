@@ -57,5 +57,9 @@ test("runs refactor through the plain-text prompt path", async () => {
     "Find concrete cases where a module owns multiple responsibilities.",
   );
   expect(received.plainText).toContain("report exactly 'No actionable findings'.");
-  expect(received).toMatchObject({ usage: true, add: ["focus on changed files"] });
+  expect(received).toMatchObject({
+    usage: true,
+    add: ["focus on changed files"],
+    webSearch: false,
+  });
 });
