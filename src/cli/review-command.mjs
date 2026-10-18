@@ -1,5 +1,6 @@
 import { runPromptCommand } from "./prompt/command.mjs";
 import { runProfileCommand } from "./profile/command.mjs";
+import { readPrompt } from "../profiles/prompt-sources/read-content.mjs";
 
 export async function runReviewCommand(
   command,
@@ -20,7 +21,29 @@ export async function runReviewCommand(
   },
 ) {
   if (command === "prompt")
-    return runPromptCommand({ cwd, write, review, promptText, model, effort, add, debugRequest });
+    return runPromptCommand({
+      cwd,
+      write,
+      review,
+      promptText,
+      model,
+      effort,
+      add,
+      usage,
+      debugRequest,
+    });
+  if (command === "analyze-refactor")
+    return runPromptCommand({
+      cwd,
+      write,
+      review,
+      promptText: readPrompt("refactor.md"),
+      model,
+      effort,
+      add,
+      usage,
+      debugRequest,
+    });
   return runProfileCommand(command, {
     mode,
     option,

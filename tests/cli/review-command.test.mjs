@@ -39,3 +39,23 @@ test("routes profile commands to the profile handler", async () => {
   expect(received).toMatchObject({ add: ["focus on implementation"], dryRun: undefined });
   expect(received.prompt).toBeDefined();
 });
+
+test("runs refactor through the plain-text prompt path", async () => {
+  let received;
+  await expect(
+    runReviewCommand("analyze-refactor", {
+      cwd: "repo",
+      write: () => {},
+      review: async (_cwd, options) => {
+        received = options;
+      },
+      usage: true,
+      add: ["focus on changed files"],
+    }),
+  ).resolves.toBe(0);
+  expect(received.plainText).toContain(
+    "Find concrete cases where a module owns multiple responsibilities.",
+  );
+  expect(received.plainText).toContain("report exactly 'No actionable findings'.");
+  expect(received).toMatchObject({ usage: true, add: ["focus on changed files"] });
+});
