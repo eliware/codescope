@@ -8,12 +8,12 @@ export async function runPromptCommand({
   promptText,
   model,
   effort,
-  webSearch = true,
+  webSearch = false,
   usage = false,
   add = [],
   debugRequest,
 }) {
-  const { combine, prompt: profilePrompt } = getProfile("all", "review");
+  const { combine, prompt: profilePrompt } = getProfile("all", "review", webSearch);
   const prompt = applyEffort(profilePrompt, effort);
   await review(cwd, {
     combine,

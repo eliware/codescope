@@ -16,4 +16,19 @@ test("runs a custom prompt through the all context without a verdict", async () 
   ).resolves.toBe(0);
   expect(calls[0].prompt.reasoning.effort).toBe("low");
   expect(calls[0].plainText).toBe("summarize");
+  expect(calls[0].webSearch).toBe(false);
+});
+
+test("enables web search when the caller sets the flag", async () => {
+  let received;
+  await runPromptCommand({
+    cwd: "repo",
+    write: () => {},
+    review: async (_cwd, options) => {
+      received = options;
+    },
+    promptText: "summarize",
+    webSearch: true,
+  });
+  expect(received.webSearch).toBe(true);
 });

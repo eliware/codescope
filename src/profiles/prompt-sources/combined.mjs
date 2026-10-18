@@ -1,6 +1,5 @@
 import { readPrompt } from "./read-content.mjs";
 import { createUnifiedTool } from "../unified-tool.mjs";
-import { webSearchTool } from "../tool-decoration.mjs";
 
 export function createCombinedPromptSources(profilePrompt) {
   const combinedProfilePrompt = (focus, tool) =>
@@ -8,7 +7,7 @@ export function createCombinedPromptSources(profilePrompt) {
   const allPrompt = combinedProfilePrompt(readPrompt("all.md"));
   const buildPrompt = (file) => {
     const prompt = structuredClone(allPrompt);
-    prompt.tools = [webSearchTool, createUnifiedTool()];
+    prompt.tools = [createUnifiedTool()];
     prompt.tool_choice = "auto";
     prompt.input.push({
       role: "user",

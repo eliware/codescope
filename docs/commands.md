@@ -65,7 +65,7 @@ Use `-a`, `--add`, `-a=`, or `--add=`.
 
 Put prompt text that starts with a dash before `--`.
 Put option values after `--`.
-After `--`, use only `--effort`, `--model`, or `--debug-request`.
+After `--`, use `--effort`, `--model`, `--debug-request`, or `--web-search`.
 
 ```text
 codescope prompt --summarize this -- --effort=low
@@ -75,13 +75,14 @@ Custom prompts do not support `--usage` or `--dry-run`.
 
 ## Options
 
-Use these options with inspection and suggestion commands:
+Use these options with commands that support them:
 
 - `--model=<name>` selects a model.
 - `--effort=<level>` sets the reasoning level.
 - `--usage` prints token counts and calculated cost.
 - `--dry-run` estimates input tokens and cost without a provider request.
 - `--debug-request` prints request and response data to standard error.
+- `--web-search` enables OpenAI web lookup for this request. Web lookup is off by default.
 - `--add <text>` appends text to the request. You can repeat this option.
 
 Use these reasoning levels: `none`, `low`, `medium`, `high`, `xhigh`, or `max`.

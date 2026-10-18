@@ -38,6 +38,7 @@ test("sends supplied custom task text with repository context and web search", a
   await runReviewPipeline("repo", {
     ...base,
     plainText: "Summarize this repository.",
+    webSearch: true,
     combine: async () => "repository source",
     createClient: () => ({
       responses: {

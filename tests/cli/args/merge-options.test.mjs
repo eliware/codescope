@@ -7,6 +7,7 @@ const values = (overrides = {}) => ({
   usageCount: 0,
   usage: undefined,
   add: [],
+  webSearch: false,
   ...overrides,
 });
 
@@ -26,6 +27,7 @@ test("rejects duplicate options and prompt dry-run combinations", () => {
     [{ dryRun: true }, { dryRun: true }, /dry-run/],
     [{ usage: true }, { usageCount: 1 }, /usage/],
     [{ command: "prompt" }, { dryRun: true }, /Usage: codescope prompt/],
+    [{ webSearch: true }, { webSearch: true }, /Only one --web-search/],
   ];
 
   for (const [parsed, leading, message] of cases)

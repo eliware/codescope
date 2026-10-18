@@ -8,6 +8,7 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
   let dryRun = 0;
   let usage = 0;
   let debugRequest = 0;
+  let webSearch = 0;
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
@@ -38,6 +39,11 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
       if (!leadingOnly) remaining.push(token);
       continue;
     }
+    if (option?.kind === "web-search") {
+      webSearch += 1;
+      if (keepScalarOptions || !leadingOnly) remaining.push(token);
+      continue;
+    }
     if (!leadingOnly) {
       remaining.push(token);
       continue;
@@ -54,6 +60,7 @@ export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnl
     dryRun,
     usage,
     debugRequest,
+    webSearch,
     remaining,
     consumed: tokens.length - remaining.length,
   };

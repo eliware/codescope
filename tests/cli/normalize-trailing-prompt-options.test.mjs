@@ -7,6 +7,10 @@ test("normalizes separated model and effort options", () => {
   ]);
 });
 
+test("accepts web search after the prompt delimiter", () => {
+  expect(normalizeTrailingPromptOptions(["--web-search"])).toEqual(["--web-search"]);
+});
+
 test("rejects missing values and tokens outside the trailing grammar", () => {
   expect(() => normalizeTrailingPromptOptions(["--effort"])).toThrow(/Only --effort/);
   expect(() => normalizeTrailingPromptOptions(["prompt text"])).toThrow(/Only --effort/);

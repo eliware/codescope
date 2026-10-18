@@ -8,6 +8,7 @@ export async function runProfileCommand(command, options) {
     option,
     options: rawOptions = [],
     effort,
+    webSearch = false,
     model,
     dryRun,
     debugRequest,
@@ -17,7 +18,7 @@ export async function runProfileCommand(command, options) {
     review,
     add = [],
   } = options;
-  const { combine, prompt: profilePrompt } = getProfile(target, mode);
+  const { combine, prompt: profilePrompt } = getProfile(target, mode, webSearch);
   const prompt = applyEffort(profilePrompt, effort);
   await review(cwd, {
     write,

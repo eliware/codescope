@@ -24,6 +24,11 @@ test("enables request debugging for grouped profiles", () => {
   expect(parseGroupedArgs("review", ["all", "--debug-request"]).debugRequest).toBe(true);
 });
 
+test("enables web search only when the grouped command includes its flag", () => {
+  expect(parseGroupedArgs("review", ["all"]).webSearch).toBeUndefined();
+  expect(parseGroupedArgs("review", ["all", "--web-search"]).webSearch).toBe(true);
+});
+
 test("rejects invalid grouped command shapes", () => {
   expect(() => parseGroupedArgs("review", [])).toThrow(/Usage/);
   expect(parseGroupedArgs("review", ["--dry-run", "all"])).toMatchObject({

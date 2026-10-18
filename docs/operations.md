@@ -30,11 +30,11 @@ Redaction and inspection do not remove every secret.
 
 ## Web lookup
 
-Inspection, suggestion, and custom prompt requests include OpenAI web lookup.
-The model can select to lookup when it needs current public information.
-A lookup query can use details from the request, with repository content and prompt text.
-For example, a query can include an API name, package name, code information, or error message.
-OpenAI processes the query and lookup results as item of the request.
+Web lookup is off by default for all requests.
+Add `--web-search` to an inspection, suggestion, or custom prompt command to enable it.
+The model can then get current public information.
+A lookup query can use request details, such as repository content and prompt text.
+OpenAI processes the query and lookup results as part of the request.
 
 Inspection request data before you run CodeScope. Do not send secrets or private data.
 

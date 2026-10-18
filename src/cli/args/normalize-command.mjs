@@ -12,6 +12,7 @@ export function normalizeCommand(command, values, extras = {}) {
     ...(values.dryRun ? { dryRun: true } : {}),
     ...(values.usage ? { usage: true } : {}),
     ...(values.debugRequest ? { debugRequest: true } : {}),
+    ...(values.webSearch ? { webSearch: true } : {}),
     add: values.add,
   };
 }

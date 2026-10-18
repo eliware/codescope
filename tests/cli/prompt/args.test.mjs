@@ -30,6 +30,12 @@ test("accepts request debugging before or after the prompt delimiter", () => {
   expect(parsePromptArgs(["question", "--", "--debug-request"]).debugRequest).toBe(true);
 });
 
+test("accepts web search only when the custom prompt includes its flag", () => {
+  expect(parsePromptArgs(["question"]).webSearch).toBeUndefined();
+  expect(parsePromptArgs(["question", "--web-search"]).webSearch).toBe(true);
+  expect(parsePromptArgs(["question", "--", "--web-search"]).webSearch).toBe(true);
+});
+
 test("accepts prompt additions before the delimiter", () => {
   expect(
     parsePromptArgs(["--summarize", "this", "--add", "focus on risks", "--", "--effort=low"]),
@@ -42,10 +48,10 @@ test("accepts prompt additions before the delimiter", () => {
 
 test("rejects additions after the prompt delimiter", () => {
   expect(() => parsePromptArgs(["question", "--", "--add", "note"])).toThrow(
-    "Only --effort=..., --model=..., or --debug-request may follow --",
+    "Only --effort=..., --model=..., --debug-request, or --web-search may follow --",
   );
   expect(() => parsePromptArgs(["question", "--", "--effort=low", "--add=note"])).toThrow(
-    "Only --effort=..., --model=..., or --debug-request may follow --",
+    "Only --effort=..., --model=..., --debug-request, or --web-search may follow --",
   );
 });
 

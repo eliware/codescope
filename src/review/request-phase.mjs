@@ -7,7 +7,7 @@ export function prepareReviewRequest(
   model,
   plainText,
   additions = [],
-  webSearch = true,
+  webSearch = false,
 ) {
   const request = prepareRequest(prompt, combined);
   if (model) request.model = model;

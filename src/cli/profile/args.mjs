@@ -1,7 +1,15 @@
 import { PROFILE_NAMES } from "../../profiles/profile/selection.mjs";
 import { parseCommandOptions } from "../options/command-options.mjs";
 
-const validOptions = new Set(["--help", "-h", "--version", "-v", "--usage", "--debug-request"]);
+const validOptions = new Set([
+  "--help",
+  "-h",
+  "--version",
+  "-v",
+  "--usage",
+  "--debug-request",
+  "--web-search",
+]);
 
 export function parseProfileArgs(profile, tokens) {
   const usage = `Unexpected arguments: ${tokens.join(" ")}`;
@@ -15,6 +23,7 @@ export function parseProfileArgs(profile, tokens) {
     effort: values.effort,
     model: values.model,
     ...(values.usage ? { usage: true } : {}),
+    ...(values.webSearch ? { webSearch: true } : {}),
     ...(values.remaining.includes("--debug-request") ? { debugRequest: true } : {}),
     add: values.add,
   };

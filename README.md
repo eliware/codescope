@@ -82,7 +82,8 @@ See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
 ## Security
 
 CodeScope sends supplied repository content to the configured OpenAI system.
-The model can also use web lookup for current public information. It can type lookup queries from request context, with repository content.
+The model can use OpenAI web lookup only when you add `--web-search` to a command.
+Web lookup is off by default.
 Remove secrets from that content before you run a inspection.
 Prevent debug logs because they can contain repository content.
 Read [Operations and data](docs/operations.md) for web lookup and cost details.

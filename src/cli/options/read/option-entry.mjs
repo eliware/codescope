@@ -12,5 +12,6 @@ export function readOptionEntry(tokens, index) {
   if (token === "--dry-run") return { kind: "dry-run", nextIndex: index };
   if (token === "--usage") return { kind: "usage", nextIndex: index };
   if (token === "--debug-request") return { kind: "debug-request", nextIndex: index };
+  if (token === "--web-search") return { kind: "web-search", nextIndex: index };
   return undefined;
 }

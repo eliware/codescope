@@ -8,9 +8,11 @@ export function mergeCommandOptions(parsed, values) {
     throw new Error("Only one --usage option is allowed");
   if (values.debugRequest && parsed.debugRequest)
     throw new Error("Only one --debug-request option is allowed");
+  if (values.webSearch && parsed.webSearch)
+    throw new Error("Only one --web-search option is allowed");
   if (parsed.command === "prompt" && values.dryRun)
     throw new Error(
-      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request]",
+      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request] [--web-search]",
     );
   return {
     ...parsed,
@@ -19,6 +21,7 @@ export function mergeCommandOptions(parsed, values) {
     ...(values.dryRun || parsed.dryRun ? { dryRun: true } : {}),
     usage: values.usageCount > 0 || parsed.usage || undefined,
     debugRequest: values.debugRequest || parsed.debugRequest || undefined,
+    webSearch: values.webSearch || parsed.webSearch || undefined,
     add: [...values.add, ...parsed.add],
   };
 }

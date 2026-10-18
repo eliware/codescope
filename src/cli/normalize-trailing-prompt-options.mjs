@@ -1,6 +1,6 @@
 const DELIMITER_ERROR = [
   "Only --ef",
-  "fort=..., --model=..., or --debug-request may follow --",
+  "fort=..., --model=..., --debug-request, or --web-search may follow --",
 ].join("");
 
 export function normalizeTrailingPromptOptions(tokens) {
@@ -12,6 +12,8 @@ export function normalizeTrailingPromptOptions(tokens) {
       if (value === undefined || value.startsWith("-")) throw new Error(DELIMITER_ERROR);
       options.push(`${token}=${value}`);
     } else if (token === "--debug-request") {
+      options.push(token);
+    } else if (token === "--web-search") {
       options.push(token);
     } else if (token.startsWith("--effort=") || token.startsWith("--model=")) {
       options.push(token);

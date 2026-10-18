@@ -1,6 +1,5 @@
 import { fillPrompt, readPrompt } from "../prompt-sources/read-content.mjs";
 import { reviewTool } from "../review-tool.mjs";
-import { webSearchTool } from "../tool-decoration.mjs";
 import { createReviewPromptSources } from "../prompt-sources/review.mjs";
 import { createSuggestionPromptSources } from "../prompt-sources/suggestions.mjs";
 import { createAnalysisPromptSources } from "../prompt-sources/analysis.mjs";
@@ -11,11 +10,11 @@ const baseRequest = {
   service_tier: "default",
   text: { format: { type: "text" }, verbosity: "low" },
   reasoning: { effort: "none", mode: "standard", summary: "auto" },
-  tools: [webSearchTool, reviewTool],
+  tools: [reviewTool],
   tool_choice: "auto",
   parallel_tool_calls: false,
   store: false,
-  include: ["reasoning.encrypted_content", "web_search_call.action.sources"],
+  include: ["reasoning.encrypted_content"],
 };
 
 export const globalReviewInstructions = readPrompt("policy-global-review.md");
@@ -24,7 +23,7 @@ export function createProfilePrompt(focus, tool = reviewTool, options = {}) {
   const globalInstructions = options.globalReviewInstructions ?? globalReviewInstructions;
   return {
     ...baseRequest,
-    tools: [webSearchTool, tool],
+    tools: [tool],
     tool_choice: "auto",
     input: [
       {

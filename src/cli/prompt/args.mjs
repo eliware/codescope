@@ -12,12 +12,12 @@ export function parsePromptArgs(args) {
   if (!promptText.trim()) throw new Error("Usage: codescope prompt <prompt text>");
   const values = parseOptionValues(optionArgs);
   if (
-    values.remaining.some((value) => value !== "--debug-request") ||
+    values.remaining.some((value) => !["--debug-request", "--web-search"].includes(value)) ||
     values.dryRun ||
     values.usage
   )
     throw new Error(
-      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request]",
+      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request] [--web-search]",
     );
   return {
     command: "prompt",
@@ -25,6 +25,7 @@ export function parsePromptArgs(args) {
     effort: values.effort,
     model: values.model,
     ...(values.debugRequest ? { debugRequest: true } : {}),
+    ...(values.webSearch ? { webSearch: true } : {}),
     add: additions.add,
   };
 }

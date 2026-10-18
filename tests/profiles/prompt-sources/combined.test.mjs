@@ -8,7 +8,7 @@ test("builds combined and release prompt sources from the all-profile prompt", (
       return { input: [{ role: "user", content: [{ type: "input_text", text: focus }] }] };
     },
   );
-  expect(combinedAllPrompt.tools).toHaveLength(2);
+  expect(combinedAllPrompt.tools).toHaveLength(1);
   expect(releasePrompt).not.toEqual(combinedAllPrompt);
   expect(options.globalReviewInstructions).toBe("");
   expect(combinedAllPrompt.input).toHaveLength(2);

@@ -14,7 +14,7 @@ export function parseGroupedArgs(mode, tokens) {
   const profileValues = parseCommandOptions(
     profileTokens,
     usage,
-    new Set(["--usage", "--debug-request", "--help", "-h"]),
+    new Set(["--usage", "--debug-request", "--web-search", "--help", "-h"]),
   );
   return {
     command: `analyze-${profile}`,
@@ -24,6 +24,7 @@ export function parseGroupedArgs(mode, tokens) {
     effort: values.effort,
     model: values.model,
     ...(values.usage ? { usage: true } : {}),
+    ...(values.webSearch || profileValues.webSearch ? { webSearch: true } : {}),
     ...(profileValues.debugRequest ? { debugRequest: true } : {}),
     add: values.add,
     ...(values.dryRun ? { dryRun: true } : {}),

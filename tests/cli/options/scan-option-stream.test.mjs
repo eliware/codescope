@@ -98,6 +98,15 @@ test("recognizes request debugging as a flag", () => {
   expect(() => parseOptionValues(["--debug-request", "--debug-request"])).toThrow(/Only one/);
 });
 
+test("recognizes web search as an opt-in flag", () => {
+  expect(scanOptionStream(["all", "--web-search"])).toMatchObject({
+    webSearch: 1,
+    remaining: ["all", "--web-search"],
+  });
+  expect(parseOptionValues(["--web-search"]).webSearch).toBe(true);
+  expect(() => parseOptionValues(["--web-search", "--web-search"])).toThrow(/Only one/);
+});
+
 test("leaves command-suffix additions for command parsing in leading mode", () => {
   expect(
     scanOptionStream(["--usage", "all", "--add", "note"], { leadingOnly: true }),

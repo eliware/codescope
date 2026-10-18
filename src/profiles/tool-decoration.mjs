@@ -8,22 +8,26 @@ export const webSearchTool = {
   search_context_size: "medium",
 };
 
-export function decorateProfilePrompt(promptSource, mode, suggestionCategories) {
+export function decorateProfilePrompt(promptSource, mode, suggestionCategories, webSearch = false) {
   const prompt = structuredClone(promptSource);
   prompt.tools = [
-    webSearchTool,
+    ...(webSearch ? [webSearchTool] : []),
     ...(prompt.tools ?? []).filter((tool) => tool.type !== "web_search"),
   ];
+  prompt.include = (prompt.include ?? []).filter(
+    (item) => item !== "web_search_call.action.sources",
+  );
+  if (webSearch) prompt.include.push("web_search_call.action.sources");
   if (mode === "suggest") {
     const categories = [
       ...new Set([...(suggestionCategories ?? SUGGESTION_CATEGORIES), "new-features"]),
     ];
     const tool = createSuggestionTool(categories);
-    prompt.tools = [webSearchTool, tool];
+    prompt.tools = [...(webSearch ? [webSearchTool] : []), tool];
     prompt.tool_choice = "auto";
   } else if (suggestionCategories) {
     const tool = createReviewTool(suggestionCategories);
-    prompt.tools = [webSearchTool, tool];
+    prompt.tools = [...(webSearch ? [webSearchTool] : []), tool];
     prompt.tool_choice = "auto";
   }
   return prompt;

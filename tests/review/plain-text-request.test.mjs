@@ -8,29 +8,44 @@ test("rejects a blank custom prompt", () => {
   expect(() => preparePlainTextRequest({}, "  ", "source")).toThrow(/non-empty/);
 });
 
-test("uses the supplied prompt and enables web search without review tools", () => {
+test("includes web search without review tools when enabled", () => {
   const request = preparePlainTextRequest(
     { tool_choice: "required", parallel_tool_calls: true },
     "prompt",
     "context",
+    true,
   );
   expect(request.tools).toEqual([
     { type: "web_search", user_location: { type: "approximate" }, search_context_size: "medium" },
   ]);
+  expect(request.include).toContain("web_search_call.action.sources");
   expect(request.input[0].content[0].text).toBe(
     frameCustomPrompt(frameRepositoryContent("context"), "prompt"),
   );
   expect(request.input[0].content[0].text).not.toContain("REVIEW INSTRUCTIONS");
 });
 
-test("removes all tools when the caller disables web search", () => {
+test("does not include tools by default", () => {
   const request = preparePlainTextRequest(
     { tools: [{ type: "function", name: "review" }] },
+    "prompt",
+    "context",
+  );
+  expect(request.tools).toEqual([]);
+});
+
+test("removes all tools when the caller disables web search", () => {
+  const request = preparePlainTextRequest(
+    {
+      tools: [{ type: "function", name: "review" }],
+      include: ["reasoning.encrypted_content", "web_search_call.action.sources"],
+    },
     "prompt",
     "context",
     false,
   );
   expect(request.tools).toEqual([]);
+  expect(request.include).toEqual(["reasoning.encrypted_content"]);
 });
 
 test("preserves supplied prompt whitespace verbatim", () => {

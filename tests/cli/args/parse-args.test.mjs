@@ -31,6 +31,10 @@ test("accepts shared options before or after the command", () => {
   expect(parseArgs(["--effort=low", "all"])).toMatchObject({ effort: "low" });
   expect(parseArgs(["--effort=low", "all", "--dry-run"])).toMatchObject({ dryRun: true });
   expect(parseArgs(["all", "--debug-request"])).toMatchObject({ debugRequest: true });
+  expect(parseArgs(["all"]).webSearch).toBeUndefined();
+  expect(parseArgs(["all", "--web-search"])).toMatchObject({ webSearch: true });
+  expect(parseArgs(["review", "all", "--web-search"])).toMatchObject({ webSearch: true });
+  expect(parseArgs(["--web-search", "all"])).toMatchObject({ webSearch: true });
   expect(parseArgs(["--debug-request", "all"])).toMatchObject({ debugRequest: true });
   expect(parseArgs(["review", "all", "--debug-request"])).toMatchObject({
     command: "analyze-all",
