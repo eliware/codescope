@@ -10,7 +10,7 @@ export function registerReviewSignals(register, controller) {
     });
   } catch (cause) {
     throw new Error(
-      `Unable to register signal handlers: ${cause instanceof Error ? cause.message : String(cause)}`,
+      `Cannot set up signal handlers: ${cause instanceof Error ? cause.message : String(cause)}`,
       { cause },
     );
   }

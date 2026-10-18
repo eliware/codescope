@@ -8,7 +8,7 @@ export function resolveInventoryPath(rootPath, relativePath, pathApi) {
     path.win32.isAbsolute(portablePath) ||
     /^(?:\\\\|\/\/)/u.test(portablePath)
   )
-    throw new Error(`Inventory path escapes review root: ${relativePath}`);
+    throw new Error(`Inventory path escapes repository root: ${relativePath}`);
   const portableRelative = pathApi.normalize(portablePath);
   const resolvedPath = pathApi.resolve(rootPath, portableRelative);
   const resolvedRelative = pathApi.relative(rootPath, resolvedPath);
@@ -17,7 +17,7 @@ export function resolveInventoryPath(rootPath, relativePath, pathApi) {
     resolvedRelative.startsWith(`..${pathApi.sep}`) ||
     pathApi.isAbsolute(resolvedRelative)
   )
-    throw new Error(`Inventory path escapes review root: ${relativePath}`);
+    throw new Error(`Inventory path escapes repository root: ${relativePath}`);
   return resolvedPath;
 }
 

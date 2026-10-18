@@ -30,7 +30,7 @@ test("reports a missing explicitly configured file", async () => {
       },
       true,
     ),
-  ).rejects.toThrow("Unable to inspect configured.env: missing");
+  ).rejects.toThrow("Cannot inspect configured.env: missing");
 });
 
 test("wraps inspection failures with the environment path", async () => {
@@ -38,7 +38,7 @@ test("wraps inspection failures with the environment path", async () => {
     inspectEnvironmentFile("file", async () => {
       throw new Error("denied");
     }),
-  ).rejects.toThrow("Unable to inspect file: denied");
+  ).rejects.toThrow("Cannot inspect file: denied");
 });
 
 test("rejects symbolic links and non-files during startup inspection", async () => {
@@ -58,5 +58,5 @@ test("preserves non-Error inspection causes", async () => {
     inspectEnvironmentFile("file", async () => {
       throw "denied";
     }),
-  ).rejects.toThrow("Unable to inspect file: denied");
+  ).rejects.toThrow("Cannot inspect file: denied");
 });

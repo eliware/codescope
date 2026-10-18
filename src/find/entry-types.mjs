@@ -10,7 +10,7 @@ export function classifyEntry(entry, relativeDirectory) {
   } catch (cause) {
     if (cause instanceof Error && cause.message.startsWith("Invalid directory entry")) throw cause;
     throw new Error(
-      `Unable to scan ${location}: ${cause instanceof Error ? cause.message : String(cause)}`,
+      `Cannot scan ${location}: ${cause instanceof Error ? cause.message : String(cause)}`,
       { cause },
     );
   }

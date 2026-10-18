@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "type": "module",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "keywords": [
@@ -31,7 +31,8 @@
     "LICENSE",
     "RELEASE_NOTES.md",
     "bin/",
-    "specs/"
+    "specs/",
+    "prompts/"
   ],
   "scripts": {
     "test": "eliware-test",

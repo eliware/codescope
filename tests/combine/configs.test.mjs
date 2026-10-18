@@ -16,6 +16,10 @@ test("combines selected configuration sections in inventory order", async () => 
 test("preserves bounded reader concurrency and output order", async () => {
   let active = 0;
   let maximum = 0;
+  let releaseReaders;
+  const bothReadersStarted = new Promise((resolve) => {
+    releaseReaders = resolve;
+  });
   const result = await combineConfigFiles("repo", {
     inventory: [".github/a.cfg", ".github/b.cfg"],
     concurrency: 2,
@@ -23,7 +27,8 @@ test("preserves bounded reader concurrency and output order", async () => {
     readFileContents: async (file) => {
       active += 1;
       maximum = Math.max(maximum, active);
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      if (active === 2) releaseReaders();
+      await bothReadersStarted;
       active -= 1;
       return file.endsWith("a.cfg") ? "a" : "b";
     },
@@ -41,7 +46,7 @@ test("rejects invalid concurrency and paths outside the root", async () => {
     combineConfigFiles("repo", { inventory: [".github/ci.cfg"], concurrency: 0 }),
   ).rejects.toThrow(/positive integer/);
   await expect(combineConfigFiles("repo", { inventory: ["C:\\outside.yml"] })).rejects.toThrow(
-    /escapes review root/,
+    /escapes repository root/,
   );
 });
 

@@ -15,9 +15,9 @@ export function resolveConfigPath(root, relativePath, platform = process.platfor
   const portable = platform === "win32" ? relativePath.replaceAll("/", "\\") : relativePath;
   const normalized = pathApi.normalize(portable);
   if (normalized === ".." || normalized.startsWith("../"))
-    throw new Error(`Configuration path escapes review root: ${relativePath}`);
+    throw new Error(`Configuration path escapes repository root: ${relativePath}`);
   if (platform === "win32" && normalized.startsWith("..\\"))
-    throw new Error(`Configuration path escapes review root: ${relativePath}`);
+    throw new Error(`Configuration path escapes repository root: ${relativePath}`);
   return pathApi.resolve(root, normalized);
 }
 

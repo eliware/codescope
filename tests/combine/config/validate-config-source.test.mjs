@@ -1,5 +1,3 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { validateConfigSource } from "../../../src/combine/config/validate-config-source.mjs";
 
@@ -15,19 +13,6 @@ test("resolves and inspects the supplied configuration path", async () => {
   });
   expect(filePath).toBe(path.resolve("repo", ".github", "ci.yml"));
   expect(inspected).toEqual([[filePath, { bigint: true }]]);
-});
-
-test("uses default file inspection when no options are supplied", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-config-validation-"));
-  try {
-    await mkdir(path.join(root, ".github"));
-    await writeFile(path.join(root, ".github", "ci.yml"), "workflow");
-    await expect(validateConfigSource(root, ".github/ci.yml")).resolves.toBe(
-      path.join(root, ".github", "ci.yml"),
-    );
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
 });
 
 test("rejects symlink and non-file configuration paths", async () => {
@@ -46,6 +31,12 @@ test("rejects symlink and non-file configuration paths", async () => {
 test("rejects paths outside the review root before file inspection", async () => {
   const inspectFile = async () => regular;
   await expect(validateConfigSource("repo", "../secret.yml", { inspectFile })).rejects.toThrow(
-    /escapes review root/,
+    /escapes repository root/,
+  );
+});
+
+test("uses the host platform and file reader by default", async () => {
+  await expect(validateConfigSource(process.cwd(), "package.json")).resolves.toBe(
+    path.join(process.cwd(), "package.json"),
   );
 });

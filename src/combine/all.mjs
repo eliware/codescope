@@ -1,4 +1,4 @@
-import { collectAllSections } from "./all-sections.mjs";
+import { collectAllSections } from "./all/sections.mjs";
 import { joinCombinedSections } from "./combined-source.mjs";
 export async function combineAllFiles(root, options = {}) {
   const sections = await collectAllSections(root, options);

@@ -1,4 +1,4 @@
-import { readOutputText } from "./read-output-text.mjs";
+import { readOutputText } from "./read/output-text.mjs";
 
 export function responseText(response, request) {
   try {

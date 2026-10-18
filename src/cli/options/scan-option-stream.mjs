@@ -1,4 +1,4 @@
-import { readOptionEntry } from "./read-option-entry.mjs";
+import { readOptionEntry } from "./read/option-entry.mjs";
 
 export function scanOptionStream(tokens, { keepScalarOptions = false, leadingOnly = false } = {}) {
   const add = [];

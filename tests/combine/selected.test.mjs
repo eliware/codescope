@@ -1,13 +1,11 @@
 import { combineSelectedFiles } from "../../src/combine/selected.mjs";
 import { extractTestSpecPromptContext } from "../../src/test-specs/prompt-context.mjs";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 
 test("combines selected implementation, tests, and docs in order", async () => {
   const options = {
     readDirectory: async () => [],
     readFileContents: async () => "",
+    readPackageJson: async () => '{"name":"@eliware/test"}',
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     combinePackageJson: undefined,
   };
@@ -21,32 +19,23 @@ test("combines selected implementation, tests, and docs in order", async () => {
   expect(result).toContain("===== other files (names and sizes only) =====");
 });
 
-test("uses default options for selected package metadata", async () => {
-  await expect(combineSelectedFiles(process.cwd())).resolves.toContain("package.json");
-});
-
 test("includes applied adjacent Test records in selected profile context", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-selected-specs-"));
-  const project = path.join(root, "project");
-  const testRoot = path.join(root, "test");
-  await mkdir(project);
-  await mkdir(path.join(testRoot, "specs", "conventions"), { recursive: true });
-  await writeFile(
-    path.join(project, "package.json"),
-    JSON.stringify({ eliware: { apply: ["general"] } }),
-  );
-  await writeFile(
-    path.join(testRoot, "specs", "conventions", "general-semantic.yaml"),
-    'directives:\n  - id: E-0.1\n    dos:\n      - "required: selected profile contract"',
-  );
-  try {
-    const result = await combineSelectedFiles(project, { inventory: [], testRoot });
-    const { instructions } = extractTestSpecPromptContext(result);
-    expect(instructions).toContain("required: selected profile contract");
-    expect(instructions).toContain("id: E-0.1");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
+  const result = await combineSelectedFiles("/repo", {
+    inventory: [],
+    testRoot: "/test12",
+    platform: "linux",
+    readPackageJson: async () => JSON.stringify({ eliware: { apply: ["general"] } }),
+    readDirectory: async (directory) =>
+      directory === "/test12/specs/conventions"
+        ? [{ name: "general-semantic.yaml", isFile: () => true }]
+        : [],
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    readFileContents: async () =>
+      'directives:\n  - id: E-0.1\n    dos:\n      - "required: selected profile contract"',
+  });
+  const { instructions } = extractTestSpecPromptContext(result);
+  expect(instructions).toContain("required: selected profile contract");
+  expect(instructions).toContain("id: E-0.1");
 });
 
 test("budgets selected evidence before a bounded inventory", async () => {
@@ -87,4 +76,20 @@ test("keeps metadata and selected source within budget when inventory cannot fit
   expect(result).toContain("===== src/selected.mjs =====");
   expect(result).not.toContain("===== other files (names and sizes only) =====");
   expect(result.length).toBeLessThanOrEqual(160);
+});
+
+test("uses the host platform when it is not supplied", async () => {
+  await expect(
+    combineSelectedFiles(process.cwd(), {
+      inventory: [],
+      readPackageJson: async () => JSON.stringify({ name: "@eliware/test" }),
+      readDirectory: async () => [],
+      readFileContents: async () => "",
+      inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+    }),
+  ).resolves.toContain("package.json");
+});
+
+test("uses default options at the public selected-content boundary", async () => {
+  await expect(combineSelectedFiles(process.cwd())).resolves.toContain("package.json");
 });

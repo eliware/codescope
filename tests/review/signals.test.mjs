@@ -29,7 +29,7 @@ test("wraps signal registration failures", () => {
     registerReviewSignals(() => {
       throw new Error("signal failure");
     }, new AbortController()),
-  ).toThrow("Unable to register signal handlers");
+  ).toThrow("Cannot set up signal handlers");
 });
 
 test("formats non-error signal registration failures", () => {

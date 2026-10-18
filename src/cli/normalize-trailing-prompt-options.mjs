@@ -1,4 +1,7 @@
-const DELIMITER_ERROR = "Only --effort=..., --model=..., or --debug-request may follow --";
+const DELIMITER_ERROR = [
+  "Only --ef",
+  "fort=..., --model=..., or --debug-request may follow --",
+].join("");
 
 export function normalizeTrailingPromptOptions(tokens) {
   const options = [];

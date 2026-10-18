@@ -1,4 +1,4 @@
-import { parsePromptArgs } from "../prompt-args.mjs";
+import { parsePromptArgs } from "../prompt/args.mjs";
 import { parseGroupedArgs } from "../grouped-args.mjs";
 import { parseDirectCommandArgs } from "./direct-command.mjs";
 

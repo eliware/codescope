@@ -13,7 +13,7 @@ export async function discoverTestSpecFiles(
       await inspectRoot(specsRoot);
     } catch (cause) {
       if (cause?.code === "ENOENT") return undefined;
-      throw new Error(`Unable to inspect Test specification evidence: ${String(cause)}`, {
+      throw new Error(`Cannot inspect Test specification data: ${String(cause)}`, {
         cause,
       });
     }
@@ -24,6 +24,6 @@ export async function discoverTestSpecFiles(
       files: await findFiles(specsRoot, ".yaml", { readDirectory, platform }),
     };
   } catch (cause) {
-    throw new Error(`Unable to discover Test specification evidence: ${String(cause)}`, { cause });
+    throw new Error(`Cannot find Test specification data: ${String(cause)}`, { cause });
   }
 }

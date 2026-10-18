@@ -1,5 +1,5 @@
 import { parseOptionValues } from "../options/parse-values.mjs";
-import { parseProfileArgs } from "../profile-args.mjs";
+import { parseProfileArgs } from "../profile/args.mjs";
 import { parseMetaCommand } from "../meta-args.mjs";
 import { normalizeCommand } from "./normalize-command.mjs";
 

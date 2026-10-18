@@ -3,7 +3,7 @@ import { collectInventorySection } from "./inventory-section.mjs";
 import { findFiles } from "../find/files.mjs";
 import { joinCombinedSections } from "./combined-source.mjs";
 import { validateCombineOptions } from "./policies.mjs";
-import { createSectionBudget } from "./section-budget.mjs";
+import { createSectionBudget } from "./section/budget.mjs";
 import { readSelectedSections } from "./selected/read-sections.mjs";
 
 const DEFAULT_SELECTED_OPTIONS = {

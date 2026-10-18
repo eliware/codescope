@@ -3,10 +3,10 @@ import { resolveJsonPath } from "../../../src/combine/json/paths.mjs";
 
 test("rejects JSON paths outside the review root", () => {
   expect(() => resolveJsonPath("/repo", "../outside.json", path.posix)).toThrow(
-    /escapes review root/,
+    /escapes repository root/,
   );
   expect(() => resolveJsonPath("/repo", "C:\\outside.json", path.win32)).toThrow(
-    /escapes review root/,
+    /escapes repository root/,
   );
 });
 

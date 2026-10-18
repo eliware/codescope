@@ -1,5 +1,5 @@
-import { runPromptCommand } from "./prompt-command.mjs";
-import { runProfileCommand } from "./profile-command.mjs";
+import { runPromptCommand } from "./prompt/command.mjs";
+import { runProfileCommand } from "./profile/command.mjs";
 
 export async function runReviewCommand(
   command,

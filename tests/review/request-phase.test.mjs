@@ -28,3 +28,15 @@ test("appends additions in order to the final user message", () => {
     /Review this\.[\s\S]*first instruction[\s\S]*second instruction$/u,
   );
 });
+
+test("rejects additions when the final user message has no text content", () => {
+  const prompt = {
+    input: [
+      { role: "developer", content: [{ type: "input_text", text: "<combine-mjs here>" }] },
+      { role: "user", content: [{ type: "input_image", image_url: "data:image/png;base64,AA==" }] },
+    ],
+  };
+  expect(() => prepareReviewRequest(prompt, "source", undefined, undefined, ["extra"])).toThrow(
+    "Request must contain a final user input_text message",
+  );
+});

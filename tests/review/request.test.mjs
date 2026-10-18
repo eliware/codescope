@@ -1,5 +1,7 @@
 import { prepareRequest } from "../../src/review/request.mjs";
-import { defaultDeveloperText } from "../../src/prompts/guidance.mjs";
+import { readPrompt } from "../../src/profiles/prompt-sources/read-content.mjs";
+
+const defaultDeveloperText = readPrompt("guidance-developer.md");
 
 const developerMessage = (text) => ({
   role: "developer",

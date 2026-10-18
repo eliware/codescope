@@ -1,4 +1,4 @@
-import { assertNotSymbolicLink, assertRegularFile } from "../environment-file-safety.mjs";
+import { assertNotSymbolicLink, assertRegularFile } from "./safety.mjs";
 
 export async function inspectEnvironmentFile(envFile, inspectFile, envFileExplicit = false) {
   try {
@@ -12,7 +12,7 @@ export async function inspectEnvironmentFile(envFile, inspectFile, envFileExplic
   }
 }
 
-export function createInspectionError(envFile, cause, message = "Unable to inspect") {
+export function createInspectionError(envFile, cause, message = "Cannot inspect") {
   return new Error(
     `${message} ${envFile}: ${cause instanceof Error ? cause.message : String(cause)}`,
     { cause },

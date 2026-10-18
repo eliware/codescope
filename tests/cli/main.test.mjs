@@ -32,7 +32,7 @@ test("routes one profile command through review and returns its status", async (
 
 test.each([
   [["all", "--model=unsupported"], /Model must be one of/],
-  [["all", "--effort=unsupported"], /Effort must be one of/],
+  [["all", "--effort=unsupported"], /Reasoning level must be one of/],
 ])("returns usage status for invalid CLI values %s", async (args, expectedMessage) => {
   const errors = [];
   await expect(main(args, { error: (message) => errors.push(message) })).resolves.toBe(2);

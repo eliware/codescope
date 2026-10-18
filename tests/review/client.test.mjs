@@ -15,5 +15,5 @@ test("wraps provider client initialization failures", () => {
     initializeReviewClient(() => {
       throw new Error("bad config");
     }, "token"),
-  ).toThrow("Unable to initialize OpenAI client");
+  ).toThrow("Cannot initialize OpenAI client");
 });

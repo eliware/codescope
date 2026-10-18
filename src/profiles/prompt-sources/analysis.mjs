@@ -1,11 +1,11 @@
-import { createAnalysisProfiles } from "../../prompts/analysis-profiles.mjs";
-import { createReviewTool } from "../../prompts/review-tool.mjs";
+import { fillPrompt } from "./read-content.mjs";
+import { createReviewTool } from "../review-tool.mjs";
 
 export function createAnalysisPromptSources(profilePrompt) {
-  const { priorityPrompt, analysisPrompt } = createAnalysisProfiles({
-    profilePrompt,
-    createReviewTool,
-  });
+  const priorityPrompt = (maximum) =>
+    profilePrompt(fillPrompt("priority.md", { MAXIMUM: maximum }), createReviewTool());
+  const analysisPrompt = (subject) =>
+    profilePrompt(fillPrompt("analysis.md", { SUBJECT: subject }));
   return {
     createAnalysisPrompt: analysisPrompt,
     sources: {

@@ -1,5 +1,5 @@
 import { readBatches } from "./batches.mjs";
-import { readConfigEntry } from "./config/read-config-entry.mjs";
+import { readConfigEntry } from "./config/read-config/entry.mjs";
 import { isAbsolutePortablePath, selectConfigFiles } from "./config/paths.mjs";
 import { validateScanRoot } from "../find/root-policy.mjs";
 
@@ -10,7 +10,7 @@ export async function combineConfigFiles(
   validateScanRoot(root, platform);
   for (const relativePath of inventory)
     if (isAbsolutePortablePath(relativePath))
-      throw new Error(`Configuration path escapes review root: ${relativePath}`);
+      throw new Error(`Configuration path escapes repository root: ${relativePath}`);
   const configFiles = selectConfigFiles(inventory, platform);
   if (!Number.isInteger(concurrency) || concurrency < 1)
     throw new Error("Configuration concurrency must be a positive integer");

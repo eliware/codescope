@@ -2,13 +2,14 @@ import {
   frameRepositoryContent,
   frameReviewContent,
   frameReviewInstructions,
-} from "../../prompts/untrusted-boundary.mjs";
-import { defaultDeveloperText } from "../../prompts/guidance.mjs";
+} from "./content-boundary.mjs";
+import { readPrompt } from "../../profiles/prompt-sources/read-content.mjs";
 import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mjs";
 import { getFunctionToolName } from "./function-tool-name.mjs";
 
 const PLACEHOLDER = "<combine-mjs here>";
 const CACHEABLE_REVIEW_TOOLS = new Set(["submit_review", "submit_unified_review"]);
+const defaultDeveloperText = readPrompt("guidance-developer.md");
 
 function formatTestSpecDeveloperInstructions(instructions) {
   return instructions
@@ -36,7 +37,7 @@ export function attachRepositoryEvidence(request, combined) {
   const instructionMessages = request.input.filter((item) => item.role === "user");
   const instructionContent = instructionMessages.flatMap((message) => message.content);
   if (!instructionContent.some((part) => part.type === "input_text"))
-    throw new Error("prompt must contain a user input_text part for repository source");
+    throw new Error("prompt must contain a user input_text content item for repository source");
   const developerInstructions = [
     content.text.trim(),
     formatTestSpecDeveloperInstructions(testSpecContext.instructions),

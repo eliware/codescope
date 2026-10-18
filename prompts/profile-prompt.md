@@ -1,0 +1,5 @@
+{{GLOBAL_REVIEW_INSTRUCTIONS}}
+
+{{PROFILE_REVIEW_RULES}}
+
+Profile focus: {{FOCUS}}

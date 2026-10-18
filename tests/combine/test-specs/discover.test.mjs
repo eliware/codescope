@@ -1,28 +1,26 @@
-import { mkdtemp, mkdir, readdir, writeFile, rm } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { discoverTestSpecFiles } from "../../../src/combine/test-specs/discover.mjs";
 
 test("reports a Test-spec discovery failure with context", async () => {
   await expect(
-    discoverTestSpecFiles("C:\\missing", {
+    discoverTestSpecFiles("/missing", {
       readDirectory: async () => {
         throw Object.assign(new Error("missing"), { code: "ENOENT" });
       },
-      platform: "win32",
+      platform: "linux",
     }),
-  ).rejects.toThrow(/Unable to discover Test specification evidence/);
+  ).rejects.toThrow(/Cannot find Test specification data/);
 });
 
-test("rethrows unexpected Test-spec discovery failures", async () => {
+test("reports unexpected Test-spec discovery failures", async () => {
   await expect(
-    discoverTestSpecFiles("C:\\broken", {
+    discoverTestSpecFiles("/broken", {
       readDirectory: async () => {
         throw Object.assign(new Error("denied"), { code: "EACCES" });
       },
-      platform: "win32",
+      platform: "linux",
     }),
-  ).rejects.toThrow(/Unable to discover Test specification evidence/);
+  ).rejects.toThrow(/Cannot find Test specification data/);
 });
 
 test("uses POSIX Test-spec paths when requested", async () => {
@@ -34,27 +32,28 @@ test("uses POSIX Test-spec paths when requested", async () => {
   ).resolves.toMatchObject({ specsRoot: "/missing/specs/conventions", files: [] });
 });
 
-test("discovers Test-spec YAML files on the host platform", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
-  try {
-    await mkdir(path.join(root, "specs", "conventions"), { recursive: true });
-    await writeFile(path.join(root, "specs", "conventions", "general-semantic.yaml"), "{}");
-    await writeFile(path.join(root, "specs", "conventions", "general-deterministic.yaml"), "{}");
-    await expect(discoverTestSpecFiles(root)).resolves.toMatchObject({
-      files: ["general-deterministic.yaml", "general-semantic.yaml"],
-    });
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
+test("discovers semantic and deterministic YAML files from injected entries", async () => {
+  await expect(
+    discoverTestSpecFiles("/repo", {
+      readDirectory: async () => [
+        { name: "general-semantic.yaml", isFile: () => true },
+        { name: "general-deterministic.yaml", isFile: () => true },
+      ],
+      platform: "linux",
+    }),
+  ).resolves.toMatchObject({
+    files: ["general-deterministic.yaml", "general-semantic.yaml"],
+  });
 });
 
 test("treats a missing convention checkout as unavailable", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
-  try {
-    await expect(discoverTestSpecFiles(root)).resolves.toBeUndefined();
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
+  await expect(
+    discoverTestSpecFiles("/repo", {
+      inspectRoot: async () => {
+        throw Object.assign(new Error("missing"), { code: "ENOENT" });
+      },
+    }),
+  ).resolves.toBeUndefined();
 });
 
 test("reports convention-root inspection failures with context", async () => {
@@ -64,26 +63,22 @@ test("reports convention-root inspection failures with context", async () => {
         throw Object.assign(new Error("denied"), { code: "EACCES" });
       },
     }),
-  ).rejects.toThrow(/Unable to inspect Test specification evidence/);
+  ).rejects.toThrow(/Cannot inspect Test specification data/);
 });
 
 test("reports an ENOENT during nested Test-spec discovery", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-test-specs-"));
-  const specsRoot = path.join(root, "specs", "conventions");
-  try {
-    await mkdir(path.join(specsRoot, "nested"), { recursive: true });
-    await expect(
-      discoverTestSpecFiles(root, {
-        readDirectory: async (directory, options) => {
-          if (directory === path.join(specsRoot, "nested"))
-            throw Object.assign(new Error("entry disappeared"), { code: "ENOENT" });
-          return readdir(directory, options);
-        },
-      }),
-    ).rejects.toThrow(/Unable to discover Test specification evidence/);
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
+  await expect(
+    discoverTestSpecFiles("/repo", {
+      platform: "linux",
+      readDirectory: async (directory) => {
+        if (directory === "/repo/specs/conventions/nested")
+          throw Object.assign(new Error("entry disappeared"), { code: "ENOENT" });
+        return directory === "/repo/specs/conventions"
+          ? [{ name: "nested", isDirectory: () => true }]
+          : [];
+      },
+    }),
+  ).rejects.toThrow(/Cannot find Test specification data/);
 });
 
 test("reports a non-directory Test-spec root as a discovery error", async () => {
@@ -94,5 +89,11 @@ test("reports a non-directory Test-spec root as a discovery error", async () => 
         throw Object.assign(new Error("not a directory"), { code: "ENOTDIR" });
       },
     }),
-  ).rejects.toThrow(/Unable to discover Test specification evidence/);
+  ).rejects.toThrow(/Cannot find Test specification data/);
+});
+
+test("uses the default reader for a missing convention root", async () => {
+  await expect(
+    discoverTestSpecFiles(path.join(process.cwd(), "test-fixtures", "missing-root")),
+  ).resolves.toBeUndefined();
 });

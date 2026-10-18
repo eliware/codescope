@@ -40,7 +40,7 @@ test("formats non-Error package reader failures", async () => {
       },
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
-  ).rejects.toThrow("Unable to read package.json: package unavailable");
+  ).rejects.toThrow("Cannot read package.json: package unavailable");
 });
 
 test("rewrites symlink package errors with package-specific guidance", async () => {
@@ -80,5 +80,5 @@ test("preserves Error package reader messages", async () => {
       },
       inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     }),
-  ).rejects.toThrow("Unable to read package.json: reader failed");
+  ).rejects.toThrow("Cannot read package.json: reader failed");
 });

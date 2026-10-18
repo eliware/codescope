@@ -26,7 +26,7 @@ test("formats missing semantic specifications with and without excluded profiles
       profiles: ["general"],
       missing: ["general"],
     }),
-  ).toContain("Convention contents are incomplete; missing general.");
+  ).toContain("Convention contents are incomplete. Missing general.");
   expect(
     formatTestSpecEvidence({
       status: "records-missing",
@@ -71,7 +71,7 @@ test("handles an empty excluded-profile list in the applicability header", () =>
       profiles: ["general"],
       records: [],
     }),
-  ).toContain("This repository applies general and does not apply any other profiles.");
+  ).toContain("This repository applies general and does not apply other profiles.");
 });
 
 test("names selected semantic files when the adjacent checkout is unavailable", () => {

@@ -1,6 +1,6 @@
 export function mergeCommandOptions(parsed, values) {
   if (values.effort !== undefined && parsed.effort !== undefined)
-    throw new Error("Only one --effort option is allowed");
+    throw new Error("Only one `--effort` option is allowed");
   if (values.model !== undefined && parsed.model !== undefined)
     throw new Error("Only one --model option is allowed");
   if (values.dryRun && parsed.dryRun) throw new Error("Only one --dry-run option is allowed");
@@ -10,7 +10,7 @@ export function mergeCommandOptions(parsed, values) {
     throw new Error("Only one --debug-request option is allowed");
   if (parsed.command === "prompt" && values.dryRun)
     throw new Error(
-      "Usage: codescope prompt <prompt text> [--effort=...] [--model=...] [--debug-request]",
+      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request]",
     );
   return {
     ...parsed,

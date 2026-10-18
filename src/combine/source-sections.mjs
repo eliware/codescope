@@ -1,5 +1,5 @@
 import { combineFiles } from "./files.mjs";
-import { createSectionBudget } from "./section-budget.mjs";
+import { createSectionBudget } from "./section/budget.mjs";
 import { joinCombinedSections } from "./combined-source.mjs";
 
 export async function collectSourceSections(root, options, inventory, initialSections = []) {

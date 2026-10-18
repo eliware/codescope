@@ -7,9 +7,9 @@ export function resolveJsonPath(rootPath, relativePath, pathApi = path) {
     path.win32.isAbsolute(portablePath) ||
     /^(?:\\\\|\/\/)/u.test(portablePath)
   )
-    throw new Error(`JSON path escapes review root: ${relativePath}`);
+    throw new Error(`JSON path escapes repository root: ${relativePath}`);
   const normalizedPath = pathApi.normalize(portablePath).replaceAll("\\", "/");
   if (normalizedPath === ".." || normalizedPath.startsWith("../"))
-    throw new Error(`JSON path escapes review root: ${relativePath}`);
+    throw new Error(`JSON path escapes repository root: ${relativePath}`);
   return pathApi.resolve(rootPath, ...normalizedPath.split("/"));
 }

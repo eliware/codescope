@@ -7,15 +7,16 @@ CodeScope reviews code and estimates token use.
 
 ## Scope and boundaries
 
-Use README.md for repository scope and product behavior.
+Read README.md for repository scope and behavior.
 
 ## Layout
 
-Use README.md and specs/README.md to find repository files.
+Read README.md and specs/README.md to find repository files.
 
 ## Development
 
-Use Node.js 26 or later and native ESM.
+Use Node.js 26 or later.
+Use native ESM.
 Keep each source and test module focused on one responsibility.
 
 ## Validation
@@ -32,12 +33,22 @@ Keep credentials, secrets, private data, and runtime state out of Git.
 
 ## Changes
 
-Keep changes within this repository scope.
+Keep changes in this repository scope.
 Use Eliware Operations for approval before external changes.
 
 ## Application
 
-Document entrypoints, workflows, settings, startup, and shutdown in README.md.
+Document entry points, workflows, settings, startup, and shutdown in README.md.
+Use `src/` for implementation modules.
+Use `bin/` for launchers.
+Use `tests/` for tests.
+Use `test-fixtures/` for test fixtures.
+
+Run focused tests first during development.
+Run one test file with `npm test -- tests/path/to/example.test.mjs`.
+Run multiple test files with `npm test -- tests/path/to/first.test.mjs tests/path/to/second.test.mjs`.
+Prevent repeated full-suite runs during development.
+Run the full `npm test` suite for final validation before a commit, milestone, or release.
 
 ## CLI
 

@@ -1,4 +1,4 @@
-import { readPackageJsonContent } from "./read-package-json-content.mjs";
+import { readPackageJsonContent } from "./read/package-json-content.mjs";
 import { parsePackageJson } from "./parse-package-json.mjs";
 import { isSafeProfileName } from "./is-safe-profile-name.mjs";
 

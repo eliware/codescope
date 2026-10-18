@@ -24,5 +24,5 @@ export function validatePromptShape(prompt) {
   if (developers.length !== 1)
     throw new Error("prompt.json must contain exactly one developer message");
   if (developers[0].content.filter((part) => part.type === "input_text").length !== 1)
-    throw new Error("prompt developer message must contain exactly one input_text part");
+    throw new Error("prompt developer message must contain exactly one input_text content item");
 }

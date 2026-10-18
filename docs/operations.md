@@ -1,17 +1,17 @@
 # Operations and data
 
-## Review input
+## Inspection input
 
-CodeScope uses the current working directory as the review root.
+CodeScope uses the current working directory as the inspection root.
 It selects files for the chosen profile.
-It applies file and context size limits.
+It applies file and context length limits.
 It does not follow symbolic links during repository discovery.
 The file inventory can show files that CodeScope did not include.
 
 The `all` profile includes code, tests, documentation, package data, and a file inventory.
 Other profiles can use a smaller set of files.
-CodeScope does not read files that fall outside the selected context.
-Review requests include applicable Eliware Test conventions.
+CodeScope does not read files that decrease outside the selected context.
+Inspection requests include applicable Eliware Test conventions.
 
 CodeScope does not run repository commands or tests.
 It does not send test output to the provider.
@@ -19,27 +19,28 @@ Run tests through your own project tools.
 
 ## Provider request
 
-Each review, suggestion, or custom prompt sends one request to OpenAI.
+Each inspection, suggestion, or custom prompt sends one request to OpenAI.
 Help and version commands send no provider request.
 CodeScope sends the selected repository context, prompt, and API token to the provider client.
 It sends only `OPENAI_API_TOKEN` as a credential.
 
 The provider can receive confidential source, tests, documentation, and configuration data.
-Review and remove secrets before you run CodeScope.
-Do not treat redaction or review as a complete secret control.
+Use redaction to remove secrets before you run CodeScope.
+Redaction and inspection do not remove every secret.
 
-## Web search
+## Web lookup
 
-Review, suggestion, and custom prompt requests include OpenAI web search.
-The model can choose to search when it needs current public information.
-A search query can use details from the request, including repository content and prompt text.
-For example, a query can include an API name, package name, code detail, or error message.
-OpenAI processes the query and search results as part of the request.
-Review request data before you run CodeScope. Do not send secrets or private data.
+Inspection, suggestion, and custom prompt requests include OpenAI web lookup.
+The model can select to lookup when it needs current public information.
+A lookup query can use details from the request, with repository content and prompt text.
+For example, a query can include an API name, package name, code information, or error message.
+OpenAI processes the query and lookup results as item of the request.
 
-Each web search call adds a separate tool charge.
-OpenAI bills search result tokens at the selected model's input token rates.
-The `--usage` cost does not include the separate web search call charge.
+Inspection request data before you run CodeScope. Do not send secrets or private data.
+
+Each web lookup call adds a separate tool charge.
+OpenAI bills lookup result tokens at the selected model's input token rates.
+The `--usage` cost does not include the separate web lookup call charge.
 See [OpenAI API pricing](https://developers.openai.com/api/docs/pricing) for current rates.
 
 ## Output

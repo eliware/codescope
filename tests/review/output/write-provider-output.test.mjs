@@ -15,7 +15,7 @@ test("formats non-Error writer failures", async () => {
       "ok",
       "suggestion",
     ),
-  ).rejects.toMatchObject({ message: "Unable to write suggestion output: disk full" });
+  ).rejects.toMatchObject({ message: "Cannot write suggestion output: disk full" });
 });
 
 test("serializes structured provider output", async () => {
@@ -37,5 +37,5 @@ test("preserves Error details when wrapping writer failures", async () => {
     writeProviderResult(async () => {
       throw new Error("disk full");
     }, "ok"),
-  ).rejects.toMatchObject({ message: "Unable to write review output: disk full" });
+  ).rejects.toMatchObject({ message: "Cannot write review output: disk full" });
 });

@@ -1,15 +1,15 @@
-import { createReviewProfiles } from "../../prompts/review-profiles.mjs";
-import { createConventionPrompt } from "../../prompts/conventions.mjs";
-import { createReviewTool } from "../../prompts/review-tool.mjs";
+import { readPrompt } from "./read-content.mjs";
+import { createReviewTool } from "../review-tool.mjs";
 
 export function createReviewPromptSources(profilePrompt) {
-  const { refactorPrompt, prompt: defaultPrompt } = createReviewProfiles({
-    profilePrompt,
-    reviewTool: createReviewTool(),
-  });
+  const reviewTool = createReviewTool();
+  const defaultPrompt = profilePrompt(readPrompt("profile-review.md"), reviewTool);
+  const refactorPrompt = profilePrompt(readPrompt("profile-refactor.md"), reviewTool);
   return {
     sources: {
-      conventions: createConventionPrompt(profilePrompt),
+      conventions: profilePrompt(
+        `${readPrompt("policy-conventions.md")}\n\n${readPrompt("conventions-extra.md")}`,
+      ),
       refactor: refactorPrompt,
     },
     defaultPrompt,

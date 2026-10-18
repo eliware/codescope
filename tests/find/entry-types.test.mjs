@@ -31,7 +31,7 @@ test("rejects ambiguous, unknown, and throwing entries", () => {
       },
       "src",
     ),
-  ).toThrow("Unable to scan");
+  ).toThrow("Cannot scan");
   expect(() =>
     classifyEntry(
       {
@@ -41,5 +41,5 @@ test("rejects ambiguous, unknown, and throwing entries", () => {
       },
       "src",
     ),
-  ).toThrow("Unable to scan src: bad metadata");
+  ).toThrow("Cannot scan src: bad metadata");
 });

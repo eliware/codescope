@@ -1,186 +1,257 @@
-version: "12.0"
-description: Normative v12 rules for the CodeScope CLI, profiles, and supplied evidence.
+version: "13.0"
+description: Normative v13 rules for the CodeScope CLI, profiles, and supplied support.
 directives:
   - id: E-1210.0
     dos:
       - Provide a structured, read-only CLI for focused reviews, suggestions, and token estimates.
-      - State CLI behavior, review profiles, and evidence rules in these directives.
+      - State CLI behavior, inspection profiles, and support rules in these directives.
     donts:
       - Do not define or enforce Eliware Test repository requirements.
       - Do not define Operations, publication, deployment, or Test8 harness behavior.
     children:
       - id: E-1210.0.0
         dos:
-          - Use the current working directory as the review root.
+          - Use the current working directory as the inspection root.
           - Keep the reviewed repository read-only. Write only CodeScope's completed output.
-          - Review supplied context and report issues. Leave fixes and validation to repository owners.
+          - >-
+            Inspection supplied context and report issues. Keep fixes and validation to repository
+            owners.
         donts:
-          - Do not change repositories, apply fixes, commit, push, release, publish, deploy, or run repository commands.
+          - >-
+            Do not change repositories, apply fixes, commit, push, release, publish, deploy, or
+            run repository commands.
       - id: E-1210.0.1
         dos:
-          - Support `codescope`, `codescope --help`, `codescope all`, `codescope review <profile>`, `codescope suggest <profile>`, direct profile names, and `codescope prompt <text>`.
-          - Support `codescope release` and `codescope review release` as release review commands.
+          - >-
+            Support `codescope`, `codescope --help`, `codescope all`, `codescope inspection
+            <profile>`, `codescope suggest <profile>`, direct profile names, and `codescope
+            prompt <text>`.
+          - >-
+            Support `codescope release` and `codescope review release` as release inspection
+            commands.
           - Use `gpt-6-luna` as the default model.
-          - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, `--model=gpt-6-astra|gpt-6-sol|gpt-6.1-sol|gpt-6-luna|gpt-5.6-luna|gpt-5.6-terra|gpt-5.6-sol`, and `-a|--add <string>`.
-          - Give custom prompts normal repository context. Disable review and suggestion output tools. Add the web search tool to every request.
-          - Set the web search location type to approximate. Set its search context size to medium.
-          - Use web search to verify public API behavior and current external specifications when an issue depends on them. Prefer official documentation.
-          - Set `tool_choice` to `auto` for structured requests that include web search.
-          - Require a structured function call in every review and suggestion response.
-          - Use the supplied prompt as the only built-in task and output instruction for `codescope prompt`.
+          - Support `--usage`, `--dry-run`, `--effort=none|low|medium|high|xhigh|max`, and
+            `-a|--add <string>`.
+          - Use `--model` with `gpt-6-astra`, `gpt-6-sol`, `gpt-6.1-sol`, or `gpt-6-luna`.
+          - Use `--model` with `gpt-5.6-luna`, `gpt-5.6-terra`, or `gpt-5.6-sol`.
+          - >-
+            Give custom prompts usual repository context. Disable inspection and suggestion output
+            tools. Add the web lookup tool to every request.
+          - >-
+            Set the web lookup location type to approximate. Set its lookup context length
+            to moderate.
+          - >-
+            Use web lookup to check public API behavior and current external specifications
+            when an issue depends on them.
+          - Prefer official documentation.
+          - Set `tool_choice` to `auto` for structured requests that include web lookup.
+          - Require a structured function call in every inspection and suggestion response.
+          - >-
+            Use the supplied prompt as the only built-in task and output instruction for
+            `codescope prompt`.
           - Put complete repository context before that prompt. Mark the context as data.
-          - Put the prompt at the end of its user message. Keep supplied additions after it as specified.
-          - Preserve custom prompt text, including leading and trailing spaces.
-          - Trim custom prompt text only to reject blank input.
-          - Keep `src/cli/main.mjs` as the CLI coordinator. It parses requests and calls focused modules.
+          - >-
+            Put the prompt at the end of its user message. Keep supplied additions after it as
+            specified.
+          - Preserve custom prompt text, with leading and trailing spaces.
+          - Cut custom prompt text only to reject blank input.
+          - >-
+            Keep `src/cli/main.mjs` as the CLI coordinator. It parses requests and calls focused
+            modules.
           - With `--usage --dry-run`, report estimated tokens and calculated cost.
           - For live requests, report usage and calculated cost for every request.
-          - Use `--dry-run` to estimate input-token cost without a model review.
+          - Use `--dry-run` to estimate input-token cost without a model inspection.
           - Accept dry-run token counts only as non-negative safe integers.
           - Report other dry-run token counts as invalid provider responses.
           - Append each `-a` or `--add` value to the final user message in command-line order.
           - Support additions on profile commands, `all`, `release`, and `prompt`.
           - Accept additions on bare `codescope` and help commands. Do not apply them to output.
-          - Treat non-option tokens as free-form prompt text.
+          - Read non-option tokens as free-form prompt text.
           - Require `--` when custom prompt text starts with a dash.
-          - Use shared parsing for effort, model, dry-run, and additions.
+          - Use shared parsing for reasoning level, model, dry-run, and additions.
           - Accept separated and equals forms for additions wherever scalar options apply.
           - Keep prompt delimiter parsing separate from scalar option parsing.
         donts:
           - Do not require custom prompts to return a verdict or fixed response schema.
-          - Do not add fixed CodeScope review, transport, or output rules to custom prompts.
+          - Do not add fixed CodeScope inspection, transport, or output rules to custom prompts.
           - Do not put additions before system, profile, repository, or final user content.
-          - Do not change, reorder, summarize, merge, or silently drop a supplied addition.
+          - Do not change, reorder, summarize, merge, or remove a supplied value.
           - Do not apply additions to bare CLI, help, or version output.
-          - Do not treat valid prompt words as misplaced options.
+          - Do not mark valid prompt words as misplaced options.
           - After `--`, reject unsupported trailing tokens with the delimiter grammar error.
       - id: E-1210.0.2
         dos:
           - Use a nonblank process `OPENAI_API_TOKEN` when available.
           - If the process value is missing or blank, use a nonblank value from `~/.codescope`.
           - Give the provider only `OPENAI_API_TOKEN`.
-          - Ignore malformed nonblank file lines that do not assign `OPENAI_API_TOKEN`.
+          - Ignore malformed nonblank file lines that do not give `OPENAI_API_TOKEN`.
           - Reject malformed assignments or quoted values for `OPENAI_API_TOKEN`.
-          - Assume users do not edit files while CodeScope reads them.
-          - Use the returned file content without checking its identity or metadata for read stability.
-          - Treat missing credentials and provider transport failures as errors.
+          - Users must not edit files while CodeScope reads them.
+          - >-
+            Use the returned file content without checking its identity or metadata for read
+            stable.
+          - Report missing credentials and provider transport failures as errors.
         donts:
           - Do not copy unrelated process variables to provider setup.
           - Do not let a blank process token hide a nonblank file token.
           - Do not reject the file because an unrelated line is malformed.
-          - Do not place credentials, tokens, environment files, or runtime state in reviewed repositories.
+          - >-
+            Do not put credentials, tokens, environment files, or runtime state in reviewed
+            repositories.
           - Do not claim redaction removes every secret.
       - id: E-1210.0.3
         dos:
-          - Exclude `RELEASE_NOTES.md` from supplied Markdown, without case sensitivity.
+          - Exclude `RELEASE_NOTES.md` from supplied Markdown. Match uppercase or lowercase letters.
           - Keep the excluded release-notes file in the unsupplied-file inventory.
-          - "Build full context in this order: `package.json`; selected semantic profiles; other JSON files; YAML files; bounded configuration; Markdown; implementation; tests; remaining-file inventory."
+          - Put `package.json` first in the repository context.
+          - Put selected semantic profiles after `package.json`.
+          - Put other JSON files after selected semantic profiles.
+          - Put YAML files after other JSON files.
+          - Put bounded configuration after YAML files.
+          - Put Markdown after bounded configuration.
+          - Put implementation files after Markdown.
+          - Put tests after implementation files.
+          - Put the remaining-file inventory last.
           - Exclude `package-lock.json` from supplied content and inventory.
           - Supply root `package.json` only in its dedicated section.
-          - Limit non-JSON, non-YAML, non-Markdown, non-source `.github` and `.knit` text files to 200 lines.
-          - List remaining files by name. Include text line and byte counts. Include binary byte counts.
+          - >-
+            Limit non-JSON, non-YAML, non-Markdown, non-source `.github` and `.knit` text files
+            to 200 lines.
+          - >-
+            List remaining files by name. Include text line and byte counts. Include binary byte
+            counts.
           - Put each file in one content section only.
-          - For `@eliware/test`, include its specs in normal YAML and Markdown sections.
-          - Include `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, matching tests, and profile-selected Markdown.
-          - For other packages, read only Eliware Test v12 semantic files named by `package.json` `eliware.apply`.
+          - For `@eliware/test`, include its specs in usual YAML and Markdown sections.
+          - >-
+            Include `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, matching tests, and
+            profile-selected Markdown.
+          - >-
+            For other packages, read only Eliware Test v13 semantic files named by
+            `package.json` `eliware.apply`.
           - Read those files from the adjacent `test12/specs/conventions` folder.
-          - Accept safe, lowercase, single-segment profile names with letters, digits, and single hyphens.
+          - >-
+            Accept safe, lowercase, single-segment profile names with letters, digits, and
+            single hyphens.
           - Map each profile to its canonical `<profile>-semantic.yaml` file.
           - Include each selected file in full. Do not parse or summarize it.
           - Put selected convention files in the developer message.
           - State which profiles apply and which do not apply before the convention files.
           - Label each file as `<profile> conventions:` before its name and contents.
           - Put repository content in one user message.
-          - Put review instructions in a separate final user message.
+          - Put inspection instructions in a separate final user message.
           - Do not load separate specification records for `@eliware/test`.
-          - Preserve complete selected semantic files, regardless of record size.
+          - Preserve complete selected semantic files, regardless of record length.
           - Set the default combined source limit to 3,000,000 characters.
-          - Apply `maxChars` to formatted evidence, headers, line numbers, and separators.
-          - In focused profiles, place the remaining-file inventory after selected evidence.
-          - Fit the inventory within the remaining character limit.
-          - When space permits, report the number of omitted inventory entries.
+          - Apply `maxChars` to formatted support, headers, line numbers, and separators.
+          - In focused profiles, put the remaining-file inventory after selected support.
+          - Match the inventory in the remaining character limit.
+          - When area permits, report the number of omitted inventory entries.
           - Exclude generated coverage, dependency folders, Git data, and coverage data.
           - Keep valid source folders named `coverage`.
-          - Skip symbolic links. Never read their targets.
-          - Assume users do not edit files while CodeScope reads them.
-          - Use content returned by each read. Do not check identity or metadata for read stability.
-          - Use metadata for discovery, link checks, file checks, size limits, and included evidence.
-          - Do not check metadata before or after a read only to detect a concurrent change.
+          - Skip symbolic links. Do not read their targets.
+          - Users must not edit files while CodeScope reads them.
+          - Use content returned by each read. Do not check identity or metadata for read stable.
+          - >-
+            Use metadata for discovery, link checks, file checks, length limits, and included
+            support.
+          - Do not check metadata before or after a read only to find a concurrent change.
           - Read selected source and inventory files. Use bounded reads when needed.
           - For selected configuration, check links and regular files during discovery.
           - Apply the configured byte limit to selected configuration files.
-          - Use returned configuration content without another metadata check for read stability.
-          - Mark repository evidence with `--- BEGIN REVIEW CONTENT ---` and `--- END REVIEW CONTENT ---`.
+          - Use returned configuration content. Do not check metadata again after the read.
+          - >-
+            Mark repository support with `--- BEGIN REVIEW CONTENT ---` and
+            `--- END REVIEW CONTENT ---`.
           - Do not add generated tokens to those markers.
-          - Treat excluded or unsupplied evidence as unknown.
+          - Mark excluded or unsupplied support as unknown.
         donts:
-          - Do not include any `package-lock.json` in content or inventory.
+          - Do not include `package-lock.json` in content or inventory.
           - Do not include adjacent `test12` package metadata or lockfiles.
           - Do not include deterministic Eliware Test specifications in provider context.
           - Do not parse, summarize, reorder, or omit selected semantic specification content.
-          - Do not treat excluded files, missing files, link targets, or unsupplied systems as reviewed evidence.
+          - >-
+            Do not use excluded files, missing files, link targets, or unsupplied systems as
+            supplied material.
       - id: E-1210.0.4
         dos:
-          - Never run tests in the reviewed repository.
-          - Never send test output as provider context.
-          - Review supplied context for exposed secrets.
-          - Report visible or redacted usable credentials, tokens, passwords, private keys, and other secrets as P0.
-          - Give each secret's location and rotation or revocation guidance.
-          - Do not treat ciphertext or encrypted key-wrapping metadata alone as usable secrets.
-          - Treat redaction and AI detection as incomplete safeguards.
+          - Do not run tests in the reviewed repository.
+          - Do not send test output as provider context.
+          - Inspect supplied content for exposed secrets.
+          - >-
+            Report shown or redacted usable credentials, tokens, passwords, private keys, and
+            other secrets as P0.
+          - Give each secret's location and turn or revocation guidance.
+          - Do not classify ciphertext or encrypted key-wrapping metadata alone as usable secrets.
+          - Redaction and AI detection do not provide complete protection.
           - Keep repository owners responsible for sanitizing supplied material.
         donts:
           - Do not claim CodeScope is a sanitized-environment mode or a complete secret scanner.
           - Do not claim CodeScope makes secret-bearing source or test output safe.
       - id: E-1210.0.5
         dos:
-          - Keep review profiles focused on actionable issues in their declared areas.
-          - Keep suggestions focused on advice. Do not include suggestions in blocking-verdict policy.
-          - Use `all` to review code, tests, docs, package data, and remaining-file inventory in one result.
-          - Keep conventions reviews focused on supplied docs, package data, specs, environment docs, and cross-file consistency.
-          - Treat missing or unsupplied artifacts as unknown, not defects.
-          - Use P0 for emergencies or supplied failing-test evidence.
-          - Use P1 for concrete high-priority defects.
+          - Keep inspection profiles focused on actionable issues in their declared areas.
+          - >-
+            Keep suggestions focused on advice. Do not include suggestions in blocking-verdict
+            policy.
+          - >-
+            Use `all` to inspect code, tests, docs, package data, and remaining-file inventory in
+            one result.
+          - >-
+            Keep conventions reviews focused on supplied docs, package data, specs, environment
+            docs, and across-file consistency.
+          - Mark missing or unsupplied artifacts as unknown, not defects.
+          - Use P0 for emergencies or supplied failing-test support.
+          - Use P1 for concrete high-severity defects.
           - Use P2 for actionable non-blocking issues.
           - Use P3 for polish or low-risk follow-up.
-          - Assume the full test suite passes unless supplied evidence shows a failure.
-          - Use supplied code, specs, and tests to review contract coverage.
-          - Do not require test-run output to review contract coverage.
-          - Assess each issue claim on its own evidence.
-          - Keep the supported part of a mixed issue. Remove unsupported claims.
-          - Do not let an invalid issue hide another valid issue in its category.
+          - Use the full test suite as passed unless supplied support shows a failure.
+          - Use supplied code, specs, and tests to inspect contract coverage.
+          - Do not require test-run output to inspect contract coverage.
+          - Check each issue claim on its own support.
+          - Keep the supported item of a mixed issue. Remove unsupported claims.
+          - Do not let an invalid issue hide a separate valid issue in its category.
           - Give each issue a severity, locations array, and issues array.
           - Require at least one item in each locations and issues array.
-          - Keep issues atomic. Check each claim against relevant code, tests, specs, docs, and conventions.
-          - Do not treat passing tests as proof about behavior they do not test.
+          - >-
+            Keep issues atomic. Check each claim against related code, tests, specs, docs, and
+            conventions.
+          - Do not use passing tests as proof about behavior they do not test.
           - Give each category issues or one no-issues sentinel.
-          - Use severity `none`, locations [`none`], and issues [`No issues found.`] for the sentinel.
-          - Request a provider block verdict for unresolved P0 or P1 issues.
-          - Treat the provider verdict as provider output only.
-          - Use implicit prompt caching for review requests.
+          - >-
+            Use severity `none`, locations [`none`], and issues [`No issues found.`] for the
+            sentinel.
+          - Request a provider stop verdict for unresolved P0 or P1 issues.
+          - Use the provider verdict as provider output only.
+          - Use implicit prompt caching for inspection requests.
           - Keep one explicit breakpoint after stable developer instructions and conventions.
           - Do not set cache mode to explicit-only.
-          - Keep review tool schemas limited to issues and verdict.
-          - Use issue-review effort `none` and reasoning summary `auto` by default.
+          - Keep inspection tool schemas small to issues and verdict.
+          - Use issue-inspection reasoning level `none` and reasoning summary `auto` by default.
         donts:
           - Do not let issues or the provider verdict change the CLI exit code.
-          - Do not report missing test output, an unseen failure, or an unsupported test-run requirement.
+          - >-
+            Do not report missing test output, an unseen failure, or an unsupported test-run
+            requirement.
           - Do not replace deterministic checks owned by other tools.
-          - Do not repeat known issues unless code contradicts the stated limit or evidence shows outside impact.
+          - >-
+            Do not repeat known issues unless code contradicts the stated limit or support
+            shows outside effect.
       - id: E-1210.0.6
         dos:
-          - Print reasoning summary text before the successful provider response when present.
-          - Otherwise, write the successful provider response unchanged.
-          - Send one request for each issue review, suggestion, and custom prompt.
-          - With `--debug-request`, print issue-review requests to stderr before send.
+          - Print reasoning summary text before the correct provider response when available.
+          - If not, write the correct provider response unchanged.
+          - Send one request for each issue inspection, suggestion, and custom prompt.
+          - With `--debug-request`, print issue-inspection requests to stderr before send.
           - Capture HTTP reasoning-summary deltas and request IDs for debug output.
-          - Print issue-review responses to stderr after receipt.
+          - Print issue-inspection responses to stderr after receipt.
           - Print captured event metadata under `--- RESPONSE EVENTS ---`.
           - Use labels `--- REVIEW REQUEST ---` and `--- REVIEW RESPONSE ---` for issue reviews.
           - Print the single request and response for suggestions and custom prompts.
-          - Treat tool schemas and prompt instructions as output guidance, not CodeScope acceptance rules.
-          - Check every issue for a concrete, evidence-backed current defect before request send.
-          - Use top-level issues and verdict fields in all and release review schemas.
+          - >-
+            Use tool schemas and prompt instructions as output guidance.
+            Do not use them as CodeScope approval rules.
+          - Check every issue for a concrete, support-backed current defect before request send.
+          - Use top-level issues and verdict fields in all and release inspection schemas.
           - Include severity, locations, and issues in each issue item.
           - Use a locations array and an issues array with at least one item.
           - Use the required no-issues sentinel for empty categories.
@@ -188,19 +259,33 @@ directives:
           - Allow provider-defined responses without a machine-readable format.
           - Report provider setup, transport, and output-write errors.
           - Report setup and provider failures with available error details.
-          - Preserve provider status, code, type, parameter, and request ID in failure diagnostics when available.
+          - >-
+            Preserve provider status, code, type, parameter, and request ID in failure
+            diagnostics when available.
           - Require output writers to report the exact number of written characters.
-          - Treat a missing write result as incomplete output.
+          - A missing write result means output is incomplete.
         donts:
-          - Do not parse, validate, redact, format, or change provider response content except for documented output and debug fields.
+          - >-
+            Do not parse, validate, redact, format, or change provider response content unless
+            for documented output and debug fields.
           - Do not expose or promise a stable CodeScope response schema.
           - Do not parse model JSON or derive process status from provider content.
       - id: E-1210.0.7
         dos:
-          - Keep CI, deployment, registry, Git, rollback, package, and other external command state out of conclusions unless evidence is supplied.
-          - Keep provider internals, operating-system behavior, and child-process behavior outside the review contract when tests cover them.
-          - Keep feature proposals, repository changes, automatic fixes, commits, pushes, releases, publication, and deployment outside the review operation.
-          - Keep the README, package data, source, tests, and release notes aligned with CodeScope behavior.
+          - >-
+            Keep CI, deployment, registry, Git, rollback, package, and other external command
+            state out of conclusions unless support is supplied.
+          - >-
+            Keep provider internals, operating-system behavior, and child-process behavior
+            outside the inspection contract when tests cover them.
+          - >-
+            Keep function proposals, repository changes, automatic fixes, commits, pushes,
+            releases, publication, and deployment outside the inspection operation.
+          - >-
+            Keep the README, package data, source, tests, and release notes aligned with
+            CodeScope behavior.
         donts:
-          - Do not infer health or alignment for excluded systems from missing evidence.
-          - Do not treat CodeScope guidance as authority for repository rules, Operations, publication, deployment, or Test8.
+          - Do not infer health or match for excluded systems from missing support.
+          - >-
+            Do not use CodeScope guidance to set repository rules, Operations,
+            publication, deployment, or Test8.

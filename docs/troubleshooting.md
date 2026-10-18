@@ -13,22 +13,22 @@ Check that its token line uses `OPENAI_API_TOKEN=value`.
 Remove malformed quotes or token text.
 Do not edit the file while CodeScope reads it.
 
-## Unsupported model or effort
+## Unsupported model or reasoning level
 
 Use a supported model from the [command guide](commands.md#options).
-Set effort to `none`, `low`, `medium`, `high`, `xhigh`, or `max`.
+Set reasoning level to `none`, `low`, `medium`, `high`, `xhigh`, or `max`.
 
 ## Provider or response error
 
 Check your network connection and API token.
 Check the error details that CodeScope prints.
 Use `--debug-request` to inspect request and response data.
-Protect debug output because it can contain repository content.
+Prevent debug output because it can contain repository content.
 
 ## Test results are missing
 
 CodeScope does not run repository tests.
-Run the repository's test command before or after a review.
+Run the repository's test command before or after a inspection.
 CodeScope does not send test output to OpenAI.
 
 ## Exit code

@@ -1,12 +1,12 @@
 # Commands
 
-Run commands from the repository that you want to review.
+Run commands from the repository that you want to inspect.
 Use `codescope --help` to print the quick-start guide.
 Use `codescope --version` to print the package version.
 
-## Review profiles
+## Inspection profiles
 
-Use review profiles to find issues in supplied repository content.
+Use inspection profiles to find issues in supplied repository content.
 
 ```text
 codescope all
@@ -17,16 +17,16 @@ codescope review security
 codescope architecture
 ```
 
-The `all` profile reviews code, tests, documentation, package data, and the file inventory.
+The `all` profile inspects code, tests, documentation, package data, and the file inventory.
 The `release` profile checks release readiness.
 The `conventions` profile checks supplied rules and repository consistency.
-Other review profiles focus on one area.
+Other inspection profiles focus on one area.
 
-Review profiles are `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`,
+Available inspection profiles are `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`,
 `architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`,
 `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, and `prioritize`.
 
-You can use a direct profile command for a review.
+You can use a direct profile command to inspect one area.
 For example, `codescope security` is the same as `codescope review security`.
 
 ## Suggestion profiles
@@ -43,7 +43,7 @@ Suggestion profiles are `all`, `new-features`, `architecture`, `api-design`, `cr
 `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`,
 `accessibility`, `quick-wins`, and `prioritize`.
 
-The `all` suggestion profile checks review areas and new features.
+The `all` suggestion profile checks inspection areas and new features.
 The `new-features` profile is available only with `suggest`.
 
 ## Custom prompts
@@ -56,8 +56,8 @@ codescope prompt "Review changed files" --add "Focus on error handling"
 ```
 
 CodeScope puts the repository context before your prompt.
-It treats repository content as review data.
-It does not add the review or suggestion policy to a custom prompt.
+It treats repository content as inspection data.
+It does not add the inspection or suggestion policy to a custom prompt.
 
 Use `--add` to append more instructions.
 Repeat `--add` to append more than one instruction.
@@ -75,23 +75,23 @@ Custom prompts do not support `--usage` or `--dry-run`.
 
 ## Options
 
-Use these options with review and suggestion commands:
+Use these options with inspection and suggestion commands:
 
 - `--model=<name>` selects a model.
-- `--effort=<level>` sets reasoning effort.
+- `--effort=<level>` sets the reasoning level.
 - `--usage` prints token counts and calculated cost.
 - `--dry-run` estimates input tokens and cost without a provider request.
 - `--debug-request` prints request and response data to standard error.
 - `--add <text>` appends text to the request. You can repeat this option.
 
-Use these reasoning effort levels: `none`, `low`, `medium`, `high`, `xhigh`, or `max`.
-The default effort is `none`.
+Use these reasoning levels: `none`, `low`, `medium`, `high`, `xhigh`, or `max`.
+The default reasoning level is `none`.
 The default model is `gpt-6-luna`.
 
 Supported models are `gpt-6-astra`, `gpt-6-sol`, `gpt-6.1-sol`, `gpt-6-luna`, `gpt-5.6-luna`,
 `gpt-5.6-terra`, and `gpt-5.6-sol`.
 
-Review requests ask for an automatic reasoning summary.
+Inspection requests ask for an automatic reasoning summary.
 CodeScope prints a summary before the provider response when the provider returns one.
 It then prints the provider response unchanged.
 
@@ -99,12 +99,12 @@ Use `--usage --dry-run` to report estimated input tokens and cost.
 Use `--usage` on a live request to report provider token counts and calculated cost.
 
 Debug output can contain sent repository content and provider data.
-Protect that output.
+Prevent access to that output.
 
 ## Exit codes
 
-CodeScope returns `0` after a successful request.
-Review issues and verdicts do not change this code.
+CodeScope returns `0` after a correct request.
+Issues and verdicts do not change this code.
 
 | Code  | Meaning                                        |
 | ----- | ---------------------------------------------- |

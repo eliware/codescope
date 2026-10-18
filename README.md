@@ -29,7 +29,7 @@ It estimates token use and cost.
 It does not change the reviewed repository or run its tests.
 
 See the [documentation](docs/README.md) for user instructions.
-See the [specifications](specs/README.md) for product rules.
+See the [specifications](specs/README.md) for software rules.
 
 ## Requirements
 
@@ -47,11 +47,11 @@ The package command is `codescope`.
 The CLI entry point is `bin/codescope.mjs`.
 The package export is `src/cli/main.mjs`.
 Package files include `src/`, `bin/`, `docs/`, `specs/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
-See [Quick start](docs/quick-start.md) for setup steps.
+See [Setup guide](docs/quick-start.md) for setup steps.
 
 ## Usage
 
-Run CodeScope from the repository that you want to review.
+Run CodeScope from the repository that you want to inspect.
 
 ```text
 codescope all
@@ -60,7 +60,7 @@ codescope suggest architecture
 ```
 
 See [Release notes](RELEASE_NOTES.md) for changes by version.
-See [Quick start](docs/quick-start.md) for profile guidance.
+See [Setup guide](docs/quick-start.md) for profile guidance.
 Run `codescope --version` to print the installed version.
 
 ## Development
@@ -81,11 +81,11 @@ See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
 
 ## Security
 
-CodeScope sends supplied repository content to the configured OpenAI service.
-The model can also use web search for current public information. It can form search queries from request context, including repository content.
-Remove secrets from that content before you run a review.
-Protect debug logs because they can contain repository content.
-Read [Operations and data](docs/operations.md) for web search and cost details.
+CodeScope sends supplied repository content to the configured OpenAI system.
+The model can also use web lookup for current public information. It can type lookup queries from request context, with repository content.
+Remove secrets from that content before you run a inspection.
+Prevent debug logs because they can contain repository content.
+Read [Operations and data](docs/operations.md) for web lookup and cost details.
 
 ## Configuration
 
@@ -96,10 +96,11 @@ See the [configuration guide](docs/configuration.md) for token rules and options
 
 CodeScope reads repository content and writes its result to standard output.
 It does not edit the reviewed repository, run its commands, or run its tests.
-Each review, suggestion, or custom prompt sends one provider request.
+Each inspection, suggestion, or custom prompt sends one provider request.
 Help and version commands send no provider request.
-Review, suggestion, and prompt commands check configuration before provider setup.
+Inspection, suggestion, and prompt commands check configuration before provider setup.
 CodeScope stops its request controller and removes signal handlers after each request.
+
 Read [Operations and data](docs/operations.md) for request and output details.
 Passing checks does not authorize publication.
 Use Eliware Operations for release approval.
@@ -112,7 +113,7 @@ Read the [command guide](docs/commands.md) for options and examples.
 
 ## Exit codes
 
-CodeScope returns `0` after a successful request, even when the result lists issues.
+CodeScope returns `0` after a correct request, also when the result lists issues.
 It returns a nonzero code when setup, input, provider, or output fails.
 Read the [command guide](docs/commands.md#exit-codes) for each code.
 

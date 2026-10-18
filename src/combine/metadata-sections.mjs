@@ -3,7 +3,7 @@ import { combineJsonFiles } from "./json.mjs";
 import { combineTestSpecs } from "./test-specs.mjs";
 import { combineConfigFiles } from "./configs.mjs";
 import { combineYamlFiles } from "./yaml.mjs";
-import { createSectionBudget } from "./section-budget.mjs";
+import { createSectionBudget } from "./section/budget.mjs";
 
 export async function collectMetadataSections(root, options, inventory) {
   const sections = {};

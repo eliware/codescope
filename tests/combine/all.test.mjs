@@ -1,7 +1,4 @@
 import { combineAllFiles } from "../../src/combine/all.mjs";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 
 test("preserves the all-context section ordering", async () => {
   const names = [
@@ -73,19 +70,22 @@ test("uses default options at the public all-context boundary", async () => {
 });
 
 test("includes eliware-test specs normally without separately injecting profiles", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "codescope-self-review-"));
-  try {
-    await mkdir(path.join(root, "specs"));
-    await writeFile(
-      path.join(root, "package.json"),
-      JSON.stringify({ name: "@eliware/test", eliware: { apply: ["general"] } }),
-    );
-    await writeFile(path.join(root, "specs", "general.json"), '{"directive":"included"}');
-    const result = await combineAllFiles(root);
-    expect(result).toContain("===== specs/general.json =====");
-    expect(result).toContain('{"directive":"included"}');
-    expect(result).not.toContain("Eliware Test specifications");
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
+  const result = await combineAllFiles("/repo", {
+    readDirectory: async (directory) =>
+      directory === "/repo"
+        ? [
+            { name: "package.json", isFile: () => true },
+            { name: "specs", isDirectory: () => true },
+          ]
+        : [{ name: "general.json", isFile: () => true }],
+    platform: "linux",
+    readFileContents: async (file) =>
+      file.endsWith("package.json")
+        ? JSON.stringify({ name: "@eliware/test", eliware: { apply: ["general"] } })
+        : '{"directive":"included"}',
+    inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
+  });
+  expect(result).toContain("===== specs/general.json =====");
+  expect(result).toContain('{"directive":"included"}');
+  expect(result).not.toContain("Eliware Test specifications");
 });

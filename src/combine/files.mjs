@@ -26,6 +26,7 @@ export async function combineFiles(
     readDirectory,
     noTests,
     testsOnly,
+    platform,
   });
 
   return combineFileSections(root, selectedFiles, {

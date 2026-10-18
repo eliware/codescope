@@ -1,7 +1,12 @@
-import { createReviewTool } from "../prompts/review-tool.mjs";
-import { createSuggestionTool } from "../prompts/suggestion-tool.mjs";
-import { SUGGESTION_CATEGORIES } from "../prompts/categories.mjs";
-import { webSearchTool } from "../prompts/request-envelope.mjs";
+import { createReviewTool } from "./review-tool.mjs";
+import { createSuggestionTool } from "./suggestion-tool.mjs";
+import { SUGGESTION_CATEGORIES } from "./categories.mjs";
+
+export const webSearchTool = {
+  type: "web_search",
+  user_location: { type: "approximate" },
+  search_context_size: "medium",
+};
 
 export function decorateProfilePrompt(promptSource, mode, suggestionCategories) {
   const prompt = structuredClone(promptSource);

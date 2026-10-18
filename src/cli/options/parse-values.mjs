@@ -11,7 +11,7 @@ export function parseOptionValues(tokens, options) {
     usage: usageTokenCount,
     debugRequest: debugRequestCount,
   } = values;
-  if (effortTokens.length > 1) throw new Error("Only one --effort option is allowed");
+  if (effortTokens.length > 1) throw new Error("Only one `--effort` option is allowed");
   if (modelTokens.length > 1) throw new Error("Only one --model option is allowed");
   if (dryRunCount > 1) throw new Error("Only one --dry-run option is allowed");
   if (debugRequestCount > 1) throw new Error("Only one --debug-request option is allowed");

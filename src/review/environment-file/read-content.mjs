@@ -1,4 +1,4 @@
-import { readHandleUpToLimit } from "../../combine/read-file-up-to-limit.mjs";
+import { readHandleUpToLimit } from "../../combine/read-file/up-to-limit.mjs";
 import { TextDecoder } from "node:util";
 
 export const MAX_ENVIRONMENT_FILE_BYTES = 100_000;

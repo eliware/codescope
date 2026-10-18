@@ -3,6 +3,6 @@ import { fileURLToPath } from "node:url";
 
 const helpPath = fileURLToPath(new URL("../../docs/quick-start.md", import.meta.url));
 
-export function usage() {
-  return readFileSync(helpPath, "utf8");
+export function usage({ readFile = readFileSync } = {}) {
+  return readFile(helpPath, "utf8");
 }

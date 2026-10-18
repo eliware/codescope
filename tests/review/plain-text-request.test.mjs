@@ -2,7 +2,7 @@ import { preparePlainTextRequest } from "../../src/review/plain-text-request.mjs
 import {
   frameCustomPrompt,
   frameRepositoryContent,
-} from "../../src/prompts/untrusted-boundary.mjs";
+} from "../../src/review/request/content-boundary.mjs";
 
 test("rejects a blank custom prompt", () => {
   expect(() => preparePlainTextRequest({}, "  ", "source")).toThrow(/non-empty/);

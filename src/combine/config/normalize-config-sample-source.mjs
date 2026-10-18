@@ -1,4 +1,4 @@
-import { MAX_CONFIG_BYTES } from "./read-config-source.mjs";
+import { MAX_CONFIG_BYTES } from "./read-config/source.mjs";
 
 export function normalizeConfigSampleSource(bounded, { readerProvided = false } = {}) {
   validateReaderResult(bounded);

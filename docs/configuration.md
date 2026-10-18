@@ -27,12 +27,12 @@ It rejects malformed token assignments and malformed quoted values.
 ## Command values
 
 Use `--model` to select a supported model.
-Use `--effort` to set reasoning effort.
+Use `--effort` to set reasoning reasoning level.
 The default model is `gpt-6-luna`.
-The default effort is `none`.
-Review requests ask for an automatic reasoning summary.
+The default reasoning level is `none`.
+Inspection requests ask for an automatic reasoning summary.
 
 Use `--usage` to report token counts and cost.
-Use `--dry-run` to estimate input tokens and cost without a review request.
+Use `--dry-run` to estimate input tokens and cost without a inspection request.
 
 Read the [command guide](commands.md) for option syntax and supported values.

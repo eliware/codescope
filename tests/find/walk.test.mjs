@@ -28,19 +28,24 @@ test("reads directories with bounded concurrency and deterministic file order", 
   let active = 0;
   let maximum = 0;
   const files = [];
+  let releaseReaders;
+  const bothReadersStarted = new Promise((resolve) => {
+    releaseReaders = resolve;
+  });
   await walkDirectories("root", {
     concurrency: 2,
     readEntries: async (directory) => {
+      if (directory === "root")
+        return [
+          { name: "z", kind: "directory" },
+          { name: "a", kind: "directory" },
+        ];
       active += 1;
       maximum = Math.max(maximum, active);
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      if (active === 2) releaseReaders();
+      await bothReadersStarted;
       active -= 1;
-      return directory === "root"
-        ? [
-            { name: "z", kind: "directory" },
-            { name: "a", kind: "directory" },
-          ]
-        : [{ name: `${directory.at(-1)}.mjs`, kind: "file" }];
+      return [{ name: `${directory.at(-1)}.mjs`, kind: "file" }];
     },
     classify: (entry) => ({
       skip: false,

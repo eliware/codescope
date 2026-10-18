@@ -1,0 +1,62 @@
+import { parsePromptArgs } from "../../../src/cli/prompt/args.mjs";
+
+test("parses prompt text with supported model and effort options", () => {
+  expect(parsePromptArgs(["review", "risks", "--effort=low", "--model=gpt-5.6-sol"])).toEqual({
+    command: "prompt",
+    promptText: "review risks",
+    effort: "low",
+    model: "gpt-5.6-sol",
+    add: [],
+  });
+});
+
+test("preserves leading and trailing whitespace in a supplied prompt argument", () => {
+  const prompt = " \nReview this exact text.\t\n";
+  expect(parsePromptArgs([prompt]).promptText).toBe(prompt);
+});
+
+test("supports a delimiter for dash-leading prompt text", () => {
+  expect(parsePromptArgs(["--summarize", "this", "--", "--effort=low"])).toEqual({
+    command: "prompt",
+    promptText: "--summarize this",
+    effort: "low",
+    model: undefined,
+    add: [],
+  });
+});
+
+test("accepts request debugging before or after the prompt delimiter", () => {
+  expect(parsePromptArgs(["question", "--debug-request"]).debugRequest).toBe(true);
+  expect(parsePromptArgs(["question", "--", "--debug-request"]).debugRequest).toBe(true);
+});
+
+test("accepts prompt additions before the delimiter", () => {
+  expect(
+    parsePromptArgs(["--summarize", "this", "--add", "focus on risks", "--", "--effort=low"]),
+  ).toMatchObject({
+    promptText: "--summarize this",
+    add: ["focus on risks"],
+    effort: "low",
+  });
+});
+
+test("rejects additions after the prompt delimiter", () => {
+  expect(() => parsePromptArgs(["question", "--", "--add", "note"])).toThrow(
+    "Only --effort=..., --model=..., or --debug-request may follow --",
+  );
+  expect(() => parsePromptArgs(["question", "--", "--effort=low", "--add=note"])).toThrow(
+    "Only --effort=..., --model=..., or --debug-request may follow --",
+  );
+});
+
+test("rejects missing, duplicate, and invalid prompt options", () => {
+  expect(() => parsePromptArgs([])).toThrow(/prompt/);
+  expect(() => parsePromptArgs(["x", "--effort=low", "--effort=high"])).toThrow(/Only one/);
+  expect(() => parsePromptArgs(["x", "--model=gpt-5.6-sol", "--model=gpt-5.6-luna"])).toThrow(
+    /Only one/,
+  );
+  expect(parsePromptArgs(["x", "--effort=bad"]).promptText).toContain("--effort=bad");
+  expect(parsePromptArgs(["x", "--model=bad"]).promptText).toContain("--model=bad");
+  expect(() => parsePromptArgs(["x", "--usage"])).toThrow(/Usage/);
+  expect(() => parsePromptArgs(["x", "--dry-run"])).toThrow(/Usage/);
+});

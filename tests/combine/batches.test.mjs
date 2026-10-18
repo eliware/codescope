@@ -26,37 +26,45 @@ test("rejects invalid batch sizes before starting reads", async () => {
 });
 
 test("preserves source order while workers complete out of order", async () => {
-  const result = await readBatches(["slow", "fast"], {
+  let finishSlow;
+  let finishFast;
+  const slow = new Promise((resolve) => {
+    finishSlow = resolve;
+  });
+  const fast = new Promise((resolve) => {
+    finishFast = resolve;
+  });
+  const result = readBatches(["slow", "fast"], {
     batchSize: 2,
     maxChars: 100,
-    read: (value) =>
-      new Promise((resolve) => {
-        setTimeout(() => resolve(value), value === "slow" ? 10 : 0);
-      }),
+    read: (value) => (value === "slow" ? slow : fast),
   });
-  expect(result).toEqual(["slow", "fast"]);
+  finishFast("fast");
+  finishSlow("slow");
+  await expect(result).resolves.toEqual(["slow", "fast"]);
 });
 
-test("rejects promptly when a failed read races with a stalled read", async () => {
-  const stalledRead = new Promise(() => {});
-  let timeoutId;
-  const timeout = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error("batch failure was delayed")), 100);
+test("rejects when one read fails while another read is stalled", async () => {
+  let finishStalled;
+  let signalStalled;
+  const stalledRead = new Promise((resolve) => {
+    finishStalled = resolve;
   });
-
-  try {
-    await expect(
-      Promise.race([
-        readBatches(["failed", "stalled"], {
-          batchSize: 2,
-          maxChars: 100,
-          read: (file) =>
-            file === "failed" ? Promise.reject(new Error("read failed")) : stalledRead,
-        }),
-        timeout,
-      ]),
-    ).rejects.toThrow("read failed");
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  const stalledStarted = new Promise((resolve) => {
+    signalStalled = resolve;
+  });
+  const result = readBatches(["failed", "stalled"], {
+    batchSize: 2,
+    maxChars: 100,
+    read: async (file) => {
+      if (file === "stalled") {
+        signalStalled();
+        return stalledRead;
+      }
+      await stalledStarted;
+      throw new Error("read failed");
+    },
+  });
+  await expect(result).rejects.toThrow("read failed");
+  finishStalled("stalled");
 });

@@ -1,7 +1,7 @@
 import path from "node:path";
 import { assertWithinLimit } from "../assert-within-limit.mjs";
-import { formatSourceSection } from "../section-format.mjs";
-import { readSourceFile } from "../read-file.mjs";
+import { formatSourceSection } from "../section/format.mjs";
+import { readSourceFile } from "../read/file.mjs";
 import { resolveJsonPath } from "./paths.mjs";
 
 export function createJsonSectionReader(

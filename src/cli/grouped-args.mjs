@@ -1,16 +1,16 @@
-import { PROFILE_NAMES } from "../profiles/profile-selection.mjs";
+import { PROFILE_NAMES } from "../profiles/profile/selection.mjs";
 import { parseCommandOptions } from "./options/command-options.mjs";
 import { parseOptionValues } from "./options/parse-values.mjs";
 
 export function parseGroupedArgs(mode, tokens) {
-  const usage = "Usage: codescope review|suggest <profile> [options]";
+  const usage = "Usage: codescope `review`|`suggest` <profile> [options]";
   const values = parseOptionValues(tokens);
   const [profile, ...profileTokens] = values.remaining;
   if (!profile) throw new Error(usage);
   if (!["review", "suggest"].includes(mode)) throw new Error(`Unknown profile mode: ${mode}`);
   if (!PROFILE_NAMES.includes(profile)) throw new Error(`Unknown command profile: ${profile}`);
   if (mode === "review" && profile === "new-features")
-    throw new Error("new-features is suggestion-only; use suggest new-features");
+    throw new Error("new-features is suggestion-only. Use suggest new-features");
   const profileValues = parseCommandOptions(
     profileTokens,
     usage,

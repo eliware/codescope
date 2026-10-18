@@ -1,9 +1,9 @@
-# Quick start
+# Setup guide
 
 ## Requirements
 
 Use Node.js 26 or later.
-Get an OpenAI API token.
+Read an OpenAI API token.
 
 ## Install
 
@@ -34,11 +34,11 @@ Linux shell:
 export OPENAI_API_TOKEN="your-token"
 ```
 
-Do not save a real token in a repository file.
+Do not save a actual token in a repository file.
 
-## Run a review
+## Run a inspection
 
-Change to the repository that you want to review.
+Change to the repository that you want to inspect.
 Run the `all` profile.
 
 ```text
@@ -50,9 +50,9 @@ CodeScope sends the supplied repository content to OpenAI.
 It prints the provider response to standard output.
 It does not change the reviewed repository or run its tests.
 
-## Choose a profile
+## Select a profile
 
-Use a review profile to find issues.
+Use a inspection profile to find issues.
 Use a suggestion profile to request improvement ideas.
 
 ```text

@@ -8,5 +8,5 @@ export function assertCompleteWrite(result, output) {
       );
     return;
   }
-  throw new Error("Writer returned an unsupported result; expected { written }");
+  throw new Error("Writer returned an unsupported result. Expected { written }.");
 }

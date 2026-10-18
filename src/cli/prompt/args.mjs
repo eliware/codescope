@@ -1,0 +1,30 @@
+import { parseOptionValues } from "../options/parse-values.mjs";
+import { scanOptionStream } from "../options/scan-option-stream.mjs";
+import { partitionPromptArgs } from "./partition.mjs";
+
+export function parsePromptArgs(args) {
+  const delimiter = args.indexOf("--");
+  const optionBoundary = delimiter < 0 ? args.length : delimiter;
+  const additions = scanOptionStream(args.slice(0, optionBoundary), { keepScalarOptions: true });
+  args = [...additions.remaining, ...(delimiter < 0 ? [] : args.slice(delimiter))];
+  const { promptArgs, optionArgs } = partitionPromptArgs(args);
+  const promptText = promptArgs.join(" ");
+  if (!promptText.trim()) throw new Error("Usage: codescope prompt <prompt text>");
+  const values = parseOptionValues(optionArgs);
+  if (
+    values.remaining.some((value) => value !== "--debug-request") ||
+    values.dryRun ||
+    values.usage
+  )
+    throw new Error(
+      "Usage: codescope prompt <prompt text> [`--effort=...`] [--model=...] [--debug-request]",
+    );
+  return {
+    command: "prompt",
+    promptText,
+    effort: values.effort,
+    model: values.model,
+    ...(values.debugRequest ? { debugRequest: true } : {}),
+    add: additions.add,
+  };
+}

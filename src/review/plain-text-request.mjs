@@ -1,5 +1,5 @@
-import { frameCustomPrompt, frameRepositoryContent } from "../prompts/untrusted-boundary.mjs";
-import { webSearchTool } from "../prompts/request-envelope.mjs";
+import { frameCustomPrompt, frameRepositoryContent } from "./request/content-boundary.mjs";
+import { webSearchTool } from "../profiles/tool-decoration.mjs";
 
 export function preparePlainTextRequest(request, plainText, combined) {
   if (typeof plainText !== "string" || !plainText.trim())

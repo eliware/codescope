@@ -12,8 +12,8 @@ export function formatConfigSection(relativePath, { text, byteTruncated }) {
   if (byteTruncated || lineTruncated)
     body.push(
       byteTruncated && !lineTruncated
-        ? "[truncated after the per-file byte limit; remaining config omitted]"
-        : `[truncated after ${MAX_CONFIG_LINES} lines; remaining config omitted]`,
+        ? "[truncated after the per-file byte limit. Remaining config omitted]"
+        : `[truncated after ${MAX_CONFIG_LINES} lines. Remaining config omitted]`,
     );
   return `===== ${relativePath} =====\n${body.join("\n")}\n`;
 }
