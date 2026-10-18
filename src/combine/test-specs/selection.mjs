@@ -3,11 +3,12 @@ import { isSafeProfileName } from "./is-safe-profile-name.mjs";
 export function selectTestSpecFiles(discoveredFiles, applicability) {
   const { profiles, canonicalPaths } = applicability;
   const selectedPaths = [...profiles]
-    .flatMap((profile) =>
-      canonicalPaths.get(profile) ?? [
-        `${profile}-semantic.yaml`,
-        `${profile}-deterministic.yaml`,
-      ],
+    .flatMap(
+      (profile) =>
+        canonicalPaths.get(profile) ?? [
+          `${profile}-semantic.yaml`,
+          `${profile}-deterministic.yaml`,
+        ],
     )
     .map(normalizeSeparators);
   const discovered = new Set(discoveredFiles.map(normalizeSeparators));

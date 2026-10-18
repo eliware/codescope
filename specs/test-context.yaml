@@ -4,7 +4,8 @@ testSpecifications:
   applicability: |
     For repositories other than `@eliware/test`, read only complete semantic and deterministic
     files named in `package.json` under `eliware.apply`. Read them from the adjacent
-    `test/specs/conventions` folder. Accept only safe, lowercase, single-segment profile names. Map each name to
+    `test/specs/conventions` folder. Accept only safe, lowercase, single-segment profile names.
+    Map each name to
     `<profile>-semantic.yaml` and `<profile>-deterministic.yaml`. State which profiles apply and
     which do not apply before the selected files. For `@eliware/test`, do not load or add separate
     specifications. Its own specifications are item of usual repository context.

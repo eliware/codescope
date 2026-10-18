@@ -26,7 +26,9 @@ test("formats missing convention specifications with and without excluded profil
       profiles: ["general"],
       missing: ["general-semantic.yaml", "general-deterministic.yaml"],
     }),
-  ).toContain("Convention contents are incomplete. Missing general-semantic.yaml, general-deterministic.yaml.");
+  ).toContain(
+    "Convention contents are incomplete. Missing general-semantic.yaml, general-deterministic.yaml.",
+  );
   expect(
     formatTestSpecEvidence({
       status: "records-missing",

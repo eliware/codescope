@@ -144,7 +144,9 @@ directives:
           - Put repository content in one user message.
           - Put inspection instructions in a separate final user message.
           - Do not load separate specification records for `@eliware/test`.
-          - Preserve complete selected semantic and deterministic files, regardless of record length.
+          - >-
+            Preserve complete selected semantic and deterministic files, regardless of record
+            length.
           - Set the default combined source limit to 3,000,000 characters.
           - Apply `maxChars` to formatted support, headers, line numbers, and separators.
           - In focused profiles, put the remaining-file inventory after selected support.
