@@ -3,6 +3,7 @@ import {
   frameCustomPrompt,
   frameRepositoryContent,
 } from "../../src/review/request/content-boundary.mjs";
+import { frameTestSpecPromptContext } from "../../src/test-specs/prompt-context.mjs";
 
 test("rejects a blank custom prompt", () => {
   expect(() => preparePlainTextRequest({}, "  ", "source")).toThrow(/non-empty/);
@@ -32,6 +33,23 @@ test("does not include tools by default", () => {
     "context",
   );
   expect(request.tools).toEqual([]);
+});
+
+test("puts semantic and deterministic convention files in the developer message", () => {
+  const specifications = frameTestSpecPromptContext(
+    "This repository applies general.\n\ngeneral semantic conventions:\nConvention file: general-semantic.yaml\nsemantic rule\n\n---\n\ngeneral deterministic conventions:\nConvention file: general-deterministic.yaml\ndeterministic rule",
+  );
+  const combined = `repository source\n${specifications}`;
+  const request = preparePlainTextRequest({ input: [] }, "prompt", combined);
+
+  expect(request.input.map(({ role }) => role)).toEqual(["developer", "user"]);
+  expect(request.input[0].content[0].text).toContain("general-semantic.yaml");
+  expect(request.input[0].content[0].text).toContain("semantic rule");
+  expect(request.input[0].content[0].text).toContain("general-deterministic.yaml");
+  expect(request.input[0].content[0].text).toContain("deterministic rule");
+  expect(request.input[1].content[0].text).toContain("repository source");
+  expect(request.input[1].content[0].text).toContain("prompt");
+  expect(request.input[1].content[0].text).not.toContain("Convention file:");
 });
 
 test("removes all tools when the caller disables web search", () => {

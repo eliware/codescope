@@ -8,8 +8,8 @@ test("resolves selected Test spec records from eliware.apply", async () => {
   ).resolves.toMatchObject({
     profiles: new Set(["general", "cli"]),
     canonicalPaths: new Map([
-      ["general", "general-semantic.yaml"],
-      ["cli", "cli-semantic.yaml"],
+      ["general", ["general-semantic.yaml", "general-deterministic.yaml"]],
+      ["cli", ["cli-semantic.yaml", "cli-deterministic.yaml"]],
     ]),
     skipSeparateRecords: false,
   });

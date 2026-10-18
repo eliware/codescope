@@ -27,7 +27,10 @@ test("includes applied adjacent Test records in selected profile context", async
     readPackageJson: async () => JSON.stringify({ eliware: { apply: ["general"] } }),
     readDirectory: async (directory) =>
       directory === "/test/specs/conventions"
-        ? [{ name: "general-semantic.yaml", isFile: () => true }]
+        ? [
+            { name: "general-semantic.yaml", isFile: () => true },
+            { name: "general-deterministic.yaml", isFile: () => true },
+          ]
         : [],
     inspectFile: async () => ({ isSymbolicLink: () => false, isFile: () => true }),
     readFileContents: async () =>

@@ -4,16 +4,17 @@ import { extractTestSpecPromptContext } from "../../src/test-specs/prompt-contex
 
 const regularFile = async () => ({ isFile: () => true, isSymbolicLink: () => false });
 
-test("includes selected semantic specs and omits deterministic specs", async () => {
+test("includes selected semantic and deterministic specs", async () => {
   const root = "/workspace/project";
   const testRoot = "/workspace/test";
   const packageJson = JSON.stringify({ eliware: { apply: ["general", "cli"] } });
   const records = {
     "general-semantic.yaml":
       'version: "13.0"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule\n    examples:\n      - purpose: preserved test example',
-    "general-deterministic.yaml": "must_not_be_included: true",
+    "general-deterministic.yaml": "general_deterministic_rule: true",
     "cli-semantic.yaml":
       'version: "13.0"\ndirectives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition',
+    "cli-deterministic.yaml": "cli_deterministic_rule: true",
     "web-semantic.yaml":
       'version: "13.0"\ndirectives:\n  - id: E-0.3\n    dos:\n      - Web test rule',
   };
@@ -38,8 +39,9 @@ test("includes selected semantic specs and omits deterministic specs", async () 
   expect(context.instructions).toContain("General test rule");
   expect(context.instructions).toContain("purpose: preserved test example");
   expect(context.instructions).toContain("CLI test prohibition");
+  expect(context.instructions).toContain("general_deterministic_rule: true");
+  expect(context.instructions).toContain("cli_deterministic_rule: true");
   expect(context.instructions).not.toContain("Web test rule");
-  expect(context.instructions).not.toContain("must_not_be_included");
   expect(context.combined).not.toContain("General test rule");
 });
 
@@ -52,7 +54,10 @@ test("uses the adjacent test checkout by default", async () => {
     readDirectory: async (directory) => {
       directoriesRead.push(directory);
       return directory === "/workspace/test/specs/conventions"
-        ? [{ name: "general-semantic.yaml", isFile: () => true }]
+        ? [
+            { name: "general-semantic.yaml", isFile: () => true },
+            { name: "general-deterministic.yaml", isFile: () => true },
+          ]
         : [];
     },
     inspectFile: regularFile,

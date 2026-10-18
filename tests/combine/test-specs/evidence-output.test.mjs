@@ -19,32 +19,34 @@ test("formats unavailable and invalid Test-spec outcomes", () => {
   ).toContain("Test-spec applicability invalid: bad package.");
 });
 
-test("formats missing semantic specifications with and without excluded profiles", () => {
+test("formats missing convention specifications with and without excluded profiles", () => {
   expect(
     formatTestSpecEvidence({
       status: "records-missing",
       profiles: ["general"],
-      missing: ["general"],
+      missing: ["general-semantic.yaml", "general-deterministic.yaml"],
     }),
-  ).toContain("Convention contents are incomplete. Missing general.");
+  ).toContain("Convention contents are incomplete. Missing general-semantic.yaml, general-deterministic.yaml.");
   expect(
     formatTestSpecEvidence({
       status: "records-missing",
       profiles: ["general"],
-      missing: ["general"],
+      missing: ["general-deterministic.yaml"],
       excludedProfiles: ["cli"],
     }),
   ).toContain("This repository does not apply cli.");
 });
 
-test("puts profile applicability before complete semantic files", () => {
+test("puts profile applicability before complete convention files", () => {
   const result = formatTestSpecEvidence({
     status: "ready",
     profiles: ["general", "application"],
     excludedProfiles: ["cli"],
     records: [
       { file: "general-semantic.yaml", contents: 'version: "12.0"\ndirectives: []\n' },
+      { file: "general-deterministic.yaml", contents: "checks:\n  - exact rule\n" },
       { file: "application-semantic.yaml", contents: "description: full source\n" },
+      { file: "application-deterministic.yaml", contents: "checks:\n  - second exact rule\n" },
     ],
   });
   const context = extractTestSpecPromptContext(result);
@@ -53,10 +55,13 @@ test("puts profile applicability before complete semantic files", () => {
     "This repository applies general and application and does not apply cli.",
   );
   expect(context.instructions).toContain(
-    'general conventions:\nConvention file: general-semantic.yaml\nversion: "12.0"\ndirectives: []\n',
+    'general semantic conventions:\nConvention file: general-semantic.yaml\nversion: "12.0"\ndirectives: []\n',
   );
   expect(context.instructions).toContain(
-    "\n\n---\n\napplication conventions:\nConvention file: application-semantic.yaml",
+    "general deterministic conventions:\nConvention file: general-deterministic.yaml\nchecks:\n  - exact rule",
+  );
+  expect(context.instructions).toContain(
+    "\n\n---\n\napplication semantic conventions:\nConvention file: application-semantic.yaml",
   );
   expect(context.instructions.indexOf("This repository applies")).toBeLessThan(
     context.instructions.indexOf("Convention file:"),
@@ -74,7 +79,7 @@ test("handles an empty excluded-profile list in the applicability header", () =>
   ).toContain("This repository applies general and does not apply other profiles.");
 });
 
-test("names selected semantic files when the adjacent checkout is unavailable", () => {
+test("names selected profiles when the adjacent checkout is unavailable", () => {
   const unavailable = extractTestSpecPromptContext(
     formatTestSpecEvidence({
       status: "checkout-unavailable",
@@ -93,7 +98,7 @@ test("states when no convention profiles apply", () => {
   ).toContain("No Eliware Test convention records apply to this repository.");
 });
 
-test("defaults omitted profiles and semantic files to empty lists", () => {
+test("defaults omitted profiles and convention files to empty lists", () => {
   expect(formatTestSpecEvidence({ status: "ready" })).toContain(
     "No Eliware Test convention records apply to this repository.",
   );

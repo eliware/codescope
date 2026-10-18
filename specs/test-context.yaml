@@ -1,18 +1,17 @@
 version: "13.0"
-description: Local rules for Eliware Test v13 semantic specifications in reviews.
+description: Local rules for Eliware Test v13 convention specifications in reviews.
 testSpecifications:
   applicability: |
-    For repositories other than `@eliware/test`, read only complete semantic files named in
-    `package.json` under `eliware.apply`. Read them from the adjacent `test/specs/conventions`
-    folder. Accept only safe, lowercase, single-segment profile names. Map each name to
-    `<profile>-semantic.yaml`. Do not load deterministic specification files. State which profiles
-    apply and which do not apply before the selected files. For `@eliware/test`, do not load or add
-    separate specifications. Its own specifications are item of usual repository context.
+    For repositories other than `@eliware/test`, read only complete semantic and deterministic
+    files named in `package.json` under `eliware.apply`. Read them from the adjacent
+    `test/specs/conventions` folder. Accept only safe, lowercase, single-segment profile names. Map each name to
+    `<profile>-semantic.yaml` and `<profile>-deterministic.yaml`. State which profiles apply and
+    which do not apply before the selected files. For `@eliware/test`, do not load or add separate
+    specifications. Its own specifications are item of usual repository context.
   authority: Eliware Test is the sole authority for shared repository rules and specification text.
   missingEvidence: |
-    If the adjacent `eliware/test` checkout or a selected semantic file is missing, report
+    If the adjacent `eliware/test` checkout or a selected convention file is missing, report
     Test-spec match as unverified. Do not guess or import requirements.
   scope: |
-    Supply the complete selected semantic files as inspection support.
+    Supply the complete selected semantic and deterministic files as inspection support.
     Do not redefine, copy, or extend their requirements.
-    their requirements.

@@ -21,6 +21,8 @@ export async function readTestSpecApplicability(root, options = {}) {
     kind: "available",
     skipSeparateRecords: false,
     profiles: new Set(apply),
-    canonicalPaths: new Map(apply.map((name) => [name, `${name}-semantic.yaml`])),
+    canonicalPaths: new Map(
+      apply.map((name) => [name, [`${name}-semantic.yaml`, `${name}-deterministic.yaml`]]),
+    ),
   };
 }

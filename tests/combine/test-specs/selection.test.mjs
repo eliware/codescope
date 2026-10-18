@@ -1,69 +1,88 @@
 import { selectTestSpecFiles } from "../../../src/combine/test-specs/selection.mjs";
 
-test("selects package-applied semantic specs and reports missing profiles", () => {
+test("selects package-applied semantic and deterministic specs", () => {
   const applicability = {
     profiles: new Set(["general", "cli"]),
     canonicalPaths: new Map([
-      ["general", "general-semantic.yaml"],
-      ["cli", "cli-semantic.yaml"],
+      ["general", ["general-semantic.yaml", "general-deterministic.yaml"]],
+      ["cli", ["cli-semantic.yaml", "cli-deterministic.yaml"]],
     ]),
   };
-  expect(
-    selectTestSpecFiles(
-      [
-        "cli-semantic.yaml",
-        "general-semantic.yaml",
-        "general-deterministic.yaml",
-        "private-semantic.yaml",
-        "nested/profile-semantic.yaml",
-        "README.md",
-      ],
-      applicability,
-    ),
-  ).toEqual({
-    files: ["general-semantic.yaml", "cli-semantic.yaml"],
+  const discovered = [
+    "cli-semantic.yaml",
+    "cli-deterministic.yaml",
+    "general-semantic.yaml",
+    "general-deterministic.yaml",
+    "private-semantic.yaml",
+    "nested/profile-semantic.yaml",
+    "README.md",
+  ];
+  const selected = selectTestSpecFiles(discovered, applicability);
+  expect(selected).toEqual({
+    files: [
+      "general-semantic.yaml",
+      "general-deterministic.yaml",
+      "cli-semantic.yaml",
+      "cli-deterministic.yaml",
+    ],
     missing: [],
     excludedProfiles: ["private"],
   });
-  expect(
-    selectTestSpecFiles(["general-semantic.yaml", "cli-semantic.yaml"], applicability).files,
-  ).toEqual(["general-semantic.yaml", "cli-semantic.yaml"]);
+});
+
+test("reports missing semantic or deterministic files", () => {
+  const applicability = {
+    profiles: new Set(["general"]),
+    canonicalPaths: new Map([
+      ["general", ["general-semantic.yaml", "general-deterministic.yaml"]],
+    ]),
+  };
   expect(selectTestSpecFiles(["general-semantic.yaml"], applicability)).toEqual({
     files: ["general-semantic.yaml"],
-    missing: ["cli"],
+    missing: ["general-deterministic.yaml"],
     excludedProfiles: [],
   });
 });
 
-test("reports unknown and unmapped profile names", () => {
+test("reports unknown and unmapped profile files", () => {
   const applicability = {
     profiles: new Set(["unsupported", "unmapped"]),
-    canonicalPaths: new Map([["unsupported", "unsupported-semantic.yaml"]]),
+    canonicalPaths: new Map([
+      ["unsupported", ["unsupported-semantic.yaml", "unsupported-deterministic.yaml"]],
+    ]),
   };
   expect(selectTestSpecFiles(["general-semantic.yaml"], applicability)).toEqual({
     files: [],
-    missing: ["unsupported", "unmapped"],
+    missing: [
+      "unsupported-semantic.yaml",
+      "unsupported-deterministic.yaml",
+      "unmapped-semantic.yaml",
+      "unmapped-deterministic.yaml",
+    ],
     excludedProfiles: ["general"],
   });
 });
 
-test("requires the exact canonical case for applied profile records", () => {
+test("requires the exact canonical case for applied files", () => {
   const applicability = {
     profiles: new Set(["cli"]),
-    canonicalPaths: new Map([["cli", "cli-semantic.yaml"]]),
+    canonicalPaths: new Map([[
+      "cli",
+      ["cli-semantic.yaml", "cli-deterministic.yaml"],
+    ]]),
   };
-  expect(selectTestSpecFiles(["CLI-semantic.yaml"], applicability)).toEqual({
+  expect(selectTestSpecFiles(["CLI-semantic.yaml", "CLI-deterministic.yaml"], applicability)).toEqual({
     files: [],
-    missing: ["cli"],
+    missing: ["cli-semantic.yaml", "cli-deterministic.yaml"],
     excludedProfiles: [],
   });
-  expect(selectTestSpecFiles(["CLI-semantic.yaml", "cli-semantic.yaml"], applicability)).toEqual({
-    files: ["cli-semantic.yaml"],
-    missing: [],
-    excludedProfiles: [],
-  });
-  expect(selectTestSpecFiles(["cli-semantic.yaml", "cli-semantic.yaml"], applicability)).toEqual({
-    files: ["cli-semantic.yaml"],
+  expect(
+    selectTestSpecFiles(
+      ["cli-semantic.yaml", "cli-deterministic.yaml", "cli-semantic.yaml"],
+      applicability,
+    ),
+  ).toEqual({
+    files: ["cli-semantic.yaml", "cli-deterministic.yaml"],
     missing: [],
     excludedProfiles: [],
   });

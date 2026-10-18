@@ -5,17 +5,12 @@ import {
 } from "./content-boundary.mjs";
 import { readPrompt } from "../../profiles/prompt-sources/read-content.mjs";
 import { extractTestSpecPromptContext } from "../../test-specs/prompt-context.mjs";
+import { formatTestSpecDeveloperInstructions } from "../../test-specs/developer-instructions.mjs";
 import { getFunctionToolName } from "./function-tool-name.mjs";
 
 const PLACEHOLDER = "<combine-mjs here>";
 const CACHEABLE_REVIEW_TOOLS = new Set(["submit_review", "submit_unified_review"]);
 const defaultDeveloperText = readPrompt("guidance-developer.md");
-
-function formatTestSpecDeveloperInstructions(instructions) {
-  return instructions
-    ? `Applicable Eliware Test conventions for this repository:\n${instructions}`
-    : "";
-}
 
 export function attachRepositoryEvidence(request, combined) {
   const testSpecContext = extractTestSpecPromptContext(combined);

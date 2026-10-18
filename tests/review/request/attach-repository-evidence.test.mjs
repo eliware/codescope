@@ -27,20 +27,24 @@ test("places labeled convention records in the developer instructions", () => {
   };
   attachRepositoryEvidence(
     request,
-    `SOURCE\n${frameTestSpecPromptContext("This repo follows general.\n\ngeneral conventions:\nConvention file: general-semantic.yaml\nDo:\n- Keep it simple.")}`,
+    `SOURCE\n${frameTestSpecPromptContext("This repo follows general.\n\ngeneral semantic conventions:\nConvention file: general-semantic.yaml\nDo:\n- Keep it simple.\n\n---\n\ngeneral deterministic conventions:\nConvention file: general-deterministic.yaml\nDo:\n- Keep the exact output.")}`,
   );
   const developerText = request.input[0].content[0].text;
   const userText = request.input[1].content[0].text;
   const instructionText = request.input[2].content[0].text;
   expect(request.input.map(({ role }) => role)).toEqual(["developer", "user", "user"]);
   expect(developerText).toContain("Applicable Eliware Test conventions for this repository:");
-  expect(developerText).toContain("general conventions:");
+  expect(developerText).toContain("general semantic conventions:");
   expect(developerText).toContain("Convention file: general-semantic.yaml");
+  expect(developerText).toContain("general deterministic conventions:");
+  expect(developerText).toContain("Convention file: general-deterministic.yaml");
   expect(developerText).toContain("Keep it simple");
+  expect(developerText).toContain("Keep the exact output");
   expect(userText).toContain("SOURCE");
   expect(instructionText).toContain("PROFILE-SPECIFIC REVIEW INSTRUCTION");
   expect(userText).not.toContain("PROFILE-SPECIFIC REVIEW INSTRUCTION");
   expect(userText).not.toContain("Keep it simple");
+  expect(userText).not.toContain("Keep the exact output");
   expect(userText).not.toContain("--- BEGIN REVIEW INSTRUCTIONS ---");
 });
 
