@@ -62,6 +62,24 @@ test("uses the adjacent test checkout by default", async () => {
   expect(directoriesRead).toContain("/workspace/test/specs/conventions");
 });
 
+test("uses Windows paths for the adjacent test checkout when requested", async () => {
+  const directoriesRead = [];
+  const root = "C:\\workspace\\codescope";
+  const specsRoot = "C:\\workspace\\test\\specs\\conventions";
+  const result = await combineTestSpecs(root, {
+    platform: "win32",
+    readPackageJson: async () => JSON.stringify({ eliware: { apply: ["general"] } }),
+    readDirectory: async (directory) => {
+      directoriesRead.push(directory);
+      return directory === specsRoot ? [{ name: "general-semantic.yaml", isFile: () => true }] : [];
+    },
+    inspectFile: regularFile,
+    readFileContents: async () => "version: 15.0\nsource: windows",
+  });
+  expect(result).toContain("source: windows");
+  expect(directoriesRead).toContain(specsRoot);
+});
+
 test("reports selected profiles missing from the supplied specifications", async () => {
   await expect(
     combineTestSpecs("/repo", {
