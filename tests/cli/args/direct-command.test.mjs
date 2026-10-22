@@ -10,10 +10,6 @@ test("parses direct profiles and metadata commands", () => {
     debugRequest: true,
   });
   expect(parseDirectCommandArgs("--help", [])).toMatchObject({ command: "help" });
-  expect(parseDirectCommandArgs("help", ["--dry-run"])).toMatchObject({
-    command: "help",
-    dryRun: true,
-  });
 });
 
 test("rejects unknown options", () => {
@@ -22,4 +18,8 @@ test("rejects unknown options", () => {
 
 test.each(["help", "version"])("rejects --usage for %s metadata commands", (command) => {
   expect(() => parseDirectCommandArgs(command, ["--usage"])).toThrow(/--usage/);
+});
+
+test.each(["help", "version"])("rejects --dry-run for %s metadata commands", (command) => {
+  expect(() => parseDirectCommandArgs(command, ["--dry-run"])).toThrow(/--dry-run/);
 });

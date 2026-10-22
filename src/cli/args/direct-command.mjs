@@ -11,6 +11,7 @@ export function parseDirectCommandArgs(first, rest) {
   const meta = parseMetaCommand(first, metaTokens);
   if (meta) {
     if (values.usage) throw new Error("--usage is not supported for help or version commands");
+    if (values.dryRun) throw new Error("--dry-run is not supported for help or version commands");
     return normalizeCommand(meta, values);
   }
   if (first.startsWith("-")) throw new Error(`Unknown option: ${first}`);
