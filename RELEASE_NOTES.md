@@ -6,20 +6,33 @@
 
 - Add `codescope refactor` for focused module and test refactoring guidance.
 - Add `codescope conventions` to report differences from applicable conventions.
-- Load runtime prompt text from Markdown files in `prompts/`.
+- Load runtime prompts from Markdown files in the packaged `prompts/` directory.
 
 ### Changed
 
-- Make web lookup opt in with `--web-search`.
-- Keep web lookup and inspection tools out of refactoring requests.
-- Group CLI error, option, profile, and prompt modules into focused folders.
-- Use Eliware Test v15 conventions and current canonical workflows.
-- Require Node.js 26 and Eliware dependency releases 15.0.0 or newer.
+- Turn web lookup off by default. Add `--web-search` to enable it for a request.
+- Run the refactor prompt with repository content and no tools or web lookup.
+- Include only applicable semantic conventions in request context. Keep deterministic files
+  outside model context.
+- Show excluded lockfiles and their metadata in the file inventory. Do not send lockfile content.
+- Set refactor suggestions to use subfolders and prevent module names with shared prefixes.
+- Move CLI, context, profile, and request modules into focused folders.
+- Use Eliware Test v15 rules and canonical CI, npm, and Knit workflows.
+- Fetch full Git history in CI.
+- Require `@eliware` v15 dependencies. Keep Node.js 26 as the minimum version.
+- Expand user guides for setup, commands, configuration, operations, and troubleshooting.
+- Remove content from `AGENTS.md` and `README.md` that the applied conventions do not require.
 
 ### Fixed
 
-- Align conventions prompts and command documentation with supported options.
-- Align CI and Knit workflows with current Eliware Test requirements.
+- Align the `conventions` prompt and command guide with supported options.
+- Correct Windows path handling for convention files.
+- Reject `--dry-run` for help and version commands.
+
+### Breaking changes
+
+- Web lookup is off by default. Add `--web-search` to access current public information.
+- Require `@eliware` v15 package dependencies.
 
 ## 12.0.0 — 2026-10-12
 
