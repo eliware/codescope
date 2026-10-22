@@ -43,7 +43,7 @@ test("puts profile applicability before complete semantic files", () => {
     profiles: ["general", "application"],
     excludedProfiles: ["cli"],
     records: [
-      { file: "general-semantic.yaml", contents: 'version: "12.0"\ndirectives: []\n' },
+      { file: "general-semantic.yaml", contents: 'version: "15.0"\ndirectives: []\n' },
       { file: "application-semantic.yaml", contents: "description: full source\n" },
     ],
   });
@@ -53,7 +53,7 @@ test("puts profile applicability before complete semantic files", () => {
     "This repository applies general and application and does not apply cli.",
   );
   expect(context.instructions).toContain(
-    'general conventions:\nConvention file: general-semantic.yaml\nversion: "12.0"\ndirectives: []\n',
+    'general conventions:\nConvention file: general-semantic.yaml\nversion: "15.0"\ndirectives: []\n',
   );
   expect(context.instructions).toContain(
     "\n\n---\n\napplication conventions:\nConvention file: application-semantic.yaml",

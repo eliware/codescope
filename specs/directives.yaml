@@ -1,5 +1,5 @@
-version: "13.0"
-description: Normative v13 rules for the CodeScope CLI, profiles, and supplied support.
+version: "15.0"
+description: Normative v15 rules for the CodeScope CLI, profiles, and supplied support.
 directives:
   - id: E-1210.0
     dos:
@@ -126,7 +126,7 @@ directives:
             Include `.js`, `.mjs`, `.cjs`, and `.ts` implementation files, matching tests, and
             profile-selected Markdown.
           - >-
-            For other packages, read only Eliware Test v13 semantic files named by
+            For other packages, read only Eliware Test v15 semantic files named by
             `package.json` `eliware.apply`.
           - Read those files from the adjacent `test/specs/conventions` folder.
           - >-

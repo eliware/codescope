@@ -1,6 +1,6 @@
 {
   "name": "@eliware/codescope",
-  "version": "13.0.0",
+  "version": "15.0.0",
   "type": "module",
   "description": "A structured OpenAI CLI for focused codebase reviews, suggestions, and token estimates.",
   "keywords": [
@@ -46,11 +46,11 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@eliware/common": "^12.0.1",
-    "@eliware/openai": "^12.0.0"
+    "@eliware/common": "^15.0.0",
+    "@eliware/openai": "^15.0.0"
   },
   "devDependencies": {
-    "@eliware/test": "^13.0.0"
+    "@eliware/test": "^15.0.0"
   },
   "jest": {
     "testEnvironment": "node",

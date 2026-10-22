@@ -1,5 +1,5 @@
-version: "13.0"
-description: Local rules for Eliware Test v13 semantic specifications in reviews.
+version: "15.0"
+description: Local rules for Eliware Test v15 semantic specifications in reviews.
 testSpecifications:
   applicability: |
     For repositories other than `@eliware/test`, read only complete semantic files named in

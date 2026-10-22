@@ -10,12 +10,12 @@ test("includes selected semantic specs and omits deterministic specs", async () 
   const packageJson = JSON.stringify({ eliware: { apply: ["general", "cli"] } });
   const records = {
     "general-semantic.yaml":
-      'version: "13.0"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule\n    examples:\n      - purpose: preserved test example',
+      'version: "15.0"\ndirectives:\n  - id: E-0.1\n    dos:\n      - General test rule\n    examples:\n      - purpose: preserved test example',
     "general-deterministic.yaml": "must_not_be_included: true",
     "cli-semantic.yaml":
-      'version: "13.0"\ndirectives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition',
+      'version: "15.0"\ndirectives:\n  - id: E-0.2\n    donts:\n      - CLI test prohibition',
     "web-semantic.yaml":
-      'version: "13.0"\ndirectives:\n  - id: E-0.3\n    dos:\n      - Web test rule',
+      'version: "15.0"\ndirectives:\n  - id: E-0.3\n    dos:\n      - Web test rule',
   };
   const directories = {
     [`${testRoot}/specs/conventions`]: Object.keys(records).map((name) => ({
