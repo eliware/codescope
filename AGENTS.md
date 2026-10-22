@@ -2,21 +2,19 @@
 
 ## Project
 
-This repository is `eliware/codescope`.
-CodeScope reviews code and estimates token use.
+Eliware owns `@eliware/codescope`, a CLI for code reviews and token estimates.
 
 ## Scope and boundaries
 
-Read README.md for repository scope and behavior.
+CodeScope does not edit reviewed repositories or run their tests.
 
 ## Layout
 
-Read README.md and specs/README.md to find repository files.
+Keep implementation in `src/`, launchers in `bin/`, tests in `tests/`, and fixtures in `test-fixtures/`.
 
 ## Development
 
-Use Node.js 26 or later.
-Use native ESM.
+Use Node.js 26 or later and native ESM.
 Keep each source and test module focused on one responsibility.
 
 ## Validation
@@ -29,20 +27,13 @@ Run `npm run format:check` to check formatting.
 
 ## Security
 
-Keep credentials, secrets, private data, and runtime state out of Git.
+Keep credentials, secrets, and private data out of Git.
 
 ## Changes
 
-Keep changes in this repository scope.
-Use Eliware Operations for approval before external changes.
+Keep changes in this repository.
 
 ## Application
-
-Document entry points, workflows, settings, startup, and shutdown in README.md.
-Use `src/` for implementation modules.
-Use `bin/` for launchers.
-Use `tests/` for tests.
-Use `test-fixtures/` for test fixtures.
 
 Run focused tests first during development.
 Run one test file with `npm test -- tests/path/to/example.test.mjs`.
@@ -56,5 +47,6 @@ Document commands, options, arguments, defaults, errors, and exit codes in READM
 
 ## npm publication
 
-Include specs/ in the npm package.
-Document install, entrypoints, package contents, version guidance, and release limits in README.md.
+Include `specs/` in the npm package.
+Document installation, entrypoints, package files, version rules, and publication limits in README.md.
+Follow Eliware Operations for release approval.

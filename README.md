@@ -47,6 +47,9 @@ The package command is `codescope`.
 The CLI entry point is `bin/codescope.mjs`.
 The package export is `src/cli/main.mjs`.
 Package files include `src/`, `bin/`, `docs/`, `specs/`, `prompts/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
+
+Use `MAJOR.MINOR.PATCH` versions that match the applied convention version.
+Follow Eliware Operations for release approval. Passing validation does not authorize publication.
 See [Setup guide](docs/quick-start.md) for setup steps.
 
 ## Usage
@@ -65,9 +68,7 @@ Run `codescope --version` to print the installed version.
 
 ## Development
 
-Use Node.js 26 or later and native ESM.
-Keep runtime code in `src/` and the CLI entry point in `bin/`.
-Use native ESM for maintained JavaScript modules.
+Read [AGENTS.md](AGENTS.md) for development rules.
 
 ## Testing
 
@@ -82,11 +83,7 @@ See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
 ## Security
 
 CodeScope sends supplied repository content to the OpenAI API.
-The model can use OpenAI web lookup only when you add `--web-search` to a command.
-Web lookup is off by default.
 Remove secrets from that content before you run an inspection.
-Limit access to debug logs. They can contain repository content.
-
 Read [Operations and data](docs/operations.md) for web lookup and cost details.
 
 ## Configuration
@@ -96,18 +93,7 @@ See the [configuration guide](docs/configuration.md) for token rules and options
 
 ## Operations
 
-CodeScope reads repository content and writes its result to standard output.
-It does not edit the reviewed repository, run its commands, or run its tests.
-Each live inspection, suggestion, or custom prompt sends one model request.
-A dry run sends one input-token count request.
-Help and version commands send no provider request.
-Inspection, suggestion, and prompt commands check configuration before provider setup.
-
-CodeScope stops its request controller and removes signal handlers after each request.
-
-Read [Operations and data](docs/operations.md) for request and output details.
-Passing checks does not authorize publication.
-Use Eliware Operations for release approval.
+Read [Operations and data](docs/operations.md) for request, output, and data details.
 
 ## Commands
 
