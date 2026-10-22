@@ -2,8 +2,8 @@
 
 ## Requirements
 
-Use Node.js 26 or later.
-Read an OpenAI API token.
+Install Node.js 26 or a newer version.
+Create an OpenAI API token.
 
 ## Install
 
@@ -13,14 +13,18 @@ Install CodeScope as a global command.
 npm install -g @eliware/codescope
 ```
 
+Check the installed version.
+
+```text
+codescope --version
+```
+
 CodeScope accepts Windows and Linux paths.
-CI runs on Ubuntu Linux.
-CI does not test Windows.
+CI runs on Ubuntu Linux. CI does not test Windows.
 
 ## Set the API token
 
-Set `OPENAI_API_TOKEN` in your process environment.
-See [Configuration](configuration.md) for the token file option.
+Set `OPENAI_API_TOKEN` in the process environment.
 
 PowerShell:
 
@@ -34,31 +38,47 @@ Linux shell:
 export OPENAI_API_TOKEN="your-token"
 ```
 
-Do not save a actual token in a repository file.
+CodeScope uses a nonblank process value first.
+If that value is blank or missing, CodeScope reads `~/.codescope`.
+On Windows, this path is `%USERPROFILE%\.codescope`.
 
-## Run an inspection
+The token file must contain this line:
 
-Change to the repository that you want to inspect.
-Run the `all` profile.
+```text
+OPENAI_API_TOKEN=your-token
+```
+
+Keep the token outside the repository.
+Read the [configuration guide](configuration.md) for token file rules.
+
+## Run CodeScope
+
+Run CodeScope from the repository root.
+CodeScope uses the current directory as its root.
 
 ```text
 cd path/to/repository
 codescope all
 ```
 
-CodeScope sends the supplied repository content to OpenAI.
+CodeScope sends selected repository content to OpenAI.
 It prints the provider response to standard output.
-It does not change the reviewed repository or run its tests.
+It does not change repository files or run repository tests.
 
-## Select a profile
+## Select a task
 
-Use an inspection profile to find issues.
-Use a suggestion profile to request improvement ideas.
+Use an inspection profile to check for issues.
+Use a suggestion profile to get improvement ideas.
+Use `refactor` to get refactoring advice.
+Use `conventions` to find differences from applicable Eliware Test conventions.
+Use `prompt` to send a custom request.
 
 ```text
 codescope review security
 codescope suggest architecture
-codescope suggest new-features
+codescope refactor
+codescope conventions
+codescope prompt "List the main reliability risks"
 ```
 
-Read the [command guide](commands.md) for all profiles and options.
+Read the [command guide](commands.md) for profiles and options.

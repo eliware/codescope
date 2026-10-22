@@ -1,80 +1,96 @@
 # Commands
 
-Run commands from the repository that you want to inspect.
-Use `codescope --help` to print the quick-start guide.
-Use `codescope --version` to print the package version.
-Use profile options to print help or version data for a profile command.
+Run commands from the repository that you want CodeScope to inspect.
+CodeScope uses the current directory as the repository root.
+
+## Help and version
+
+Print the setup guide or package version.
 
 ```text
+codescope --help
+codescope --version
 codescope all --help
-codescope review all --help
-codescope all --version
 codescope review all --version
 ```
 
+Profile help prints the setup guide.
+Profile version prints the package version.
+
 ## Inspection profiles
 
-Use inspection profiles to find issues in supplied repository content.
+Use an inspection profile to check repository content and report issues.
 
 ```text
 codescope all
 codescope review all
-codescope review release
-codescope review conventions
+codescope release
 codescope review security
 codescope architecture
 ```
 
-The `all` profile inspects code, tests, documentation, package data, and the file inventory.
-The `release` profile checks release readiness.
-The `conventions` command uses a plain-text prompt to list cases where code does not follow applicable conventions.
-It accepts `--effort`, `--model`, `--debug-request`, `--web-search`, and `--add`.
-It does not support `--usage` or `--dry-run`.
-Other inspection profiles focus on one area.
+The direct command `codescope security` matches `codescope review security`.
 
-Available inspection profiles are `all`, `release`, `conventions`, `p0`, `p0-1`, `p0-2`, `p0-3`,
-`architecture`, `api-design`, `cross-platform`, `refactor`, `security`, `reliability`,
+The inspection profiles are `all`, `release`, `conventions`, `refactor`, `p0`, `p0-1`, `p0-2`,
+`p0-3`, `architecture`, `api-design`, `cross-platform`, `security`, `reliability`,
 `performance`, `dependencies`, `observability`, `accessibility`, `quick-wins`, and `prioritize`.
+The `new-features` profile works only with `suggest`.
 
-You can use a direct profile command to inspect one area.
-For example, `codescope security` is the same as `codescope review security`.
+The `all` profile checks code, tests, documentation, package data, and file inventory.
+The `release` profile checks release readiness with the same repository context.
+Other profiles can use a smaller set of files.
+
+## Refactor and conventions commands
+
+Run `refactor` for advice about module responsibilities and test structure.
+Run `conventions` to list differences from applicable Eliware Test conventions.
+
+```text
+codescope refactor
+codescope conventions
+codescope review refactor
+codescope review conventions
+```
+
+These commands send plain-text prompts with the `all` repository context.
+They support `--effort`, `--model`, `--debug-request`, `--web-search`, and `--add`.
+They do not support `--usage` or `--dry-run`.
 
 ## Suggestion profiles
 
-Use suggestion profiles to request non-blocking ideas.
+Use a suggestion profile to request improvement ideas.
 
 ```text
 codescope suggest all
 codescope suggest architecture
 codescope suggest new-features
+codescope suggest refactor
 ```
 
 Suggestion profiles are `all`, `new-features`, `architecture`, `api-design`, `cross-platform`,
 `refactor`, `security`, `reliability`, `performance`, `dependencies`, `observability`,
 `accessibility`, `quick-wins`, and `prioritize`.
-
-The `all` suggestion profile checks inspection areas and new features.
-The `new-features` profile is available only with `suggest`.
+The `all` profile requests suggestions across the supplied repository content.
 
 ## Custom prompts
 
-Use `prompt` to send your own request with repository context.
+Use `prompt` to send a custom request with the `all` repository context.
 
 ```text
 codescope prompt "List the main reliability risks"
 codescope prompt "Review changed files" --add "Focus on error handling"
 ```
 
-CodeScope puts the repository context before your prompt.
-It treats repository content as inspection data.
-It does not add the inspection or suggestion policy to a custom prompt.
+CodeScope puts repository content before the custom prompt.
+It treats repository content as data for the request.
+It does not add inspection or suggestion instructions to a custom prompt.
 
-Use `--add` to append more instructions.
-Repeat `--add` to append more than one instruction.
+Use `--add` to append instructions to the request.
+Repeat `--add` to append more instructions.
 Use `-a`, `--add`, `-a=`, or `--add=`.
 
 Put prompt text that starts with a dash before `--`.
-Put option values after `--`.
+Put supported options after `--`.
 After `--`, use `--effort`, `--model`, `--debug-request`, or `--web-search`.
 
 ```text
@@ -85,37 +101,47 @@ Custom prompts do not support `--usage` or `--dry-run`.
 
 ## Options
 
-Use these options with commands that support them:
+Use these options with supported commands:
 
-- `--model=<name>` selects a model.
-- `--effort=<level>` sets the reasoning level.
-- `--usage` prints token counts and calculated cost.
-- `--dry-run` estimates input tokens and cost without a provider request.
+- `--model <name>` selects a model in the installed `@eliware/openai` pricing catalog.
+- `--effort <level>` sets the reasoning level.
+- `--usage` prints provider token counts and calculated cost after a live request.
+- `--dry-run` counts input tokens without requesting a model response.
 - `--debug-request` prints request and response data to standard error.
-- `--web-search` enables OpenAI web lookup for this request. Web lookup is off by default.
-- `--add <text>` appends text to the request. You can repeat this option.
+- `--web-search` enables OpenAI web lookup for one request. Lookup is off by default.
+- `--add <text>` appends text to the request. Repeat this option as needed.
+
+The parser accepts `--effort low` and `--effort=low`.
 
 Use these reasoning levels: `none`, `low`, `medium`, `high`, `xhigh`, or `max`.
 The default reasoning level is `none`.
 The default model is `gpt-6-luna`.
-
-Supported models are `gpt-6-astra`, `gpt-6-sol`, `gpt-6.1-sol`, `gpt-6-luna`, `gpt-5.6-luna`,
-`gpt-5.6-terra`, and `gpt-5.6-sol`.
+The current model catalog includes `gpt-6-astra`, `gpt-6-sol`, `gpt-6.1-sol`, `gpt-6-luna`,
+`gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
 
 Inspection requests ask for an automatic reasoning summary.
 CodeScope prints a summary before the provider response when the provider returns one.
-It then prints the provider response unchanged.
+CodeScope prints the provider response without changing its text.
 
 Use `--usage --dry-run` to report estimated input tokens and cost.
+The dry run sends an input-token count request to OpenAI.
+It does not request a model response.
 Use `--usage` on a live request to report provider token counts and calculated cost.
 
-Debug output can contain sent repository content and provider data.
-Prevent access to that output.
+```text
+codescope all --usage --dry-run
+codescope all --effort low --usage
+codescope all --debug-request 2> request.log
+codescope all --web-search
+```
+
+Debug output can contain repository content and provider data.
+Limit access to debug output.
 
 ## Exit codes
 
-CodeScope returns `0` after a correct request.
-Issues and verdicts do not change this code.
+CodeScope returns `0` when a request completes.
+Reported issues and verdicts do not change this code.
 
 | Code  | Meaning                                        |
 | ----- | ---------------------------------------------- |

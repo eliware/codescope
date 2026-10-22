@@ -81,11 +81,12 @@ See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
 
 ## Security
 
-CodeScope sends supplied repository content to the configured OpenAI system.
+CodeScope sends supplied repository content to the OpenAI API.
 The model can use OpenAI web lookup only when you add `--web-search` to a command.
 Web lookup is off by default.
 Remove secrets from that content before you run an inspection.
-Prevent debug logs because they can contain repository content.
+Limit access to debug logs. They can contain repository content.
+
 Read [Operations and data](docs/operations.md) for web lookup and cost details.
 
 ## Configuration
@@ -97,9 +98,11 @@ See the [configuration guide](docs/configuration.md) for token rules and options
 
 CodeScope reads repository content and writes its result to standard output.
 It does not edit the reviewed repository, run its commands, or run its tests.
-Each inspection, suggestion, or custom prompt sends one provider request.
+Each live inspection, suggestion, or custom prompt sends one model request.
+A dry run sends one input-token count request.
 Help and version commands send no provider request.
 Inspection, suggestion, and prompt commands check configuration before provider setup.
+
 CodeScope stops its request controller and removes signal handlers after each request.
 
 Read [Operations and data](docs/operations.md) for request and output details.
@@ -108,13 +111,14 @@ Use Eliware Operations for release approval.
 
 ## Commands
 
-Use `codescope --help` to view the command list.
+Use `codescope --help` to print the setup guide.
 Use `codescope prompt "your question"` to send a custom request.
 Read the [command guide](docs/commands.md) for options and examples.
 
 ## Exit codes
 
-CodeScope returns `0` after a correct request, also when the result lists issues.
+CodeScope returns `0` when the request completes.
+Reported issues do not change the exit code.
 It returns a nonzero code when setup, input, provider, or output fails.
 Read the [command guide](docs/commands.md#exit-codes) for each code.
 
