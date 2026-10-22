@@ -18,15 +18,26 @@ test("composes metadata for unsupplied inventory files in sorted order", async (
   ]);
 });
 
-test("does not read or list package lockfiles in the remaining-file inventory", async () => {
-  const read = jest.fn();
-  await expect(
-    describeOtherFiles("repo", ["package-lock.json", "nested/package-lock.json"], {
+test("lists package lockfiles as metadata without including their contents", async () => {
+  const read = jest.fn(async () => ({ data: '{"private":"lock content"}', truncated: false }));
+  const result = await describeOtherFiles(
+    "repo",
+    ["package-lock.json", "nested/package-lock.json", "nested/deep/package-lock.json"],
+    {
       inspectFile: regular,
       readOtherFileContents: read,
-    }),
-  ).resolves.toEqual({ entries: [], totalEntries: 0 });
-  expect(read).not.toHaveBeenCalled();
+    },
+  );
+  expect(result).toEqual({
+    entries: [
+      "nested/deep/package-lock.json | text | 1 lines | 26 bytes",
+      "nested/package-lock.json | text | 1 lines | 26 bytes",
+      "package-lock.json | text | 1 lines | 26 bytes",
+    ],
+    totalEntries: 3,
+  });
+  expect(read).toHaveBeenCalledTimes(3);
+  expect(JSON.stringify(result)).not.toContain("lock content");
 });
 
 test("lists release notes in the inventory without supplying their content", async () => {

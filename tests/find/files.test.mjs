@@ -46,6 +46,26 @@ test("uses injected readers for virtual roots and defaults for real roots", asyn
   await expect(findFiles(process.cwd(), ".mjs")).resolves.toContain("src/cli/main.mjs");
 });
 
+test("includes package-lock.json files at every directory depth", async () => {
+  const root = path.resolve("fixture-root");
+  const tree = {
+    [root]: [file("package-lock.json"), file("root.txt"), directory("nested")],
+    [path.join(root, "nested")]: [file("package-lock.json"), file("nested.txt"), directory("deep")],
+    [path.join(root, "nested", "deep")]: [file("package-lock.json"), file("deep.txt")],
+  };
+
+  await expect(
+    findFiles(root, "", { readDirectory: async (directoryPath) => tree[directoryPath] ?? [] }),
+  ).resolves.toEqual([
+    "nested/deep/deep.txt",
+    "nested/deep/package-lock.json",
+    "nested/nested.txt",
+    "nested/package-lock.json",
+    "package-lock.json",
+    "root.txt",
+  ]);
+});
+
 test("inspects and rejects symlinked roots", async () => {
   const inspected = [];
   const inspectRoot = async (root) => {

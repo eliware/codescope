@@ -15,7 +15,7 @@ test("filters included content and normalizes Windows separators", () => {
   ).toEqual(["src/a.mjs"]);
 });
 
-test("omits package lockfiles from inventory at every size", () => {
+test("keeps package lockfiles in inventory at every path depth", () => {
   expect(
     selectInventoryFiles(
       "repo",
@@ -23,7 +23,7 @@ test("omits package lockfiles from inventory at every size", () => {
       path.posix,
       () => false,
     ),
-  ).toEqual(["notes.txt"]);
+  ).toEqual(["nested/package-lock.JSON", "notes.txt", "package-lock.json"]);
 });
 
 test("rejects absolute and escaping inventory paths", () => {

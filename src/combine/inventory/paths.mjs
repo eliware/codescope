@@ -1,5 +1,4 @@
 import path from "node:path";
-import { isPackageLock } from "../json/policy.mjs";
 
 export function resolveInventoryPath(rootPath, relativePath, pathApi) {
   const portablePath = pathApi.sep === "\\" ? relativePath.replaceAll("\\", "/") : relativePath;
@@ -33,6 +32,6 @@ export function selectInventoryFiles(root, inventory, pathApi, isIncludedContent
       resolveInventoryPath(rootPath, relativePath, pathApi);
       return relativePath;
     })
-    .filter((relativePath) => !isIncludedContent(relativePath) && !isPackageLock(relativePath))
+    .filter((relativePath) => !isIncludedContent(relativePath))
     .sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
 }
