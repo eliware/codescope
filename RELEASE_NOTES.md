@@ -1,5 +1,13 @@
 # Release Notes
 
+## 15.0.1 — 2026-10-26
+
+### Changed
+
+- Set the CodeScope package version to 15.0.1.
+- Update `@eliware/common`, `@eliware/openai`, and `@eliware/test` to 15.0.1.
+- Refresh the lockfile with current compatible transitive package versions.
+
 ## 15.0.0 — 2026-10-22
 
 ### Added
