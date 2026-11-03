@@ -1,5 +1,13 @@
 # Release Notes
 
+## 15.1.0 — 2026-11-03
+
+### Changed
+
+- Set the CodeScope package version to 15.1.0.
+- Update `@eliware/test` to 15.1.0.
+- Mark the `codescope` command-line launcher as executable.
+
 ## 15.0.1 — 2026-10-26
 
 ### Changed
