@@ -1,12 +1,23 @@
 # Release Notes
 
-## 15.1.0 — 2026-11-03
+## 15.1.0 — 2026-11-05
+
+### Added
+
+- Add a NAS Knit target that installs dependencies and runs `npm test`.
+- Add Git status for `.env` files to the file inventory without reading their contents.
 
 ### Changed
 
-- Set the CodeScope package version to 15.1.0.
-- Update `@eliware/test` to 15.1.0.
+- Set the CodeScope package version to 15.1.0 and update `@eliware/test` to 15.1.0.
+- Refresh the lockfile with current compatible package versions.
+- Update end-user guides for environment-file status, platform support, and reasoning summaries.
+- Remove content from `AGENTS.md` and `README.md` that conventions do not require.
 - Mark the `codescope` command-line launcher as executable.
+
+### Fixed
+
+- Tell CodeScope that environment-file metadata does not prove that a usable secret exists.
 
 ## 15.0.1 — 2026-10-26
 
