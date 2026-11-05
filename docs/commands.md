@@ -119,7 +119,7 @@ The default model is `gpt-6-luna`.
 The current model catalog includes `gpt-6-astra`, `gpt-6-sol`, `gpt-6.1-sol`, `gpt-6-luna`,
 `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`.
 
-Inspection requests ask for an automatic reasoning summary.
+Model requests ask for an automatic reasoning summary.
 CodeScope prints a summary before the provider response when the provider returns one.
 CodeScope prints the provider response without changing its text.
 

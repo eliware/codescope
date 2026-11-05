@@ -24,33 +24,32 @@ A structured OpenAI CLI for focused codebase reviews, suggestions, and token est
 
 ## Features
 
-CodeScope reviews supplied repository content and reports issues or suggestions.
-It estimates token use and cost.
-It does not change the reviewed repository or run its tests.
-
-See the [documentation](docs/README.md) for user instructions.
-See the [specifications](specs/README.md) for software rules.
+CodeScope reviews repository content, reports issues, suggests improvements, and estimates token use and cost.
+CodeScope does not change a reviewed repository or run its tests.
+See the [documentation index](docs/README.md) for user guides.
+See [specifications](specs/README.md) for repository rules.
 
 ## Requirements
 
 Use Node.js 26 or later.
+Create an OpenAI API token.
 
 ## Setup
 
-Install the public package with npm.
+Install CodeScope as a global command.
 
 ```text
 npm install -g @eliware/codescope
 ```
 
-The package command is `codescope`.
-The CLI entry point is `bin/codescope.mjs`.
+The command entrypoint is `bin/codescope.mjs`.
 The package export is `src/cli/main.mjs`.
-Package files include `src/`, `bin/`, `docs/`, `specs/`, `prompts/`, `README.md`, `AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
+The package files include `src/`, `docs/`, `README.md`, `AGENTS.md`, `LICENSE`, `RELEASE_NOTES.md`, `bin/`, `specs/`, and `prompts/`.
 
-Use `MAJOR.MINOR.PATCH` versions that match the applied convention version.
+Use numeric `MAJOR.MINOR.PATCH` versions that match the applied convention version.
 Follow Eliware Operations for release approval. Passing validation does not authorize publication.
-See [Setup guide](docs/quick-start.md) for setup steps.
+
+Read the [setup guide](docs/quick-start.md) to install and run CodeScope.
 
 ## Usage
 
@@ -62,51 +61,46 @@ codescope review release
 codescope suggest architecture
 ```
 
-See [Release notes](RELEASE_NOTES.md) for changes by version.
-See [Setup guide](docs/quick-start.md) for profile guidance.
-Run `codescope --version` to print the installed version.
+Read [release notes](RELEASE_NOTES.md) for version changes.
+Read the [command guide](docs/commands.md) for commands and options.
 
 ## Development
 
-Read [AGENTS.md](AGENTS.md) for development rules.
+Read [AGENTS.md](AGENTS.md) for repository instructions.
 
 ## Testing
 
 Run `npm test` for aggregate validation.
-The command runs `eliware-test`.
 CodeScope does not run tests in a reviewed repository.
 
 ## Troubleshooting
 
-See the [troubleshooting guide](docs/troubleshooting.md) for common errors.
+Read the [troubleshooting guide](docs/troubleshooting.md) for help with common errors.
 
 ## Security
 
-CodeScope sends supplied repository content to the OpenAI API.
-Remove secrets from that content before you run an inspection.
-Read [Operations and data](docs/operations.md) for web lookup and cost details.
+CodeScope sends selected repository content to OpenAI.
+Remove secrets and private data from that content before you run CodeScope.
+Read [Operations and data](docs/operations.md) for request and data details.
 
 ## Configuration
 
 Set `OPENAI_API_TOKEN` in the process environment or in `~/.codescope`.
-See the [configuration guide](docs/configuration.md) for token rules and options.
+Read the [configuration guide](docs/configuration.md) for token rules and command values.
 
 ## Operations
 
-Read [Operations and data](docs/operations.md) for request, output, and data details.
+Read [Operations and data](docs/operations.md) for context selection, request behavior, output, and usage.
 
 ## Commands
 
 Use `codescope --help` to print the setup guide.
-Use `codescope prompt "your question"` to send a custom request.
-Read the [command guide](docs/commands.md) for options and examples.
+Read the [command guide](docs/commands.md) for command behavior, options, arguments, defaults, and examples.
 
 ## Exit codes
 
-CodeScope returns `0` when the request completes.
-Reported issues do not change the exit code.
-It returns a nonzero code when setup, input, provider, or output fails.
-Read the [command guide](docs/commands.md#exit-codes) for each code.
+Reported issues do not change the command exit code.
+Read the [command guide](docs/commands.md#exit-codes) for all exit codes.
 
 ## Support
 

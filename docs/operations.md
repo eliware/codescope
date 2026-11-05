@@ -13,6 +13,10 @@ The inventory lists each lockfile by name and metadata.
 The inventory lists other files by name and metadata.
 Text entries include line and byte counts.
 
+CodeScope lists `.env` and `.env.*` files without reading their contents.
+It reports their local Git status as tracked, untracked and ignored, untracked and not ignored, or unknown.
+It does not send matching `.gitignore` rules or environment-file contents to OpenAI.
+
 Binary files show their byte count.
 Large files show the sampled-byte limit message.
 

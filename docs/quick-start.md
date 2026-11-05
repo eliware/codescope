@@ -19,8 +19,9 @@ Check the installed version.
 codescope --version
 ```
 
-CodeScope accepts Windows and Linux paths.
-CI runs on Ubuntu Linux. CI does not test Windows.
+CI tests Ubuntu Linux only.
+CodeScope accepts Windows, macOS, and FreeBSD paths.
+The CI workflow does not test these platforms.
 
 ## Set the API token
 

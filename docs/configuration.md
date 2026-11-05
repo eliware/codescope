@@ -30,7 +30,7 @@ Use `--model` to select a model from the installed `@eliware/openai` pricing cat
 Use `--effort` to set the reasoning level.
 The default model is `gpt-6-luna`.
 The default reasoning level is `none`.
-Inspection requests ask for an automatic reasoning summary.
+Model requests ask for an automatic reasoning summary.
 
 Web lookup is off by default.
 Add `--web-search` to enable it for one request.
