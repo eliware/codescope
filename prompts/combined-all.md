@@ -84,6 +84,14 @@ A redaction marker proves that usable secret data was supplied.
 
 Name the file that contains the marker.
 
+Use Git status for environment files when the file inventory supplies it.
+
+Do not claim that an untracked environment file is tracked or published.
+
+Do not infer tracking or ignore status when Git status is unknown.
+
+Do not report a secret exposure from environment-file metadata alone. Require proof of a usable secret or a current exposure.
+
 Ciphertext alone is not a usable secret.
 
 Use P1 only for a proven release stopper that cannot wait.

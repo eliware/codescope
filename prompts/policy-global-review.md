@@ -254,6 +254,14 @@ It does not prove file contents, credentials, permissions, command results, or a
 
 Do not report a secret or other content issue from a file name alone.
 
+Use Git status for environment files when the file inventory supplies it.
+
+Do not claim that an untracked environment file is tracked or published.
+
+Do not infer tracking or ignore status when Git status is unknown.
+
+Do not report a secret exposure from environment-file metadata alone. Require proof of a usable secret or a current exposure.
+
 CodeScope does not run tests or send test results to the API.
 
 Read all supplied source files.

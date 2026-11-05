@@ -103,6 +103,10 @@ directives:
         dos:
           - Exclude `RELEASE_NOTES.md` from supplied Markdown. Match uppercase or lowercase letters.
           - Keep the excluded release-notes file in the unsupplied-file inventory.
+          - List environment files without reading their content.
+          - >-
+            Include local Git status for environment files as tracked, untracked and ignored,
+            untracked and not ignored, or unknown.
           - Put `package.json` first in the repository context.
           - Put selected semantic profiles after `package.json`.
           - Put other JSON files after selected semantic profiles.

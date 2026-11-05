@@ -15,6 +15,7 @@ export async function describeOtherFiles(
     concurrency = 8,
     maxChars = Number.POSITIVE_INFINITY,
     platform = process.platform,
+    executeGit,
   } = {},
 ) {
   validateInventoryOptions(concurrency);
@@ -22,7 +23,12 @@ export async function describeOtherFiles(
   const rootPath = pathApi.resolve(root);
   const paths = selectInventoryFiles(root, inventory, pathApi, isIncludedContent);
   const read = (relativePath) =>
-    readInventoryEntry(rootPath, relativePath, { pathApi, readOtherFileContents, inspectFile });
+    readInventoryEntry(rootPath, relativePath, {
+      pathApi,
+      readOtherFileContents,
+      inspectFile,
+      executeGit,
+    });
   if (Number.isFinite(maxChars)) {
     const entries = [];
     for (const relativePath of paths) {

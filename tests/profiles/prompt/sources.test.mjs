@@ -37,4 +37,7 @@ test("loads the developer prompt and profile text from Markdown files", () => {
 test("uses default profile prompt options", () => {
   const prompt = createProfilePrompt("default focus");
   expect(prompt.input[1].content[0].text).toContain("Profile focus: default focus");
+  expect(prompt.input[1].content[0].text).toContain(
+    "Do not claim that an untracked environment file is tracked or published.",
+  );
 });

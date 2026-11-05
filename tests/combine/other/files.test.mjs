@@ -52,14 +52,18 @@ test("lists release notes in the inventory without supplying their content", asy
   });
 });
 
-test("lists environment files as metadata without exposing their content", async () => {
-  const contents = "PRIVATE_VALUE";
+test("lists environment files with Git status and does not read their content", async () => {
+  const read = jest.fn(async () => ({ data: "not-read", truncated: false }));
   const result = await describeOtherFiles("repo", [".env"], {
     inspectFile: regular,
-    readOtherFileContents: async () => ({ data: contents, truncated: false }),
+    readOtherFileContents: read,
+    executeGit: jest.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(0),
   });
-  expect(result.entries).toEqual([`.env | text | 1 lines | ${Buffer.byteLength(contents)} bytes`]);
-  expect(result.entries.join("\n")).not.toContain(contents);
+  expect(result.entries).toEqual([
+    ".env | environment file | content omitted | Git status: untracked and ignored",
+  ]);
+  expect(read).not.toHaveBeenCalled();
+  expect(result.entries.join("\n")).not.toContain("not-read");
 });
 
 test("preserves independent per-file limits and bounded concurrency", async () => {
