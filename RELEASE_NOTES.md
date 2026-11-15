@@ -5,7 +5,8 @@
 ### Changed
 
 - Keep paths under `dist` and `artifacts` in the context inventory while omitting their contents.
-- Set the CodeScope package version to 15.1.1 and refresh the lockfile.
+- Set the CodeScope package version to 15.1.1.
+- Refresh the lockfile with updated compatible package versions.
 
 ## 15.1.0 — 2026-11-05
 
