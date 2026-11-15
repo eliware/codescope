@@ -1,4 +1,5 @@
 import path from "node:path";
+import { isGeneratedArtifactPath } from "../content-path.mjs";
 
 const CONTENT_EXTENSIONS = [".json", ".yaml", ".yml", ".md", ".js", ".mjs", ".cjs", ".ts"];
 
@@ -28,6 +29,7 @@ export function selectConfigFiles(inventory, platform = process.platform) {
     )
     .filter((relativePath) => {
       const normalized = relativePath.toLowerCase();
+      if (isGeneratedArtifactPath(relativePath)) return false;
       const isCollectedElsewhere = CONTENT_EXTENSIONS.some((extension) =>
         normalized.endsWith(extension),
       );

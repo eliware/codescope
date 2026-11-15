@@ -1,5 +1,12 @@
 # Release Notes
 
+## 15.1.1 — 2026-11-14
+
+### Changed
+
+- Keep paths under `dist` and `artifacts` in the context inventory while omitting their contents.
+- Set the CodeScope package version to 15.1.1 and refresh the lockfile.
+
 ## 15.1.0 — 2026-11-05
 
 ### Added

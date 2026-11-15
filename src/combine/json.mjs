@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { findFiles } from "../find/files.mjs";
 import { readBatches } from "./batches.mjs";
 import { isIncludedJson } from "./json/policy.mjs";
+import { isGeneratedArtifactPath } from "./content-path.mjs";
 import { createJsonSectionReader } from "./json/read-section.mjs";
 export async function combineJsonFiles(
   root,
@@ -16,7 +17,7 @@ export async function combineJsonFiles(
   } = {},
 ) {
   const files = (await findFiles(root, ".json", { readDirectory, platform })).filter(
-    isIncludedJson,
+    (relativePath) => !isGeneratedArtifactPath(relativePath) && isIncludedJson(relativePath),
   );
   const sections = await readBatches(files, {
     batchSize: concurrency,

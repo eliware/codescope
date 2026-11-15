@@ -1,4 +1,5 @@
 import { isIncludedJson } from "../json/policy.mjs";
+import { isGeneratedArtifactPath } from "../content-path.mjs";
 
 const CODE_EXTENSIONS = [".js", ".mjs", ".cjs", ".ts"];
 
@@ -6,6 +7,7 @@ export const MAX_OTHER_FILE_BYTES = 100_000;
 
 export function isIncludedContent(relativePath) {
   const lower = relativePath.toLowerCase();
+  if (isGeneratedArtifactPath(relativePath)) return false;
   if (lower === "release_notes.md" || lower.endsWith("/release_notes.md")) return false;
   if (isIncludedJson(relativePath)) return true;
   if (lower.endsWith(".yaml") || lower.endsWith(".yml")) return true;

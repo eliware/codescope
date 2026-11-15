@@ -49,3 +49,13 @@ test.each(["src/main.js", "src/main.mjs", "src/main.cjs", "src/main.ts", "notes.
     expect(isIncludedContent(file)).toBe(file !== "notes.txt");
   },
 );
+
+test.each([
+  "dist/bundle.js",
+  "nested/dist/data.json",
+  "artifacts/output.yaml",
+  "nested/ARTIFACTS/README.md",
+  "dist\\nested\\module.ts",
+])("identifies generated artifact paths: %s", (file) => {
+  expect(isIncludedContent(file)).toBe(false);
+});

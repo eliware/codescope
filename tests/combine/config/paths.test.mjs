@@ -14,6 +14,8 @@ test("selects config entries not owned by another content section", () => {
       ".github/script.mjs",
       ".github/script.test.mjs",
       ".github/setup.cfg",
+      ".github/dist/generated.cfg",
+      ".knit/artifacts/generated.cfg",
       ".knit/check.mjs",
     ]),
   ).toEqual([".github/setup.cfg"]);

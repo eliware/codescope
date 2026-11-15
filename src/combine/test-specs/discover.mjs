@@ -1,6 +1,7 @@
 import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
 import { findFiles } from "../../find/files.mjs";
+import { isGeneratedArtifactPath } from "../content-path.mjs";
 
 export async function discoverTestSpecFiles(
   testRoot,
@@ -21,7 +22,9 @@ export async function discoverTestSpecFiles(
   try {
     return {
       specsRoot,
-      files: await findFiles(specsRoot, ".yaml", { readDirectory, platform }),
+      files: (await findFiles(specsRoot, ".yaml", { readDirectory, platform })).filter(
+        (relativePath) => !isGeneratedArtifactPath(relativePath),
+      ),
     };
   } catch (cause) {
     throw new Error(`Cannot find Test specification data: ${String(cause)}`, { cause });
